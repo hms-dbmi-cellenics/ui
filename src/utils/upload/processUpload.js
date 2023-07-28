@@ -12,7 +12,8 @@ import fetchAPI from 'utils/http/fetchAPI';
 
 import getFileTypeV2 from 'utils/getFileTypeV2';
 import { sampleTech } from 'utils/constants';
-import uploadParts from './processMultipartUpload';
+import fileUploadSpecifications from 'utils/upload/fileUploadSpecifications';
+import processMultipartUpload from 'utils/upload/processMultipartUpload';
 
 const prepareAndUploadFileToS3 = async (
   experimentId, sampleId, fileType, file, uploadUrlParams, dispatch,
@@ -36,7 +37,7 @@ const prepareAndUploadFileToS3 = async (
   };
 
   try {
-    parts = await uploadParts(file, signedUrls, createOnUploadProgressForPart);
+    parts = await processMultipartUpload(file, signedUrls, createOnUploadProgressForPart);
   } catch (e) {
     dispatch(updateSampleFileUpload(experimentId, sampleId, fileType, UploadStatus.UPLOAD_ERROR));
     return;
@@ -63,7 +64,7 @@ const prepareAndUploadFileToS3 = async (
 };
 
 const createAndUploadSingleFile = async (file, experimentId, sampleId, dispatch, selectedTech) => {
-  const fileType = getFileTypeV2(file.fileObject.name, file.fileObject.type);
+  const fileType = getFileTypeV2(file.name, selectedTech);
 
   if (!file.compressed) {
     try {
@@ -123,7 +124,7 @@ const processUpload = async (filesList, technology, samples, experimentId, dispa
     const pathToArray = file.name.trim().replace(/[\s]{2,}/ig, ' ').split('/');
 
     const sampleName = pathToArray[0];
-    const fileName = _.last(pathToArray);
+    const fileName = fileUploadSpecifications[technology].getCorrespondingName(_.last(pathToArray));
 
     // Update the file name so that instead of being saved as
     // e.g. WT13/matrix.tsv.gz, we save it as matrix.tsv.gz

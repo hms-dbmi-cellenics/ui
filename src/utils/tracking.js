@@ -1,8 +1,10 @@
 import { init, push } from '@socialgouv/matomo-next';
 import Auth from '@aws-amplify/auth';
-import { Environment } from './deploymentInfo';
 
-const MATOMO_URL = 'https://cellenics.matomo.cloud';
+import { Environment } from './deploymentInfo';
+import getDomainSpecificContent from './getDomainSpecificContent';
+
+const MATOMO_URL = `https://${getDomainSpecificContent('matomoName')}.matomo.cloud`;
 
 // To test a staging deployment, you'll need to go to matomo.cloud
 // and change the URL there to point to your staging env URL.
@@ -12,17 +14,17 @@ const trackingInfo = {
   [Environment.PRODUCTION]: {
     enabled: true,
     siteId: 1,
-    containerId: 'zdMhc9ey',
+    containerId: getDomainSpecificContent('containerIds')[Environment.PRODUCTION],
   },
   [Environment.STAGING]: {
     enabled: false,
     siteId: 2,
-    containerId: 'lMoIVl5D',
+    containerId: getDomainSpecificContent('containerIds')[Environment.STAGING],
   },
   [Environment.DEVELOPMENT]: {
     enabled: false,
     siteId: 3,
-    containerId: 'uMEoPBAl',
+    containerId: getDomainSpecificContent('containerIds')[Environment.DEVELOPMENT],
   },
 };
 

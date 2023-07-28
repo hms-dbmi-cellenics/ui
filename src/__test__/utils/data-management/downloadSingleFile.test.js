@@ -3,6 +3,7 @@ import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 import downloadSingleFile from 'utils/data-management/downloadSingleFile';
 import downloadFromUrl from 'utils/downloadFromUrl';
 
+import { sampleTech } from 'utils/constants';
 import fake from '__test__/test-utils/constants';
 
 jest.mock('utils/downloadFromUrl');
@@ -24,7 +25,7 @@ describe('downloadFromUrl', () => {
 
     const fileName = 'features.tsv.gz';
 
-    await downloadSingleFile(fake.EXPERIMENT_ID, fake.SAMPLE_ID, fileName);
+    await downloadSingleFile(fake.EXPERIMENT_ID, fake.SAMPLE_ID, fileName, sampleTech['10X']);
 
     expect(downloadFromUrl).toHaveBeenCalledWith(mockSignedUrl);
     expect(fetchMock.mock.calls).toMatchSnapshot();

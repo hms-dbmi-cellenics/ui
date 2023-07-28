@@ -1,8 +1,8 @@
-import calculatePipelineRerunStatus from 'utils/data-management/calculatePipelineRerunStatus';
+import calculateGem2sRerunStatus from 'utils/data-management/calculateGem2sRerunStatus';
 
 import pipelineStatusValues from 'utils/pipelineStatusValues';
 
-describe('calculatePipelineRerunStatus', () => {
+describe('calculateGem2sRerunStatus', () => {
   const successfulGem2sBackendStatus = {
     startDate: '2023-01-13T01:01:10.574Z',
     stopDate: '2023-01-13T01:02:16.435Z',
@@ -54,7 +54,7 @@ describe('calculatePipelineRerunStatus', () => {
 
     const {
       rerun, reasons,
-    } = calculatePipelineRerunStatus(runningGem2sBackendStatus, experiment);
+    } = calculateGem2sRerunStatus(runningGem2sBackendStatus, experiment);
 
     expect(rerun).toEqual(false);
     expect(reasons).toEqual([]);
@@ -67,7 +67,7 @@ describe('calculatePipelineRerunStatus', () => {
       shouldRerun: false,
     };
 
-    const { rerun } = calculatePipelineRerunStatus(
+    const { rerun } = calculateGem2sRerunStatus(
       failedGem2sBackendStatus, experiment,
     );
 
@@ -75,7 +75,7 @@ describe('calculatePipelineRerunStatus', () => {
   });
 
   it('No rerun when gem2s finished and its a normal experiment and shouldRerun is false', () => {
-    const { rerun } = calculatePipelineRerunStatus(
+    const { rerun } = calculateGem2sRerunStatus(
       { ...successfulGem2sBackendStatus, shouldRerun: false },
       experiment,
     );
@@ -84,7 +84,7 @@ describe('calculatePipelineRerunStatus', () => {
   });
 
   it('Rerun when gem2s finished and its a normal experiment and shouldRerun is true', () => {
-    const { rerun } = calculatePipelineRerunStatus(
+    const { rerun } = calculateGem2sRerunStatus(
       { ...successfulGem2sBackendStatus, shouldRerun: true },
       experiment,
     );
@@ -98,7 +98,7 @@ describe('calculatePipelineRerunStatus', () => {
       parentExperimentId: 'mockParentExperimentId',
     };
 
-    const { rerun } = calculatePipelineRerunStatus(
+    const { rerun } = calculateGem2sRerunStatus(
       { ...successfulGem2sBackendStatus, shouldRerun: true },
       subsetExperiment,
     );

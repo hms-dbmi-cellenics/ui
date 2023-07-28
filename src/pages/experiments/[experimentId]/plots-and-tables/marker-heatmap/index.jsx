@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Collapse,
   Skeleton,
@@ -12,9 +12,6 @@ import { Vega } from 'react-vega';
 import PropTypes from 'prop-types';
 import 'vega-webgl-renderer';
 
-import pushNotificationMessage from 'utils/pushNotificationMessage';
-import endUserMessages from 'utils/endUserMessages';
-
 import { getCellSets, getCellSetsHierarchyByKeys } from 'redux/selectors';
 
 import HeatmapGroupBySettings from 'components/data-exploration/heatmap/HeatmapGroupBySettings';
@@ -26,7 +23,8 @@ import { updatePlotConfig, loadPlotConfig } from 'redux/actions/componentConfig'
 import Header from 'components/Header';
 import PlotContainer from 'components/plots/PlotContainer';
 import { generateSpec } from 'utils/plotSpecs/generateHeatmapSpec';
-import { loadGeneExpression, loadMarkerGenes, loadPaginatedGeneProperties } from 'redux/actions/genes';
+import { loadGeneExpression, loadMarkerGenes } from 'redux/actions/genes';
+import loadGeneList from 'redux/actions/genes/loadGeneList';
 import { loadCellSets } from 'redux/actions/cellSets';
 import PlatformError from 'components/PlatformError';
 import Loader from 'components/Loader';
@@ -43,7 +41,6 @@ import useConditionalEffect from 'utils/customHooks/useConditionalEffect';
 const { Panel } = Collapse;
 const plotUuid = 'markerHeatmapPlotMain';
 const plotType = 'markerHeatmap';
-const geneListUuid = 'geneList';
 
 const MarkerHeatmap = ({ experimentId }) => {
   const dispatch = useDispatch();
@@ -268,20 +265,7 @@ const MarkerHeatmap = ({ experimentId }) => {
   }, [config, downsampledCellOrder]);
 
   useEffect(() => {
-    const state = {
-      sorter: {
-        field: 'gene_names',
-        columnKey: 'gene_names',
-        order: 'ascend',
-      },
-      pagination: {
-        current: 1,
-        pageSize: 100000,
-      },
-      pageSizeFilter: null,
-    };
-
-    dispatch(loadPaginatedGeneProperties(experimentId, ['dispersions'], geneListUuid, state));
+    dispatch(loadGeneList(experimentId));
   }, []);
 
   const treeScrollable = document.getElementById('ScrollWrapper');

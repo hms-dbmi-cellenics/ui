@@ -1,8 +1,37 @@
 import {
-  ssrGetDeploymentInfo, DomainName, Environment,
+  ssrGetDeploymentInfo, DomainName, Environment, privacyPolicyIsNotAccepted,
 } from 'utils/deploymentInfo';
 
 describe('deploymentInfo', () => {
+  describe('privacyPolicyIsNotAccepted', () => {
+    it('Returns false for users that accepted privacy policy', () => {
+      const user = { attributes: { 'custom:agreed_terms': 'true' } };
+      const domainName = DomainName.BIOMAGE;
+
+      expect(privacyPolicyIsNotAccepted(user, domainName)).toEqual(false);
+    });
+
+    it('Returns false for users that arent in Biomage deployment', () => {
+      const user = { attributes: {} };
+      const domainName = 'Someotherdomain.com';
+
+      expect(privacyPolicyIsNotAccepted(user, domainName)).toEqual(false);
+    });
+
+    it('Returns true for users that still need to accept terms in Biomage', () => {
+      const user = { attributes: {} };
+      const domainName = DomainName.BIOMAGE;
+
+      expect(privacyPolicyIsNotAccepted(user, domainName)).toEqual(true);
+    });
+
+    it('Returns true for users that still need to accept terms in Biomage staging', () => {
+      const user = { attributes: {} };
+      const domainName = DomainName.BIOMAGE_STAGING;
+
+      expect(privacyPolicyIsNotAccepted(user, domainName)).toEqual(true);
+    });
+  });
   describe('ssrGetDeploymentInfo', () => {
     let originalEnv;
 
@@ -58,12 +87,21 @@ describe('deploymentInfo', () => {
       });
     });
 
-    it('Works in development', () => {
-      process.env = { NODE_ENV: Environment.DEVELOPMENT };
+    it('Works in development for hms', () => {
+      process.env = { NODE_ENV: Environment.DEVELOPMENT, DEV_ACCOUNT: 'HMS' };
 
       expect(ssrGetDeploymentInfo()).toEqual({
         environment: Environment.DEVELOPMENT,
         domainName: DomainName.HMS,
+      });
+    });
+
+    it('Works in development for biomage', () => {
+      process.env = { NODE_ENV: Environment.DEVELOPMENT, DEV_ACCOUNT: 'BIOMAGE' };
+
+      expect(ssrGetDeploymentInfo()).toEqual({
+        environment: Environment.DEVELOPMENT,
+        domainName: DomainName.BIOMAGE,
       });
     });
   });

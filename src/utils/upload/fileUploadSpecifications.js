@@ -4,12 +4,13 @@ const techNamesToDisplay = {
   [sampleTech['10X']]: '10X Chromium',
   [sampleTech.RHAPSODY]: 'BD Rhapsody',
   [sampleTech.SEURAT]: 'Seurat',
+  [sampleTech.H5]: '10X Chromium - H5',
 };
 
 const matchFileName = (fileName, fileNames) => {
   const regexString = `.*(${Array.from(fileNames).join('|')})$`;
   const regexp = new RegExp(regexString, 'i');
-  return fileName.match(regexp);
+  return regexp.test(fileName);
 };
 
 /* eslint-disable max-len */
@@ -42,14 +43,11 @@ const fileUploadSpecifications = {
     dropzoneText: 'Drag and drop folders here or click to browse.',
     // setting to empty string allows folder upload on dropzone click
     webkitdirectory: '',
-    isNameValid(fileName) { return this.acceptedFiles.has(fileName) || matchFileName(fileName, this.acceptedFiles); },
+    isNameValid(fileName) { return matchFileName(fileName, this.acceptedFiles); },
     getCorrespondingName(fileName) {
       const allowedNames = Array.from(this.acceptedFiles);
 
-      // Using for loop to allow breaking quickly
-      for (let i = 0; i < allowedNames.length; i += 1) {
-        if (fileName.endsWith(allowedNames[i])) return allowedNames[i];
-      }
+      return allowedNames.find((allowedName) => fileName.endsWith(allowedName));
     },
   },
   [sampleTech.SEURAT]: {
@@ -97,7 +95,16 @@ const fileUploadSpecifications = {
     isNameValid: (fileName) => fileName.toLowerCase().match(/.*expression_data.st(.gz)?$/),
     getCorrespondingName: (fileName) => fileName,
   },
-
+  [sampleTech.H5]: {
+    acceptedFiles: new Set(['matrix.h5', 'matrix.h5.gz']),
+    requiredFiles: [{ key: 'matrix.h5.gz', displayedName: 'matrix.h5' }],
+    inputInfo: [['<code>matrix.h5</code> or <code>matrix.h5.gz</code>']],
+    fileUploadParagraphs: [`For each sample, upload a folder containing the h5 file. The folder's
+    name will be used to name the sample in it.
+    You can change this name later in Data Management.`],
+    isNameValid: (fileName) => fileName.toLowerCase().match(/.*matrix.h5(.gz)?$/),
+    getCorrespondingName: (fileName) => fileName,
+  },
 };
 
 export { techNamesToDisplay };

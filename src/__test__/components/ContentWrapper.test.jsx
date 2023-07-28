@@ -19,7 +19,7 @@ import { loadExperiments, setActiveExperiment } from 'redux/actions/experiments'
 
 import { updateExperimentInfo } from 'redux/actions/experimentSettings';
 
-import calculatePipelineRerunStatus from 'utils/data-management/calculatePipelineRerunStatus';
+import calculateGem2sRerunStatus from 'utils/data-management/calculateGem2sRerunStatus';
 
 import mockAPI, {
   generateDefaultMockAPIResponses,
@@ -29,7 +29,7 @@ import { experiments } from '__test__/test-utils/mockData';
 
 jest.mock('redux/selectors');
 jest.mock('utils/socketConnection');
-jest.mock('utils/data-management/calculatePipelineRerunStatus');
+jest.mock('utils/data-management/calculateGem2sRerunStatus');
 
 jest.mock('next/router', () => ({
   __esModule: true,
@@ -122,7 +122,7 @@ describe('ContentWrapper', () => {
 
     navigator.userAgent = chromeUA;
 
-    calculatePipelineRerunStatus.mockImplementation(() => ({ rerun: true, reasons: [], complete: false }));
+    calculateGem2sRerunStatus.mockImplementation(() => ({ rerun: true, reasons: [], complete: false }));
 
     await store.dispatch(loadExperiments());
     await store.dispatch(setActiveExperiment(experimentId));
@@ -130,7 +130,7 @@ describe('ContentWrapper', () => {
   });
 
   afterEach(() => {
-    calculatePipelineRerunStatus.mockRestore();
+    calculateGem2sRerunStatus.mockRestore();
   });
 
   it('renders correctly', async () => {
@@ -166,7 +166,7 @@ describe('ContentWrapper', () => {
   });
 
   it('Links are enabled if the selected project is processed', async () => {
-    calculatePipelineRerunStatus.mockImplementationOnce(() => ({ rerun: false, reasons: [], complete: true }));
+    calculateGem2sRerunStatus.mockImplementationOnce(() => ({ rerun: false, reasons: [], complete: true }));
 
     const mockBackendStatus = {
       loading: false,
@@ -200,6 +200,19 @@ describe('ContentWrapper', () => {
 
     // Plots and Tables link is not disabled
     expect(screen.getByText('Plots and Tables').closest('li')).toHaveAttribute('aria-disabled', 'false');
+  });
+
+  it('Links are disabled if user is not in a module/page for experiment analysing', async () => {
+    useRouter.mockImplementation(() => ({
+      pathname: '/repository',
+    }));
+
+    await renderContentWrapper(experimentId, experimentData);
+
+    expect(screen.getByText('Data Management').closest('li')).toHaveAttribute('aria-disabled', 'false');
+    expect(screen.getByText('Data Processing').closest('li')).toHaveAttribute('aria-disabled', 'true');
+    expect(screen.getByText('Data Exploration').closest('li')).toHaveAttribute('aria-disabled', 'true');
+    expect(screen.getByText('Plots and Tables').closest('li')).toHaveAttribute('aria-disabled', 'true');
   });
 
   it('has the correct sider and layout style when opened / closed', async () => {

@@ -25,7 +25,7 @@ export default {
   ERROR_FETCH_BACKGROUND_GENE_EXP: 'We couldn\'t get the background gene expression',
   ERROR_FETCH_MARKER_GENES: 'We couldn\'t get the marker genes',
   ERROR_FILE_CATEGORY: 'The selected file name does not match the expected category.',
-  ERROR_FILES_FOLDER: 'Only files contained in a folder are accepted for 10X uploads.',
+  ERROR_FILES_FOLDER: 'Only files contained in a folder are accepted.',
   ERROR_METADATA_MULTIPLE_FILES: 'You need to upload a single file in .tsv format',
   ERROR_METADATA_WRONG_FORMAT: 'The file does not seem to be in the correct tsv key-value format.',
   ERROR_SEURAT_MULTIPLE_FILES: 'Only a single rds file is accepted for Seurat uploads.',

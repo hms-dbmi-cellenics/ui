@@ -1,5 +1,5 @@
 import React, {
-  useEffect, useState, useCallback,
+  useEffect, useState, useCallback, useMemo,
 } from 'react';
 import {
   Radio,
@@ -39,14 +39,19 @@ const comparisonInitialState = {
   comparisonType: null,
 };
 
+const cellSetNameFromKey = (properties, key) => {
+  // some entries have the parent cell set in the name like sample/213123-asda-2321
+  // the second part after the slash is needed to return the cell set name
+  const keySplitted = key?.split('/')[1] || key;
+  return properties[keySplitted]?.name.replace(/\s+/g, '_') || keySplitted;
+};
+
 const BatchDiffExpression = (props) => {
   const { experimentId } = props;
   const [chosenOperation, setChosenOperation] = useState('fullList');
   const dispatch = useDispatch();
   const cellSets = useSelector(getCellSets());
   const { properties, hierarchy } = cellSets;
-  const [numSamples, setNumSamples] = useState(0);
-
   const experimentName = useSelector((state) => state.experimentSettings.info.experimentName);
   const cellSetNodes = useSelector(getCellSetsHierarchyByType('cellSets'));
   const metadataCellSetNodes = useSelector(getCellSetsHierarchyByType('metadataCategorical'));
@@ -56,20 +61,15 @@ const BatchDiffExpression = (props) => {
   const [comparison, setComparison] = useState(comparisonInitialState);
   const batchCellSetKeys = useSelector(getCellSetsHierarchyByKeys([comparison.basis]))[0]?.children
     .map((child) => child.key);
+  const batchCellSetNames = batchCellSetKeys?.map((key) => cellSetNameFromKey(properties, key));
+
+  const [sample] = useSelector(getCellSetsHierarchyByKeys(['sample']));
+
+  const isDatasetUnisample = useMemo(() => sample?.children.length === 1, [sample]);
 
   useEffect(() => {
     dispatch(loadCellSets(experimentId));
   }, []);
-
-  useEffect(() => {
-    if (hierarchy && hierarchy.length === 0) return;
-
-    const samples = hierarchy?.find(
-      (rootNode) => (rootNode.key === 'sample'),
-    )?.children;
-
-    setNumSamples(samples.length);
-  }, [Object.keys(properties).length]);
 
   useEffect(() => {
     changeComparison({
@@ -116,7 +116,14 @@ const BatchDiffExpression = (props) => {
 
   const downloadCSVsAsZip = (data) => {
     const encoder = new TextEncoder();
-    const archiveName = `batchDE_${experimentName}`;
+    let archiveName;
+    const { cellSet, compareWith, basis } = comparison;
+    const experimentNameNoSpace = experimentName.replace(/\s+/g, '_');
+    if (chosenOperation === 'fullList') {
+      archiveName = `${experimentNameNoSpace}-FULL-LIST-${cellSetNameFromKey(properties, basis)}`;
+    } else {
+      archiveName = `${experimentNameNoSpace}-${cellSetNameFromKey(properties, cellSet)}-TO-${cellSetNameFromKey(properties, compareWith)}-IN-${cellSetNameFromKey(properties, basis)}`;
+    }
     const CSVs = data.reduce((accumulator, currentData, indx) => {
       let csvString;
       let fileName;
@@ -125,11 +132,11 @@ const BatchDiffExpression = (props) => {
         const columnNames = Object.keys(currentData[0]).join(',');
         const csvRows = currentData.map((obj) => Object.values(obj).join(','));
         csvString = `${columnNames}\n${csvRows.join('\n')}`;
-        fileName = `DE-${batchCellSetKeys[indx]}.csv`;
+        fileName = `DE-${batchCellSetNames[indx]}.csv`;
       } else {
         // If currentData[0] is not an array, include the error message in the CSV file
         csvString = `error\n${currentData.error}`;
-        fileName = `DE-${batchCellSetKeys[indx]}-error.csv`;
+        fileName = `DE-${batchCellSetNames[indx]}-error.csv`;
       }
       const encodedString = encoder.encode(csvString);
       accumulator[fileName] = encodedString;
@@ -278,7 +285,7 @@ const BatchDiffExpression = (props) => {
           >
             <Space direction='vertical'>
               <Space direction='horizontal'>
-                <Radio value='fullList'>
+                <Radio value='fullList' disabled={dataLoading}>
                   Generate a full list of marker genes for all cell sets
                   {'   '}
                   <Tooltip title='Each cell set will be compared to all other cells, using all samples.'>
@@ -286,9 +293,9 @@ const BatchDiffExpression = (props) => {
                   </Tooltip>
                 </Radio>
               </Space>
-              <Radio value='compareForCellSets' disabled={numSamples === 1}>
+              <Radio value='compareForCellSets' disabled={isDatasetUnisample || dataLoading}>
                 {
-                  numSamples === 1 ? (
+                  isDatasetUnisample ? (
                     <Tooltip
                       overlay={(
                         <span>
@@ -304,7 +311,7 @@ const BatchDiffExpression = (props) => {
                   )
                 }
               </Radio>
-              <Radio value='compareForSamples'>
+              <Radio value='compareForSamples' disabled={dataLoading}>
                 Compare two cell sets for all samples/groups
               </Radio>
             </Space>

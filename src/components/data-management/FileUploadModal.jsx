@@ -35,6 +35,7 @@ const SEURAT_MAX_FILE_SIZE = 15 * 1024 * 1024 * 1024;
 const extraHelpText = {
   [sampleTech['10X']]: () => <></>,
   [sampleTech.SEURAT]: () => <></>,
+  [sampleTech.H5]: () => <></>,
   [sampleTech.RHAPSODY]: () => (
     <Paragraph>
       <ul>
@@ -104,15 +105,17 @@ const FileUploadModal = (props) => {
     } else {
       let filesNotInFolder = false;
 
-      // Remove all files that aren't in a folder
       filteredFiles = filteredFiles
+        // Remove all files that aren't in a folder
         .filter((file) => {
           const inFolder = file.path.includes('/');
 
           filesNotInFolder ||= !inFolder;
 
           return inFolder;
-        });
+        })
+        // Remove all files that don't fit the current technology's valid names
+        .filter((file) => techOptions[selectedTech].isNameValid(file.name));
 
       if (filesNotInFolder) {
         handleError('error', endUserMessages.ERROR_FILES_FOLDER);
@@ -203,14 +206,20 @@ const FileUploadModal = (props) => {
               >
                 <Select
                   aria-label='sampleTechnologySelect'
-                  defaultValue={selectedTech}
-                  onChange={(value) => setSelectedTech(value)}
-                  disabled={Boolean(currentSelectedTech)}
                   data-testid='uploadTechSelect'
+                  defaultValue={selectedTech}
+                  disabled={currentSelectedTech}
+                  onChange={(value) => setSelectedTech(value)}
+                  style={{ width: 180 }} // Fix the width so that the dropdown doesn't change size when the value changes
                 >
-                  {Object.values(sampleTech).map((tech) => (
-                    <Option key={`key-${tech}`} value={tech}>{techNamesToDisplay[tech]}</Option>
-                  ))}
+                  {
+                    Object.values(sampleTech)
+                      .map((tech) => (
+                        <Option key={`key-${tech}`} value={tech}>
+                          {techNamesToDisplay[tech]}
+                        </Option>
+                      ))
+                  }
                 </Select>
               </Tooltip>
             </Space>

@@ -1,5 +1,10 @@
 const isBrowser = typeof window !== 'undefined' && typeof window.document !== 'undefined';
 
+const privacyPolicyIsNotAccepted = (user, domainName) => (
+  user?.attributes['custom:agreed_terms'] !== 'true'
+  && (domainName === DomainName.BIOMAGE || domainName === DomainName.BIOMAGE_STAGING)
+);
+
 const Environment = {
   DEVELOPMENT: 'development',
   STAGING: 'staging',
@@ -7,12 +12,15 @@ const Environment = {
 };
 
 const DomainName = {
+  BIOMAGE: 'scp.biomage.net',
+  BIOMAGE_STAGING: 'scp-staging.biomage.net',
   HMS: 'cellenics.hms.harvard.edu',
   HMS_STAGING: 'staging.single-cell-platform.net',
 };
 
 const AccountId = {
   HMS: '160782110667',
+  BIOMAGE: '242905224710',
 };
 
 const ssrGetDeploymentInfo = () => {
@@ -40,11 +48,12 @@ const ssrGetDeploymentInfo = () => {
 
   const domainName = currentEnvironment !== Environment.DEVELOPMENT
     ? process.env.DOMAIN_NAME
-    : DomainName.HMS;
+    : DomainName[process.env.DEV_ACCOUNT];
 
   return { environment: currentEnvironment, domainName };
 };
 
-export {
-  isBrowser, ssrGetDeploymentInfo, DomainName, AccountId, Environment,
+// Using module.exports instead of export allows next.config.js to use it
+module.exports = {
+  isBrowser, ssrGetDeploymentInfo, DomainName, AccountId, Environment, privacyPolicyIsNotAccepted,
 };

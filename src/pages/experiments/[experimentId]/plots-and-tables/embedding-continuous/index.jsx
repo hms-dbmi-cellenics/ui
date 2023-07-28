@@ -10,17 +10,17 @@ import {
 import SelectData from 'components/plots/styling/embedding-continuous/SelectData';
 import Header from 'components/Header';
 import ContinuousEmbeddingPlot from 'components/plots/ContinuousEmbeddingPlot';
-import SingleGeneSelection from 'components/plots/styling/SingleGeneSelection';
 import PlotContainer from 'components/plots/PlotContainer';
+import { loadPaginatedGeneProperties, loadGeneExpression } from 'redux/actions/genes';
 
 import {
   updatePlotConfig,
   loadPlotConfig,
 } from 'redux/actions/componentConfig/index';
 import { loadCellSets } from 'redux/actions/cellSets';
-import { loadGeneExpression, loadPaginatedGeneProperties } from 'redux/actions/genes';
 import { getCellSets } from 'redux/selectors';
 import { plotNames } from 'utils/constants';
+import GeneSearchBar from 'components/plots/GeneSearchBar';
 
 const { Panel } = Collapse;
 
@@ -29,7 +29,7 @@ const plotType = 'embeddingContinuous';
 const PROPERTIES = ['dispersions'];
 const tableState = {
   pagination: {
-    current: 1, pageSize: 1, showSizeChanger: true, total: 0,
+    current: 1, pageSize: 1000000, showSizeChanger: true,
   },
   geneNamesFilter: null,
   sorter: { field: PROPERTIES[0], columnKey: PROPERTIES[0], order: 'descend' },
@@ -129,9 +129,10 @@ const ContinuousEmbeddingPage = ({ experimentId }) => {
   const renderExtraPanels = () => (
     <>
       <Panel header='Gene selection' key='gene-selection'>
-        <SingleGeneSelection
-          config={config}
-          setSearchedGene={setSearchedGene}
+        <GeneSearchBar
+          allowMultiple={false}
+          onSelect={setSearchedGene}
+          buttonText='Submit'
         />
       </Panel>
       <Panel header='Select data' key='select-data'>
