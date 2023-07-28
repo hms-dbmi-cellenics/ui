@@ -1,0 +1,29 @@
+#!/bin/sh
+
+NAME=$(git config user.name)
+EMAIL=$(git config user.email)
+AUTO_SIGN=$(git config user.auto-signoff)
+SELF_SIGN=$(grep -qi "^Signed-off-by: $NAME <$EMAIL>" "$1")
+
+if [ -z "$NAME" ]; then
+    echo "empty git config user.name"
+    exit 1
+fi
+
+if [ -z "$EMAIL" ]; then
+    echo "empty git config user.email"
+    exit 1
+fi
+
+# auto sign-off if configured
+if [ "$AUTO_SIGN" ]; then
+    git interpret-trailers --if-exists doNothing --trailer \
+    "Signed-off-by: $NAME <$EMAIL>" \
+    --in-place "$1"
+fi
+
+# error if auto sign-off not configured and no manual sign-off
+if [ ! "$SELF_SIGN" ] &&[ ! "$AUTO_SIGN" ]; then
+    echo "ERROR:\n a sign-off statement is required\n either commit with -s flag or run git config user.auto-signoff true"
+    exit 1
+fi
