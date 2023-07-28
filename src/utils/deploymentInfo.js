@@ -48,7 +48,7 @@ const ssrGetDeploymentInfo = () => {
 
   const domainName = currentEnvironment !== Environment.DEVELOPMENT
     ? process.env.DOMAIN_NAME
-    : DomainName.HMS;
+    : DomainName[process.env.DEV_ACCOUNT];
 
   return { environment: currentEnvironment, domainName };
 };

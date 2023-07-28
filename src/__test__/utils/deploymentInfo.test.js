@@ -87,12 +87,21 @@ describe('deploymentInfo', () => {
       });
     });
 
-    it('Works in development', () => {
-      process.env = { NODE_ENV: Environment.DEVELOPMENT };
+    it('Works in development for hms', () => {
+      process.env = { NODE_ENV: Environment.DEVELOPMENT, DEV_ACCOUNT: 'HMS' };
 
       expect(ssrGetDeploymentInfo()).toEqual({
         environment: Environment.DEVELOPMENT,
         domainName: DomainName.HMS,
+      });
+    });
+
+    it('Works in development for biomage', () => {
+      process.env = { NODE_ENV: Environment.DEVELOPMENT, DEV_ACCOUNT: 'BIOMAGE' };
+
+      expect(ssrGetDeploymentInfo()).toEqual({
+        environment: Environment.DEVELOPMENT,
+        domainName: DomainName.BIOMAGE,
       });
     });
   });
