@@ -27,7 +27,7 @@ const DiffExprResults = (props) => {
 
   const dispatch = useDispatch();
   const {
-    data, total, error, loading,
+    data, error, loading,
   } = useSelector((state) => state.differentialExpression.properties);
   const {
     type: comparisonType,
@@ -191,7 +191,6 @@ const DiffExprResults = (props) => {
         height={height - 70 - (exportAlert ? 70 : 0) - (settingsListed ? 70 : 0)}
         propData={dataShown}
         loadData={loadData}
-        total={total}
         extraOptions={(
           <>
             <Button type='link' size='small' onClick={() => setExportAlert(true)}>Export as CSV</Button>
