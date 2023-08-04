@@ -106,7 +106,6 @@ const GeneListTool = (props) => {
       error={error || false}
       propData={dataShown}
       loadData={loadData}
-      total={total || 0}
       width={width}
       height={height}
     />
