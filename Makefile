@@ -17,7 +17,7 @@ check: ## Checks code for linting/construct errors
 	@npm run lint
 	@npm run detect-secrets
 	@echo "    [✓]\n"
-setup-hooks: ## Configures path to git hooks
+hooks: ## Configures path to git hooks
 	@git config core.hooksPath .githooks
 run: ## Runs the UI
 	@npm start
