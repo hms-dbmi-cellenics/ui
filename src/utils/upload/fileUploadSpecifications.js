@@ -55,7 +55,7 @@ const fileUploadSpecifications = {
     inputInfo: [
       ['<code>scdata$samples</code>: sample assignment. If absent, treated as unisample.'],
       ['<code>scdata[[\'RNA\']]@counts</code>: raw feature counts.'],
-      ['<code>scdata@reductions</code>: contains the embbedings for <code>pca</code> as well as <code>umap</code> or <code>tsne</code>.'],
+      ['<code>scdata@reductions</code>: contains the embbedings for <code>pca</code> as well as either <code>umap</code> or <code>tsne</code>.'],
       ['\uD83D\uDCA1cluster metadata in <code>scdata@meta.data</code> is auto-detected.'],
       ['\uD83D\uDCA1sample level metadata in <code>scdata@meta.data</code> that groups samples in <code>scdata$samples</code> is auto-detected for downstream analysis.'],
       ['\uD83D\uDCA1if file size is over 15GB, try removing any assays not indicated above.'],
