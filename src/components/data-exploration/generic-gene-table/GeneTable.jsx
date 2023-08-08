@@ -22,9 +22,8 @@ const valueComparator = (key) => (a, b) => {
 const GeneTable = (props) => {
   const {
     experimentId, error, loading, columns, propData, loadData,
-    total, initialTableState, width, height, extraOptions,
+    initialTableState, width, height, extraOptions,
   } = props;
-
   const dispatch = useDispatch();
   const selectedGenes = useSelector((state) => state.genes.selected);
   const [geneNameFilterState, setGeneNameFilterState] = useState({});
@@ -34,7 +33,6 @@ const GeneTable = (props) => {
       current: 1,
       pageSize: 1000000,
       showSizeChanger: true,
-      total,
     },
     geneNamesFilter: null,
   };
@@ -62,7 +60,6 @@ const GeneTable = (props) => {
             current: 1,
             pageSize: 50,
             showSizeChanger: true,
-            total,
           },
           geneNamesFilter: null,
         },
@@ -101,7 +98,7 @@ const GeneTable = (props) => {
 
     const newTableState = {
       ...tableState,
-      pagination: { ...tableState.pagination, current: 1, total: newData.length },
+      pagination: { ...tableState.pagination, current: 1 },
       geneNamesFilter: searchPattern,
     };
 
@@ -244,7 +241,6 @@ GeneTable.propTypes = {
   columns: PropTypes.array.isRequired,
   propData: PropTypes.array.isRequired,
   loadData: PropTypes.func.isRequired,
-  total: PropTypes.number.isRequired,
   error: PropTypes.PropTypes.oneOfType(
     [
       PropTypes.string,
