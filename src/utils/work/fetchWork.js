@@ -33,9 +33,9 @@ const fetchGeneExpressionWorkWithoutLocalCache = async (
   );
 
   // Then, we may be able to find this in S3.
-  const response = await seekFromS3(ETag, experimentId, body.name);
+  // const response = await seekFromS3(ETag, experimentId, body.name);
 
-  if (response) return response;
+  // if (response) return response;
 
   // If there is no response in S3, dispatch workRequest via the worker
   try {
