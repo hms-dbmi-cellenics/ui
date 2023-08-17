@@ -180,9 +180,18 @@ jobs:
       - id: ref
         name: Format docker tag and repository name.
         run: |-
-          # This will take a ref like `refs/heads/master`
-          # and turn it into `refs-heads-master`
-          REF_ID=$(echo $GITHUB_REF | sed 's/\//-/g')
+          if [ "${{ github.event_name }}" = "pull_request_target" ]; then
+            # Construct the PR_GITHUB_REF for our pull request copying GITHUB_REF's format
+            # We can't use GITHUB_REF because it is set to master in this event
+            # More info: https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#pull_request_target
+            PR_GITHUB_REF="refs/pull/${{ github.event.pull_request.number }}/merge"
+            REF_ID=$(echo $PR_GITHUB_REF | sed 's/\//-/g')
+          else
+            # This will take a ref like `refs/heads/master`
+            # and turn it into `refs-heads-master`
+            REF_ID=$(echo $GITHUB_REF | sed 's/\//-/g')
+          fi
+
           echo "ref-id=$REF_ID" >> $GITHUB_OUTPUT
 
           # the final tag is something like:
@@ -201,14 +210,7 @@ jobs:
             IMAGE_TAG="${REF_ID/refs-tags-/}"
           elif [ "${{ github.event_name }}" = "pull_request_target" ]; then
             COMMIT_SHA="${{ github.sha }}"
-              
-            # Construct the REF_ID for our pull request in the same format
-            # We can't use GITHUB_REF because it is set to master
-            # More info: https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#pull_request_target
-            PR_GITHUB_REF="refs/pull/${{ github.event.pull_request.number }}/merge"
-            PR_REF_ID=$(echo $PR_GITHUB_REF | sed 's/\//-/g')
-
-            IMAGE_TAG="$PR_REF_ID-$COMMIT_SHA-$TIMESTAMP"
+            IMAGE_TAG="$REF_ID-$COMMIT_SHA-$TIMESTAMP"
           else
             COMMIT_SHA=$GITHUB_SHA
             IMAGE_TAG="$REF_ID-$COMMIT_SHA-$TIMESTAMP"
