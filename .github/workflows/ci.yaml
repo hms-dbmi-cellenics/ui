@@ -192,7 +192,7 @@ jobs:
 
           # In push & PR events we want the tag to contain the latest commit on the branch:
           # in push events, the latest commit of the master branch is GITHUB_SHA
-          # in PR synch the latest commit of the branch is found in github.event.pull_request.head.sha instead
+          # in PR synch the latest commit of the branch is found in github.sha instead
 
           TIMESTAMP=$(date +%s)
 
