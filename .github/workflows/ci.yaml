@@ -91,6 +91,9 @@ jobs:
       - id: checkout
         name: Check out source code
         uses: actions/checkout@v3
+        with:
+          ref: ${{github.head_ref}}
+          repository: ${{github.event.pull_request.head.repo.full_name}}
 
       - id: setup-node
         uses: actions/setup-node@v3
@@ -163,6 +166,9 @@ jobs:
       - id: checkout
         name: Check out source code
         uses: actions/checkout@v3
+        with:
+          ref: ${{github.head_ref}}
+          repository: ${{github.event.pull_request.head.repo.full_name}}
 
       - id: download-build-out
         name: Download Next.js build output
@@ -272,6 +278,9 @@ jobs:
       - id: checkout
         name: Check out source code
         uses: actions/checkout@v3
+        with:
+          ref: ${{github.head_ref}}
+          repository: ${{github.event.pull_request.head.repo.full_name}}
 
       - id: setup-aws
         name: Configure AWS credentials
