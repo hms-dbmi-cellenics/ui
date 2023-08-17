@@ -17,7 +17,9 @@ check: ## Checks code for linting/construct errors
 	@npm run lint
 	@npm run detect-secrets
 	@echo "    [✓]\n"
-run: ## Runs the UI 
+hooks: ## Configures path to git hooks
+	@git config core.hooksPath .githooks
+run: ## Runs the UI
 	@npm start
 .PHONY:install build check run help
 clean: ## Cleans up temporary files

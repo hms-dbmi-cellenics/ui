@@ -25,19 +25,6 @@ jobs:
           sudo apt-get update -y
           sudo apt-get install -y pcregrep
 
-      - id: check-issue-url
-        name: Check issue URL
-        run: |-
-          REGEX="#### URL to issue\s?\r\n(https:\/\/github\.com\/hms-dbmi-cellenics\/issues\/issues\/[0-9]+|https:\/\/biomage\.atlassian\.net\/browse\/BIOMAGE-[0-9]+|https:\/\/github\.com\/biomage-org\/issues\/issues\/[0-9]+|N\/A)"
-
-          echo "REGEX to test against:"
-          echo $REGEX
-          echo "Now looking at regex result:"
-
-          pcregrep -o1 -M "$REGEX" <<\EOF
-          ${{ github.event.pull_request.body }}
-          EOF
-
       - id: extract-staging
         name: Check staging URL
         run: |-

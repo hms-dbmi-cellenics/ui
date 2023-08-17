@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
 import { Button, Dropdown, Card } from 'antd';
 import { QuestionCircleOutlined, DownOutlined } from '@ant-design/icons';
-import renderDomainSpecificContent from 'utils/domainSpecificContent';
+import getDomainSpecificContent from 'utils/getDomainSpecificContent';
 
 const HelpButton = () => {
   const [visible, setVisible] = useState(false);
   const overlay = () => (
     <Card size='small' style={{ padding: '1em', width: '265px' }}>
-      {renderDomainSpecificContent('HelpButton')}
+      {getDomainSpecificContent('HelpButton')}
     </Card>
   );
 

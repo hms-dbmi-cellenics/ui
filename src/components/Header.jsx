@@ -10,7 +10,7 @@ import UserButton from 'components/header/UserButton';
 import FeedbackButton from 'components/header/FeedbackButton';
 import ReferralButton from 'components/header/ReferralButton';
 import HelpButton from 'components/header/HelpButton';
-import renderDomainSpecificContent from 'utils/domainSpecificContent.jsx';
+import getDomainSpecificContent from 'utils/getDomainSpecificContent';
 
 const Header = (props) => {
   const {
@@ -35,7 +35,7 @@ const Header = (props) => {
         extra={(
           <Space size='large'>
             <Space>
-              {renderDomainSpecificContent('Courses')}
+              {getDomainSpecificContent('HeaderExtraButton')}
               <HelpButton />
               <FeedbackButton />
               <ReferralButton />

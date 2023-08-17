@@ -6,19 +6,47 @@ on:
   release:
     types:
       - released
-  pull_request:
+  pull_request_target:
     branches:
       - master
+    types:
+      - labeled
+      - unlabeled
+      - opened
+      - synchronize
+      - reopened
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
 jobs:
+  is-safe-to-run:
+    name: Sensitive jobs are safe to be run
+    runs-on: ubuntu-20.04
+    if: (github.event_name == 'pull_request_target' && contains(github.event.pull_request.labels.*.name, 'safe to run')) || github.event_name == 'release' || github.event_name == 'push'
+    steps:
+      - id: is-safe-to-run
+        name: Is safe to run
+        run: |-
+          echo "Safe to run, checks will proceed"
+
+  is-not-safe-to-run:
+    name: Sensitive jobs aren't labeled safe to be run
+    runs-on: ubuntu-20.04
+    if: (github.event_name == 'pull_request_target' && !contains(github.event.pull_request.labels.*.name, 'safe to run'))
+    steps:
+      - id: is-not-safe-to-run
+        name: The pull request hasn't been labeled safe to run
+        run: |-
+          echo "Pull request not labeled safe to run"
+          exit 1
+
   uncheck-integration-test:
     name: Mark integration test as not run
     runs-on: ubuntu-20.04
-    if: github.event_name == 'pull_request'
+    needs: is-safe-to-run
+    if: github.event_name == 'pull_request_target'
     steps:
       - id: get-pr-body
         name: Get the current PR body
@@ -56,12 +84,16 @@ jobs:
   build:
     name: Build website
     runs-on: ubuntu-20.04
+    needs: is-safe-to-run
     env:
       CI: true
     steps:
       - id: checkout
         name: Check out source code
         uses: actions/checkout@v3
+        with:
+          ref: ${{github.head_ref}}
+          repository: ${{github.event.pull_request.head.repo.full_name}}
 
       - id: setup-node
         uses: actions/setup-node@v3
@@ -96,8 +128,8 @@ jobs:
       - id: check-licenses
         name: Check licenses
         env:
-          ALLOWED_LICENSES: "MIT;Apache-2.0;BSD-3-Clause;ISC;BSD-2-Clause;BSD;CC0-1.0;0BSD;Unlicense;(MIT AND Zlib);(Unlicense OR Apache-2.0);BSD-3-Clause OR MIT;(MIT OR Apache-2.0);CC-BY-4.0;Apache-Style;(Apache-2.0 OR MPL-1.1);WTFPL;(WTFPL OR MIT);EPL-1.0;(MIT AND BSD-3-Clause);(MIT OR CC0-1.0);Custom: https://github.com/aws-amplify/amplify-js;SGI-B-2.0"
-          EXCLUDE_PACKAGES: "cartocolor@4.0.2;turf-jsts@1.2.3;gl-vec2@1.3.0;flatbuffers@1.12.0;text-encoding-utf-8@1.0.2"
+          ALLOWED_LICENSES: 'MIT;Apache-2.0;BSD-3-Clause;ISC;BSD-2-Clause;BSD;CC0-1.0;0BSD;Unlicense;(MIT AND Zlib);(Unlicense OR Apache-2.0);BSD-3-Clause OR MIT;(MIT OR Apache-2.0);CC-BY-4.0;Apache-Style;(Apache-2.0 OR MPL-1.1);WTFPL;(WTFPL OR MIT);EPL-1.0;(MIT AND BSD-3-Clause);(MIT OR CC0-1.0);Custom: https://github.com/aws-amplify/amplify-js;SGI-B-2.0'
+          EXCLUDE_PACKAGES: 'cartocolor@4.0.2;turf-jsts@1.2.3;gl-vec2@1.3.0;flatbuffers@1.12.0;text-encoding-utf-8@1.0.2'
         run: |-
           npm install -g license-checker
           license-checker --production --json --onlyAllow="${ALLOWED_LICENSES}" --excludePackages="${EXCLUDE_PACKAGES}"
@@ -126,7 +158,7 @@ jobs:
   build-docker:
     name: Build Docker container
     runs-on: ubuntu-20.04
-    needs: build
+    needs: [build, is-safe-to-run]
     outputs:
       ref-id: ${{ steps.ref.outputs.ref-id }}
       image-tag: ${{ steps.ref.outputs.image-tag }}
@@ -134,6 +166,9 @@ jobs:
       - id: checkout
         name: Check out source code
         uses: actions/checkout@v3
+        with:
+          ref: ${{github.head_ref}}
+          repository: ${{github.event.pull_request.head.repo.full_name}}
 
       - id: download-build-out
         name: Download Next.js build output
@@ -164,7 +199,7 @@ jobs:
           if [ "${{ github.event_name }}" = "release" ] && [ "${{ github.event.action }}" = "released" ]; then
             COMMIT_SHA=""
             IMAGE_TAG="${REF_ID/refs-tags-/}"
-          elif [ "${{ github.event_name }}" = "pull_request" ]; then
+          elif [ "${{ github.event_name }}" = "pull_request_target" ]; then
             COMMIT_SHA="${{ github.event.pull_request.head.sha }}"
             IMAGE_TAG="$REF_ID-$COMMIT_SHA-$TIMESTAMP"
           else
@@ -234,7 +269,7 @@ jobs:
   deploy:
     name: Deploy to Kubernetes
     runs-on: ubuntu-20.04
-    needs: build-docker
+    needs: [build-docker, is-safe-to-run]
     strategy:
       max-parallel: 1
       matrix:
@@ -243,6 +278,9 @@ jobs:
       - id: checkout
         name: Check out source code
         uses: actions/checkout@v3
+        with:
+          ref: ${{github.head_ref}}
+          repository: ${{github.event.pull_request.head.repo.full_name}}
 
       - id: setup-aws
         name: Configure AWS credentials
@@ -315,6 +353,7 @@ jobs:
             select(di == 0).metadata.labels.sandboxId = strenv(SANDBOX_ID) |
             select(di == 1).metadata.name = strenv(CHART_SOURCE_NAME) |
             select(di == 1).metadata.namespace = strenv(NAMESPACE) |
+            select(di == 1).spec.url = "https://github.com/" + strenv(GITHUB_OWNER) + "/iac" |
             select(di == 1).spec.ref.branch = strenv(CHART_REF) |
             select(di == 2).metadata.name = strenv(DEPLOYMENT_NAME) |
             select(di == 2).metadata.namespace = strenv(NAMESPACE) |
@@ -361,6 +400,7 @@ jobs:
             cat $DEPLOYMENT_NAME.yaml
 
         env:
+          GITHUB_OWNER: ${{ github.repository_owner }}
           REF_ID: ${{ needs.build-docker.outputs.ref-id }}
           IMAGE_TAG: ${{ needs.build-docker.outputs.image-tag }}
           REGISTRY: ${{ steps.login-ecr.outputs.registry }}
@@ -378,7 +418,7 @@ jobs:
           user_name: Biomage CI/CD
 
       - name: Change name of deployment file for staging deployment
-        if: (github.event_name == 'pull_request' || github.event_name == 'push') && matrix.environment == 'staging'
+        if: (github.event_name == 'pull_request_target' || github.event_name == 'push') && matrix.environment == 'staging'
         env:
           DEPLOYMENT_NAME: ${{ steps.fill-metadata.outputs.deployment-name }}
           REF_ID: ${{ needs.build-docker.outputs.ref-id }}
@@ -386,7 +426,7 @@ jobs:
           mv $DEPLOYMENT_NAME.yaml $REF_ID.yaml
 
       - name: Push staging deployment template to releases
-        if: (github.event_name == 'pull_request' || github.event_name == 'push') && matrix.environment == 'staging'
+        if: (github.event_name == 'pull_request_target' || github.event_name == 'push') && matrix.environment == 'staging'
         uses: dmnemec/copy_file_to_another_repo_action@v1.0.4
         env:
           API_TOKEN_GITHUB: ${{ secrets.API_TOKEN_GITHUB }}
@@ -400,7 +440,7 @@ jobs:
   ready-to-merge:
     name: Ready for merging
     runs-on: ubuntu-20.04
-    needs: deploy
+    needs: [deploy, is-safe-to-run]
     steps:
       - id: ready-to-merge
         name: Signal readiness to merge
@@ -410,7 +450,7 @@ jobs:
   report-if-failed:
     name: Report if workflow failed
     runs-on: ubuntu-20.04
-    needs: [build, build-docker, deploy]
+    needs: [build, build-docker, deploy, is-safe-to-run]
     if: failure() && github.ref == 'refs/heads/master'
     steps:
       - id: send-to-slack
