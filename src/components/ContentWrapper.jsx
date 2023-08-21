@@ -67,7 +67,6 @@ const ContentWrapper = (props) => {
   const getErrorPreprocessStatus = (isSeurat, backendStatus) => {
     const backendErrors = [pipelineStatusValues.FAILED, pipelineStatusValues.TIMED_OUT, pipelineStatusValues.ABORTED];
     if (isSeurat && backendErrors.includes(backendStatus?.seurat?.status)) {
-      console.log('backendStatus.status?.seurat', backendStatus.status?.seurat);
       const seuratErrorMessage = pipelineErrorUserMessages[backendStatus?.seurat?.error?.error];
       return { type: 'seurat', message: seuratErrorMessage };
     }
