@@ -22,6 +22,7 @@ const AccountId = {
   HMS: '160782110667',
   BIOMAGE: '242905224710',
 };
+
 const ssrGetDeploymentInfo = () => {
   let currentEnvironment = null;
 
@@ -47,11 +48,12 @@ const ssrGetDeploymentInfo = () => {
 
   const domainName = currentEnvironment !== Environment.DEVELOPMENT
     ? process.env.DOMAIN_NAME
-    : DomainName.HMS;
+    : DomainName[process.env.DEV_ACCOUNT];
 
   return { environment: currentEnvironment, domainName };
 };
 
-export {
+// Using module.exports instead of export allows next.config.js to use it
+module.exports = {
   isBrowser, ssrGetDeploymentInfo, DomainName, AccountId, Environment, privacyPolicyIsNotAccepted,
 };

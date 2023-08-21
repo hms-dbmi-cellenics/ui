@@ -1,13 +1,10 @@
 import { init, push } from '@socialgouv/matomo-next';
 import Auth from '@aws-amplify/auth';
-import { AccountId } from 'utils/deploymentInfo';
-import nextConfig from 'next/config';
-import { Environment } from './deploymentInfo';
 
-const accountId = nextConfig()?.publicRuntimeConfig?.accountId;
-const isAccountHMS = accountId === AccountId.HMS;
-const matomoName = isAccountHMS ? 'cellenics' : 'biomage';
-const MATOMO_URL = `https://${matomoName}.matomo.cloud`;
+import { Environment } from './deploymentInfo';
+import getDomainSpecificContent from './getDomainSpecificContent';
+
+const MATOMO_URL = `https://${getDomainSpecificContent('matomoName')}.matomo.cloud`;
 
 // To test a staging deployment, you'll need to go to matomo.cloud
 // and change the URL there to point to your staging env URL.
@@ -17,17 +14,17 @@ const trackingInfo = {
   [Environment.PRODUCTION]: {
     enabled: true,
     siteId: 1,
-    containerId: isAccountHMS ? 'zdMhc9ey' : 'lkIodjnO',
+    containerId: getDomainSpecificContent('containerIds')[Environment.PRODUCTION],
   },
   [Environment.STAGING]: {
     enabled: false,
     siteId: 2,
-    containerId: isAccountHMS ? 'lMoIVl5D' : 'FX7UBNS6',
+    containerId: getDomainSpecificContent('containerIds')[Environment.STAGING],
   },
   [Environment.DEVELOPMENT]: {
     enabled: false,
     siteId: 3,
-    containerId: isAccountHMS ? 'uMEoPBAl' : 'lS8ZRMXJ',
+    containerId: getDomainSpecificContent('containerIds')[Environment.DEVELOPMENT],
   },
 };
 
