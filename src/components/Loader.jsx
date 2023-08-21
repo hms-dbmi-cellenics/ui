@@ -84,7 +84,7 @@ const formatInfo = (workingOn, request) => {
 
 const Loader = ({ experimentId }) => {
   const backendStatus = useSelector((state) => state.backendStatus);
-  const workerInfo = backendStatus[experimentId]?.status?.worker;
+  const workerInfo = backendStatus?.[experimentId]?.status?.worker;
 
   const { data: workerStatus } = useSWR(
     () => (experimentId ? `/v2/experiments/${experimentId}/backendStatus` : null),
