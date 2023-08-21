@@ -330,7 +330,7 @@ const ContentWrapper = (props) => {
         backendLoading || !backendStatusRequested) {
         return <PreloadContent />;
       }
-      if (currentStatusScreen.type !== 'qc') {
+      if (currentStatusScreen && currentStatusScreen.type !== 'qc') {
         return (
           <GEM2SLoadingScreen
             experimentId={routeExperimentId}
@@ -341,7 +341,7 @@ const ContentWrapper = (props) => {
           />
         );
       }
-      if (currentStatusScreen.type === 'qc') {
+      if (currentStatusScreen?.type === 'qc') {
         return (
           <PipelineRedirectToDataProcessing
             experimentId={routeExperimentId}
