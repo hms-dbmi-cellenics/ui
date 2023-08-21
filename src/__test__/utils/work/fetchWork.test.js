@@ -82,6 +82,7 @@ describe('fetchWork', () => {
       timeout,
       GENE_EXPRESSION_ABCD_ETAG,
       expect.anything(),
+      expect.anything(),
     );
 
     // The expected response should be fine
@@ -111,6 +112,7 @@ describe('fetchWork', () => {
       nonGeneExpressionWorkRequest,
       timeout,
       NON_GENE_EXPRESSION_ETAG,
+      expect.anything(),
       expect.anything(),
     );
     expect(mockCacheGet).toHaveBeenCalledTimes(1);
@@ -161,6 +163,7 @@ describe('fetchWork', () => {
       expect.anything(),
       expect.anything(),
       NON_GENE_EXPRESSION_ETAG,
+      expect.anything(),
       expect.anything(),
     );
   });
@@ -219,6 +222,7 @@ describe('fetchWork', () => {
       expect.anything(),
       expect.anything(),
       NON_GENE_EXPRESSION_ETAG,
+      expect.anything(),
       expect.anything(),
     );
   });

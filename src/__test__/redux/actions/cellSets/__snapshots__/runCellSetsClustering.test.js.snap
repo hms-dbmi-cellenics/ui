@@ -1,0 +1,49 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`runCellSetsClustering action Dispatches all required actions to update cell sets clustering. 1`] = `
+Array [
+  Array [
+    "1234",
+    Object {
+      "cellSetKey": "louvain",
+      "cellSetName": "Louvain clusters",
+      "config": Object {
+        "resolution": 0.5,
+      },
+      "name": "ClusterCells",
+      "type": "louvain",
+    },
+    60,
+    "mock-hash",
+    Object {
+      "PipelineRunETag": "2021-01-01T00:00:00",
+      "broadcast": true,
+    },
+    [Function],
+  ],
+]
+`;
+
+exports[`runCellSetsClustering action Dispatches error action when dispatchWorkRequest fails 1`] = `
+Array [
+  Array [
+    "1234",
+    Object {
+      "cellSetKey": "louvain",
+      "cellSetName": "Louvain clusters",
+      "config": Object {
+        "resolution": 0.5,
+      },
+      "name": "ClusterCells",
+      "type": "louvain",
+    },
+    60,
+    "mock-hash",
+    Object {
+      "PipelineRunETag": "2021-01-01T00:00:00",
+      "broadcast": true,
+    },
+    [Function],
+  ],
+]
+`;
