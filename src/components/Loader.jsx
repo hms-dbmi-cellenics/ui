@@ -85,8 +85,6 @@ const formatInfo = (workingOn, request) => {
 const Loader = ({ experimentId }) => {
   const backendStatus = useSelector((state) => state.backendStatus);
   const workerInfo = backendStatus[experimentId]?.status?.worker;
-  const { workingOn, request } = workerInfo;
-  console.log('workerInfo: ', workerInfo);
 
   const { data: workerStatus } = useSWR(
     () => (experimentId ? `/v2/experiments/${experimentId}/backendStatus` : null),
@@ -101,7 +99,9 @@ const Loader = ({ experimentId }) => {
     );
   }
 
-  if (workingOn) {
+  if (workerInfo && workerInfo.workingOn) {
+    console.log('workerInfo: ', workerInfo);
+    const { workingOn, request } = workerInfo;
     const message = formatInfo(workingOn, request);
     return (
       <div>
