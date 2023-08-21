@@ -20,7 +20,6 @@ import {
   Typography,
 } from 'antd';
 
-import Error from 'pages/_error';
 import pipelineErrorUserMessages from 'utils/pipelineErrorUserMessages';
 import PrivacyPolicyIntercept from 'components/data-management/PrivacyPolicyIntercept';
 
@@ -62,10 +61,21 @@ const ContentWrapper = (props) => {
   const user = useSelector((state) => state.user.current);
 
   const samples = useSelector((state) => state.samples);
-
   // selectedExperimentID holds the value in redux of the selected experiment
   // after loading a page it is determined whether to use that ID or the ID in the route URL
   // i.e. when we are in data management there is not exp ID in the URL so we get it from redux
+  const getErrorPreprocessStatus = (isSeurat, backendStatus) => {
+    const backendErrors = [pipelineStatusValues.FAILED, pipelineStatusValues.TIMED_OUT, pipelineStatusValues.ABORTED];
+    if (isSeurat && backendErrors.includes(backendStatus?.seurat?.status)) {
+      console.log('backendStatus.status?.seurat', backendStatus.status?.seurat);
+      const seuratErrorMessage = pipelineErrorUserMessages[backendStatus?.seurat?.error?.error];
+      return { type: 'seurat', message: seuratErrorMessage };
+    }
+    if (backendErrors.includes(backendStatus?.gem2s?.status) && !isSeurat) {
+      return { type: 'gem2s' };
+    }
+    return false;
+  };
 
   useEffect(() => {
     if (!selectedExperimentID && !routeExperimentId) return;
@@ -104,18 +114,12 @@ const ContentWrapper = (props) => {
 
   const seuratBackendStatus = backendStatus?.seurat;
   const seuratStatusKey = backendStatus?.seurat?.status;
-  const seuratErrorCode = backendStatus?.seurat?.error?.error;
   const seuratRunning = seuratStatusKey === 'RUNNING';
   const seuratRunningError = backendErrors.includes(seuratStatusKey);
   const completedSeuratSteps = backendStatus?.seurat?.completedSteps;
   const seuratComplete = seuratStatusKey === pipelineStatusValues.SUCCEEDED;
   const isSeurat = (seuratStatusKey && seuratStatusKey !== pipelineStatusValues.NOT_CREATED) || false;
-
-  const [seuratErrorMessage, setSeuratErrorMessage] = useState();
-  useEffect(() => {
-    setSeuratErrorMessage(pipelineErrorUserMessages[seuratErrorCode]);
-  }, [seuratErrorCode]);
-
+  const preprocessErrorStatus = getErrorPreprocessStatus(isSeurat, backendStatus);
   // This is used to prevent a race condition where the page would start loading immediately
   // when the backend status was previously loaded. In that case, `backendLoading` is `false`
   // and would be set to true only in the `loadBackendStatus` action, the time between the
@@ -303,17 +307,15 @@ const ContentWrapper = (props) => {
         backendLoading || !backendStatusRequested) {
         return <PreloadContent />;
       }
-
-      if (backendError) {
-        return <Error errorText={backendError} />;
-      }
-
-      if (gem2sRunningError) {
-        return <GEM2SLoadingScreen experimentId={routeExperimentId} pipelineStatus='error' pipelineType='gem2s' />;
-      }
-
-      if (seuratRunningError) {
-        return <GEM2SLoadingScreen experimentId={routeExperimentId} pipelineStatus='error' pipelineType='seurat' pipelineErrorMessage={seuratErrorMessage} />;
+      if (preprocessErrorStatus) {
+        return (
+          <GEM2SLoadingScreen
+            experimentId={routeExperimentId}
+            pipelineStatus='error'
+            pipelineType={preprocessErrorStatus.type}
+            pipelineErrorMessage={preprocessErrorStatus?.message}
+          />
+        );
       }
 
       if (seuratComplete && currentModule === modules.DATA_PROCESSING) {
