@@ -64,16 +64,40 @@ const ContentWrapper = (props) => {
   // selectedExperimentID holds the value in redux of the selected experiment
   // after loading a page it is determined whether to use that ID or the ID in the route URL
   // i.e. when we are in data management there is not exp ID in the URL so we get it from redux
-  const getErrorPreprocessStatus = (isSeurat, backendStatus) => {
-    const backendErrors = [pipelineStatusValues.FAILED, pipelineStatusValues.TIMED_OUT, pipelineStatusValues.ABORTED];
-    if (isSeurat && backendErrors.includes(backendStatus?.seurat?.status)) {
-      const seuratErrorMessage = pipelineErrorUserMessages[backendStatus?.seurat?.error?.error];
-      return { type: 'seurat', message: seuratErrorMessage };
+  const getCurrentStatusScreen = (isSeurat, backendStatus) => {
+    if (isSeurat) {
+      // if the project is of seurat type - ignore the other statuses
+      if (seuratRunningError) {
+        const seuratErrorMessage = pipelineErrorUserMessages[backendStatus?.seurat?.error?.error];
+        return { type: 'seurat', message: seuratErrorMessage, status: 'error' };
+      }
+      if (seuratRunning) {
+        return { type: 'seurat', status: 'running', completedSteps: completedSeuratSteps };
+      }
+    } else {
+      // gem2s is first before checking QC
+      if (gem2sRunningError) {
+        return { type: 'gem2s', status: 'error' };
+      }
+      if (gem2sRunning || waitingForQcToLaunch) {
+        return { type: 'gem2s', status: 'running', completedSteps: completedGem2sSteps };
+      }
+      if (gem2sNotCreated) {
+        return { type: 'gem2s', status: 'toBeRun' };
+      }
+
+      if (currentModule !== modules.DATA_PROCESSING) {
+        if (qcRunningError) {
+          return { type: 'qc', status: 'error' };
+        }
+        if (qcRunning) {
+          return { type: 'qc', status: 'running' };
+        }
+        if (qcStatusKey === pipelineStatusValues.NOT_CREATED) {
+          return { type: 'qc', status: 'toBeRun' };
+        }
+      }
     }
-    if (backendErrors.includes(backendStatus?.gem2s?.status) && !isSeurat) {
-      return { type: 'gem2s' };
-    }
-    return false;
   };
 
   useEffect(() => {
@@ -116,9 +140,9 @@ const ContentWrapper = (props) => {
   const seuratRunning = seuratStatusKey === 'RUNNING';
   const seuratRunningError = backendErrors.includes(seuratStatusKey);
   const completedSeuratSteps = backendStatus?.seurat?.completedSteps;
-  const seuratComplete = seuratStatusKey === pipelineStatusValues.SUCCEEDED;
+  const seuratComplete = seuratStatusKey === pipelineStatusValues.SUCCEEDED && isSeurat;
   const isSeurat = (seuratStatusKey && seuratStatusKey !== pipelineStatusValues.NOT_CREATED) || false;
-  const preprocessErrorStatus = getErrorPreprocessStatus(isSeurat, backendStatus);
+  const currentStatusScreen = getCurrentStatusScreen(isSeurat, backendStatus);
   // This is used to prevent a race condition where the page would start loading immediately
   // when the backend status was previously loaded. In that case, `backendLoading` is `false`
   // and would be set to true only in the `loadBackendStatus` action, the time between the
@@ -306,13 +330,22 @@ const ContentWrapper = (props) => {
         backendLoading || !backendStatusRequested) {
         return <PreloadContent />;
       }
-      if (preprocessErrorStatus) {
+      if (currentStatusScreen.type !== 'qc') {
         return (
           <GEM2SLoadingScreen
             experimentId={routeExperimentId}
-            pipelineStatus='error'
-            pipelineType={preprocessErrorStatus.type}
-            pipelineErrorMessage={preprocessErrorStatus?.message}
+            pipelineStatus={currentStatusScreen.status}
+            pipelineType={currentStatusScreen.type}
+            pipelineErrorMessage={currentStatusScreen?.message}
+            completedSteps={currentStatusScreen?.completedSteps}
+          />
+        );
+      }
+      if (currentStatusScreen.type === 'qc') {
+        return (
+          <PipelineRedirectToDataProcessing
+            experimentId={routeExperimentId}
+            pipelineStatus={currentStatusScreen.status}
           />
         );
       }
@@ -320,31 +353,6 @@ const ContentWrapper = (props) => {
       if (seuratComplete && currentModule === modules.DATA_PROCESSING) {
         navigateTo(modules.DATA_EXPLORATION, { experimentId: routeExperimentId });
         return <></>;
-      }
-
-      if (gem2sRunning || waitingForQcToLaunch) {
-        return <GEM2SLoadingScreen experimentId={routeExperimentId} pipelineStatus='running' completedSteps={completedGem2sSteps} pipelineType='gem2s' />;
-      }
-
-      if (seuratRunning) {
-        return <GEM2SLoadingScreen experimentId={routeExperimentId} pipelineStatus='running' completedSteps={completedSeuratSteps} pipelineType='seurat' />;
-      }
-
-      if (gem2sNotCreated) {
-        return <GEM2SLoadingScreen experimentId={routeExperimentId} pipelineStatus='toBeRun' />;
-      }
-
-      if (qcRunningError && currentModule !== modules.DATA_PROCESSING) {
-        return <PipelineRedirectToDataProcessing experimentId={routeExperimentId} pipelineStatus='error' />;
-      }
-
-      if (qcRunning && currentModule !== modules.DATA_PROCESSING) {
-        return <PipelineRedirectToDataProcessing experimentId={routeExperimentId} pipelineStatus='running' />;
-      }
-
-      if (qcStatusKey === pipelineStatusValues.NOT_CREATED
-        && currentModule !== modules.DATA_PROCESSING && !isSeurat) {
-        return <PipelineRedirectToDataProcessing experimentId={routeExperimentId} pipelineStatus='toBeRun' />;
       }
 
       if (process.env.NODE_ENV === 'development') {
