@@ -40,6 +40,7 @@ import integrationTestConstants from 'utils/integrationTestConstants';
 import pipelineStatusValues from 'utils/pipelineStatusValues';
 import calculateGem2sRerunStatus from 'utils/data-management/calculateGem2sRerunStatus';
 import { DndProvider } from 'react-dnd';
+import { loadSamples } from 'redux/actions/samples';
 
 const { Sider } = Layout;
 const { Text } = Typography;
@@ -61,46 +62,57 @@ const ContentWrapper = (props) => {
   const user = useSelector((state) => state.user.current);
 
   const samples = useSelector((state) => state.samples);
-  // selectedExperimentID holds the value in redux of the selected experiment
-  // after loading a page it is determined whether to use that ID or the ID in the route URL
-  // i.e. when we are in data management there is not exp ID in the URL so we get it from redux
-  const getCurrentStatusScreen = (isSeurat, backendStatus) => {
-    if (isSeurat) {
-      // if the project is of seurat type - ignore the other statuses
-      if (seuratRunningError) {
-        const seuratErrorMessage = pipelineErrorUserMessages[backendStatus?.seurat?.error?.error];
-        return { type: 'seurat', message: seuratErrorMessage, status: 'error' };
-      }
-      if (seuratRunning) {
-        return { type: 'seurat', status: 'running', completedSteps: completedSeuratSteps };
-      }
-    } else {
-      // gem2s is first before checking QC
-      if (gem2sRunningError) {
-        return { type: 'gem2s', status: 'error' };
-      }
-      if (gem2sRunning || waitingForQcToLaunch) {
-        return { type: 'gem2s', status: 'running', completedSteps: completedGem2sSteps };
-      }
-      if (gem2sNotCreated) {
-        return { type: 'gem2s', status: 'toBeRun' };
-      }
+  const selectedTechnology = (samples[experimentData?.sampleIds?.[0]]?.type || false);
 
-      if (currentModule !== modules.DATA_PROCESSING) {
-        if (qcRunningError) {
-          return { type: 'qc', status: 'error' };
-        }
-        if (qcRunning) {
-          return { type: 'qc', status: 'running' };
-        }
-        if (qcStatusKey === pipelineStatusValues.NOT_CREATED) {
-          return { type: 'qc', status: 'toBeRun' };
-        }
+  const getStatusObject = (type, status, message = null, completedSteps = null) => ({
+    type,
+    status,
+    ...(message && { message }),
+    ...(completedSteps && { completedSteps }),
+  });
+
+  const getSeuratStatus = (backendStatus) => {
+    if (seuratRunningError) {
+      const errorMessage = pipelineErrorUserMessages[backendStatus?.seurat?.error?.error];
+      return getStatusObject('seurat', 'error', errorMessage);
+    }
+    if (seuratRunning) {
+      return getStatusObject('seurat', 'running', null, completedSeuratSteps);
+    }
+    return null;
+  };
+
+  const getGem2sStatus = () => {
+    if (gem2sRunningError) return getStatusObject('gem2s', 'error');
+    if (gem2sRunning || waitingForQcToLaunch) {
+      return getStatusObject('gem2s', 'running', null, completedGem2sSteps);
+    }
+    if (gem2sNotCreated) return getStatusObject('gem2s', 'toBeRun');
+    return null;
+  };
+
+  const getQcStatus = () => {
+    if (currentModule !== modules.DATA_PROCESSING) {
+      if (qcRunningError) return getStatusObject('qc', 'error');
+      if (qcRunning) return getStatusObject('qc', 'running');
+      if (qcStatusKey === pipelineStatusValues.NOT_CREATED) {
+        return getStatusObject('qc', 'toBeRun');
       }
     }
+    return null;
+  };
+
+  const getCurrentStatusScreen = (isSeurat, backendStatus) => {
+    if (isSeurat) {
+      return getSeuratStatus(backendStatus);
+    }
+    return getGem2sStatus() || getQcStatus();
   };
 
   useEffect(() => {
+    // selectedExperimentID holds the value in redux of the selected experiment
+    // after loading a page it is determined whether to use that ID or the ID in the route URL
+    // i.e. when we are in data management there is not exp ID in the URL so we get it from redux
     if (!selectedExperimentID && !routeExperimentId) return;
 
     if (currentModule === modules.DATA_MANAGEMENT) {
@@ -140,8 +152,8 @@ const ContentWrapper = (props) => {
   const seuratRunning = seuratStatusKey === 'RUNNING';
   const seuratRunningError = backendErrors.includes(seuratStatusKey);
   const completedSeuratSteps = backendStatus?.seurat?.completedSteps;
+  const isSeurat = seuratStatusKey && seuratStatusKey !== pipelineStatusValues.NOT_CREATED && selectedTechnology === 'seurat';
   const seuratComplete = seuratStatusKey === pipelineStatusValues.SUCCEEDED && isSeurat;
-  const isSeurat = (seuratStatusKey && seuratStatusKey !== pipelineStatusValues.NOT_CREATED) || false;
   const currentStatusScreen = getCurrentStatusScreen(isSeurat, backendStatus);
   // This is used to prevent a race condition where the page would start loading immediately
   // when the backend status was previously loaded. In that case, `backendLoading` is `false`
@@ -152,7 +164,9 @@ const ContentWrapper = (props) => {
   useEffect(() => {
     if (!currentExperimentId) return;
     if (!backendLoading) dispatch(loadBackendStatus(currentExperimentId));
-
+    // need to load the samples to get the selected technology of the experiment
+    // in the future, selected technology can be moved to under .experiments
+    if (!samples[experimentData?.sampleIds[0]]) dispatch(loadSamples(routeExperimentId));
     if (isBrowser) {
       import('utils/socketConnection')
         .then(({ default: connectionPromise }) => connectionPromise)
