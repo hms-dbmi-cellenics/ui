@@ -153,7 +153,7 @@ const ContentWrapper = (props) => {
   const seuratRunningError = backendErrors.includes(seuratStatusKey);
   const completedSeuratSteps = backendStatus?.seurat?.completedSteps;
   const isSeurat = seuratStatusKey && seuratStatusKey !== pipelineStatusValues.NOT_CREATED && selectedTechnology === 'seurat';
-  const seuratComplete = seuratStatusKey === pipelineStatusValues.SUCCEEDED && isSeurat;
+  const seuratComplete = (seuratStatusKey === pipelineStatusValues.SUCCEEDED) && isSeurat;
   const currentStatusScreen = getCurrentStatusScreen(isSeurat, backendStatus);
   // This is used to prevent a race condition where the page would start loading immediately
   // when the backend status was previously loaded. In that case, `backendLoading` is `false`
