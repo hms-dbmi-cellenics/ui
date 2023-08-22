@@ -64,51 +64,6 @@ const ContentWrapper = (props) => {
   const samples = useSelector((state) => state.samples);
   const selectedTechnology = (samples[experimentData?.sampleIds?.[0]]?.type || false);
 
-  const getStatusObject = (type, status, message = null, completedSteps = null) => ({
-    type,
-    status,
-    ...(message && { message }),
-    ...(completedSteps && { completedSteps }),
-  });
-
-  const getSeuratStatus = (backendStatus) => {
-    if (seuratRunningError) {
-      const errorMessage = pipelineErrorUserMessages[backendStatus?.seurat?.error?.error];
-      return getStatusObject('seurat', 'error', errorMessage);
-    }
-    if (seuratRunning) {
-      return getStatusObject('seurat', 'running', null, completedSeuratSteps);
-    }
-    return null;
-  };
-
-  const getGem2sStatus = () => {
-    if (gem2sRunningError) return getStatusObject('gem2s', 'error');
-    if (gem2sRunning || waitingForQcToLaunch) {
-      return getStatusObject('gem2s', 'running', null, completedGem2sSteps);
-    }
-    if (gem2sNotCreated) return getStatusObject('gem2s', 'toBeRun');
-    return null;
-  };
-
-  const getQcStatus = () => {
-    if (currentModule !== modules.DATA_PROCESSING) {
-      if (qcRunningError) return getStatusObject('qc', 'error');
-      if (qcRunning) return getStatusObject('qc', 'running');
-      if (qcStatusKey === pipelineStatusValues.NOT_CREATED) {
-        return getStatusObject('qc', 'toBeRun');
-      }
-    }
-    return null;
-  };
-
-  const getCurrentStatusScreen = (isSeurat, backendStatus) => {
-    if (isSeurat) {
-      return getSeuratStatus(backendStatus);
-    }
-    return getGem2sStatus() || getQcStatus();
-  };
-
   useEffect(() => {
     // selectedExperimentID holds the value in redux of the selected experiment
     // after loading a page it is determined whether to use that ID or the ID in the route URL
@@ -154,7 +109,8 @@ const ContentWrapper = (props) => {
   const completedSeuratSteps = backendStatus?.seurat?.completedSteps;
   const isSeurat = seuratStatusKey && seuratStatusKey !== pipelineStatusValues.NOT_CREATED && selectedTechnology === 'seurat';
   const seuratComplete = (seuratStatusKey === pipelineStatusValues.SUCCEEDED) && isSeurat;
-  const currentStatusScreen = getCurrentStatusScreen(isSeurat, backendStatus);
+  const waitingForQcToLaunch = gem2sStatusKey === pipelineStatusValues.SUCCEEDED
+    && qcStatusKey === pipelineStatusValues.NOT_CREATED;
   // This is used to prevent a race condition where the page would start loading immediately
   // when the backend status was previously loaded. In that case, `backendLoading` is `false`
   // and would be set to true only in the `loadBackendStatus` action, the time between the
@@ -166,7 +122,7 @@ const ContentWrapper = (props) => {
     if (!backendLoading) dispatch(loadBackendStatus(currentExperimentId));
     // need to load the samples to get the selected technology of the experiment
     // in the future, selected technology can be moved to under .experiments
-    if (!samples[experimentData?.sampleIds[0]]) dispatch(loadSamples(routeExperimentId));
+    if (!samples[experimentData?.sampleIds?.[0]]) dispatch(loadSamples(routeExperimentId));
     if (isBrowser) {
       import('utils/socketConnection')
         .then(({ default: connectionPromise }) => connectionPromise)
@@ -218,6 +174,54 @@ const ContentWrapper = (props) => {
   }, []);
 
   if (!user) return <></>;
+  const getStatusObject = (type, status, message = null, completedSteps = null) => ({
+    type,
+    status,
+    ...(message && { message }),
+    ...(completedSteps && { completedSteps }),
+  });
+
+  const gem2sNotCreated = checkEveryIsValue([gem2sStatusKey, seuratStatusKey], pipelineStatusValues.NOT_CREATED);
+
+  const getSeuratStatus = () => {
+    if (seuratRunningError) {
+      const errorMessage = pipelineErrorUserMessages[backendStatus?.seurat?.error?.error];
+      return getStatusObject('seurat', 'error', errorMessage);
+    }
+    if (seuratRunning) {
+      return getStatusObject('seurat', 'running', null, completedSeuratSteps);
+    }
+    return null;
+  };
+
+  const getGem2sStatus = () => {
+    if (gem2sRunningError) return getStatusObject('gem2s', 'error');
+    if (gem2sRunning || waitingForQcToLaunch) {
+      return getStatusObject('gem2s', 'running', null, completedGem2sSteps);
+    }
+    if (gem2sNotCreated) return getStatusObject('gem2s', 'toBeRun');
+    return null;
+  };
+
+  const getQcStatus = () => {
+    if (currentModule !== modules.DATA_PROCESSING) {
+      if (qcRunningError) return getStatusObject('qc', 'error');
+      if (qcRunning) return getStatusObject('qc', 'running');
+      if (qcStatusKey === pipelineStatusValues.NOT_CREATED) {
+        return getStatusObject('qc', 'toBeRun');
+      }
+    }
+    return null;
+  };
+
+  const getCurrentStatusScreen = () => {
+    if (isSeurat) {
+      return getSeuratStatus();
+    }
+    return getGem2sStatus() || getQcStatus();
+  };
+
+  const currentStatusScreen = getCurrentStatusScreen();
 
   const BigLogo = () => (
     <div
@@ -332,11 +336,6 @@ const ContentWrapper = (props) => {
       disabledIfSeuratComplete: false,
     },
   ];
-
-  const waitingForQcToLaunch = gem2sStatusKey === pipelineStatusValues.SUCCEEDED
-    && qcStatusKey === pipelineStatusValues.NOT_CREATED;
-
-  const gem2sNotCreated = checkEveryIsValue([gem2sStatusKey, seuratStatusKey], pipelineStatusValues.NOT_CREATED);
 
   const renderContent = () => {
     if (routeExperimentId) {
