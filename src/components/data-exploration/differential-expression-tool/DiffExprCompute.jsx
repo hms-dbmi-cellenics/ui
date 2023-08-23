@@ -188,8 +188,7 @@ const DiffExprCompute = (props) => {
                   For between-group comparisons, genes that are unlikely to be significantly differentially expressed due to very
                   low counts across all samples are excluded before statistical tests. This is done to reduce the impact of multiple
                   hypothesis correction. As a result, the 'between comparison' result table may display fewer genes than the total
-                  number of genes detected in the experiment. Please note that missing genes in the 'between comparison' table
-                  represent genes with insufficient data for reliable testing and thus are filtered out.
+                  number of genes detected in the experiment.
                 </span>
               </>
             )}
