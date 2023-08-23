@@ -82,7 +82,6 @@ const ContentWrapper = (props) => {
 
   const currentExperimentId = currentExperimentIdRef.current;
   const experiment = useSelector((state) => state?.experiments[currentExperimentId]);
-
   const experimentName = experimentData?.experimentName || experiment?.name;
 
   const {
@@ -196,6 +195,9 @@ const ContentWrapper = (props) => {
 
   const getGem2sStatus = () => {
     if (gem2sRunningError) return getStatusObject('gem2s', 'error');
+    if (gem2sRunning && experiment?.isSubsetted) {
+      return getStatusObject('gem2s', 'subsetting', null, completedGem2sSteps);
+    }
     if (gem2sRunning || waitingForQcToLaunch) {
       return getStatusObject('gem2s', 'running', null, completedGem2sSteps);
     }
