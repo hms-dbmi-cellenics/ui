@@ -3,7 +3,7 @@ on:
   push:
     branches:
       - master
-   release:
+  release:
     types:
       - released
   pull_request_target:
@@ -44,6 +44,7 @@ jobs:
   uncheck-integration-test:
     name: Mark integration test as not run
     runs-on: ubuntu-20.04
+    needs: is-safe-to-run
     if: github.event_name == 'pull_request_target'
     steps:
       - id: get-pr-body
@@ -270,7 +271,7 @@ jobs:
       - id: checkout
         name: Check out source code
         uses: actions/checkout@v3
-          with:
+        with:
           ref: ${{github.head_ref}}
           repository: ${{github.event.pull_request.head.repo.full_name}}
 
