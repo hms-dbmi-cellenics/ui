@@ -5,6 +5,7 @@ import useSWR from 'swr';
 import React from 'react';
 import { useSelector } from 'react-redux';
 import fetchAPI from 'utils/http/fetchAPI';
+import { getBackendStatus } from 'redux/selectors';
 
 const { Text } = Typography;
 const DOWNLOAD_EXPERIMENT = 'download_experiment_s3';
@@ -83,7 +84,9 @@ const formatInfo = (workingOn, request) => {
 };
 
 const Loader = ({ experimentId }) => {
-  const backendStatus = useSelector((state) => state.backendStatus);
+  const {
+    status: backendStatus,
+  } = useSelector(getBackendStatus(experimentId));
   const workerInfo = backendStatus?.[experimentId]?.status?.worker;
 
   const { data: workerStatus } = useSWR(
@@ -100,7 +103,6 @@ const Loader = ({ experimentId }) => {
   }
 
   if (workerInfo && workerInfo.workingOn) {
-    console.log('workerInfo: ', workerInfo);
     const { workingOn, request } = workerInfo;
     const message = formatInfo(workingOn, request);
     return (

@@ -142,10 +142,6 @@ const dispatchWorkRequest = async (
     io.on(`Heartbeat-${experimentId}`, (message) => {
       const newTimeoutDate = getTimeoutDate(timeout);
       if (newTimeoutDate < workerTimeoutDate) {
-        // consider using the ExperimentUpdates Handler
-        // const cb = experimentUpdatesHandler(dispatch);
-        //  (update) => cb(currentExperimentId, update));
-        console.log('received heartbeat ', message);
         const status = {
           worker: {
             workingOn: message.workingOn,
