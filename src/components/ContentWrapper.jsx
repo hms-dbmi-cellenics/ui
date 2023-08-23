@@ -101,12 +101,13 @@ const ContentWrapper = (props) => {
   const gem2sRunningError = backendErrors.includes(gem2sStatusKey);
   const completedGem2sSteps = backendStatus?.gem2s?.completedSteps;
 
+  const isSeurat = seuratStatusKey && selectedTechnology === 'seurat';
+
   const seuratBackendStatus = backendStatus?.seurat;
   const seuratStatusKey = backendStatus?.seurat?.status;
-  const seuratRunning = seuratStatusKey === 'RUNNING';
-  const seuratRunningError = backendErrors.includes(seuratStatusKey);
+  const seuratRunning = seuratStatusKey === 'RUNNING' && isSeurat;
+  const seuratRunningError = backendErrors.includes(seuratStatusKey) && isSeurat;
   const completedSeuratSteps = backendStatus?.seurat?.completedSteps;
-  const isSeurat = seuratStatusKey && seuratStatusKey !== pipelineStatusValues.NOT_CREATED && selectedTechnology === 'seurat';
   const seuratComplete = (seuratStatusKey === pipelineStatusValues.SUCCEEDED) && isSeurat;
   const waitingForQcToLaunch = gem2sStatusKey === pipelineStatusValues.SUCCEEDED
     && qcStatusKey === pipelineStatusValues.NOT_CREATED;
