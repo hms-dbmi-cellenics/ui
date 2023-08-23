@@ -170,18 +170,27 @@ const DiffExprCompute = (props) => {
               )
             }
             <Tooltip overlay={(
-              <span>
-                For finding genes that are differentially expressed between two experimental groups. This analysis uses a
-                {' '}
-                <a
-                  href='http://bioconductor.org/books/3.14/OSCA.workflows/segerstolpe-human-pancreas-smart-seq2.html#segerstolpe-comparison'
-                  target='_blank'
-                  rel='noreferrer'
-                >
-                  pseudobulk limma-voom workflow
-                </a>
-                .
-              </span>
+              <>
+                <span>
+                  For finding genes that are differentially expressed between two experimental groups. This analysis uses a
+                  {' '}
+                  <a
+                    href='http://bioconductor.org/books/3.14/OSCA.workflows/segerstolpe-human-pancreas-smart-seq2.html#segerstolpe-comparison'
+                    target='_blank'
+                    rel='noreferrer'
+                  >
+                    pseudobulk limma-voom workflow
+                  </a>
+                  .
+                </span>
+                <br />
+                <span>
+                  For between-group comparisons, genes that are unlikely to be significantly differentially expressed due to very
+                  low counts across all samples are excluded before statistical tests. This is done to reduce the impact of multiple
+                  hypothesis correction. As a result, the 'between comparison' result table may display fewer genes than the total
+                  number of genes detected in the experiment.
+                </span>
+              </>
             )}
             >
               <InfoCircleOutlined />
