@@ -100,11 +100,10 @@ const ContentWrapper = (props) => {
   const gem2sRunning = gem2sStatusKey === 'RUNNING';
   const gem2sRunningError = backendErrors.includes(gem2sStatusKey);
   const completedGem2sSteps = backendStatus?.gem2s?.completedSteps;
-
+  const seuratStatusKey = backendStatus?.seurat?.status;
   const isSeurat = seuratStatusKey && selectedTechnology === 'seurat';
 
   const seuratBackendStatus = backendStatus?.seurat;
-  const seuratStatusKey = backendStatus?.seurat?.status;
   const seuratRunning = seuratStatusKey === 'RUNNING' && isSeurat;
   const seuratRunningError = backendErrors.includes(seuratStatusKey) && isSeurat;
   const completedSeuratSteps = backendStatus?.seurat?.completedSteps;
