@@ -144,8 +144,8 @@ const dispatchWorkRequest = async (
       if (newTimeoutDate < workerTimeoutDate) {
         const status = {
           worker: {
-            workingOn: message.workingOn,
-            request: message.request,
+            statusCode: message.status_code,
+            userMessage: message.user_message,
           },
         };
         dispatch(updateBackendStatus(experimentId, status));

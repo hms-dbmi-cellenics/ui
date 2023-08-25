@@ -54,35 +54,6 @@ const fastLoad = (message) => (
   </>
 );
 
-const formatTaskName = (taskName) => {
-  // Remove "get" from the name
-  const nameWithoutGet = taskName.replace(/Get/g, '');
-
-  // Split on capital letters, then join with spaces
-  const finalName = nameWithoutGet.replace(/([A-Z])/g, ' $1').trim();
-
-  return finalName;
-};
-
-const formatInfo = (workingOn, request) => {
-  if (workingOn === DOWNLOAD_EXPERIMENT || workingOn === LOAD_EXPERIMENT) {
-    return 'Accessing the Seurat object for your analysis';
-  }
-  if (workingOn === STARTED_TASK) {
-    return `Working on the requested task: ${formatTaskName(request.body.name)}`;
-  }
-  if (workingOn === COMPRESSING_TASK_DATA) {
-    return `Working on the requested task:${formatTaskName(request.body.name)}`;
-  }
-  if (workingOn === UPLOADING_TASK_DATA) {
-    return `Finalizing results for the requested task: ${formatTaskName(request.body.name)}`;
-  }
-  if (workingOn === FINISHED_TASK) {
-    return `Displaying results for the requested task: ${formatTaskName(request.body.name)}`;
-  }
-  return workingOn;
-};
-
 const Loader = ({ experimentId }) => {
   const {
     status: backendStatus,
@@ -102,12 +73,11 @@ const Loader = ({ experimentId }) => {
     );
   }
 
-  if (workerInfo && workerInfo.workingOn) {
-    const { workingOn, request } = workerInfo;
-    const message = formatInfo(workingOn, request);
+  if (workerInfo && workerInfo.userMessage) {
+    const { userMessage } = workerInfo;
     return (
       <div>
-        {fastLoad(message)}
+        {fastLoad(userMessage)}
       </div>
     );
   }
