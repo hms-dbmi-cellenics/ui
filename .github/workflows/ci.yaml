@@ -83,12 +83,16 @@ jobs:
   test:
     name: Run unit tests
     runs-on: ubuntu-20.04
+    needs: is-safe-to-run
     env:
       CI: true
     steps:
       - id: checkout
         name: Check out source code
         uses: actions/checkout@v3
+        with:
+          ref: ${{github.head_ref}}
+          repository: ${{github.event.pull_request.head.repo.full_name}}
 
       - id: setup-node
         uses: actions/setup-node@v3
@@ -132,6 +136,7 @@ jobs:
   build-docker:
     name: Build Docker container
     runs-on: ubuntu-20.04
+    needs: is-safe-to-run
     outputs:
       ref-id: ${{ steps.ref.outputs.ref-id }}
       image-tag: ${{ steps.ref.outputs.image-tag }}
@@ -139,6 +144,9 @@ jobs:
       - id: checkout
         name: Check out source code
         uses: actions/checkout@v3
+        with:
+          ref: ${{github.head_ref}}
+          repository: ${{github.event.pull_request.head.repo.full_name}}
 
       - id: download-build-out
         name: Download Next.js build output
