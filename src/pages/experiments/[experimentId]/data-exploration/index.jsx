@@ -43,6 +43,7 @@ const ExplorationViewPage = ({
       dispatch(loadProcessingSettings(experimentId));
     }
   }, []);
+
   const methodUppercase = method ? method.toUpperCase() : ' ';
   const embeddingTitle = `${methodUppercase} Embedding`;
 
