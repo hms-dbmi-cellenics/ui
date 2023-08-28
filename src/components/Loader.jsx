@@ -8,12 +8,7 @@ import fetchAPI from 'utils/http/fetchAPI';
 import { getBackendStatus } from 'redux/selectors';
 
 const { Text } = Typography;
-const DOWNLOAD_EXPERIMENT = 'download_experiment_s3';
-const LOAD_EXPERIMENT = 'load_experiment_to_memory';
-const STARTED_TASK = 'started_task';
-const COMPRESSING_TASK_DATA = 'compressing_data';
-const UPLOADING_TASK_DATA = 'upload_data';
-const FINISHED_TASK = 'finished_task';
+
 const slowLoad = () => (
   <>
     <div style={{ padding: 25 }}>
