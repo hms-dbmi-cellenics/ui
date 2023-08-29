@@ -1,6 +1,6 @@
 name: Validate pull request
 on:
-  pull_request:
+  pull_request_target:
     types: [opened, reopened, edited]
 jobs:
   # BEWARE: GitHub uses Microsoft-style line endings (CRLF)
