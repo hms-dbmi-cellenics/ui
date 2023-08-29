@@ -55,10 +55,13 @@ const Loader = ({ experimentId }) => {
   } = useSelector(getBackendStatus(experimentId));
   const workerInfo = backendStatus?.[experimentId]?.status?.worker;
 
+  console.log('workerInfo', workerInfo);
+  console.log('backendStatus', backendStatus);
   const { data: workerStatus } = useSWR(
     () => (experimentId ? `/v2/experiments/${experimentId}/backendStatus` : null),
     fetchAPI,
   );
+  console.log('workerStatus', workerStatus);
 
   if (!workerStatus) {
     return (
