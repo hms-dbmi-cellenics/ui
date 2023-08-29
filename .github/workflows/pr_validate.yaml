@@ -161,7 +161,7 @@ jobs:
         with:
           workflow: Run end-to-end tests
           repo: ${{ github.repository_owner }}/testing
-          token: ${{ secrets.API_TOKEN_GITHUB }}
+          token: ${{ secrets.GITHUB_TOKEN }}
           ref: ${{ steps.extract-integration-test-ref.outputs.ref }}
           inputs: '{ "environment": "staging", "ref": "${{ steps.extract-integration-test-ref.outputs.ref }}", "sandboxId": "${{needs.lint-pr-body.outputs.sandbox}}", "image_sha" : "${{ steps.extract-commit-details.outputs.github_sha }}", "namespace": "${{steps.extract-commit-details.outputs.repo_name}}-${{needs.lint-pr-body.outputs.sandbox}}" }'
 
@@ -195,7 +195,7 @@ jobs:
         name: Uncheck the integration checkbox
         uses: tzkhan/pr-update-action@v2
         with:
-          repo-token: ${{ secrets.API_TOKEN_GITHUB }}
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
           head-branch-regex: ${{ github.head_ref }}
           lowercase-branch: false
           body-template: ${{  steps.create-unchecked-pr-body.outputs.body }}
