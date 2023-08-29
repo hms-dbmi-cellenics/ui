@@ -50,13 +50,9 @@ const fastLoad = (message) => (
 );
 
 const Loader = ({ experimentId }) => {
-  const {
-    status: backendStatus,
-  } = useSelector(getBackendStatus(experimentId));
+  const backendStatus = useSelector((state) => state.backendStatus);
   const workerInfo = backendStatus?.[experimentId]?.status?.worker;
 
-  console.log('workerInfo', workerInfo);
-  console.log('backendStatus', backendStatus);
   const { data: workerStatus } = useSWR(
     () => (experimentId ? `/v2/experiments/${experimentId}/backendStatus` : null),
     fetchAPI,
