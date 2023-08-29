@@ -148,6 +148,22 @@ jobs:
           ref: ${{github.head_ref}}
           repository: ${{github.event.pull_request.head.repo.full_name}}
 
+      - id: setup-node
+        uses: actions/setup-node@v3
+        with:
+          node-version: '14'
+          cache: 'npm'
+
+      - id: install
+        name: Install dependencies
+        run: |-
+          echo "Running CI with "
+          echo "Node version: $(node --version)"
+          echo "NPM version: $(npm --version)"
+
+          git config --global url."https://".insteadOf ssh://
+          npm ci
+
       - id: next-cache-seek
         name: Look up the Next.js build cache
         uses: actions/cache@v2
