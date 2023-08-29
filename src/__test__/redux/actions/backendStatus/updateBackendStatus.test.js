@@ -17,5 +17,8 @@ describe('updateBackendStatus', () => {
     const firstAction = store.getActions()[0];
     expect(firstAction.type).toEqual(BACKEND_STATUS_UPDATED);
     expect(firstAction).toMatchSnapshot();
+
+    // Intentionally break the test with a failing expectation
+    expect('something').toEqual(null);
   });
 });
