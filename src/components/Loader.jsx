@@ -34,19 +34,22 @@ const slowLoad = () => (
 );
 
 const fastLoad = (message) => (
-  <>
+  <div style={{
+    display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+  }}
+  >
     <div style={{ padding: 25 }}>
       <ClipLoader
         size={50}
         color='#8f0b10'
       />
     </div>
-    <p>
+    <p style={{ textAlign: 'center' }}>
       <Text>
         {message || "We're getting your data ..."}
       </Text>
     </p>
-  </>
+  </div>
 );
 
 const Loader = ({ experimentId }) => {
