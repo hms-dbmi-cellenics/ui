@@ -304,7 +304,7 @@ describe('Trajectory analysis plot', () => {
 
     await renderTrajectoryAnalysisPage(storeState);
 
-    expect(screen.getByText(/We're getting your data/i)).toBeInTheDocument();
+    expect(screen.getByText(/Assigning a worker to your analysis/i)).toBeInTheDocument();
     await waitFor(async () => {
       await expect(screen.queryByRole('graphics-document', { name: defaultShownPlotDescription })).toBeNull();
     });
@@ -320,7 +320,7 @@ describe('Trajectory analysis plot', () => {
 
     await renderTrajectoryAnalysisPage(storeState);
 
-    expect(screen.getByText(/We're getting your data/i)).toBeInTheDocument();
+    expect(screen.getByText(/Assigning a worker to your analysis/i)).toBeInTheDocument();
     await waitFor(async () => {
       await expect(screen.queryByRole('graphics-document', { name: defaultShownPlotDescription })).toBeNull();
     });
@@ -350,7 +350,7 @@ describe('Trajectory analysis plot', () => {
 
     await renderTrajectoryAnalysisPage(storeState);
 
-    expect(screen.getByText(/We're getting your data/i)).toBeInTheDocument();
+    expect(screen.getByText(/Assigning a worker to your analysis/i)).toBeInTheDocument();
     await waitFor(async () => {
       await expect(screen.queryByRole('graphics-document', { name: defaultShownPlotDescription })).toBeNull();
     });

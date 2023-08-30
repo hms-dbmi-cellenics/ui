@@ -20,6 +20,8 @@ import createTestComponentFactory from '__test__/test-utils/testComponentFactory
 import mockAPI, { generateDefaultMockAPIResponses } from '__test__/test-utils/mockAPI';
 import fake from '__test__/test-utils/constants';
 
+jest.mock('components/Loader');
+
 enableFetchMocks();
 
 const createMockStore = configureMockStore([thunk]);

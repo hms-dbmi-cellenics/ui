@@ -141,7 +141,7 @@ describe('HeatmapPlot', () => {
 
     await loadAndRenderDefaultHeatmap(storeState);
 
-    expect(screen.getByText(/We're getting your data .../i)).toBeInTheDocument();
+    expect(screen.getByText(/Assigning a worker to your analysis/i)).toBeInTheDocument();
   });
 
   it('Shows loader message if the marker genes are loading', async () => {
@@ -159,7 +159,7 @@ describe('HeatmapPlot', () => {
 
     await loadAndRenderDefaultHeatmap(storeState);
 
-    expect(screen.getByText(/We're getting your data .../i)).toBeInTheDocument();
+    expect(screen.getByText(/Assigning a worker to your analysis/i)).toBeInTheDocument();
   });
 
   it('Shows loader message if the marker genes are loaded but theres other selected genes still loading', async (done) => {
@@ -188,7 +188,7 @@ describe('HeatmapPlot', () => {
     });
 
     // Loading screen shows up
-    expect(screen.getByText(/We're getting your data .../i)).toBeInTheDocument();
+    expect(screen.getByText(/Assigning a worker to your analysis/i)).toBeInTheDocument();
     done();
   });
 
