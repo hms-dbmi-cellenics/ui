@@ -192,7 +192,7 @@ describe('Volcano plot page', () => {
 
     await runComparison();
 
-    expect(screen.getByText(/We're getting your data/i)).toBeInTheDocument();
+    expect(screen.getByText(/Assigning a worker to your analysis/i)).toBeInTheDocument();
     expect(screen.queryByRole('graphics-document', { name: 'Vega visualization' })).toBeNull();
 
     // The CSV download button should be disabled

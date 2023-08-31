@@ -831,6 +831,7 @@ describe('AnnotateClustersTool', () => {
         expect.anything(),
         expect.anything(),
         { PipelineRunETag: '2021-10-20T12:51:44.755Z', broadcast: true },
+        expect.anything(),
       );
     });
   });

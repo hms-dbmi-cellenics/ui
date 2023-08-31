@@ -15,6 +15,8 @@ import cellSetsInitialState from 'redux/reducers/cellSets/initialState';
 
 import { mockCellSets } from '__test__/test-utils/cellSets.mock';
 
+jest.mock('components/Loader');
+
 const mockStore = configureMockStore([thunk]);
 
 const emptyState = {
