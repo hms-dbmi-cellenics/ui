@@ -54,7 +54,6 @@ jobs:
           state: open
 
       - id: create-unchecked-pr-body
-        if: steps.get-pr-body.outputs.body != ''
         name: Create unchecked PR body
         run: |-
           UNCHECKED_BODY=$(sed 's/- \[[Xx]\] Started end-to-end tests on the latest commit./- \[ \] Started end-to-end tests on the latest commit./' <<\EOF
@@ -72,6 +71,7 @@ jobs:
           echo "EOF" >> "$GITHUB_OUTPUT"
 
       - id: uncheck-integration-checkbox
+        if: steps.create-unchecked-pr-body.outputs.body != ''
         name: Uncheck the integration checkbox
         uses: tzkhan/pr-update-action@v2
         with:
