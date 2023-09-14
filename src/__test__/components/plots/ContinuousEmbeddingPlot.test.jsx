@@ -110,7 +110,7 @@ describe('Continuous embedding plot', () => {
       );
     });
 
-    expect(screen.getByText(/We're getting your data/i)).toBeInTheDocument();
+    expect(screen.getByText(/Assigning a worker to your analysis/i)).toBeInTheDocument();
     expect(screen.queryByRole('graphics-document', { name: 'Continuous embedding plot' })).toBeNull();
   });
 
@@ -119,7 +119,7 @@ describe('Continuous embedding plot', () => {
       loading: true,
     });
 
-    expect(screen.getByText(/We're getting your data/i)).toBeInTheDocument();
+    expect(screen.getByText(/Assigning a worker to your analysis/i)).toBeInTheDocument();
     expect(screen.queryByRole('graphics-document', { name: 'Continuous embedding plot' })).toBeNull();
   });
 
@@ -142,7 +142,7 @@ describe('Continuous embedding plot', () => {
 
     await renderContinuousEmbeddingPlot(storeState);
 
-    expect(screen.getByText(/We're getting your data/i)).toBeInTheDocument();
+    expect(screen.getByText(/Assigning a worker to your analysis/i)).toBeInTheDocument();
     expect(screen.queryByRole('graphics-document', { name: 'Continuous embedding plot' })).toBeNull();
   });
 
@@ -168,7 +168,7 @@ describe('Continuous embedding plot', () => {
 
     await renderContinuousEmbeddingPlot(storeState);
 
-    expect(screen.getByText(/We're getting your data/i)).toBeInTheDocument();
+    expect(screen.getByText(/Assigning a worker to your analysis/i)).toBeInTheDocument();
     expect(screen.queryByRole('graphics-document', { name: 'Continuous embedding plot' })).toBeNull();
   });
 

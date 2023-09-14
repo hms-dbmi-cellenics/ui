@@ -112,18 +112,7 @@ describe('runCellSetsClustering action', () => {
     await store.dispatch(runCellSetsClustering(experimentId, 0.5));
 
     expect(dispatchWorkRequest).toHaveBeenCalledTimes(1);
-    expect(dispatchWorkRequest).toHaveBeenCalledWith(
-      experimentId,
-      {
-        cellSetKey: 'louvain', cellSetName: 'Louvain clusters', config: { resolution: 0.5 }, name: 'ClusterCells', type: 'louvain',
-      },
-      60,
-      'mock-hash',
-      {
-        PipelineRunETag: backendStatus[experimentId].status.pipeline.startDate,
-        broadcast: true,
-      },
-    );
+    expect(dispatchWorkRequest.mock.calls).toMatchSnapshot();
   });
 
   it('Dispatches error action when dispatchWorkRequest fails', async () => {
@@ -141,17 +130,6 @@ describe('runCellSetsClustering action', () => {
     await store.dispatch(runCellSetsClustering(experimentId, 0.5));
 
     expect(dispatchWorkRequest).toHaveBeenCalledTimes(1);
-    expect(dispatchWorkRequest).toHaveBeenCalledWith(
-      experimentId,
-      {
-        cellSetKey: 'louvain', cellSetName: 'Louvain clusters', config: { resolution: 0.5 }, name: 'ClusterCells', type: 'louvain',
-      },
-      60,
-      'mock-hash',
-      {
-        PipelineRunETag: backendStatus[experimentId].status.pipeline.startDate,
-        broadcast: true,
-      },
-    );
+    expect(dispatchWorkRequest.mock.calls).toMatchSnapshot();
   });
 });

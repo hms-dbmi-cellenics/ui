@@ -5,8 +5,7 @@ import {
 import { useDispatch } from 'react-redux';
 import Link from 'next/link';
 import PropTypes from 'prop-types';
-import runGem2s from 'redux/actions/pipeline/runGem2s';
-import runSeurat from 'redux/actions/pipeline/runSeurat';
+import { retry } from 'redux/actions/pipeline';
 import NotifyByEmail from './NotifyByEmail';
 
 const { Title, Text } = Typography;
@@ -28,24 +27,22 @@ const pipelineStepsInfoByType = {
   ],
 };
 
-const runnerByType = {
-  gem2s: runGem2s,
-  seurat: runSeurat,
-};
-
 const GEM2SLoadingScreen = (props) => {
   const {
-    pipelineStatus, completedSteps, experimentId, experimentName, pipelineType, pipelineErrorMessage,
+    pipelineStatus,
+    completedSteps,
+    experimentId,
+    experimentName,
+    pipelineType,
+    pipelineErrorMessage,
   } = props;
 
   const pipelineStepsInfo = pipelineStepsInfoByType[pipelineType];
-  const runner = runnerByType[pipelineType];
-
   const dispatch = useDispatch();
 
   const dataManagementPath = '/data-management';
   const relaunchExperiment = async () => {
-    await dispatch(runner(experimentId));
+    await dispatch(retry(experimentId));
   };
 
   const texts = {
