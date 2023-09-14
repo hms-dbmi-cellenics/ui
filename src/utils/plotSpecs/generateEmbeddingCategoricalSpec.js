@@ -14,6 +14,52 @@ const generateSpec = (config, plotData, cellSetLegendsData) => {
     : [config.axesRanges.yMin, config.axesRanges.yMax];
 
   let legend = [];
+  let marks = [
+    {
+      type: 'symbol',
+      clip: true,
+      from: { data: 'values' },
+      encode: {
+        enter: {
+          x: { scale: 'x', field: 'x' },
+          y: { scale: 'y', field: 'y' },
+          size: [
+            {
+              test: "inrange(datum.x, domain('x')) && inrange(datum.y, domain('y'))",
+              value: config?.marker.size,
+            },
+            { value: 0 },
+          ],
+          stroke: { scale: 'cellSetMarkColors', field: 'cellSetKey' },
+          fill: { scale: 'cellSetMarkColors', field: 'cellSetKey' },
+          shape: { value: 'circle' },
+          fillOpacity: { value: config?.marker.opacity / 10 },
+        },
+      },
+    }
+  ];
+
+  if (config?.labels.enabled) {
+    marks.push(
+      {
+        type: 'text',
+        clip: true,
+        from: { data: 'labels' },
+        encode: {
+          enter: {
+            x: { scale: 'x', field: 'meanX' },
+            y: { scale: 'y', field: 'meanY' },
+            text: { field: 'cellSetName' },
+            fontSize: { value: config?.labels.size },
+            strokeWidth: { value: 1.2 },
+            fill: { value: config?.colour.masterColour },
+            fillOpacity: { value: config?.labels.enabled },
+            font: { value: config?.fontStyle.font },
+          },
+        },
+      }
+    )
+  }
 
   // removing empty/unused entries from the data. This was causing issues with the legend
   // example of an entry {
@@ -195,47 +241,7 @@ const generateSpec = (config, plotData, cellSetLegendsData) => {
         domainWidth: config?.axes.domainWidth,
       },
     ],
-    marks: [
-      {
-        type: 'symbol',
-        clip: true,
-        from: { data: 'values' },
-        encode: {
-          enter: {
-            x: { scale: 'x', field: 'x' },
-            y: { scale: 'y', field: 'y' },
-            size: [
-              {
-                test: "inrange(datum.x, domain('x')) && inrange(datum.y, domain('y'))",
-                value: config?.marker.size,
-              },
-              { value: 0 },
-            ],
-            stroke: { scale: 'cellSetMarkColors', field: 'cellSetKey' },
-            fill: { scale: 'cellSetMarkColors', field: 'cellSetKey' },
-            shape: { value: 'circle' },
-            fillOpacity: { value: config?.marker.opacity / 10 },
-          },
-        },
-      },
-      {
-        type: 'text',
-        clip: true,
-        from: { data: 'labels' },
-        encode: {
-          enter: {
-            x: { scale: 'x', field: 'meanX' },
-            y: { scale: 'y', field: 'meanY' },
-            text: { field: 'cellSetName' },
-            fontSize: { value: config?.labels.size },
-            strokeWidth: { value: 1.2 },
-            fill: { value: config?.colour.masterColour },
-            fillOpacity: { value: config?.labels.enabled },
-            font: { value: config?.fontStyle.font },
-          },
-        },
-      },
-    ],
+    marks: marks,
     legends: legend,
     title:
     {
