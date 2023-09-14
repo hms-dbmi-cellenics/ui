@@ -186,7 +186,6 @@ const frequencyInitialConfig = {
   title: titleBaseState,
   axes: {
     ...axesBaseState,
-    xAxisText: 'Sample',
     yAxisText: 'Proportion',
     xAxisRotateLabels: true,
     offset: 10,

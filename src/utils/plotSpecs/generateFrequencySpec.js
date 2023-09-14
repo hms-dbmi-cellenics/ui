@@ -156,7 +156,7 @@ const generateSpec = (config, plotData, xNamesToDisplay, yNamesToDisplay) => {
         orient: 'bottom',
         scale: 'x',
         zindex: 1,
-        title: config.axes.xAxisText,
+        title: config.xAxisGrouping,
         titleFont: config.fontStyle.font,
         labelFont: config.fontStyle.font,
         labelColor: config.colour.masterColour,
