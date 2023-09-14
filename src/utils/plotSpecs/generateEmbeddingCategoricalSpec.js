@@ -14,7 +14,7 @@ const generateSpec = (config, plotData, cellSetLegendsData) => {
     : [config.axesRanges.yMin, config.axesRanges.yMax];
 
   let legend = [];
-  let marks = [
+  const marks = [
     {
       type: 'symbol',
       clip: true,
@@ -36,7 +36,7 @@ const generateSpec = (config, plotData, cellSetLegendsData) => {
           fillOpacity: { value: config?.marker.opacity / 10 },
         },
       },
-    }
+    },
   ];
 
   if (config?.labels.enabled) {
@@ -57,8 +57,8 @@ const generateSpec = (config, plotData, cellSetLegendsData) => {
             font: { value: config?.fontStyle.font },
           },
         },
-      }
-    )
+      },
+    );
   }
 
   // removing empty/unused entries from the data. This was causing issues with the legend
@@ -241,7 +241,7 @@ const generateSpec = (config, plotData, cellSetLegendsData) => {
         domainWidth: config?.axes.domainWidth,
       },
     ],
-    marks: marks,
+    marks,
     legends: legend,
     title:
     {
