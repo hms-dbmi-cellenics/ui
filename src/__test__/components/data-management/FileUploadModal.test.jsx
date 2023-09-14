@@ -131,25 +131,19 @@ describe('FileUploadModal', () => {
     // Lists the requirements of the Seurat object
     expect(screen.getByText(/The Seurat object must contain the following slots and metadata:/i)).toBeInTheDocument();
 
-    // including HVFInfo
-    expect(screen.getByText(/HVFInfo\(scdata\)/i)).toBeInTheDocument();
-
-    // clusters
-    expect(screen.getByText(/scdata\$seurat_clusters/i)).toBeInTheDocument();
-
     // samples
     expect(screen.getAllByText(/scdata\$samples/i).length).toBe(2);
 
     // counts
     expect(screen.getByText(/scdata\[\['RNA'\]\]@counts/i)).toBeInTheDocument();
 
-    // log-counts
-    expect(screen.getByText(/scdata\[\['RNA'\]\]@data/i)).toBeInTheDocument();
-
     // reductions
     expect(screen.getByText(/scdata@reductions/i)).toBeInTheDocument();
 
-    // inform used that metadata is auto-detected
+    // inform users that cluster metadata is auto-detected
+    expect(screen.getByText(/cluster metadata .+ is auto-detected/i)).toBeInTheDocument();
+
+    // inform users that sample level metadata is auto-detected
     expect(screen.getByText(/sample level metadata .+ is auto-detected/i)).toBeInTheDocument();
 
     // told to drag and drop rds file
