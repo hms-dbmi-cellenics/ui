@@ -7,7 +7,7 @@
 # Targets
 #--------------------------------------------------
 install: ## Installs node dependencies
-	@npm install
+	@npm ci
 build: ## Creates a production build
 	@npm run build
 test: ## Executes unit tests
