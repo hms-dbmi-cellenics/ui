@@ -29,7 +29,7 @@ const ProjectsList = (props) => {
 
   const filteredExperiments = experiments.ids
     .map((id) => experiments[id])
-    .filter((exp) => exp.name.match(filter) || exp.id.match(filter));
+    .filter((exp) => (exp.name.match(filter) || exp.id.match(filter)));
   if (filteredExperiments.length === 0) {
     return (
       <div data-test-id={integrationTestConstants.ids.PROJECTS_LIST} />
