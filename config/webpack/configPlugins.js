@@ -1,13 +1,8 @@
 /* eslint-disable no-param-reassign */
-const webpack = require('webpack');
 const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
 
 const webpackConfigPlugins = (config, { dev }) => {
-  const plugins = [
-    new webpack.IgnorePlugin(
-      /pages.*\/test.*/,
-    ),
-  ];
+  const plugins = [];
 
   if (process.env.NODE_ENV === 'analyse') {
     plugins.push(
