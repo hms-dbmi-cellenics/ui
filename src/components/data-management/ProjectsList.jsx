@@ -36,10 +36,6 @@ const ProjectsList = (props) => {
 
   const experiments = useSelector((state) => state.experiments);
 
-  if (experiments.meta.loading) {
-    return [...Array(5)].map((_, idx) => <Skeleton key={`skeleton-${idx}`} role='progressbar' active />);
-  }
-
   const setSize = useCallback((index, size) => {
     sizeMap.current = { ...sizeMap.current, [index]: size + 5 };
 
@@ -54,12 +50,11 @@ const ProjectsList = (props) => {
     .map((id) => experiments[id])
     .filter((exp) => (exp.name.match(filter) || exp.id.match(filter)));
 
-  if (filteredExperiments.length === 0) {
-    return (
-      <div data-test-id={integrationTestConstants.ids.PROJECTS_LIST} />
-    );
+  if (experiments.meta.loading) {
+    return ([...Array(5)].map((_, idx) => <Skeleton key={`skeleton-${idx}`} role='progressbar' active />));
+  } if (filteredExperiments.length === 0) {
+    return (<div data-test-id={integrationTestConstants.ids.PROJECTS_LIST} />);
   }
-
   return (
     <div data-test-id={integrationTestConstants.ids.PROJECTS_LIST}>
       <List
