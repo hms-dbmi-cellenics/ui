@@ -45,7 +45,7 @@ const PlotStyling = (props) => {
     expressionValuesCapping: (attr) => <ExpressionValuesCapping key='expressionValuesCapping' config={config} onUpdate={onUpdate} {...attr} />,
     markers: (attr) => <PointDesign key='markers' config={config} onUpdate={onUpdate} {...attr} />,
     legend: (attr) => <LegendEditor key='legend' onUpdate={onUpdate} config={config} {...attr} />,
-    labels: (attr) => <LabelsDesign key='legend' onUpdate={onUpdate} config={config} {...attr} />,
+    labels: (attr) => <LabelsDesign key='labels' onUpdate={onUpdate} config={config} {...attr} />,
     violinMarkers: (attr) => <ViolinMarkersEditor key='violinMarkers' config={config} onUpdate={onUpdate} {...attr} />,
     volcanoThresholds: (attr) => <VolcanoThresholdsGuidesEditor key='volcanoThresholds' config={config} onUpdate={onUpdate} {...attr} />,
     volcanoMarkers: (attr) => <VolcanoMarkersEditor key='volcanoMarkers' config={config} onUpdate={onUpdate} {...attr} />,
