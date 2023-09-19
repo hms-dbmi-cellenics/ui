@@ -156,7 +156,7 @@ const CellSetsTool = (props) => {
           <CellSetOperation
             icon={<SplitCellsOutlined />}
             onCreate={(name, color) => {
-              dispatch(createCellSet(experimentId, name, color, complement(selectedCellSetKeys, properties)));
+              dispatch(createCellSet(experimentId, name, color, complement(selectedCellSetKeys, cellSets)));
             }}
             ariaLabel='Complement of selected'
             helpTitle='Create new cell set from the complement of the selected sets in the current tab.'
