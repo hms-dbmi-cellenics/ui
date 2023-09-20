@@ -2,7 +2,6 @@ import React from 'react';
 import '__test__/test-utils/setupTests';
 
 import { render, screen } from '@testing-library/react';
-import { within } from '@testing-library/dom';
 import { act } from 'react-dom/test-utils';
 
 import { Provider } from 'react-redux';

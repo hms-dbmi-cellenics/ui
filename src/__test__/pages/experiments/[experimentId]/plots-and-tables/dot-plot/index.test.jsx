@@ -4,7 +4,8 @@ import _ from 'lodash';
 import { act } from 'react-dom/test-utils';
 import { render, screen } from '@testing-library/react';
 import { mount } from 'enzyme';
-import { fireEvent, waitFor, within } from '@testing-library/dom';
+import { waitFor } from '@testing-library/react';
+
 import '@testing-library/jest-dom';
 import { Provider } from 'react-redux';
 

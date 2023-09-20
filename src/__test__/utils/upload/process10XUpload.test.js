@@ -3,13 +3,13 @@ import thunk from 'redux-thunk';
 import waitForActions from 'redux-mock-store-await-actions';
 import axios from 'axios';
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
+import { waitFor } from '@testing-library/react';
 
 import { SAMPLES_FILE_UPDATE } from 'redux/actionTypes/samples';
 import initialSampleState, { sampleTemplate } from 'redux/reducers/samples/initialState';
 import initialExperimentState, { experimentTemplate } from 'redux/reducers/experiments/initialState';
 
 import UploadStatus from 'utils/upload/UploadStatus';
-import { waitFor } from '@testing-library/dom';
 
 import processUpload from 'utils/upload/processUpload';
 

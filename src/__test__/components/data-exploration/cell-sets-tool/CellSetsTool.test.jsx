@@ -7,7 +7,6 @@ import {
 import userEvent from '@testing-library/user-event';
 
 import { act } from 'react-dom/test-utils';
-import { within } from '@testing-library/dom';
 
 import { Provider } from 'react-redux';
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';

@@ -9,7 +9,6 @@ import thunk from 'redux-thunk';
 import '@testing-library/jest-dom';
 import configureStore from 'redux-mock-store';
 import { act } from 'react-dom/test-utils';
-import { fireEvent } from '@testing-library/dom';
 import userEvent from '@testing-library/user-event';
 import { screen, render, waitFor } from '@testing-library/react';
 
@@ -319,11 +318,11 @@ describe('ProjectDetails', () => {
 
     const options = await getMenuItems();
 
-    fireEvent.click(options[0]);
+    userEvent.click(options[0]);
 
     const input = screen.getByDisplayValue('Track 1');
-    fireEvent.change(input, { target: { value: 'myBrandNewMetadata' } });
-    fireEvent.keyDown(input, { key: 'Enter', code: 'Enter' });
+    userEvent.change(input, { target: { value: 'myBrandNewMetadata' } });
+    userEvent.keyDown(input, { key: 'Enter', code: 'Enter' });
 
     expect(mockedCreateMetadataTrack).toBeCalledTimes(1);
     expect(mockedCreateMetadataTrack).toHaveBeenCalledWith('myBrandNewMetadata', 'experiment-1');
@@ -339,11 +338,11 @@ describe('ProjectDetails', () => {
 
     const options = await getMenuItems();
 
-    fireEvent.click(options[0]);
+    userEvent.click(options[0]);
 
     const input = screen.getByDisplayValue('Track 1');
-    fireEvent.change(input, { target: { value: 'myBrandNewMetadata' } });
-    fireEvent.keyDown(input, { key: 'Escape', code: 'Escape' });
+    userEvent.change(input, { target: { value: 'myBrandNewMetadata' } });
+    userEvent.keyDown(input, { key: 'Escape', code: 'Escape' });
 
     expect(store.getState().experiments[experiment1id].metadataKeys).toEqual(['metadata-1']);
   });
@@ -360,10 +359,10 @@ describe('ProjectDetails', () => {
 
     const options = await getMenuItems();
 
-    fireEvent.click(options[0]);
+    userEvent.click(options[0]);
     const input = screen.getByDisplayValue('Track 1');
-    fireEvent.change(input, { target: { value: '  myBrandNewMetadata     ' } });
-    fireEvent.keyDown(input, { key: 'Enter', code: 'Enter' });
+    userEvent.change(input, { target: { value: '  myBrandNewMetadata     ' } });
+    userEvent.keyDown(input, { key: 'Enter', code: 'Enter' });
 
     expect(mockedCreateMetadataTrack).toBeCalledTimes(1);
     expect(mockedCreateMetadataTrack).toHaveBeenCalledWith('myBrandNewMetadata', 'experiment-1');
@@ -387,15 +386,15 @@ describe('ProjectDetails', () => {
     // Add track column
     const options = await getMenuItems();
 
-    fireEvent.click(options[0]);
-    fireEvent.keyDown(screen.getByDisplayValue('Track 1'), { key: 'Enter', code: 'Enter' });
+    userEvent.click(options[0]);
+    userEvent.keyDown(screen.getByDisplayValue('Track 1'), { key: 'Enter', code: 'Enter' });
 
     // Change track value for sample
 
     act(() => userEvent.click(screen.getAllByRole('button', { name: 'Edit' })[1]));
 
     const input = screen.getByRole('textbox');
-    fireEvent.change(input, { target: { value: '  myBrandNewMetadataWithWhitespaces     ' } });
+    userEvent.change(input, { target: { value: '  myBrandNewMetadataWithWhitespaces     ' } });
 
     act(() => userEvent.click(screen.getByRole('button', { name: 'Save' })));
 
