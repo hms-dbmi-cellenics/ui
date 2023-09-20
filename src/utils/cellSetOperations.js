@@ -60,7 +60,9 @@ const complement = (listOfSets, cellSets) => {
     (key) => properties[key]?.cellIds || null,
   ).filter(
     (set) => set && set.size > 0,
-  ).flatMap((set) => [...set]);
+  ).reduce(
+    (acc, curr) => new Set([...acc, ...curr]),
+  );
 
   const filteredCellIds = hierarchy.filter((rootCluster) => rootCluster.key === 'louvain')[0]
     .children
@@ -72,7 +74,9 @@ const complement = (listOfSets, cellSets) => {
     (cluster) => properties[cluster].cellIds,
   ).filter(
     (set) => set && set.size > 0,
-  ).flatMap((set) => [...set]);
+  ).reduce(
+    (acc, curr) => new Set([...acc, ...curr]),
+  );
 
   // remove all cells that are selected
   if (selectedCells.size > 0) {
