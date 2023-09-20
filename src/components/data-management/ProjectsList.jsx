@@ -39,8 +39,7 @@ const ProjectsList = (props) => {
   const experiments = useSelector((state) => state.experiments);
 
   const setSize = useCallback((index, size) => {
-    sizeMap.current = { ...sizeMap.current, [index]: size + 5 };
-
+    sizeMap.current[index] = size + 5;
     //  if the height gets changed, we need to reset the heights
     // so that they are recalculated
     listRef.current.resetAfterIndex(index);
