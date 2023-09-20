@@ -6,7 +6,9 @@ import { VariableSizeList as List } from 'react-window';
 import integrationTestConstants from 'utils/integrationTestConstants';
 import ProjectCard from './ProjectCard';
 
-const windowMargin = 130;
+// This makes sure that all the projects can be viewed properly inside the list
+// TODO : This has to be done properly in CSS
+const windowMargin = 130;// px
 
 const Row = ({
   index, data, style, setSize,
