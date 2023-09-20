@@ -21,6 +21,7 @@ const union = (listOfSets, properties) => {
   }
 
   const sets = listOfSets.map((key) => properties[key]?.cellIds || []);
+  // flatten and transform list of Sets to list of lists
   const unionSet = new Set(
     sets.flatMap(set => [...set]),
   );
@@ -63,19 +64,7 @@ const complement = (listOfSets, properties, hierarchy) => {
     (acc, curr) => new Set([...acc, ...curr]),
   );
 
-  const filteredCellClusters = hierarchy.find((rootCluster) => rootCluster.key === 'louvain')
-    .children
-    .map((child) => child.key);
-
-  // get the ids of all cells in the dataset
-  // All cells are assumed to be included in at least 1 cluster
-  const complementSet = filteredCellClusters.map(
-    (cluster) => properties[cluster].cellIds,
-  ).filter(
-    (set) => set && set.size > 0,
-  ).reduce(
-    (acc, curr) => new Set([...acc, ...curr]),
-  );
+  const complementSet = getFilteredCells({ hierarchy, properties });
 
   // remove all cells that are selected
   if (selectedCells.size > 0) {
