@@ -9,7 +9,8 @@ import {
   EMBEDDINGS_LOADING,
 } from 'redux/actionTypes/embeddings';
 
-import { seekFromS3 } from 'utils/work/seekWorkResponse';
+import { dispatchWorkRequest } from 'utils/work/seekWorkResponse';
+import { workerDataResult } from '__test__/test-utils/mockAPI';
 
 jest.mock('utils/getTimeoutForWorkerTask', () => ({
   __esModule: true, // this property makes it work
@@ -18,8 +19,7 @@ jest.mock('utils/getTimeoutForWorkerTask', () => ({
 
 jest.mock('utils/work/seekWorkResponse', () => ({
   __esModule: true, // this property makes it work
-  dispatchWorkRequest: jest.fn(() => true),
-  seekFromS3: jest.fn(),
+  dispatchWorkRequest: jest.fn(),
 }));
 
 const mockStore = configureStore([thunk]);
@@ -55,10 +55,9 @@ describe('loadEmbedding action', () => {
   beforeEach(async () => {
     jest.clearAllMocks();
 
-    seekFromS3
+    dispatchWorkRequest
       .mockReset()
-      .mockImplementationOnce(() => null)
-      .mockImplementationOnce(() => Promise.resolve([[1, 2], [3, 4]]));
+      .mockImplementationOnce(() => workerDataResult([[1, 2], [3, 4]]));
   });
 
   it('Dispatches if not loaded', async () => {
@@ -176,9 +175,8 @@ describe('loadEmbedding action', () => {
       },
     );
 
-    seekFromS3
+    dispatchWorkRequest
       .mockReset()
-      .mockImplementationOnce(() => null)
       .mockImplementationOnce(() => { throw new Error('random error!'); });
 
     await store.dispatch(loadEmbedding(experimentId, embeddingType));

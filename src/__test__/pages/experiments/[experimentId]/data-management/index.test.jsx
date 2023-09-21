@@ -85,7 +85,7 @@ describe('Data Management page', () => {
   it('Shows an empty project list if there are no projects', async () => {
     const noProjectsResponse = {
       ...mockAPIResponse,
-      '/experiments': () => promiseResponse(
+      '/experiments$': () => promiseResponse(
         JSON.stringify([]),
       ),
     };
@@ -191,7 +191,7 @@ describe('Data Management page', () => {
 
     const apiResponses = {
       ...mockAPIResponse,
-      [`experiments/${experimentWithSamplesId}/samples`]: () => loadingResponsePromise,
+      [`experiments/${experimentWithSamplesId}/samples$`]: () => loadingResponsePromise,
     };
 
     fetchMock.resetMocks({ sticky: true });

@@ -11,15 +11,14 @@ import {
   GENES_PROPERTIES_ERROR,
 } from 'redux/actionTypes/genes';
 
-import { dispatchWorkRequest, seekFromS3 } from 'utils/work/seekWorkResponse';
+import { dispatchWorkRequest } from 'utils/work/seekWorkResponse';
 
-import mockAPI, { generateDefaultMockAPIResponses } from '__test__/test-utils/mockAPI';
+import mockAPI, { generateDefaultMockAPIResponses, workerDataResult } from '__test__/test-utils/mockAPI';
 import processingConfigData from '__test__/data/processing_config.json';
 
 jest.mock('utils/work/seekWorkResponse', () => ({
   __esModule: true, // this property makes it work
-  dispatchWorkRequest: jest.fn(() => true),
-  seekFromS3: jest.fn(() => new Promise((resolve) => { resolve(null); })),
+  dispatchWorkRequest: jest.fn(),
 }));
 
 jest.mock('utils/getTimeoutForWorkerTask', () => ({
@@ -48,7 +47,7 @@ describe('loadPaginatedGeneProperties action', () => {
   beforeEach(async () => {
     jest.clearAllMocks();
 
-    seekFromS3
+    dispatchWorkRequest
       .mockReset()
       .mockImplementation(() => null);
 
@@ -91,10 +90,9 @@ describe('loadPaginatedGeneProperties action', () => {
       },
     });
 
-    seekFromS3
+    dispatchWorkRequest
       .mockReset()
-      .mockImplementationOnce(() => null)
-      .mockImplementation(() => Promise.resolve({
+      .mockImplementation(() => workerDataResult({
         total: 2,
         gene_names: ['a', 'b'],
         dispersions: [1, 1],
@@ -142,9 +140,8 @@ describe('loadPaginatedGeneProperties action', () => {
       },
     });
 
-    seekFromS3
+    dispatchWorkRequest
       .mockReset()
-      .mockImplementationOnce(() => null)
       .mockImplementation(() => Promise.reject(new Error('random error!')));
 
     const tableState = {
