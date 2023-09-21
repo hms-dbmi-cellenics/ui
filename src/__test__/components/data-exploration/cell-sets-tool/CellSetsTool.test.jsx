@@ -452,20 +452,9 @@ describe('CellSetsTool', () => {
 
     screen.getByText('New Cluster');
     const newClusterKey = getClusterByName('New Cluster');
-
-    const cluster0CellIds = louvainClusters.find(({ name }) => name === 'Cluster 0').cellIds;
-    const allCellIds = sampleList.reduce(
-      (sumCellIds, { cellIds }) => sumCellIds.concat(cellIds),
-      [],
-    );
-
     const actualComplement = storeState.getState().cellSets.properties[newClusterKey].cellIds;
-    const expectedComplement = new Set(
-      allCellIds.filter((cellId) => !cluster0CellIds.includes(cellId)),
-    );
 
-    // complement = the whole dataset - first cluster
-    expect(actualComplement).toEqual(expectedComplement);
+    expect(actualComplement).toMatchSnapshot();
   });
 
   it('Scratchpad cluster deletion works ', async () => {
