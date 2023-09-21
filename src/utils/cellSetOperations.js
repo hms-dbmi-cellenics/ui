@@ -21,12 +21,9 @@ const union = (listOfSets, properties) => {
   }
 
   const sets = listOfSets.map((key) => properties[key]?.cellIds || []);
+  // flatten and transform list of Sets to list of lists
   const unionSet = new Set(
-    [].concat(
-      ...sets.map(
-        (set) => [...set],
-      ),
-    ),
+    sets.flatMap(set => [...set]),
   );
 
   return unionSet;
@@ -54,11 +51,10 @@ const intersection = (listOfSets, properties) => {
   return intersectionSet;
 };
 
-const complement = (listOfSets, properties) => {
+const complement = (listOfSets, properties, hierarchy) => {
   if (!listOfSets) {
     return new Set();
   }
-
   // get the ids of all selected cells
   const selectedCells = listOfSets.map(
     (key) => properties[key]?.cellIds || null,
@@ -68,15 +64,7 @@ const complement = (listOfSets, properties) => {
     (acc, curr) => new Set([...acc, ...curr]),
   );
 
-  // get the ids of all cells in the dataset
-  // All cells are assumed to be included in at least 1 cluster
-  const complementSet = Object.values(properties).map(
-    (cluster) => cluster.cellIds,
-  ).filter(
-    (set) => set && set.size > 0,
-  ).reduce(
-    (acc, curr) => new Set([...acc, ...curr]),
-  );
+  const complementSet = getFilteredCells({ hierarchy, properties });
 
   // remove all cells that are selected
   if (selectedCells.size > 0) {
