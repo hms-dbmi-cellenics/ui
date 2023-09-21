@@ -30,7 +30,6 @@ jobs:
         name: Is safe to run
         run: |-
           echo "Safe to run, checks will proceed"
-
   is-not-safe-to-run:
     name: Sensitive jobs aren't labeled safe to be run
     runs-on: ubuntu-20.04
@@ -72,6 +71,7 @@ jobs:
           echo "EOF" >> "$GITHUB_OUTPUT"
 
       - id: uncheck-integration-checkbox
+        if: steps.create-unchecked-pr-body.outputs.body != ''
         name: Uncheck the integration checkbox
         uses: tzkhan/pr-update-action@v2
         with:
@@ -81,8 +81,8 @@ jobs:
           body-template: ${{  steps.create-unchecked-pr-body.outputs.body }}
           body-update-action: replace
 
-  build:
-    name: Build website
+  test:
+    name: Run unit tests
     runs-on: ubuntu-20.04
     needs: is-safe-to-run
     env:
@@ -91,6 +91,9 @@ jobs:
       - id: checkout
         name: Check out source code
         uses: actions/checkout@v3
+        with:
+          ref: ${{github.head_ref}}
+          repository: ${{github.event.pull_request.head.repo.full_name}}
 
       - id: setup-node
         uses: actions/setup-node@v3
@@ -131,6 +134,37 @@ jobs:
           npm install -g license-checker
           license-checker --production --json --onlyAllow="${ALLOWED_LICENSES}" --excludePackages="${EXCLUDE_PACKAGES}"
 
+  build-docker:
+    name: Build Docker container
+    runs-on: ubuntu-20.04
+    needs: is-safe-to-run
+    outputs:
+      ref-id: ${{ steps.ref.outputs.ref-id }}
+      image-tag: ${{ steps.ref.outputs.image-tag }}
+    steps:
+      - id: checkout
+        name: Check out source code
+        uses: actions/checkout@v3
+        with:
+          ref: ${{github.head_ref}}
+          repository: ${{github.event.pull_request.head.repo.full_name}}
+
+      - id: setup-node
+        uses: actions/setup-node@v3
+        with:
+          node-version: '14'
+          cache: 'npm'
+
+      - id: install
+        name: Install dependencies
+        run: |-
+          echo "Running CI with "
+          echo "Node version: $(node --version)"
+          echo "NPM version: $(npm --version)"
+
+          git config --global url."https://".insteadOf ssh://
+          npm ci
+
       - id: next-cache-seek
         name: Look up the Next.js build cache
         uses: actions/cache@v2
@@ -152,18 +186,6 @@ jobs:
             .next/
             !.next/cache
 
-  build-docker:
-    name: Build Docker container
-    runs-on: ubuntu-20.04
-    needs: [build, is-safe-to-run]
-    outputs:
-      ref-id: ${{ steps.ref.outputs.ref-id }}
-      image-tag: ${{ steps.ref.outputs.image-tag }}
-    steps:
-      - id: checkout
-        name: Check out source code
-        uses: actions/checkout@v3
-
       - id: download-build-out
         name: Download Next.js build output
         uses: actions/download-artifact@v2
@@ -174,38 +196,40 @@ jobs:
       - id: ref
         name: Format docker tag and repository name.
         run: |-
-          # This will take a ref like `refs/heads/master`
-          # and turn it into `refs-heads-master`
-          REF_ID=$(echo $GITHUB_REF | sed 's/\//-/g')
+          if [ "${{ github.event_name }}" = "pull_request_target" ]; then
+            # Construct the PR_GITHUB_REF for our pull request copying GITHUB_REF's format
+            # We can't use GITHUB_REF because it is set to master in this event
+            # More info: https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#pull_request_target
+            PR_GITHUB_REF="refs/pull/${{ github.event.pull_request.number }}/merge"
+            REF_ID=$(echo $PR_GITHUB_REF | sed 's/\//-/g')
+          else
+            # This will take a ref like `refs/heads/master`
+            # and turn it into `refs-heads-master`
+            REF_ID=$(echo $GITHUB_REF | sed 's/\//-/g')
+          fi
           echo "ref-id=$REF_ID" >> $GITHUB_OUTPUT
-
           # the final tag is something like:
           # refs-heads-master-a4f8bc313dae
           # this is what we push to ECR
           # we will also take semver'd tags like `1.0.0` and use them for releases
-
           # In push & PR events we want the tag to contain the latest commit on the branch:
           # in push events, the latest commit of the master branch is GITHUB_SHA
-          # in PR synch the latest commit of the branch is found in github.event.pull_request.head.sha instead
-
+          # in PR synch the latest commit of the branch is found in github.sha instead
           TIMESTAMP=$(date +%s)
-
           if [ "${{ github.event_name }}" = "release" ] && [ "${{ github.event.action }}" = "released" ]; then
             COMMIT_SHA=""
             IMAGE_TAG="${REF_ID/refs-tags-/}"
           elif [ "${{ github.event_name }}" = "pull_request_target" ]; then
-            COMMIT_SHA="${{ github.event.pull_request.head.sha }}"
+            COMMIT_SHA="${{ github.sha }}"
             IMAGE_TAG="$REF_ID-$COMMIT_SHA-$TIMESTAMP"
           else
             COMMIT_SHA=$GITHUB_SHA
             IMAGE_TAG="$REF_ID-$COMMIT_SHA-$TIMESTAMP"
           fi
-
           # IMAGE_TAG is used in the Build Docker Image step.
           # We can easily build the image-tag from REF_ID and COMMIT_SHA for non-production releases.
           # But we can not easily create the image tag for production releases, so we're bulding it here
           echo "image-tag=$IMAGE_TAG" >> $GITHUB_OUTPUT
-
           # This will take a GitHub repo name like `hms-dbmi-cellenics/releases`
           # and turns it into `releases`. This will be the name of the
           # ECR repository.
@@ -238,7 +262,7 @@ jobs:
         name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
 
-      - id: build
+      - id: build-docker-image
         name: Build Docker image
         uses: docker/build-push-action@v2
         with:
@@ -272,6 +296,9 @@ jobs:
       - id: checkout
         name: Check out source code
         uses: actions/checkout@v3
+        with:
+          ref: ${{github.head_ref}}
+          repository: ${{github.event.pull_request.head.repo.full_name}}
 
       - id: setup-aws
         name: Configure AWS credentials
@@ -415,7 +442,6 @@ jobs:
           REF_ID: ${{ needs.build-docker.outputs.ref-id }}
         run: |-
           mv $DEPLOYMENT_NAME.yaml $REF_ID.yaml
-
       - name: Push staging deployment template to releases
         if: (github.event_name == 'pull_request_target' || github.event_name == 'push') && matrix.environment == 'staging'
         uses: dmnemec/copy_file_to_another_repo_action@v1.0.4
@@ -441,7 +467,7 @@ jobs:
   report-if-failed:
     name: Report if workflow failed
     runs-on: ubuntu-20.04
-    needs: [build, build-docker, deploy, is-safe-to-run]
+    needs: [test, build-docker, deploy, is-safe-to-run]
     if: failure() && github.ref == 'refs/heads/master'
     steps:
       - id: send-to-slack

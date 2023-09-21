@@ -62,7 +62,7 @@ const domainSpecificContent = {
     ),
     HeaderExtraButton: (
       <Button>
-        <a href='https://www.biomage.net/cellenicscourse' target='_blank' rel='noreferrer'>
+        <a href='https://courses.biomage.net' target='_blank' rel='noreferrer'>
           Courses
         </a>
       </Button>
