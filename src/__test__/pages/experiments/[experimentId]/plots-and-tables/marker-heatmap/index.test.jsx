@@ -10,7 +10,7 @@ import { Provider } from 'react-redux';
 import { loadBackendStatus } from 'redux/actions/backendStatus';
 import { loadGeneExpression } from 'redux/actions/genes';
 import { makeStore } from 'redux/store';
-import { seekFromS3 } from 'utils/work/seekWorkResponse';
+import { dispatchWorkRequest } from 'utils/work/seekWorkResponse';
 import expressionDataFAKEGENE from '__test__/data/gene_expression_FAKEGENE.json';
 import markerGenesData2 from '__test__/data/marker_genes_2.json';
 import markerGenesData5 from '__test__/data/marker_genes_5.json';
@@ -20,9 +20,11 @@ import preloadAll from 'jest-next-dynamic';
 
 import fake from '__test__/test-utils/constants';
 import mockAPI, {
+  dispatchWorkRequestMock,
   generateDefaultMockAPIResponses,
   promiseResponse,
   statusResponse,
+  workerDataResult,
 } from '__test__/test-utils/mockAPI';
 import createTestComponentFactory from '__test__/test-utils/testComponentFactory';
 import cellSetsData from '__test__/data/cell_sets.json';
@@ -62,15 +64,14 @@ jest.mock('localforage', () => ({
 
 jest.mock('utils/work/seekWorkResponse', () => ({
   __esModule: true,
-  dispatchWorkRequest: jest.fn(() => true),
-  seekFromS3: jest.fn(),
+  dispatchWorkRequest: jest.fn(),
 }));
 
 const mockWorkerResponses = {
-  '5-marker-genes': () => Promise.resolve(_.cloneDeep(markerGenesData5)),
-  '2-marker-genes': () => Promise.resolve(_.cloneDeep(markerGenesData2)),
-  'FAKEGENE-expression': () => Promise.resolve(_.cloneDeep(expressionDataFAKEGENE)),
-  ListGenes: () => Promise.resolve(geneList),
+  '5-marker-genes': markerGenesData5,
+  '2-marker-genes': markerGenesData2,
+  'FAKEGENE-expression': expressionDataFAKEGENE,
+  ListGenes: geneList,
 };
 
 const experimentId = fake.EXPERIMENT_ID;
@@ -78,7 +79,7 @@ const plotUuid = 'markerHeatmapPlotMain';
 let storeState = null;
 
 const customAPIResponses = {
-  [`/plots/${plotUuid}`]: (req) => {
+  [`/plots/${plotUuid}$`]: (req) => {
     if (req.method === 'PUT') return promiseResponse(JSON.stringify('OK'));
     return statusResponse(404, 'Not Found');
   },
@@ -117,9 +118,9 @@ describe('Marker heatmap plot', () => {
   beforeEach(async () => {
     jest.clearAllMocks();
 
-    seekFromS3
+    dispatchWorkRequest
       .mockReset()
-      .mockImplementation((Etag) => mockWorkerResponses[Etag]());
+      .mockImplementation(dispatchWorkRequestMock(mockWorkerResponses));
 
     fetchMock.resetMocks();
     fetchMock.doMock();
@@ -152,13 +153,15 @@ describe('Marker heatmap plot', () => {
   });
 
   it('Shows an error message if marker genes failed to load', async () => {
-    seekFromS3
+    dispatchWorkRequest
       .mockReset()
-      .mockImplementation((ETag) => {
-        if (ETag === '5-marker-genes') return Promise.reject(new Error('Not found'));
+      .mockImplementation(
+        (_experimentId, _body, _timeout, ETag) => {
+          if (ETag === '5-marker-genes') return Promise.reject(new Error('Not found'));
 
-        return mockWorkerResponses[ETag]();
-      });
+          return workerDataResult(mockWorkerResponses[ETag]);
+        },
+      );
 
     await renderHeatmapPage(storeState);
 
@@ -203,9 +206,9 @@ describe('Marker heatmap plot', () => {
   });
 
   it('adds genes correctly into the plot', async () => {
-    seekFromS3
+    dispatchWorkRequest
       .mockReset()
-      .mockImplementation((Etag) => mockWorkerResponses[Etag]());
+      .mockImplementation(dispatchWorkRequestMock(mockWorkerResponses));
 
     await renderHeatmapPage(storeState);
 
@@ -248,12 +251,12 @@ describe('Marker heatmap plot', () => {
   });
 
   it('Shows an error message if gene expression fails to load', async () => {
-    seekFromS3
+    dispatchWorkRequest
       .mockReset()
-      .mockImplementation((Etag) => {
-        if (Etag === '5-marker-genes' || Etag === 'ListGenes') return mockWorkerResponses[Etag]();
+      .mockImplementation((_experimentId, _body, _timeout, ETag) => {
+        if (ETag === '5-marker-genes' || ETag === 'ListGenes') return workerDataResult(mockWorkerResponses[ETag]);
 
-        if (Etag === 'FAKEGENE-expression') { return Promise.reject(new Error('Not found')); }
+        if (ETag === 'FAKEGENE-expression') { return Promise.reject(new Error('Not found')); }
       });
 
     await renderHeatmapPage(storeState);
@@ -382,7 +385,7 @@ describe('Marker heatmap plot', () => {
     const manyCellSetsResponse = {
       ...generateDefaultMockAPIResponses(fake.EXPERIMENT_ID),
       ...customAPIResponses,
-      [`experiments/${fake.EXPERIMENT_ID}/cellSets`]: () => promiseResponse(JSON.stringify(cellSetsData)),
+      [`experiments/${fake.EXPERIMENT_ID}/cellSets$`]: () => promiseResponse(JSON.stringify(cellSetsData)),
     };
 
     fetchMock.mockIf(/.*/, mockAPI(manyCellSetsResponse));

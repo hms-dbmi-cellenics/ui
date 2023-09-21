@@ -28,7 +28,6 @@ import { loadBackendStatus } from 'redux/actions/backendStatus';
 enableFetchMocks();
 
 jest.mock('utils/work/seekWorkResponse', () => ({
-  seekFromS3: jest.fn(),
   dispatchWorkRequest: jest.fn(),
 }));
 
@@ -105,7 +104,7 @@ let storeState;
 
 // Mocking samples update / delete routes
 const customResponses = {
-  [`experiments/${experimentId}/cellSets`]: () => promiseResponse(JSON.stringify(cellSetsData)),
+  [`experiments/${experimentId}/cellSets$`]: () => promiseResponse(JSON.stringify(cellSetsData)),
 };
 const mockAPIResponse = _.merge(
   generateDefaultMockAPIResponses(experimentId),
@@ -686,7 +685,7 @@ describe('CellSetsTool', () => {
   it('Annotated cell sets has delete buttons', async () => {
     const mockAPICellClassAPIResponse = {
       ...mockAPIResponse,
-      [`experiments/${experimentId}/cellSets`]: () => promiseResponse(JSON.stringify(cellSetsWithAnnotatedCellClass)),
+      [`experiments/${experimentId}/cellSets$`]: () => promiseResponse(JSON.stringify(cellSetsWithAnnotatedCellClass)),
     };
 
     fetchMock.mockIf(/.*/, mockAPI(mockAPICellClassAPIResponse));
@@ -711,7 +710,7 @@ describe('CellSetsTool', () => {
   it('Deleting annotated cell class deletes the cell class and the cell sets', async () => {
     const mockAPICellClassAPIResponse = {
       ...mockAPIResponse,
-      [`experiments/${experimentId}/cellSets`]: () => promiseResponse(JSON.stringify(cellSetsWithAnnotatedCellClass)),
+      [`experiments/${experimentId}/cellSets$`]: () => promiseResponse(JSON.stringify(cellSetsWithAnnotatedCellClass)),
     };
 
     fetchMock.mockIf(/.*/, mockAPI(mockAPICellClassAPIResponse));

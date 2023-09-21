@@ -9,12 +9,13 @@ import mockAPI, {
   statusResponse,
   promiseResponse,
   generateDefaultMockAPIResponses,
+  dispatchWorkRequestMock,
 } from '__test__/test-utils/mockAPI';
 import cellSetsData from '__test__/data/cell_sets.json';
 import { MAX_LEGEND_ITEMS } from 'components/plots/helpers/PlotLegendAlert';
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 import { makeStore } from 'redux/store';
-import { seekFromS3 } from 'utils/work/seekWorkResponse';
+import { dispatchWorkRequest } from 'utils/work/seekWorkResponse';
 import mockEmbedding from '__test__/data/embedding.json';
 
 import { generateDataProcessingPlotUuid } from 'utils/generateCustomPlotUuid';
@@ -45,7 +46,6 @@ jest.mock('object-hash', () => {
 jest.mock('utils/work/seekWorkResponse', () => ({
   __esModule: true,
   dispatchWorkRequest: jest.fn(() => true),
-  seekFromS3: jest.fn(),
 }));
 
 const mockWorkerResponses = {
@@ -65,10 +65,10 @@ const renderDataIntegration = async (store) => await render(
 );
 
 const customAPIResponses = {
-  [`/plots/${embeddingsPlotUuid}`]: () => statusResponse(404, 'Not Found'),
-  [`/plots/${elbowPlotUuid}`]: () => statusResponse(404, 'Not Found'),
-  [`/plots/${frequencyPlotUuid}`]: () => statusResponse(404, 'Not Found'),
-  [`experiments/${fake.EXPERIMENT_ID}/backendStatus`]: () => promiseResponse(
+  [`/plots/${embeddingsPlotUuid}$`]: () => statusResponse(404, 'Not Found'),
+  [`/plots/${elbowPlotUuid}$`]: () => statusResponse(404, 'Not Found'),
+  [`/plots/${frequencyPlotUuid}$`]: () => statusResponse(404, 'Not Found'),
+  [`experiments/${fake.EXPERIMENT_ID}/backendStatus$`]: () => promiseResponse(
     JSON.stringify({
       pipeline: { status: 'SUCCEEDED', completedSteps: ['ConfigureEmbedding'] },
       worker: { status: 'Running', started: true, ready: true },
@@ -86,10 +86,9 @@ describe('DataIntegration', () => {
     fetchMock.resetMocks();
     fetchMock.doMock();
 
-    seekFromS3
+    dispatchWorkRequest
       .mockReset()
-      .mockImplementationOnce(() => null)
-      .mockImplementationOnce((Etag) => mockWorkerResponses[Etag]);
+      .mockImplementationOnce(dispatchWorkRequestMock(mockWorkerResponses));
 
     fetchMock.mockIf(/.*/, mockAPI(mockApiResponses));
     storeState = makeStore();
@@ -140,7 +139,7 @@ describe('DataIntegration', () => {
     const modifiedResponse = {
       ...generateDefaultMockAPIResponses(fake.EXPERIMENT_ID),
       ...customAPIResponses,
-      [`experiments/${fake.EXPERIMENT_ID}/backendStatus`]: () => promiseResponse(
+      [`experiments/${fake.EXPERIMENT_ID}/backendStatus$`]: () => promiseResponse(
         JSON.stringify(emptyCompletedSteps),
       ),
     };
@@ -170,7 +169,7 @@ describe('DataIntegration', () => {
     const modifiedResponse = {
       ...generateDefaultMockAPIResponses(fake.EXPERIMENT_ID),
       ...customAPIResponses,
-      [`experiments/${fake.EXPERIMENT_ID}/backendStatus`]: () => promiseResponse(null),
+      [`experiments/${fake.EXPERIMENT_ID}/backendStatus$`]: () => promiseResponse(null),
     };
 
     fetchMock.mockIf(/.*/, mockAPI(modifiedResponse));
@@ -200,7 +199,7 @@ describe('DataIntegration', () => {
     const manySamplesResponse = {
       ...generateDefaultMockAPIResponses(fake.EXPERIMENT_ID),
       ...customAPIResponses,
-      [`experiments/${fake.EXPERIMENT_ID}/cellSets`]: () => promiseResponse(JSON.stringify(cellSetsData)),
+      [`experiments/${fake.EXPERIMENT_ID}/cellSets$`]: () => promiseResponse(JSON.stringify(cellSetsData)),
     };
 
     storeState.dispatch(loadCellSets(fake.EXPERIMENT_ID, true));
