@@ -56,6 +56,7 @@ const toApiV1 = (samples, experimentId) => {
 };
 
 const loadSamples = (experimentId) => async (dispatch) => {
+  if (!experimentId) return;
   try {
     dispatch({
       type: SAMPLES_LOADING,
