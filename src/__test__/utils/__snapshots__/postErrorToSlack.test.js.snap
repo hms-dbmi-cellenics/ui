@@ -1,9 +1,9 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`PostErrorToSlack Posts requests correctly 1`] = `
-Array [
+[
   "https://slack.com/api/files.upload",
-  Object {
+  {
     "body": FormData {},
     "method": "POST",
   },

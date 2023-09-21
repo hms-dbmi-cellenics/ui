@@ -11,7 +11,6 @@ import userEvent from '@testing-library/user-event';
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 
 import { makeStore } from 'redux/store';
-import { selectOption } from '__test__/test-utils/rtlHelpers';
 import mockAPI, { generateDefaultMockAPIResponses } from '__test__/test-utils/mockAPI';
 import * as getBatchDiffExpr from 'utils/extraActionCreators/differentialExpression/getBatchDiffExpr';
 import * as checkCanRunDiffExprModule from 'utils/extraActionCreators/differentialExpression/checkCanRunDiffExpr';
@@ -83,9 +82,14 @@ describe('Batch differential expression tests ', () => {
     expect(computeButton).toBeDisabled();
 
     await act(async () => {
-      await selectOption('KO', dropdowns[0]);
-      await selectOption('Rest of Samples', dropdowns[1]);
-      await selectOption('Fake louvain clusters', dropdowns[2]);
+      userEvent.click(dropdowns[0]);
+      userEvent.click(screen.getByText(/K0/));
+
+      userEvent.click(dropdowns[1]);
+      userEvent.click(screen.getByText(/Rest of Samples/));
+
+      userEvent.click(dropdowns[2]);
+      userEvent.click(screen.getByText(/Fake louvain clusters/));
     });
 
     // The Compute button should now be enabled

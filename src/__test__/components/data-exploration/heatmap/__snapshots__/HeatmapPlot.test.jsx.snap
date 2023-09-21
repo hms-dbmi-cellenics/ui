@@ -1,15 +1,15 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`HeatmapPlot Does not display hidden cell sets 1`] = `
-Array [
+[
   "testae48e318dab9a1bd0bexperiment",
-  Object {
+  {
     "cellSetKey": "louvain",
-    "groupByClasses": Array [
+    "groupByClasses": [
       "louvain",
       "sample",
     ],
-    "hiddenCellSetKeys": Array [
+    "hiddenCellSetKeys": [
       "louvain-3",
     ],
     "nGenes": 5,
@@ -18,7 +18,7 @@ Array [
   },
   900,
   "5-marker-genes",
-  Object {
+  {
     "PipelineRunETag": "2021-10-20T12:51:44.755Z",
     "broadcast": false,
   },
@@ -27,7 +27,7 @@ Array [
 `;
 
 exports[`HeatmapPlot Reacts to cellClass groupby being changed 1`] = `
-Array [
+[
   "0",
   "1",
   "2",
@@ -950,7 +950,7 @@ Array [
 `;
 
 exports[`HeatmapPlot Reacts to cellClass groupby being changed 2`] = `
-Array [
+[
   "Ms4a4b",
   "Smc4",
   "Ccr7",
@@ -990,7 +990,7 @@ Array [
 `;
 
 exports[`HeatmapPlot Renders the heatmap component by default if everything loads 1`] = `
-Array [
+[
   "0",
   "1",
   "2",
@@ -1913,7 +1913,7 @@ Array [
 `;
 
 exports[`HeatmapPlot Renders the heatmap component by default if everything loads 2`] = `
-Array [
+[
   "Ms4a4b",
   "Smc4",
   "Ccr7",
@@ -1953,7 +1953,7 @@ Array [
 `;
 
 exports[`HeatmapPlot Responds correctly to vitessce Heatmap callbacks 1`] = `
-Array [
+[
   "0",
   "1",
   "2",
@@ -2876,7 +2876,7 @@ Array [
 `;
 
 exports[`HeatmapPlot Responds correctly to vitessce Heatmap callbacks 2`] = `
-Array [
+[
   "Ms4a4b",
   "Smc4",
   "Ccr7",

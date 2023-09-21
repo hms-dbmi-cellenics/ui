@@ -10,7 +10,6 @@ import thunk from 'redux-thunk';
 import preloadAll from 'jest-next-dynamic';
 // eslint-disable-next-line import/extensions
 import { Scatterplot } from 'vitessce/dist/umd/production/scatterplot.min';
-import Embedding from 'components/data-exploration/embedding/Embedding';
 import CrossHair from 'components/data-exploration/embedding/CrossHair';
 import CellInfo from 'components/data-exploration/CellInfo';
 import { CELL_SETS_CREATE } from 'redux/actionTypes/cellSets';
@@ -27,6 +26,9 @@ let store;
 
 const width = 100;
 const height = 200;
+
+jest.mock('vitessce/dist/es/production/static/css/index.css', () => { });
+import Embedding from 'components/data-exploration/embedding/Embedding';
 
 const initialExperimentState = generateExperimentSettingsMock([]);
 

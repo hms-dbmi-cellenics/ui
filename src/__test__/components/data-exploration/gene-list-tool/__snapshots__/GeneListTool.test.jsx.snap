@@ -1,8 +1,8 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`GeneListTool Clicking one of the \`eye\` buttons triggers appropriate onChange actions. 1`] = `
-Object {
-  "payload": Object {
+{
+  "payload": {
     "experimentId": "1234",
     "key": "J",
     "store": "genes",

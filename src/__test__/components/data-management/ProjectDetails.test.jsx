@@ -12,11 +12,11 @@ import { act } from 'react-dom/test-utils';
 import userEvent from '@testing-library/user-event';
 import { screen, render, waitFor } from '@testing-library/react';
 
-import * as createMetadataTrack from 'redux/actions/experiments/createMetadataTrack';
-import * as updateValueInMetadataTrack from 'redux/actions/experiments/updateValueInMetadataTrack';
-import * as cloneExperiment from 'redux/actions/experiments/cloneExperiment';
-import * as loadExperiments from 'redux/actions/experiments/loadExperiments';
-import * as setActiveExperiment from 'redux/actions/experiments/setActiveExperiment';
+import mockedCreateMetadataTrack from 'redux/actions/experiments/createMetadataTrack';
+import mockedUpdateValueInMetadataTrack from 'redux/actions/experiments/updateValueInMetadataTrack';
+import mockedCloneExperiment from 'redux/actions/experiments/cloneExperiment';
+import mockedLoadExperiments from 'redux/actions/experiments/loadExperiments';
+import mockedSetActiveExperiment from 'redux/actions/experiments/setActiveExperiment';
 
 import initialSamplesState, { sampleTemplate } from 'redux/reducers/samples/initialState';
 import initialExperimentsState from 'redux/reducers/experiments/initialState';
@@ -38,6 +38,12 @@ jest.mock('utils/AppRouteProvider', () => ({
     navigateTo: mockNavigateTo,
   })),
 }));
+
+jest.mock('redux/actions/experiments/createMetadataTrack', () => jest.fn(() => ({ type: 'MOCK_ACTION' })));
+jest.mock('redux/actions/experiments/updateValueInMetadataTrack', () => jest.fn(() => ({ type: 'MOCK_ACTION' })));
+jest.mock('redux/actions/experiments/cloneExperiment', () => jest.fn(() => ({ type: 'MOCK_ACTION' })));
+jest.mock('redux/actions/experiments/loadExperiments', () => jest.fn(() => ({ type: 'MOCK_ACTION' })));
+jest.mock('redux/actions/experiments/setActiveExperiment', () => jest.fn(() => ({ type: 'MOCK_ACTION' })));
 
 const mockStore = configureStore([thunk]);
 const width = 600;
@@ -199,19 +205,8 @@ const withSeuratDataState = {
 const projectDetailsFactory = createTestComponentFactory(ProjectDetails, { width, height });
 
 describe('ProjectDetails', () => {
-  let mockedCreateMetadataTrack;
-  let mockedUpdateValueInMetadataTrack;
-  let mockedCloneExperiment;
-  let mockedLoadExperiments;
-  let mockedSetActiveExperiment;
-
   beforeEach(() => {
     jest.clearAllMocks();
-    mockedCreateMetadataTrack = jest.spyOn(createMetadataTrack, 'default');
-    mockedUpdateValueInMetadataTrack = jest.spyOn(updateValueInMetadataTrack, 'default');
-    mockedCloneExperiment = jest.spyOn(cloneExperiment, 'default');
-    mockedLoadExperiments = jest.spyOn(loadExperiments, 'default');
-    mockedSetActiveExperiment = jest.spyOn(setActiveExperiment, 'default');
   });
 
   const getMenuItems = async () => {
@@ -321,8 +316,7 @@ describe('ProjectDetails', () => {
     userEvent.click(options[0]);
 
     const input = screen.getByDisplayValue('Track 1');
-    userEvent.change(input, { target: { value: 'myBrandNewMetadata' } });
-    userEvent.keyDown(input, { key: 'Enter', code: 'Enter' });
+    userEvent.type(input, '{selectall}{backspace}myBrandNewMetadata{enter}');
 
     expect(mockedCreateMetadataTrack).toBeCalledTimes(1);
     expect(mockedCreateMetadataTrack).toHaveBeenCalledWith('myBrandNewMetadata', 'experiment-1');
@@ -341,8 +335,7 @@ describe('ProjectDetails', () => {
     userEvent.click(options[0]);
 
     const input = screen.getByDisplayValue('Track 1');
-    userEvent.change(input, { target: { value: 'myBrandNewMetadata' } });
-    userEvent.keyDown(input, { key: 'Escape', code: 'Escape' });
+    userEvent.type(input, '{selectall}{backspace}myBrandNewMetadata{esc}');
 
     expect(store.getState().experiments[experiment1id].metadataKeys).toEqual(['metadata-1']);
   });
@@ -361,8 +354,7 @@ describe('ProjectDetails', () => {
 
     userEvent.click(options[0]);
     const input = screen.getByDisplayValue('Track 1');
-    userEvent.change(input, { target: { value: '  myBrandNewMetadata     ' } });
-    userEvent.keyDown(input, { key: 'Enter', code: 'Enter' });
+    userEvent.type(input, '{selectall}{backspace}  myBrandNewMetadata     {enter}');
 
     expect(mockedCreateMetadataTrack).toBeCalledTimes(1);
     expect(mockedCreateMetadataTrack).toHaveBeenCalledWith('myBrandNewMetadata', 'experiment-1');
@@ -387,16 +379,14 @@ describe('ProjectDetails', () => {
     const options = await getMenuItems();
 
     userEvent.click(options[0]);
-    userEvent.keyDown(screen.getByDisplayValue('Track 1'), { key: 'Enter', code: 'Enter' });
+    userEvent.type(screen.getByDisplayValue('Track 1'), '{enter}');
 
     // Change track value for sample
-
-    act(() => userEvent.click(screen.getAllByRole('button', { name: 'Edit' })[1]));
+    userEvent.click(screen.getAllByRole('button', { name: 'Edit' })[1]);
 
     const input = screen.getByRole('textbox');
-    userEvent.change(input, { target: { value: '  myBrandNewMetadataWithWhitespaces     ' } });
-
-    act(() => userEvent.click(screen.getByRole('button', { name: 'Save' })));
+    userEvent.type(input, '{selectall}{backspace}  myBrandNewMetadataWithWhitespaces     ');
+    userEvent.click(screen.getByRole('button', { name: 'Save' }));
 
     expect(mockedUpdateValueInMetadataTrack).toHaveBeenCalledTimes(1);
     expect(mockedUpdateValueInMetadataTrack).toHaveBeenCalledWith('experiment-1', 'sample-1', 'metadata-1', 'myBrandNewMetadataWithWhitespaces');
@@ -436,7 +426,8 @@ describe('ProjectDetails', () => {
         </Provider>,
       );
     });
-    act(() => userEvent.click(screen.getByText('Copy')));
+    userEvent.click(screen.getByRole('button', { name: 'Copy' }));
+
     expect(mockedCloneExperiment).toHaveBeenCalledTimes(1);
     await waitFor(() => {
       expect(mockedLoadExperiments).toHaveBeenCalledTimes(1);
