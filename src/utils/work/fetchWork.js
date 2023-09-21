@@ -1,63 +1,14 @@
-import { Environment, isBrowser } from 'utils/deploymentInfo';
+import { isBrowser, Environment } from 'utils/deploymentInfo';
 
 import { getBackendStatus } from 'redux/selectors';
 
 import cache from 'utils/cache';
-import generateETag from 'utils/work/generateETag';
-import { dispatchWorkRequest, seekFromS3 } from 'utils/work/seekWorkResponse';
+import seekWorkerResultsOrDispatchWork from 'utils/work/seekWorkResponse';
+import getExtraDependencies from 'utils/work/getExtraDependencies';
 
-// Temporarily using gene expression without local cache
-const fetchGeneExpressionWorkWithoutLocalCache = async (
-  experimentId,
-  timeout,
-  body,
-  backendStatus,
-  environment,
-  broadcast,
-  extras,
-  dispatch,
-  getState,
-) => {
-  // If new genes are needed, construct payload, try S3 for results,
-  // and send out to worker if there's a miss.
-  const { pipeline: { startDate: qcPipelineStartDate } } = backendStatus;
-
-  const ETag = await generateETag(
-    experimentId,
-    body,
-    extras,
-    qcPipelineStartDate,
-    environment,
-    dispatch,
-    getState,
-  );
-
-  // Then, we may be able to find this in S3.
-  const response = await seekFromS3(ETag, experimentId, body.name);
-
-  if (response) return response;
-
-  // If there is no response in S3, dispatch workRequest via the worker
-  try {
-    await dispatchWorkRequest(
-      experimentId,
-      body,
-      timeout,
-      ETag,
-      {
-        ETagPipelineRun: qcPipelineStartDate,
-        broadcast,
-        ...extras,
-      },
-      dispatch,
-    );
-  } catch (error) {
-    console.error('Error dispatching work request: ', error);
-    throw error;
-  }
-
-  return await seekFromS3(ETag, experimentId, body.name);
-};
+const DISABLE_UNIQUE_KEYS = [
+  'GetEmbedding',
+];
 
 const fetchWork = async (
   experimentId,
@@ -75,10 +26,19 @@ const fetchWork = async (
 
   const backendStatus = getBackendStatus(experimentId)(getState()).status;
 
-  const { environment } = getState().networkResources;
-
   if (!isBrowser) {
     throw new Error('Disabling network interaction on server');
+  }
+
+  const { environment } = getState().networkResources;
+  let cacheUniquenessKey = null;
+
+  if (
+    environment !== Environment.PRODUCTION
+    && (!localStorage.getItem('disableCache') || localStorage.getItem('disableCache') === 'true')
+    && !DISABLE_UNIQUE_KEYS.includes(body.name)
+  ) {
+    cacheUniquenessKey = Math.random();
   }
 
   if (environment === Environment.DEVELOPMENT && !localStorage.getItem('disableCache')) {
@@ -87,68 +47,46 @@ const fetchWork = async (
 
   const { pipeline: { startDate: qcPipelineStartDate } } = backendStatus;
 
-  if (body.name === 'GeneExpression') {
-    return fetchGeneExpressionWorkWithoutLocalCache(
-      experimentId,
-      timeout,
-      body,
-      backendStatus,
-      environment,
-      broadcast,
-      extras,
-      dispatch,
-      getState,
-    );
-  }
+  const requestProps = {
+    ETagPipelineRun: qcPipelineStartDate,
+    broadcast,
+    ...extras,
+  };
 
-  const ETag = await generateETag(
+  const extraDependencies = await getExtraDependencies(
+    experimentId, body, dispatch, getState,
+  );
+
+  console.log(experimentId,
+    body,
+    extras,
+    cacheUniquenessKey,
+    extraDependencies);
+
+  const ETagProps = {
     experimentId,
     body,
     extras,
-    qcPipelineStartDate,
-    environment,
+    cacheUniquenessKey,
+    extraDependencies,
+  };
+
+  console.log('IM CALLING THISS');
+  const { ETag, data } = await seekWorkerResultsOrDispatchWork(
+    experimentId,
+    body,
+    timeout,
+    requestProps,
+    ETagProps,
+    onETagGenerated,
     dispatch,
-    getState,
   );
 
-  onETagGenerated(ETag);
-
-  // First, let's try to fetch this information from the local cache.
-  const data = await cache.get(ETag);
-
-  if (data) {
-    return data;
+  if (body.name !== 'GeneExpression') {
+    await cache.set(ETag, data);
   }
 
-  // Then, we may be able to find this in S3.
-  let response = await seekFromS3(ETag, experimentId, body.name);
-
-  if (response) return response;
-
-  // If there is no response in S3, dispatch workRequest via the worker
-  try {
-    await dispatchWorkRequest(
-      experimentId,
-      body,
-      timeout,
-      ETag,
-      {
-        PipelineRunETag: qcPipelineStartDate,
-        broadcast,
-        ...extras,
-      },
-      dispatch,
-    );
-
-    response = await seekFromS3(ETag, experimentId, body.name);
-  } catch (error) {
-    console.error('Error dispatching work request', error);
-    throw error;
-  }
-
-  await cache.set(ETag, response);
-
-  return response;
+  return data;
 };
 
 export default fetchWork;

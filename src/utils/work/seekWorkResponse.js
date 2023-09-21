@@ -6,54 +6,25 @@ import unpackResult from 'utils/work/unpackResult';
 import parseResult from 'utils/work/parseResult';
 import WorkTimeoutError from 'utils/errors/http/WorkTimeoutError';
 import WorkResponseError from 'utils/errors/http/WorkResponseError';
-import httpStatusCodes from 'utils/http/httpStatusCodes';
 import { updateBackendStatus } from 'redux/actions/backendStatus';
+import cache from 'utils/cache';
 
 const throwResponseError = (response) => {
   throw new Error(`Error ${response.status}: ${response.text}`, { cause: response });
 };
 
-const timeoutIds = {};
-
-// getRemainingWorkerStartTime returns how many more seconds the worker is expected to
-// need to be running with an extra 1 minute for a bit of leeway
-const getRemainingWorkerStartTime = (creationTimestamp) => {
-  const now = new Date();
-  const creationTime = new Date(creationTimestamp);
-  const elapsed = parseInt((now - creationTime) / (1000), 10); // gives second difference
-
-  // we assume a worker takes up to 5 minutes to start
-  const totalStartup = 5 * 60;
-  const remainingTime = totalStartup - elapsed;
-  // add an extra minute just in case
-  return remainingTime + 60;
-};
-
-const seekFromS3 = async (ETag, experimentId, taskName) => {
-  let response;
-  try {
-    const url = `/v2/workResults/${experimentId}/${ETag}`;
-
-    response = await fetchAPI(url);
-  } catch (e) {
-    if (e.statusCode === httpStatusCodes.NOT_FOUND) {
-      return null;
-    }
-
-    throw e;
-  }
-
-  const storageResp = await fetch(response.signedUrl);
+const downloadFromS3 = async (signedUrl, taskName) => {
+  const storageResp = await fetch(signedUrl);
 
   if (!storageResp.ok) {
     throwResponseError(storageResp);
   }
 
   const unpackedResult = await unpackResult(storageResp, taskName);
-  const parsedResult = parseResult(unpackedResult, taskName);
-
-  return parsedResult;
+  return parseResult(unpackedResult, taskName);
 };
+
+const timeoutIds = {};
 
 // getTimeoutDate returns the date resulting of adding 'timeout' seconds to
 // current time.
@@ -87,6 +58,20 @@ const getWorkerTimeout = (taskName, defaultTimeout) => {
       return dayjs().add(defaultTimeout, 's').toISOString();
     }
   }
+};
+
+// getRemainingWorkerStartTime returns how many more seconds the worker is expected to
+// need to be running with an extra 1 minute for a bit of leeway
+const getRemainingWorkerStartTime = (creationTimestamp) => {
+  const now = new Date();
+  const creationTime = new Date(creationTimestamp);
+  const elapsed = parseInt((now - creationTime) / (1000), 10); // gives second difference
+
+  // we assume a worker takes up to 5 minutes to start
+  const totalStartup = 5 * 60;
+  const remainingTime = totalStartup - elapsed;
+  // add an extra minute just in case
+  return remainingTime + 60;
 };
 
 const dispatchWorkRequest = async (
@@ -182,4 +167,58 @@ const dispatchWorkRequest = async (
   return result;
 };
 
-export { dispatchWorkRequest, seekFromS3 };
+const seekWorkerResultsOrDispatchWork = async (
+  experimentId,
+  body,
+  timeout,
+  requestProps,
+  ETagProps,
+  onETagGenerated,
+  dispatch,
+) => {
+  const url = `/v2/workResults/${experimentId}`;
+  const { ETag, signedUrl } = await fetchAPI(url, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(ETagProps),
+  });
+
+  onETagGenerated(ETag);
+
+  // First, let's try to fetch this information from the local cache.
+  let data = await cache.get(ETag);
+
+  if (data) {
+    return { ETag, data };
+  }
+
+  // If a signed url is returned, we know that results already exist
+  if (signedUrl) {
+    data = await downloadFromS3(signedUrl);
+    return { ETag, data };
+  }
+
+  // Otherwise subscribe to the worker socket using the Etag
+  try {
+    await dispatchWorkRequest(
+      experimentId,
+      body,
+      timeout,
+      ETag,
+      requestProps,
+      dispatch,
+    );
+
+    const { signedUrl: newSignedUrl } = await fetchAPI(url, ETagProps);
+    data = await downloadFromS3(newSignedUrl);
+
+    return { ETag, data };
+  } catch (error) {
+    console.error('Error dispatching work request', error);
+    throw error;
+  }
+};
+
+export default seekWorkerResultsOrDispatchWork;
