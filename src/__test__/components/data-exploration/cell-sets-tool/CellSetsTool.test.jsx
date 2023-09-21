@@ -28,7 +28,6 @@ import { loadBackendStatus } from 'redux/actions/backendStatus';
 enableFetchMocks();
 
 jest.mock('utils/work/seekWorkResponse', () => ({
-  seekFromS3: jest.fn(),
   dispatchWorkRequest: jest.fn(),
 }));
 
@@ -105,7 +104,7 @@ let storeState;
 
 // Mocking samples update / delete routes
 const customResponses = {
-  [`experiments/${experimentId}/cellSets`]: () => promiseResponse(JSON.stringify(cellSetsData)),
+  [`experiments/${experimentId}/cellSets$`]: () => promiseResponse(JSON.stringify(cellSetsData)),
 };
 const mockAPIResponse = _.merge(
   generateDefaultMockAPIResponses(experimentId),
@@ -452,20 +451,9 @@ describe('CellSetsTool', () => {
 
     screen.getByText('New Cluster');
     const newClusterKey = getClusterByName('New Cluster');
-
-    const cluster0CellIds = louvainClusters.find(({ name }) => name === 'Cluster 0').cellIds;
-    const allCellIds = sampleList.reduce(
-      (sumCellIds, { cellIds }) => sumCellIds.concat(cellIds),
-      [],
-    );
-
     const actualComplement = storeState.getState().cellSets.properties[newClusterKey].cellIds;
-    const expectedComplement = new Set(
-      allCellIds.filter((cellId) => !cluster0CellIds.includes(cellId)),
-    );
 
-    // complement = the whole dataset - first cluster
-    expect(actualComplement).toEqual(expectedComplement);
+    expect(actualComplement).toMatchSnapshot();
   });
 
   it('Scratchpad cluster deletion works ', async () => {
@@ -697,7 +685,7 @@ describe('CellSetsTool', () => {
   it('Annotated cell sets has delete buttons', async () => {
     const mockAPICellClassAPIResponse = {
       ...mockAPIResponse,
-      [`experiments/${experimentId}/cellSets`]: () => promiseResponse(JSON.stringify(cellSetsWithAnnotatedCellClass)),
+      [`experiments/${experimentId}/cellSets$`]: () => promiseResponse(JSON.stringify(cellSetsWithAnnotatedCellClass)),
     };
 
     fetchMock.mockIf(/.*/, mockAPI(mockAPICellClassAPIResponse));
@@ -722,7 +710,7 @@ describe('CellSetsTool', () => {
   it('Deleting annotated cell class deletes the cell class and the cell sets', async () => {
     const mockAPICellClassAPIResponse = {
       ...mockAPIResponse,
-      [`experiments/${experimentId}/cellSets`]: () => promiseResponse(JSON.stringify(cellSetsWithAnnotatedCellClass)),
+      [`experiments/${experimentId}/cellSets$`]: () => promiseResponse(JSON.stringify(cellSetsWithAnnotatedCellClass)),
     };
 
     fetchMock.mockIf(/.*/, mockAPI(mockAPICellClassAPIResponse));
@@ -831,6 +819,7 @@ describe('AnnotateClustersTool', () => {
         expect.anything(),
         expect.anything(),
         { PipelineRunETag: '2021-10-20T12:51:44.755Z', broadcast: true },
+        expect.anything(),
       );
     });
   });

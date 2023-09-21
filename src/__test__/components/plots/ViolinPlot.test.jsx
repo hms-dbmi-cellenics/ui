@@ -7,7 +7,7 @@ import { act } from 'react-dom/test-utils';
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 import '__test__/test-utils/setupTests';
 import { loadBackendStatus } from 'redux/actions/backendStatus';
-import { seekFromS3 } from 'utils/work/seekWorkResponse';
+import { dispatchWorkRequest } from 'utils/work/seekWorkResponse';
 import expressionDataFAKEGENE from '__test__/data/gene_expression_FAKEGENE.json';
 
 import ViolinPlot from 'components/plots/ViolinPlotMain';
@@ -22,6 +22,7 @@ import endUserMessages from 'utils/endUserMessages';
 
 import _ from 'lodash';
 import mockAPI, {
+  dispatchWorkRequestMock,
   generateDefaultMockAPIResponses,
   statusResponse,
 } from '__test__/test-utils/mockAPI';
@@ -44,7 +45,6 @@ jest.mock('object-hash', () => {
 jest.mock('utils/work/seekWorkResponse', () => ({
   __esModule: true,
   dispatchWorkRequest: jest.fn(() => true),
-  seekFromS3: jest.fn(),
 }));
 
 const mockWorkerResponses = {
@@ -57,7 +57,7 @@ const experimentId = fake.EXPERIMENT_ID;
 const plotUuid = 'ViolinMain'; // At some point this will stop being hardcoded
 
 const customAPIResponses = {
-  [`/plots/${plotUuid}`]: () => statusResponse(404, 'Not found'),
+  [`/plots/${plotUuid}$`]: () => statusResponse(404, 'Not found'),
 };
 
 const mockAPIResponses = _.merge(
@@ -88,10 +88,9 @@ describe('ViolinPlot', () => {
   beforeEach(async () => {
     jest.clearAllMocks();
 
-    seekFromS3
+    dispatchWorkRequest
       .mockReset()
-      .mockImplementationOnce(() => null)
-      .mockImplementationOnce((Etag) => mockWorkerResponses[Etag]);
+      .mockImplementationOnce(dispatchWorkRequestMock(mockWorkerResponses));
 
     enableFetchMocks();
     fetchMock.resetMocks();
@@ -116,7 +115,7 @@ describe('ViolinPlot', () => {
   it('Shows a loader screen if cell sets are not loaded / still loading', async () => {
     await renderViolinPlot(storeState);
 
-    expect(screen.getByText("We're getting your data ...")).toBeInTheDocument();
+    expect(screen.getByText(/Assigning a worker to your analysis/i)).toBeInTheDocument();
   });
 
   it('Renders a plot', async () => {
@@ -130,7 +129,7 @@ describe('ViolinPlot', () => {
   it('Shows an error if there is an error while loading cellSets', async () => {
     const errorResponse = {
       ...mockAPIResponses,
-      [`experiments/${experimentId}/cellSets`]: () => statusResponse(500, 'Some random error'),
+      [`experiments/${experimentId}/cellSets$`]: () => statusResponse(500, 'Some random error'),
     };
 
     fetchMock.mockIf(/.*/, mockAPI(errorResponse));

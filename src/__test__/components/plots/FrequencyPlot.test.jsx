@@ -52,14 +52,14 @@ describe('Frequency plot tests', () => {
   it('Renders Loader instead of vega plot if  is being loaded', async () => {
     const cellSetErrorResponse = {
       ...generateDefaultMockAPIResponses(fake.EXPERIMENT_ID),
-      [`experiments/${fake.EXPERIMENT_ID}/cellSets`]: () => delayedResponse({ body: 'Not found', status: 404 }, 4000),
+      [`experiments/${fake.EXPERIMENT_ID}/cellSets$`]: () => delayedResponse({ body: 'Not found', status: 404 }, 4000),
     };
 
     fetchMock.mockIf(/.*/, mockAPI(cellSetErrorResponse));
 
     await renderFrequencyPlot();
 
-    expect(screen.getByText(/We're getting your data/i)).toBeInTheDocument();
+    expect(screen.getByText(/Assigning a worker to your analysis/i)).toBeInTheDocument();
     expect(screen.queryByRole('graphics-document', { name: 'Frequency plot' })).toBeNull();
 
     expect(updateCSV).not.toHaveBeenCalled();

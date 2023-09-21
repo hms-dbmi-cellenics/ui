@@ -2,15 +2,12 @@ import dayjs from 'dayjs';
 
 import getAuthJWT from 'utils/getAuthJWT';
 import fetchAPI from 'utils/http/fetchAPI';
-import unpackResult from 'utils/work/unpackResult';
+import unpackResult, { decompressUint8Array } from 'utils/work/unpackResult';
 import parseResult from 'utils/work/parseResult';
 import WorkTimeoutError from 'utils/errors/http/WorkTimeoutError';
 import WorkResponseError from 'utils/errors/http/WorkResponseError';
-import httpStatusCodes from 'utils/http/httpStatusCodes';
 
-const throwResponseError = (response) => {
-  throw new Error(`Error ${response.status}: ${response.text}`, { cause: response });
-};
+import { updateBackendStatus } from 'redux/actions/backendStatus';
 
 const timeoutIds = {};
 
@@ -28,27 +25,14 @@ const getRemainingWorkerStartTime = (creationTimestamp) => {
   return remainingTime + 60;
 };
 
-const seekFromS3 = async (ETag, experimentId, taskName) => {
-  let response;
-  try {
-    const url = `/v2/workResults/${experimentId}/${ETag}`;
+const seekFromS3 = async (taskName, signedUrl) => {
+  const response = await fetch(signedUrl);
 
-    response = await fetchAPI(url);
-  } catch (e) {
-    if (e.statusCode === httpStatusCodes.NOT_FOUND) {
-      return null;
-    }
-
-    throw e;
+  if (!response.ok) {
+    throw new Error(`Error ${response.status}: ${response.text}`, { cause: response });
   }
 
-  const storageResp = await fetch(response.signedUrl);
-
-  if (!storageResp.ok) {
-    throwResponseError(storageResp);
-  }
-
-  const unpackedResult = await unpackResult(storageResp, taskName);
+  const unpackedResult = await unpackResult(response, taskName);
   const parsedResult = parseResult(unpackedResult, taskName);
 
   return parsedResult;
@@ -94,10 +78,11 @@ const dispatchWorkRequest = async (
   timeout,
   ETag,
   requestProps,
+  dispatch,
 ) => {
   const { default: connectionPromise } = await import('utils/socketConnection');
-  const io = await connectionPromise;
 
+  const io = await connectionPromise;
   const { name: taskName } = body;
 
   // for listGenes, markerHeatmap, & getEmbedding we set a long timeout for the worker
@@ -107,6 +92,7 @@ const dispatchWorkRequest = async (
   // and progresing.
   // this should be removed if we make each request run in a different worker
   const workerTimeoutDate = getWorkerTimeout(taskName, timeout);
+
   const authJWT = await getAuthJWT();
 
   const request = {
@@ -137,39 +123,61 @@ const dispatchWorkRequest = async (
     // this experiment update is received whenever a worker finishes any work request
     // related to the current experiment. We extend the timeout because we know
     // the worker is alive and was working on another request of our experiment
-    io.on(`Heartbeat-${experimentId}`, () => {
+    io.on(`Heartbeat-${experimentId}`, (message) => {
       const newTimeoutDate = getTimeoutDate(timeout);
       if (newTimeoutDate < workerTimeoutDate) {
+        const status = {
+          worker: {
+            statusCode: message.status_code,
+            userMessage: message.user_message,
+          },
+        };
+        dispatch(updateBackendStatus(experimentId, status));
+
         setOrRefreshTimeout(request, timeout, reject, ETag);
       }
     });
   });
 
   const responsePromise = new Promise((resolve, reject) => {
-    io.on(`WorkResponse-${ETag}`, (res) => {
-      const { response } = res;
+    io.on(`WorkResponse-${ETag}`, async (res) => {
+      // If type is object, then we received a notification with a signedUrl
+      // now we need to fetch the actual result from s3
+      if (typeof res === 'object') {
+        const { response } = res;
 
-      if (response.error) {
-        const { errorCode, userMessage } = response;
-        console.error(errorCode, userMessage);
+        if (response.error) {
+          const { errorCode, userMessage } = response;
+          console.error(errorCode, userMessage);
 
-        return reject(
-          new WorkResponseError(errorCode, userMessage, request),
-        );
+          return reject(
+            new WorkResponseError(errorCode, userMessage, request),
+          );
+        }
+
+        return resolve({ signedUrl: response.signedUrl });
       }
 
-      // If no error, the response should be ready on S3.
-      // In this case, return true
-      return resolve();
+      // If type isn't object, then we have the actual work result,
+      // no further downloads are necessary, we just need to decompress and return it
+      const decompressedData = await decompressUint8Array(Uint8Array.from(Buffer.from(res, 'base64')));
+
+      return resolve({ data: parseResult(decompressedData) });
     });
   });
 
-  const result = Promise.race([timeoutPromise, responsePromise]);
+  // TODO test what happens when api throws an error here
+  await fetchAPI(
+    `/v2/workRequest/${experimentId}/${ETag}`,
+    {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(request),
+    },
+  );
 
   // TODO switch to using normal WorkRequest for v2 requests
-  io.emit('WorkRequest-v2', request);
-
-  return result;
+  return await Promise.race([timeoutPromise, responsePromise]);
 };
 
 export { dispatchWorkRequest, seekFromS3 };

@@ -12,12 +12,13 @@ import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 
 import fake from '__test__/test-utils/constants';
 import mockAPI, {
+  dispatchWorkRequestMock,
   generateDefaultMockAPIResponses,
   promiseResponse,
   statusResponse,
 } from '__test__/test-utils/mockAPI';
 
-import { seekFromS3 } from 'utils/work/seekWorkResponse';
+import { dispatchWorkRequest } from 'utils/work/seekWorkResponse';
 
 import createTestComponentFactory from '__test__/test-utils/testComponentFactory';
 import { makeStore } from 'redux/store';
@@ -61,22 +62,21 @@ jest.mock('object-hash', () => {
 jest.mock('utils/work/seekWorkResponse', () => ({
   __esModule: true,
   dispatchWorkRequest: jest.fn(() => true),
-  seekFromS3: jest.fn(),
 }));
 
 const mockWorkerResponses = {
-  'paginated-gene-expression': () => Promise.resolve(_.cloneDeep(paginatedGeneExpressionData)),
-  'dot-plot-data': () => Promise.resolve(_.cloneDeep(dotPlotData)),
+  'paginated-gene-expression': paginatedGeneExpressionData,
+  'dot-plot-data': dotPlotData,
 };
 
 const experimentId = fake.EXPERIMENT_ID;
 const plotUuid = 'dotPlotMain';
 
 const customAPIResponses = {
-  [`experiments/${experimentId}/cellSets`]: () => promiseResponse(
+  [`experiments/${experimentId}/cellSets$`]: () => promiseResponse(
     JSON.stringify(_.cloneDeep(cellSetsDataWithScratchpad)),
   ),
-  [`/plots/${plotUuid}`]: (req) => {
+  [`/plots/${plotUuid}$`]: (req) => {
     if (req.method === 'PUT') return promiseResponse(JSON.stringify('OK'));
     return statusResponse(404, 'Not Found');
   },
@@ -133,9 +133,9 @@ describe('Dot plot page', () => {
   beforeEach(async () => {
     jest.clearAllMocks();
 
-    seekFromS3
+    dispatchWorkRequest
       .mockReset()
-      .mockImplementation((Etag) => mockWorkerResponses[Etag]());
+      .mockImplementation(dispatchWorkRequestMock(mockWorkerResponses));
 
     fetchMock.resetMocks();
     fetchMock.mockIf(/.*/, mockAPI(mockAPIResponse));
@@ -179,7 +179,7 @@ describe('Dot plot page', () => {
   it('Shows a skeleton if config is not loaded', async () => {
     const noConfigResponse = {
       ...mockAPIResponse,
-      [`/plots/${plotUuid}`]: () => new Promise(() => { }),
+      [`/plots/${plotUuid}$`]: () => new Promise(() => { }),
     };
 
     fetchMock.mockIf(/.*/, mockAPI(noConfigResponse));
@@ -192,7 +192,7 @@ describe('Dot plot page', () => {
   it('Shows an error if there are errors loading cell sets', async () => {
     const cellSetsErrorResponse = {
       ...mockAPIResponse,
-      [`experiments/${experimentId}/cellSets`]: () => statusResponse(404, 'Nothing found'),
+      [`experiments/${experimentId}/cellSets$`]: () => statusResponse(404, 'Nothing found'),
     };
 
     fetchMock.mockIf(/.*/, mockAPI(cellSetsErrorResponse));
@@ -208,12 +208,10 @@ describe('Dot plot page', () => {
       'dot-plot-data': () => { throw new Error('error'); },
     };
 
-    seekFromS3
+    dispatchWorkRequest
       .mockReset()
-      .mockImplementationOnce(() => null)
-      .mockImplementationOnce((Etag) => errorResponse[Etag]())
-      .mockImplementationOnce(() => null)
-      .mockImplementationOnce((Etag) => errorResponse[Etag]());
+      .mockImplementationOnce(dispatchWorkRequestMock(errorResponse))
+      .mockImplementationOnce(dispatchWorkRequestMock(errorResponse));
 
     await renderDotPlot(storeState);
 
@@ -224,19 +222,19 @@ describe('Dot plot page', () => {
   it('Shows an empty message if there is no data to show in the plot', async () => {
     const emptyResponse = {
       ...mockWorkerResponses,
-      'dot-plot-data': () => Promise.resolve({
+      'dot-plot-data': {
         cellSetsIdx: [],
         cellSetsNames: [],
         cellsPercentage: [],
         avgExpression: [],
         geneNameIdx: [],
         geneNames: [],
-      }),
+      },
     };
 
-    seekFromS3
+    dispatchWorkRequest
       .mockReset()
-      .mockImplementation((Etag) => emptyResponse[Etag]());
+      .mockImplementation(dispatchWorkRequestMock(emptyResponse));
 
     await renderDotPlot(storeState);
 
@@ -245,15 +243,15 @@ describe('Dot plot page', () => {
   });
 
   it('Should show a no data error if user is using marker gene and selected filter sets are not represented in more than 1 group in the base cell set', async () => {
-    seekFromS3
+    dispatchWorkRequest
       .mockReset()
-      .mockImplementation((Etag) => mockWorkerResponses[Etag]());
+      .mockImplementation(dispatchWorkRequestMock(mockWorkerResponses));
 
     await renderDotPlot(storeState);
 
     // Call to list genes
     await waitFor(() => {
-      expect(seekFromS3).toHaveBeenCalledTimes(2);
+      expect(dispatchWorkRequest).toHaveBeenCalledTimes(2);
     });
 
     // Use marker genes
@@ -262,7 +260,7 @@ describe('Dot plot page', () => {
     });
 
     // Call to load dot plot
-    expect(seekFromS3).toHaveBeenCalledTimes(3);
+    expect(dispatchWorkRequest).toHaveBeenCalledTimes(3);
 
     // Select data
     await act(async () => {
@@ -283,7 +281,7 @@ describe('Dot plot page', () => {
     });
 
     // Call to load dot plot
-    expect(seekFromS3).toHaveBeenCalledTimes(4);
+    expect(dispatchWorkRequest).toHaveBeenCalledTimes(4);
 
     // Select the filter sets
     const selectFilterCells = screen.getByRole('combobox', { name: 'selectPoints' });
@@ -306,10 +304,10 @@ describe('Dot plot page', () => {
     });
 
     // No new calls to load dot plot
-    expect(seekFromS3).toHaveBeenCalledTimes(4);
+    expect(dispatchWorkRequest).toHaveBeenCalledTimes(4);
 
     // Calls are correct
-    expect(seekFromS3.mock.calls).toMatchSnapshot();
+    expect(dispatchWorkRequest.mock.calls).toMatchSnapshot();
   });
 
   it('removing a gene keeps the order', async () => {
@@ -407,17 +405,14 @@ describe('Dot plot page', () => {
   });
 
   it('resets the data', async () => {
-    seekFromS3
+    dispatchWorkRequest
       .mockReset()
       // 1st call to list genes
-      .mockImplementationOnce(() => null)
-      .mockImplementationOnce((Etag) => mockWorkerResponses[Etag]())
+      .mockImplementationOnce(dispatchWorkRequestMock(mockWorkerResponses))
       // 2nd call to load dot plot
-      .mockImplementationOnce(() => null)
-      .mockImplementationOnce((Etag) => mockWorkerResponses[Etag]())
+      .mockImplementationOnce(dispatchWorkRequestMock(mockWorkerResponses))
       // 3rd call to load dot plot
-      .mockImplementationOnce(() => null)
-      .mockImplementationOnce((Etag) => mockWorkerResponses[Etag]());
+      .mockImplementationOnce(dispatchWorkRequestMock(mockWorkerResponses));
 
     await renderDotPlot(storeState);
 
@@ -452,14 +447,12 @@ describe('Drag and drop enzyme tests', () => {
   beforeEach(async () => {
     jest.clearAllMocks();
 
-    seekFromS3
+    dispatchWorkRequest
       .mockReset()
       // 1st call to list genes
-      .mockImplementationOnce(() => null)
-      .mockImplementationOnce((Etag) => mockWorkerResponses[Etag]())
+      .mockImplementationOnce(dispatchWorkRequestMock(mockWorkerResponses))
       // 2nd call to paginated gene expression
-      .mockImplementationOnce(() => null)
-      .mockImplementationOnce((Etag) => mockWorkerResponses[Etag]());
+      .mockImplementationOnce(dispatchWorkRequestMock(mockWorkerResponses));
 
     fetchMock.resetMocks();
     fetchMock.mockIf(/.*/, mockAPI(mockAPIResponse));
