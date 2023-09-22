@@ -92,8 +92,6 @@ const initialState = {
     },
   },
 };
-// Based on https://stackoverflow.com/a/51045733
-const flushPromises = () => new Promise(setImmediate);
 const mockStore = configureMockStore([thunk]);
 
 jest.mock('utils/upload/loadAndCompressIfNecessary',
@@ -174,8 +172,6 @@ describe('processUpload', () => {
     expect(mockAxiosCalls[1].data).toBeInstanceOf(Blob);
     expect(mockAxiosCalls[2].data).toBeInstanceOf(Blob);
 
-    // Wait until all put promises are resolved
-    await flushPromises();
 
     const fileUpdateActions = store.getActions().filter(
       (action) => action.type === SAMPLES_FILE_UPDATE,
@@ -247,8 +243,6 @@ describe('processUpload', () => {
     expect(mockAxiosCalls[1].data).toBeInstanceOf(Blob);
     expect(mockAxiosCalls[2].data).toBeInstanceOf(Blob);
 
-    // Wait until all put promises are resolved
-    await flushPromises();
 
     const fileUpdateActions = store.getActions().filter(
       (action) => action.type === SAMPLES_FILE_UPDATE,

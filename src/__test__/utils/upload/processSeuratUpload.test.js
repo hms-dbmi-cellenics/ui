@@ -64,8 +64,7 @@ const initialState = {
     },
   },
 };
-// Based on https://stackoverflow.com/a/51045733
-const flushPromises = () => new Promise(setImmediate);
+
 const mockStore = configureMockStore([thunk]);
 
 jest.mock('uuid', () => ({
@@ -129,9 +128,6 @@ describe('processUpload', () => {
     // Each put call is made with the correct information
     expect(mockAxiosCalls[0].url).toBe('theSignedUrl1');
     expect(mockAxiosCalls[1].url).toBe('theSignedUrl2');
-
-    // Wait until all put promises are resolved
-    await flushPromises();
 
     const fileUpdateActions = store.getActions().filter(
       (action) => action.type === SAMPLES_FILE_UPDATE,

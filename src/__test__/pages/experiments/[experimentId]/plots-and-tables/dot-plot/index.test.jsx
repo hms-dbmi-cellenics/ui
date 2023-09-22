@@ -2,9 +2,8 @@ import React from 'react';
 import _ from 'lodash';
 
 import { act } from 'react-dom/test-utils';
-import { render, screen, within } from '@testing-library/react';
+import { render, screen, fireEvent, within, waitFor } from '@testing-library/react';
 import { mount } from 'enzyme';
-import { waitFor } from '@testing-library/react';
 
 import '@testing-library/jest-dom';
 import { Provider } from 'react-redux';
@@ -276,7 +275,9 @@ describe('Dot plot page', () => {
     userEvent.click(baseOption);
 
     // Call to load dot plot
-    expect(seekFromS3).toHaveBeenCalledTimes(4);
+    await waitFor(() => {
+      expect(seekFromS3).toHaveBeenCalledTimes(4);
+    });
 
     // Select the filter sets
     const selectFilterCells = screen.getByRole('combobox', { name: 'selectPoints' });

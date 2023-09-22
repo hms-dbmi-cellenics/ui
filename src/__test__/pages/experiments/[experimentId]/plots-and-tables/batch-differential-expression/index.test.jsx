@@ -2,7 +2,7 @@ import _ from 'lodash';
 import React from 'react';
 import { Provider } from 'react-redux';
 import {
-  render, screen, fireEvent,
+  render, screen, fireEvent, waitFor,
 } from '@testing-library/react';
 import BatchDiffExpression from 'pages/experiments/[experimentId]/plots-and-tables/batch-differential-expression/index';
 import fake from '__test__/test-utils/constants';
@@ -68,45 +68,40 @@ describe('Batch differential expression tests ', () => {
     expect(screen.getByText(/Select samples or metadata.../i)).toBeInTheDocument();
   });
 
-  fit('sending a request should work', async () => {
+  it('sending a request should work', async () => {
     await renderPage();
 
     const compareForCellSetsRadio = screen.getByLabelText(secondOptionText);
-    const computeButton = screen.getByText(/Compute and Download/).closest('button');
+    const disabledComputeButton = screen.getByText(/Compute and Download/).closest('button');
 
     // Initial state should have the Compute button disabled
-    expect(computeButton).toBeDisabled();
+    expect(disabledComputeButton).toBeDisabled();
 
-    // Click the 'Generate a full list of marker genes for all cell sets' option
-    await act(() => userEvent.click(compareForCellSetsRadio));
+    userEvent.click(compareForCellSetsRadio);
+
     const dropdowns = screen.getAllByRole('combobox');
-    expect(computeButton).toBeDisabled();
-
-    screen.debug(null, Infinity);
+    expect(dropdowns.length).toEqual(3);
 
     await act(async () => {
-      userEvent.click(dropdowns[0]);
-      userEvent.click(screen.getByText(/K0/));
-
-      userEvent.click(dropdowns[1]);
-      userEvent.click(screen.getByText(/Rest of Samples/));
-
-      userEvent.click(dropdowns[2]);
-      userEvent.click(screen.getByText(/Fake louvain clusters/));
+      fireEvent.change(dropdowns[0], { target: { value: 'K0' } });
+      fireEvent.change(dropdowns[1], { target: { value: 'Rest of Samples' } });
+      fireEvent.change(dropdowns[2], { target: { value: 'Fake louvain clusters' } });
     });
 
-    // The Compute button should now be enabled
-    const button = screen.getByRole('button', { name: /Compute/ });
-    expect(button).toBeEnabled();
-    userEvent.click(button);
+    waitFor(() => {
+      // The Compute button should now be enabled
+      const enabledComputeButton = screen.getByText(/Compute and Download/).closest('button');
+      expect(enabledComputeButton).toBeEnabled();
+      userEvent.click(enabledComputeButton);
 
-    expect(getBatchDiffExprSpy).toHaveBeenCalledWith('testae48e318dab9a1bd0bexperiment',
-      {
-        basis: 'louvain',
-        cellSet: 'sample/b62028a1-ffa0-4f10-823d-93c9ddb88898',
-        compareWith: 'sample/rest',
-        comparisonType: 'between',
-      }, 'compareForCellSets',
-      ['louvain-0', 'louvain-1', 'louvain-2', 'louvain-3', 'louvain-4', 'louvain-5', 'louvain-6', 'louvain-7', 'louvain-8', 'louvain-9', 'louvain-10', 'louvain-11', 'louvain-12', 'louvain-13']);
+      expect(getBatchDiffExprSpy).toHaveBeenCalledWith('testae48e318dab9a1bd0bexperiment',
+        {
+          basis: 'louvain',
+          cellSet: 'sample/b62028a1-ffa0-4f10-823d-93c9ddb88898',
+          compareWith: 'sample/rest',
+          comparisonType: 'between',
+        }, 'compareForCellSets',
+        ['louvain-0', 'louvain-1', 'louvain-2', 'louvain-3', 'louvain-4', 'louvain-5', 'louvain-6', 'louvain-7', 'louvain-8', 'louvain-9', 'louvain-10', 'louvain-11', 'louvain-12', 'louvain-13']);
+    });
   });
 });

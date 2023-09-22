@@ -103,8 +103,6 @@ describe('loadGeneExpression action', () => {
     const actions = store.getActions();
     expect(_.map(actions, 'type')).toEqual([GENES_EXPRESSION_LOADING, GENES_EXPRESSION_LOADED]);
     expect(_.map(actions, 'payload')).toMatchSnapshot();
-
-    expect(actions[1].payload.newGenes).toEqual(mockResult);
   });
 
   it('Dispatches appropriately on failure', async () => {

@@ -2,27 +2,27 @@
 
 exports[`processUpload Uploads and updates redux correctly when there are no errors with cellranger v2 1`] = `
 [
- {
-    "data": {},
-    "headers":{
+  {
+    "data": Blob {},
+    "headers": {
       "Content-Type": "application/octet-stream",
     },
     "method": "put",
     "onUploadProgress": [Function],
     "url": "theSignedUrl",
   },
- {
-    "data": {},
-    "headers":{
+  {
+    "data": Blob {},
+    "headers": {
       "Content-Type": "application/octet-stream",
     },
     "method": "put",
     "onUploadProgress": [Function],
     "url": "theSignedUrl",
   },
- {
-    "data": {},
-    "headers":{
+  {
+    "data": Blob {},
+    "headers": {
       "Content-Type": "application/octet-stream",
     },
     "method": "put",
@@ -34,27 +34,27 @@ exports[`processUpload Uploads and updates redux correctly when there are no err
 
 exports[`processUpload Uploads and updates redux correctly when there are no errors with cellranger v3 1`] = `
 [
- {
-    "data": {},
-    "headers":{
+  {
+    "data": Blob {},
+    "headers": {
       "Content-Type": "application/octet-stream",
     },
     "method": "put",
     "onUploadProgress": [Function],
     "url": "theSignedUrl",
   },
- {
-    "data": {},
-    "headers":{
+  {
+    "data": Blob {},
+    "headers": {
       "Content-Type": "application/octet-stream",
     },
     "method": "put",
     "onUploadProgress": [Function],
     "url": "theSignedUrl",
   },
- {
-    "data": {},
-    "headers":{
+  {
+    "data": Blob {},
+    "headers": {
       "Content-Type": "application/octet-stream",
     },
     "method": "put",

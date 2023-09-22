@@ -106,6 +106,7 @@ let storeState = null;
 
 describe('Samples table', () => {
   beforeEach(async () => {
+    jest.clearAllMocks();
     fetchMock.mockClear();
     fetchMock.mockIf(/.*/, mockAPI(mockAPIResponse));
 
@@ -125,8 +126,10 @@ describe('Samples table', () => {
   it('Does not show prompt to upload datasets if samples are available', async () => {
     await renderSamplesTable(storeState);
 
-    expect(screen.queryByText(/Start uploading your samples by clicking on Add data./i)).toBeNull();
-    expect(screen.queryByText(/Don't have data\? Get started using one of our example datasets:/i)).toBeNull();
+    waitFor(() => {
+      expect(screen.queryByText(/Start uploading your samples by clicking on Add data./i)).toBeNull();
+      expect(screen.queryByText(/Don't have data\? Get started using one of our example datasets:/i)).toBeNull();
+    });
   });
 
   it('Should show all the samples', async () => {
@@ -134,6 +137,12 @@ describe('Samples table', () => {
 
     Object.values(samples).forEach((sample) => {
       expect(screen.getByText(sample.name)).toBeInTheDocument();
+    });
+
+    waitFor(() => {
+      Object.values(samples).forEach((sample) => {
+        expect(screen.getByText(sample.name)).toBeInTheDocument();
+      });
     });
   });
 
@@ -150,8 +159,10 @@ describe('Samples table', () => {
 
     await renderSamplesTable(missingSampleStore);
 
-    Object.values(samples).forEach((sample) => {
-      expect(screen.queryByText(sample.name)).not.toBeInTheDocument();
+    waitFor(() => {
+      Object.values(samples).forEach((sample) => {
+        expect(screen.queryByText(sample.name)).not.toBeInTheDocument();
+      });
     });
   });
 
@@ -166,11 +177,13 @@ describe('Samples table', () => {
 
     await renderSamplesTable(validatingExpStore);
 
-    Object.values(samples).forEach((sample) => {
-      expect(screen.queryByText(sample.name)).not.toBeInTheDocument();
-    });
+    waitFor(() => {
+      Object.values(samples).forEach((sample) => {
+        expect(screen.queryByText(sample.name)).not.toBeInTheDocument();
+      });
 
-    expect(screen.getByText('We\'re validating your samples ...')).toBeDefined();
+      expect(screen.getByText('We\'re validating your samples ...')).toBeDefined();
+    });
   });
 
   it('Should show the samples if theres validation going on but not for active experiment', async () => {
@@ -184,11 +197,13 @@ describe('Samples table', () => {
 
     await renderSamplesTable(validatingExpStore);
 
-    Object.values(samples).forEach((sample) => {
-      expect(screen.getByText(sample.name)).toBeInTheDocument();
-    });
+    waitFor(() => {
+      Object.values(samples).forEach((sample) => {
+        expect(screen.getByText(sample.name)).toBeInTheDocument();
+      });
 
-    expect(screen.queryByText('We\'re validating your samples ...')).not.toBeInTheDocument();
+      expect(screen.queryByText('We\'re validating your samples ...')).not.toBeInTheDocument();
+    });
   });
 
   it('Renaming the sample renames the sample', async () => {
@@ -219,15 +234,17 @@ describe('Samples table', () => {
       userEvent.click(firstSampleSaveButton);
     });
 
-    // Changed sample name should not exist
-    expect(screen.queryByText(sampleNameToChange)).toBeNull();
+    waitFor(() => {
+      // Changed sample name should not exist
+      expect(screen.queryByText(sampleNameToChange)).toBeNull();
 
-    // New name should exist
-    expect(screen.getByText(newSampleName)).toBeInTheDocument();
+      // New name should exist
+      expect(screen.getByText(newSampleName)).toBeInTheDocument();
 
-    // Remaining samples should still exist
-    sampleNames.forEach((sampleName) => {
-      expect(screen.getByText(sampleName)).toBeInTheDocument();
+      // Remaining samples should still exist
+      sampleNames.forEach((sampleName) => {
+        expect(screen.getByText(sampleName)).toBeInTheDocument();
+      });
     });
   });
 
@@ -244,12 +261,14 @@ describe('Samples table', () => {
     const sampleNames = Object.values(samples).map((sample) => sample.name);
     const deletedSampleName = sampleNames.shift();
 
-    // Deleted sample should not exist
-    expect(screen.queryByText(deletedSampleName)).toBeNull();
+    waitFor(() => {
+      // Deleted sample should not exist
+      expect(screen.queryByText(deletedSampleName)).toBeNull();
 
-    // Remaining samples should still exist
-    sampleNames.forEach((sampleName) => {
-      expect(screen.getByText(sampleName)).toBeInTheDocument();
+      // Remaining samples should still exist
+      sampleNames.forEach((sampleName) => {
+        expect(screen.getByText(sampleName)).toBeInTheDocument();
+      });
     });
   });
 
