@@ -172,7 +172,6 @@ describe('processUpload', () => {
     expect(mockAxiosCalls[1].data).toBeInstanceOf(Blob);
     expect(mockAxiosCalls[2].data).toBeInstanceOf(Blob);
 
-
     const fileUpdateActions = store.getActions().filter(
       (action) => action.type === SAMPLES_FILE_UPDATE,
     );
@@ -242,7 +241,6 @@ describe('processUpload', () => {
     expect(mockAxiosCalls[0].data).toBeInstanceOf(Blob);
     expect(mockAxiosCalls[1].data).toBeInstanceOf(Blob);
     expect(mockAxiosCalls[2].data).toBeInstanceOf(Blob);
-
 
     const fileUpdateActions = store.getActions().filter(
       (action) => action.type === SAMPLES_FILE_UPDATE,
