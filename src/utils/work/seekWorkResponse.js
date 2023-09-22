@@ -112,7 +112,7 @@ const dispatchWorkRequest = async (
     io.on(`WorkerInfo-${experimentId}`, (res) => {
       const { response: { podInfo: { creationTimestamp, phase } } } = res;
       const extraTime = getRemainingWorkerStartTime(creationTimestamp);
-
+      console.log('Received worker info', res, extraTime);
       // this worker info indicates that the work request has been received but the worker
       // is still spinning up so we will add extra time to account for that.
       if (phase === 'Pending' && extraTime > 0) {
@@ -134,7 +134,7 @@ const dispatchWorkRequest = async (
           },
         };
         dispatch(updateBackendStatus(experimentId, status));
-
+        console.log('Heartbeat with status', status);
         setOrRefreshTimeout(request, timeout, reject, ETag);
       }
     });
@@ -143,7 +143,7 @@ const dispatchWorkRequest = async (
   const responsePromise = new Promise((resolve, reject) => {
     io.on(`WorkResponse-${ETag}`, (res) => {
       const { response } = res;
-
+      console.log('Received response from worker', response);
       if (response.error) {
         const { errorCode, userMessage } = response;
         console.error(errorCode, userMessage);
@@ -193,6 +193,7 @@ const seekWorkerResultsOrDispatchWork = async (
   let data = await cache.get(ETag);
 
   if (data) {
+    console.log('Found locally cached results!');
     return { ETag, data };
   }
 
@@ -201,6 +202,7 @@ const seekWorkerResultsOrDispatchWork = async (
 
   // If a signed url is returned, we know that results already exist
   if (signedUrl) {
+    console.log('Found S3 results!');
     data = await downloadFromS3(signedUrl);
     return { ETag, data };
   }
@@ -219,7 +221,7 @@ const seekWorkerResultsOrDispatchWork = async (
       dispatch,
     );
 
-    console.log('Work request dispatched');
+    console.log('Work request dispatched!');
 
     const { ETag: newEtag, signedUrl: newSignedUrl } = await fetchAPI(url, ETagProps);
 
