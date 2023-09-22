@@ -91,9 +91,9 @@ const experimentCloneId = 'mockExperimentCloneId';
 
 // Mocking samples update / delete routes
 const customResponses = {
-  [`experiments/${experimentWithSamplesId}/samples/${experimentWithSamples.samplesOrder[0]}`]: () => statusResponse(200, 'OK'),
-  [`experiments/${experimentWithSamplesId}/samples/position`]: () => statusResponse(200, 'OK'),
-  [`experiments/${mockDemoExperiments[0].id}/clone`]: () => promiseResponse(JSON.stringify(experimentCloneId)),
+  [`experiments/${experimentWithSamplesId}/samples/${experimentWithSamples.samplesOrder[0]}$`]: () => statusResponse(200, 'OK'),
+  [`experiments/${experimentWithSamplesId}/samples/position$`]: () => statusResponse(200, 'OK'),
+  [`experiments/${mockDemoExperiments[0].id}/clone$`]: () => promiseResponse(JSON.stringify(experimentCloneId)),
 };
 
 const mockAPIResponse = _.merge(

@@ -9,7 +9,7 @@ import { Vega } from 'react-vega';
 
 import { loadBackendStatus } from 'redux/actions/backendStatus';
 import { makeStore } from 'redux/store';
-import { seekFromS3 } from 'utils/work/seekWorkResponse';
+import { dispatchWorkRequest } from 'utils/work/seekWorkResponse';
 import mockEmbedding from '__test__/data/embedding.json';
 import mockStartingNodes from '__test__/data/starting_nodes.json';
 import mockPseudoTime from '__test__/data/pseudotime.json';
@@ -25,6 +25,7 @@ import mockAPI, {
   promiseResponse,
   statusResponse,
   delayedResponse,
+  dispatchWorkRequestMock,
 } from '__test__/test-utils/mockAPI';
 import createTestComponentFactory from '__test__/test-utils/testComponentFactory';
 import userEvent from '@testing-library/user-event';
@@ -50,8 +51,7 @@ jest.mock('object-hash', () => {
 
 jest.mock('utils/work/seekWorkResponse', () => ({
   __esModule: true,
-  dispatchWorkRequest: jest.fn(() => true),
-  seekFromS3: jest.fn(),
+  dispatchWorkRequest: jest.fn(),
 }));
 
 jest.mock('react-vega', () => {
@@ -73,7 +73,7 @@ const plotUuid = 'trajectoryAnalysisMain';
 let storeState = null;
 
 const customAPIResponses = {
-  [`/plots/${plotUuid}`]: (req) => {
+  [`/plots/${plotUuid}$`]: (req) => {
     if (req.method === 'PUT') return promiseResponse(JSON.stringify('OK'));
     return statusResponse(404, 'Not Found');
   },
@@ -146,15 +146,9 @@ describe('Trajectory analysis plot', () => {
   beforeEach(async () => {
     jest.clearAllMocks();
 
-    let toggleReturnNull = true;
-
-    seekFromS3
+    dispatchWorkRequest
       .mockReset()
-      .mockImplementation((mockETag) => {
-        const result = toggleReturnNull ? null : mockWorkerResponses[mockETag];
-        toggleReturnNull = !toggleReturnNull;
-        return result;
-      });
+      .mockImplementation(dispatchWorkRequestMock(mockWorkerResponses));
 
     enableFetchMocks();
     fetchMock.resetMocks();
@@ -297,7 +291,7 @@ describe('Trajectory analysis plot', () => {
   it('Shows a loader if there is no config', async () => {
     const delayedConfigResponse = {
       ...defaultResponses,
-      [`experiments/${experimentId}/processingConfig`]: () => delayedResponse({ body: 'Not found', status: 404 }, 4000),
+      [`experiments/${experimentId}/processingConfig$`]: () => delayedResponse({ body: 'Not found', status: 404 }, 4000),
     };
 
     fetchMock.mockIf(/.*/, mockAPI(delayedConfigResponse));
@@ -313,7 +307,7 @@ describe('Trajectory analysis plot', () => {
   it('Shows a loader if cell sets is loading', async () => {
     const cellSetErrorResponse = {
       ...defaultResponses,
-      [`experiments/${experimentId}/cellSets`]: () => delayedResponse({ body: 'Not found', status: 404 }, 4000),
+      [`experiments/${experimentId}/cellSets$`]: () => delayedResponse({ body: 'Not found', status: 404 }, 4000),
     };
 
     fetchMock.mockIf(/.*/, mockAPI(cellSetErrorResponse));
@@ -329,7 +323,7 @@ describe('Trajectory analysis plot', () => {
   it('Shows an error if fetching cell sets throw an error', async () => {
     const cellSetErrorResponse = {
       ...defaultResponses,
-      [`experiments/${experimentId}/cellSets`]: () => statusResponse(500, 'some random error'),
+      [`experiments/${experimentId}/cellSets$`]: () => statusResponse(500, 'some random error'),
     };
 
     fetchMock.mockIf(/.*/, mockAPI(cellSetErrorResponse));
@@ -343,9 +337,8 @@ describe('Trajectory analysis plot', () => {
   });
 
   it('Shows a loader if embedding data is loading', async () => {
-    seekFromS3
+    dispatchWorkRequest
       .mockReset()
-      .mockImplementationOnce(() => null)
       .mockImplementationOnce(() => delayedResponse({ body: 'Not found', status: 404 }, 4000));
 
     await renderTrajectoryAnalysisPage(storeState);
@@ -357,9 +350,8 @@ describe('Trajectory analysis plot', () => {
   });
 
   it('Shows an error if there is an error fetching embedding', async () => {
-    seekFromS3
+    dispatchWorkRequest
       .mockReset()
-      .mockImplementationOnce(() => null)
       .mockImplementationOnce(() => Promise.reject(new WorkResponseError('some random error')));
 
     await renderTrajectoryAnalysisPage(storeState);
@@ -434,7 +426,7 @@ describe('Trajectory analysis plot', () => {
     const manyCellSetsResponse = {
       ...generateDefaultMockAPIResponses(fake.EXPERIMENT_ID),
       ...customAPIResponses,
-      [`experiments/${fake.EXPERIMENT_ID}/cellSets`]: () => promiseResponse(JSON.stringify(cellSetsData)),
+      [`experiments/${fake.EXPERIMENT_ID}/cellSets$`]: () => promiseResponse(JSON.stringify(cellSetsData)),
     };
 
     fetchMock.mockIf(/.*/, mockAPI(manyCellSetsResponse));

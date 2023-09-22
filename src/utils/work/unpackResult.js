@@ -9,19 +9,20 @@ const unpackResult = async (storageResp, taskName = null) => {
 
   const arrayBuf = await storageResp.arrayBuffer();
 
-  const resultPromise = new Promise((resolve, reject) => {
-    const uint8array = new Uint8Array(arrayBuf);
+  return decompressUint8Array(new Uint8Array(arrayBuf));
+};
 
-    decompress(uint8array, (err, decompressed) => {
+const decompressUint8Array = async (array) => (
+  new Promise((resolve, reject) => {
+    decompress(array, (err, decompressed) => {
       if (err) {
         reject(err);
       } else {
         resolve(decompressed);
       }
     });
-  });
+  })
+);
 
-  return resultPromise;
-};
-
+export { decompressUint8Array };
 export default unpackResult;

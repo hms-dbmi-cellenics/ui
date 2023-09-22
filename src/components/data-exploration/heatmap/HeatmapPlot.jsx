@@ -48,7 +48,9 @@ const HeatmapPlot = (props) => {
     (state) => state.genes.expression.downsampledCellOrder,
   );
 
-  const selectedGenes = useSelector((state) => state.genes.expression.views[COMPONENT_TYPE]?.data);
+  const { data: selectedGenes, fetching: fetchingGenes } = useSelector(
+    (state) => state.genes.expression.views[COMPONENT_TYPE],
+  ) ?? {};
 
   const [viewState, setViewState] = useState({ zoom: 0, target: [0, 0] });
   const [heatmapData, setHeatmapData] = useState(null);
@@ -110,7 +112,8 @@ const HeatmapPlot = (props) => {
   }, [heatmapSettings]);
 
   useEffect(() => {
-    const selectedGenesLoading = _.intersection(selectedGenes, loadingGenes).length > 0;
+    const selectedGenesLoading = _.intersection(selectedGenes, loadingGenes).length > 0
+      && fetchingGenes;
 
     // markerGenesLoading only happen on the first load
     // selectedGenesLoading happens every time the selected genes are changed

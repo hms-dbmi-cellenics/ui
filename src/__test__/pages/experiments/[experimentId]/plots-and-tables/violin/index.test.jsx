@@ -8,15 +8,17 @@ import { act } from 'react-dom/test-utils';
 import { Provider } from 'react-redux';
 import { loadBackendStatus } from 'redux/actions/backendStatus';
 import { makeStore } from 'redux/store';
-import { seekFromS3 } from 'utils/work/seekWorkResponse';
+import { dispatchWorkRequest } from 'utils/work/seekWorkResponse';
 import markerGenes1 from '__test__/data/marker_genes_1.json';
 import paginatedGeneExpressionData from '__test__/data/paginated_gene_expression.json';
 
 import fake from '__test__/test-utils/constants';
 import mockAPI, {
+  dispatchWorkRequestMock,
   generateDefaultMockAPIResponses,
   promiseResponse,
   statusResponse,
+  workerDataResult,
 } from '__test__/test-utils/mockAPI';
 import createTestComponentFactory from '__test__/test-utils/testComponentFactory';
 
@@ -41,8 +43,7 @@ jest.mock('object-hash', () => {
 
 jest.mock('utils/work/seekWorkResponse', () => ({
   __esModule: true,
-  dispatchWorkRequest: jest.fn(() => true),
-  seekFromS3: jest.fn(),
+  dispatchWorkRequest: jest.fn(),
 }));
 
 const mockWorkerResponses = {
@@ -55,7 +56,7 @@ const plotUuid = 'ViolinMain';
 const multiViewUuid = 'multiView-ViolinMain';
 
 const customAPIResponses = {
-  [`/plots/${plotUuid}`]: (req) => {
+  [`/plots/${plotUuid}$`]: (req) => {
     if (req.method === 'PUT') return promiseResponse(JSON.stringify('OK'));
     return statusResponse(404, 'Not Found');
   },
@@ -90,14 +91,12 @@ describe('ViolinIndex', () => {
   beforeEach(async () => {
     jest.clearAllMocks();
 
-    seekFromS3
+    dispatchWorkRequest
       .mockReset()
       // 1st call to list genes
-      .mockImplementationOnce(() => null)
-      .mockImplementationOnce((Etag) => mockWorkerResponses[Etag])
+      .mockImplementationOnce(dispatchWorkRequestMock(mockWorkerResponses))
       // 2nd call to load gene expression
-      .mockImplementationOnce(() => null)
-      .mockImplementationOnce((Etag) => mockWorkerResponses[Etag]);
+      .mockImplementationOnce(dispatchWorkRequestMock(mockWorkerResponses));
 
     fetchMock.resetMocks();
     fetchMock.mockIf(/.*/, mockAPI(defaultResponses));

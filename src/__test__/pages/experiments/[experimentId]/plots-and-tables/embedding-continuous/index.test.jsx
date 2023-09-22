@@ -7,7 +7,7 @@ import { act } from 'react-dom/test-utils';
 import { Provider } from 'react-redux';
 import { loadBackendStatus } from 'redux/actions/backendStatus';
 import { makeStore } from 'redux/store';
-import { seekFromS3 } from 'utils/work/seekWorkResponse';
+import { dispatchWorkRequest } from 'utils/work/seekWorkResponse';
 import markerGenes1 from '__test__/data/marker_genes_1.json';
 
 import mockEmbedding from '__test__/data/embedding.json';
@@ -17,6 +17,7 @@ import preloadAll from 'jest-next-dynamic';
 
 import fake from '__test__/test-utils/constants';
 import mockAPI, {
+  dispatchWorkRequestMock,
   generateDefaultMockAPIResponses,
   promiseResponse,
   statusResponse,
@@ -45,7 +46,6 @@ jest.mock('object-hash', () => {
 jest.mock('utils/work/seekWorkResponse', () => ({
   __esModule: true,
   dispatchWorkRequest: jest.fn(() => true),
-  seekFromS3: jest.fn(),
 }));
 
 const mockWorkerResponses = {
@@ -58,7 +58,7 @@ const plotUuid = 'embeddingContinuousMain';
 let storeState = null;
 
 const customAPIResponses = {
-  [`/plots/${plotUuid}`]: (req) => {
+  [`/plots/${plotUuid}$`]: (req) => {
     if (req.method === 'PUT') return promiseResponse(JSON.stringify('OK'));
     return statusResponse(404, 'Not Found');
   },
@@ -94,9 +94,9 @@ describe('Continuous embedding plot', () => {
   beforeEach(async () => {
     jest.clearAllMocks();
 
-    seekFromS3
+    dispatchWorkRequest
       .mockReset()
-      .mockImplementation((Etag) => mockWorkerResponses[Etag]);
+      .mockImplementation(dispatchWorkRequestMock(mockWorkerResponses));
 
     enableFetchMocks();
     fetchMock.resetMocks();

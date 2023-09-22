@@ -37,7 +37,7 @@ describe('Normalized matrix index page', () => {
   const mockResponse = jest.fn();
   // simulating intial load of plot
   const customAPIResponses = {
-    [`/plots/${plotUuid}`]: mockResponse,
+    [`/plots/${plotUuid}$`]: mockResponse,
   };
   const mockApiResponses = _.merge(
     generateDefaultMockAPIResponses(fake.EXPERIMENT_ID), customAPIResponses,

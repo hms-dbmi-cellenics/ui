@@ -7,14 +7,16 @@ import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 
 import TrajectoryAnalysisPlot from 'components/plots/TrajectoryAnalysisPlot';
 
-import mockAPI, { generateDefaultMockAPIResponses, promiseResponse, statusResponse } from '__test__/test-utils/mockAPI';
+import mockAPI, {
+  dispatchWorkRequestMock, generateDefaultMockAPIResponses, promiseResponse, statusResponse,
+} from '__test__/test-utils/mockAPI';
 import createTestComponentFactory from '__test__/test-utils/testComponentFactory';
 import fake from '__test__/test-utils/constants';
 import mockEmbedding from '__test__/data/embedding.json';
 import mockStartingNodes from '__test__/data/starting_nodes.json';
 import mockProcessingConfig from '__test__/data/processing_config.json';
 
-import { seekFromS3 } from 'utils/work/seekWorkResponse';
+import { dispatchWorkRequest } from 'utils/work/seekWorkResponse';
 import { loadBackendStatus } from 'redux/actions/backendStatus';
 import { loadPlotConfig } from 'redux/actions/componentConfig';
 import getTrajectoryPlotStartingNodes from 'redux/actions/componentConfig/getTrajectoryPlotStartingNodes';
@@ -42,8 +44,7 @@ jest.mock('object-hash', () => {
 
 jest.mock('utils/work/seekWorkResponse', () => ({
   __esModule: true,
-  dispatchWorkRequest: jest.fn(() => true),
-  seekFromS3: jest.fn(),
+  dispatchWorkRequest: jest.fn(),
 }));
 
 const mockWorkerResponses = {
@@ -55,7 +56,7 @@ const plotUuid = 'trajectoryAnalysisMain';
 const plotType = plotTypes.TRAJECTORY_ANALYSIS;
 
 const customAPIResponses = {
-  [`/plots/${plotUuid}`]: (req) => {
+  [`/plots/${plotUuid}$`]: (req) => {
     if (req.method === 'PUT') return promiseResponse(JSON.stringify('OK'));
     return statusResponse(404, 'Not Found');
   },
@@ -115,15 +116,9 @@ describe('Trajectory analysis plot', () => {
     fetchMock.resetMocks();
     fetchMock.mockIf(/.*/, mockAPI(defaultAPIResponse));
 
-    let toggleReturnNull = true;
-
-    seekFromS3
+    dispatchWorkRequest
       .mockReset()
-      .mockImplementation((mockETag) => {
-        const result = toggleReturnNull ? null : mockWorkerResponses[mockETag];
-        toggleReturnNull = !toggleReturnNull;
-        return result;
-      });
+      .mockImplementation(dispatchWorkRequestMock(mockWorkerResponses));
 
     storeState = makeStore();
     await storeState.dispatch(loadBackendStatus(experimentId));
@@ -157,7 +152,7 @@ describe('Trajectory analysis plot', () => {
     fetchMock.resetMocks();
     fetchMock.mockIf(/.*/, mockAPI({
       ...defaultAPIResponse,
-      [`experiments/${experimentId}/processingConfig`]: () => promiseResponse(
+      [`experiments/${experimentId}/processingConfig$`]: () => promiseResponse(
         JSON.stringify(tsneSettings),
       ),
     }));
