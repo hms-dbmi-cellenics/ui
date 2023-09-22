@@ -185,6 +185,8 @@ const seekWorkerResultsOrDispatchWork = async (
     body: JSON.stringify(ETagProps),
   });
 
+  console.log('Recieved ETag: ', ETag, ' and signedUrl: ', signedUrl);
+
   onETagGenerated(ETag);
 
   // First, let's try to fetch this information from the local cache.
@@ -194,11 +196,17 @@ const seekWorkerResultsOrDispatchWork = async (
     return { ETag, data };
   }
 
+  console.log('Didn\'t find locally cached results');
+  console.log('Looking in S3...');
+
   // If a signed url is returned, we know that results already exist
   if (signedUrl) {
     data = await downloadFromS3(signedUrl);
     return { ETag, data };
   }
+
+  console.log('Didn\'t find S3 results');
+  console.log('Dispatching work request...');
 
   // Otherwise subscribe to the worker socket using the Etag
   try {
@@ -211,7 +219,12 @@ const seekWorkerResultsOrDispatchWork = async (
       dispatch,
     );
 
-    const { signedUrl: newSignedUrl } = await fetchAPI(url, ETagProps);
+    console.log('Work request dispatched');
+
+    const { ETag: newEtag, signedUrl: newSignedUrl } = await fetchAPI(url, ETagProps);
+
+    console.log('Recieved new ETag: ', newEtag, ' and signedUrl: ', newSignedUrl);
+
     data = await downloadFromS3(newSignedUrl);
 
     return { ETag, data };
