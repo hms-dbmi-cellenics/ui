@@ -1,40 +1,40 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`cellInfoReducer Updates cell info state on focus action 1`] = `
-Object {
-  "focus": Object {
+{
+  "focus": {
     "key": "GENE1",
     "store": "genes",
   },
   "groupedTrack": "louvain",
-  "selectedTracks": Array [
+  "selectedTracks": [
     "louvain",
   ],
 }
 `;
 
 exports[`cellInfoReducer Updates cell info state on unfocus action 1`] = `
-Object {
-  "focus": Object {
+{
+  "focus": {
     "key": null,
     "store": null,
   },
   "groupedTrack": "louvain",
-  "selectedTracks": Array [
+  "selectedTracks": [
     "louvain",
   ],
 }
 `;
 
 exports[`cellInfoReducer Updates cell info state on update action 1`] = `
-Object {
+{
   "cellId": "C1",
-  "focus": Object {
+  "focus": {
     "key": "louvain",
     "store": "cellSets",
   },
   "groupedTrack": "louvain",
-  "selectedTracks": Array [
+  "selectedTracks": [
     "louvain",
   ],
 }

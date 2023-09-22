@@ -1,11 +1,11 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`updateConfig Checking if empty update doesnt change anything 1`] = `
-Object {
-  "embeddingCategoricalMain": Object {
-    "config": Object {
-      "axes": Object {
-        "defaultValues": Array [
+{
+  "embeddingCategoricalMain": {
+    "config": {
+      "axes": {
+        "defaultValues": [
           "x",
           "y",
         ],
@@ -19,7 +19,7 @@ Object {
         "xAxisText": "Umap 1",
         "yAxisText": "Umap 2",
       },
-      "axesRanges": Object {
+      "axesRanges": {
         "xAxisAuto": true,
         "xMax": 10,
         "xMin": 0,
@@ -27,32 +27,32 @@ Object {
         "yMax": 10,
         "yMin": 0,
       },
-      "colour": Object {
+      "colour": {
         "gradient": "default",
         "invert": "standard",
         "masterColour": "#000000",
         "reverseColourBar": false,
         "toggleInvert": "#FFFFFF",
       },
-      "dimensions": Object {
+      "dimensions": {
         "height": 550,
         "width": 700,
       },
-      "fontStyle": Object {
+      "fontStyle": {
         "colour": "#000000",
         "font": "sans-serif",
       },
-      "labels": Object {
+      "labels": {
         "enabled": false,
         "size": 18,
       },
-      "legend": Object {
+      "legend": {
         "colour": "#000000",
         "enabled": true,
         "position": "right",
         "showAlert": false,
       },
-      "marker": Object {
+      "marker": {
         "opacity": 5,
         "shape": "circle",
         "showOpacity": true,
@@ -61,7 +61,7 @@ Object {
       "selectedCellSet": "louvain",
       "selectedSample": "All",
       "spec": "1.0.0",
-      "title": Object {
+      "title": {
         "anchor": "start",
         "dx": 10,
         "fontSize": 20,
@@ -72,17 +72,17 @@ Object {
     "experimentId": "1234",
     "loading": false,
     "outstandingChanges": true,
-    "plotData": Array [],
+    "plotData": [],
     "plotType": "embeddingCategorical",
   },
 }
 `;
 
 exports[`updateConfig Checking if fields changed 1`] = `
-Object {
-  "volcanoPlotMain": Object {
-    "config": Object {
-      "axes": Object {
+{
+  "volcanoPlotMain": {
+    "config": {
+      "axes": {
         "domainWidth": 2,
         "gridOpacity": 5,
         "gridWidth": 10,
@@ -93,7 +93,7 @@ Object {
         "xAxisText": "log fold change",
         "yAxisText": "-log10(adj p-value)",
       },
-      "axesRanges": Object {
+      "axesRanges": {
         "xAxisAuto": true,
         "xMax": 10,
         "xMin": 0,
@@ -101,28 +101,28 @@ Object {
         "yMax": 10,
         "yMin": 0,
       },
-      "colour": Object {
+      "colour": {
         "gradient": "default",
         "invert": "standard",
         "masterColour": "#000000",
         "reverseColourBar": false,
         "toggleInvert": "#FFFFFF",
       },
-      "dimensions": Object {
+      "dimensions": {
         "height": 500,
         "width": 500,
       },
       "downsampleRatio": 0,
-      "fontStyle": Object {
+      "fontStyle": {
         "colour": "#000000",
         "font": "sans-serif",
       },
       "height": 2000,
-      "labels": Object {
+      "labels": {
         "enabled": true,
         "size": 18,
       },
-      "legend": Object {
+      "legend": {
         "colour": "#000000",
         "enabled": true,
         "position": "bottom-right",
@@ -132,7 +132,7 @@ Object {
       "logFoldChangeThreshold": 1,
       "logFoldChangeThresholdColor": "#ff0000",
       "logFoldChangeTickCount": 5,
-      "marker": Object {
+      "marker": {
         "opacity": 5,
         "shape": "circle",
         "showOpacity": false,
@@ -152,7 +152,7 @@ Object {
       "strokeOpa": 1,
       "textThresholdValue": 240,
       "thresholdGuideWidth": 1,
-      "title": Object {
+      "title": {
         "anchor": "start",
         "dx": 10,
         "fontSize": 15,
@@ -165,7 +165,7 @@ Object {
     "experimentId": "1234",
     "loading": false,
     "outstandingChanges": true,
-    "plotData": Array [],
+    "plotData": [],
     "plotType": "volcano",
   },
 }

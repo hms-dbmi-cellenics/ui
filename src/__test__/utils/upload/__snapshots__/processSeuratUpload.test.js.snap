@@ -2,18 +2,18 @@
 
 exports[`processUpload Uploads and updates redux correctly when there are no errors 1`] = `
 Array [
-  Object {
-    "data": Blob {},
-    "headers": Object {
+  {
+    "data": {},
+    "headers": {
       "Content-Type": "application/octet-stream",
     },
     "method": "put",
     "onUploadProgress": [Function],
     "url": "theSignedUrl1",
   },
-  Object {
-    "data": Blob {},
-    "headers": Object {
+  {
+    "data": {},
+    "headers": {
       "Content-Type": "application/octet-stream",
     },
     "method": "put",

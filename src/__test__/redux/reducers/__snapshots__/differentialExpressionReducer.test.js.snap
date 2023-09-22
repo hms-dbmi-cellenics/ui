@@ -1,31 +1,31 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`differentialExpressionReducer Sets error state on error action 1`] = `
-Object {
-  "comparison": Object {
-    "advancedFilters": Array [],
-    "group": Object {
-      "between": Object {
+{
+  "comparison": {
+    "advancedFilters": [],
+    "group": {
+      "between": {
         "basis": null,
         "cellSet": null,
         "compareWith": null,
       },
-      "within": Object {
+      "within": {
         "basis": null,
         "cellSet": null,
         "compareWith": null,
       },
     },
-    "ordering": Object {
+    "ordering": {
       "orderBy": "logFC",
       "orderDirection": "DESC",
     },
     "type": "within",
   },
-  "properties": Object {
-    "comparisonGroup": Object {},
+  "properties": {
+    "comparisonGroup": {},
     "comparisonType": null,
-    "data": Array [],
+    "data": [],
     "error": "asd",
     "loading": false,
     "total": 0,
@@ -34,62 +34,62 @@ Object {
 `;
 
 exports[`differentialExpressionReducer Sets loaded state on loaded action 1`] = `
-Object {
-  "comparison": Object {
-    "advancedFilters": Array [],
-    "group": Object {
-      "between": Object {
+{
+  "comparison": {
+    "advancedFilters": [],
+    "group": {
+      "between": {
         "basis": null,
         "cellSet": null,
         "compareWith": null,
       },
-      "within": Object {
+      "within": {
         "basis": null,
         "cellSet": null,
         "compareWith": null,
       },
     },
-    "ordering": Object {
+    "ordering": {
       "orderBy": "logFC",
       "orderDirection": "DESC",
     },
     "type": "within",
   },
-  "properties": Object {
+  "properties": {
     "comparisonGroup": undefined,
     "comparisonType": undefined,
-    "data": Array [
-      Object {
+    "data": [
+      {
         "gene_names": "A",
         "logFC": 3.45,
         "p_val": 1.16,
         "p_val_adj": 2.16,
       },
-      Object {
+      {
         "gene_names": "B",
         "logFC": 4.45,
         "p_val": 2.16,
         "p_val_adj": 3.16,
       },
-      Object {
+      {
         "gene_names": "C",
         "logFC": 5.45,
         "p_val": 3.16,
         "p_val_adj": 4.16,
       },
-      Object {
+      {
         "gene_names": "D",
         "logFC": 6.45,
         "p_val": 4.16,
         "p_val_adj": 5.16,
       },
-      Object {
+      {
         "gene_names": "E",
         "logFC": 7.45,
         "p_val": 5.16,
         "p_val_adj": 6.16,
       },
-      Object {
+      {
         "gene_names": "F",
         "logFC": 8.45,
         "p_val": 6.16,
@@ -104,36 +104,36 @@ Object {
 `;
 
 exports[`differentialExpressionReducer Sets loading state on loading action 1`] = `
-Object {
-  "comparison": Object {
-    "advancedFilters": Array [
-      Object {
+{
+  "comparison": {
+    "advancedFilters": [
+      {
         "columnName": "foo",
         "columnValue": "bar",
       },
     ],
-    "group": Object {
-      "between": Object {
+    "group": {
+      "between": {
         "basis": null,
         "cellSet": null,
         "compareWith": null,
       },
-      "within": Object {
+      "within": {
         "basis": null,
         "cellSet": null,
         "compareWith": null,
       },
     },
-    "ordering": Object {
+    "ordering": {
       "orderBy": "logFC",
       "orderDirection": "DESC",
     },
     "type": "within",
   },
-  "properties": Object {
-    "comparisonGroup": Object {},
+  "properties": {
+    "comparisonGroup": {},
     "comparisonType": null,
-    "data": Array [],
+    "data": [],
     "error": false,
     "loading": true,
     "total": 0,

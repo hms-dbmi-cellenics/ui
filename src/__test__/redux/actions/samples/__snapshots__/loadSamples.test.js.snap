@@ -1,58 +1,58 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`loadSample action Dispatches error correctly 1`] = `
-Array [
+[
   undefined,
-  Object {
+  {
     "error": "Error: An api error",
   },
 ]
 `;
 
 exports[`loadSample action Works correctly 1`] = `
-Object {
-  "samples": Object {
-    "e03ef6ea-5014-4e57-aecd-59964ac9172c": Object {
+{
+  "samples": {
+    "e03ef6ea-5014-4e57-aecd-59964ac9172c": {
       "createdDate": "2021-12-07 17:36:27.773+00",
       "experimentId": "1234",
-      "fileNames": Array [
+      "fileNames": [
         "matrix.mtx.gz",
         "barcodes.tsv.gz",
         "features.tsv.gz",
       ],
-      "files": Object {
-        "barcodes.tsv.gz": Object {
+      "files": {
+        "barcodes.tsv.gz": {
           "name": "barcodes.tsv.gz",
           "size": undefined,
-          "upload": Object {
+          "upload": {
             "status": "uploaded",
           },
           "valid": true,
         },
-        "features.tsv.gz": Object {
+        "features.tsv.gz": {
           "name": "features.tsv.gz",
           "size": undefined,
-          "upload": Object {
+          "upload": {
             "status": "uploaded",
           },
           "valid": true,
         },
-        "matrix.mtx.gz": Object {
+        "matrix.mtx.gz": {
           "name": "matrix.mtx.gz",
           "size": undefined,
-          "upload": Object {
+          "upload": {
             "status": "uploaded",
           },
           "valid": true,
         },
       },
       "lastModified": "2021-12-07 17:38:42.036+00",
-      "metadata": Object {
+      "metadata": {
         "age": "BL",
         "timePoint": "BL",
       },
       "name": "BLp7",
-      "options": Object {},
+      "options": {},
       "type": "10x",
       "uuid": "e03ef6ea-5014-4e57-aecd-59964ac9172c",
     },

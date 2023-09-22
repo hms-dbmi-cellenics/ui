@@ -1,237 +1,237 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`filterCells generates correct louvain clusters data with one sample in particular 1`] = `
-Object {
-  "cellSetLegendsData": Array [
-    Object {
+{
+  "cellSetLegendsData": [
+    {
       "color": "#e377c2",
       "key": "louvain-0",
       "name": "Cluster 0",
     },
-    Object {
+    {
       "color": "#8c564b",
       "key": "louvain-1",
       "name": "Cluster 1",
     },
   ],
-  "filteredCells": Object {
-    "1": Object {
+  "filteredCells": {
+    "1": {
       "cellId": 1,
       "cellSetKey": "louvain-0",
       "cellSetName": "Cluster 0",
       "color": "#e377c2",
     },
-    "10": Object {
+    "10": {
       "cellId": 10,
       "cellSetKey": "louvain-0",
       "cellSetName": "Cluster 0",
       "color": "#e377c2",
     },
-    "11": Object {
+    "11": {
       "cellId": 11,
       "cellSetKey": "louvain-0",
       "cellSetName": "Cluster 0",
       "color": "#e377c2",
     },
-    "12": Object {
+    "12": {
       "cellId": 12,
       "cellSetKey": "louvain-0",
       "cellSetName": "Cluster 0",
       "color": "#e377c2",
     },
-    "16": Object {
+    "16": {
       "cellId": 16,
       "cellSetKey": "louvain-0",
       "cellSetName": "Cluster 0",
       "color": "#e377c2",
     },
-    "17": Object {
+    "17": {
       "cellId": 17,
       "cellSetKey": "louvain-0",
       "cellSetName": "Cluster 0",
       "color": "#e377c2",
     },
-    "18": Object {
+    "18": {
       "cellId": 18,
       "cellSetKey": "louvain-0",
       "cellSetName": "Cluster 0",
       "color": "#e377c2",
     },
-    "19": Object {
+    "19": {
       "cellId": 19,
       "cellSetKey": "louvain-0",
       "cellSetName": "Cluster 0",
       "color": "#e377c2",
     },
-    "2": Object {
+    "2": {
       "cellId": 2,
       "cellSetKey": "louvain-0",
       "cellSetName": "Cluster 0",
       "color": "#e377c2",
     },
-    "20": Object {
+    "20": {
       "cellId": 20,
       "cellSetKey": "louvain-0",
       "cellSetName": "Cluster 0",
       "color": "#e377c2",
     },
-    "21": Object {
+    "21": {
       "cellId": 21,
       "cellSetKey": "louvain-0",
       "cellSetName": "Cluster 0",
       "color": "#e377c2",
     },
-    "22": Object {
+    "22": {
       "cellId": 22,
       "cellSetKey": "louvain-0",
       "cellSetName": "Cluster 0",
       "color": "#e377c2",
     },
-    "23": Object {
+    "23": {
       "cellId": 23,
       "cellSetKey": "louvain-0",
       "cellSetName": "Cluster 0",
       "color": "#e377c2",
     },
-    "24": Object {
+    "24": {
       "cellId": 24,
       "cellSetKey": "louvain-0",
       "cellSetName": "Cluster 0",
       "color": "#e377c2",
     },
-    "25": Object {
+    "25": {
       "cellId": 25,
       "cellSetKey": "louvain-0",
       "cellSetName": "Cluster 0",
       "color": "#e377c2",
     },
-    "26": Object {
+    "26": {
       "cellId": 26,
       "cellSetKey": "louvain-0",
       "cellSetName": "Cluster 0",
       "color": "#e377c2",
     },
-    "27": Object {
+    "27": {
       "cellId": 27,
       "cellSetKey": "louvain-0",
       "cellSetName": "Cluster 0",
       "color": "#e377c2",
     },
-    "28": Object {
+    "28": {
       "cellId": 28,
       "cellSetKey": "louvain-0",
       "cellSetName": "Cluster 0",
       "color": "#e377c2",
     },
-    "29": Object {
+    "29": {
       "cellId": 29,
       "cellSetKey": "louvain-0",
       "cellSetName": "Cluster 0",
       "color": "#e377c2",
     },
-    "3": Object {
+    "3": {
       "cellId": 3,
       "cellSetKey": "louvain-0",
       "cellSetName": "Cluster 0",
       "color": "#e377c2",
     },
-    "30": Object {
+    "30": {
       "cellId": 30,
       "cellSetKey": "louvain-0",
       "cellSetName": "Cluster 0",
       "color": "#e377c2",
     },
-    "31": Object {
+    "31": {
       "cellId": 31,
       "cellSetKey": "louvain-1",
       "cellSetName": "Cluster 1",
       "color": "#8c564b",
     },
-    "32": Object {
+    "32": {
       "cellId": 32,
       "cellSetKey": "louvain-1",
       "cellSetName": "Cluster 1",
       "color": "#8c564b",
     },
-    "33": Object {
+    "33": {
       "cellId": 33,
       "cellSetKey": "louvain-1",
       "cellSetName": "Cluster 1",
       "color": "#8c564b",
     },
-    "34": Object {
+    "34": {
       "cellId": 34,
       "cellSetKey": "louvain-1",
       "cellSetName": "Cluster 1",
       "color": "#8c564b",
     },
-    "35": Object {
+    "35": {
       "cellId": 35,
       "cellSetKey": "louvain-1",
       "cellSetName": "Cluster 1",
       "color": "#8c564b",
     },
-    "36": Object {
+    "36": {
       "cellId": 36,
       "cellSetKey": "louvain-1",
       "cellSetName": "Cluster 1",
       "color": "#8c564b",
     },
-    "37": Object {
+    "37": {
       "cellId": 37,
       "cellSetKey": "louvain-1",
       "cellSetName": "Cluster 1",
       "color": "#8c564b",
     },
-    "38": Object {
+    "38": {
       "cellId": 38,
       "cellSetKey": "louvain-1",
       "cellSetName": "Cluster 1",
       "color": "#8c564b",
     },
-    "39": Object {
+    "39": {
       "cellId": 39,
       "cellSetKey": "louvain-1",
       "cellSetName": "Cluster 1",
       "color": "#8c564b",
     },
-    "4": Object {
+    "4": {
       "cellId": 4,
       "cellSetKey": "louvain-0",
       "cellSetName": "Cluster 0",
       "color": "#e377c2",
     },
-    "40": Object {
+    "40": {
       "cellId": 40,
       "cellSetKey": "louvain-1",
       "cellSetName": "Cluster 1",
       "color": "#8c564b",
     },
-    "5": Object {
+    "5": {
       "cellId": 5,
       "cellSetKey": "louvain-0",
       "cellSetName": "Cluster 0",
       "color": "#e377c2",
     },
-    "6": Object {
+    "6": {
       "cellId": 6,
       "cellSetKey": "louvain-0",
       "cellSetName": "Cluster 0",
       "color": "#e377c2",
     },
-    "7": Object {
+    "7": {
       "cellId": 7,
       "cellSetKey": "louvain-0",
       "cellSetName": "Cluster 0",
       "color": "#e377c2",
     },
-    "8": Object {
+    "8": {
       "cellId": 8,
       "cellSetKey": "louvain-0",
       "cellSetName": "Cluster 0",
       "color": "#e377c2",
     },
-    "9": Object {
+    "9": {
       "cellId": 9,
       "cellSetKey": "louvain-0",
       "cellSetName": "Cluster 0",
@@ -242,250 +242,250 @@ Object {
 `;
 
 exports[`filterCells generates correct samples data with one sample in particular 1`] = `
-Object {
-  "cellSetLegendsData": Array [
-    Object {
+{
+  "cellSetLegendsData": [
+    {
       "color": "#8c564b",
       "key": "b62028a1-ffa0-4f10-823d-93c9ddb88898",
       "name": "KO",
     },
   ],
-  "filteredCells": Object {
-    "1": Object {
+  "filteredCells": {
+    "1": {
       "cellId": 1,
       "cellSetKey": "b62028a1-ffa0-4f10-823d-93c9ddb88898",
       "cellSetName": "KO",
       "color": "#8c564b",
     },
-    "10": Object {
+    "10": {
       "cellId": 10,
       "cellSetKey": "b62028a1-ffa0-4f10-823d-93c9ddb88898",
       "cellSetName": "KO",
       "color": "#8c564b",
     },
-    "11": Object {
+    "11": {
       "cellId": 11,
       "cellSetKey": "b62028a1-ffa0-4f10-823d-93c9ddb88898",
       "cellSetName": "KO",
       "color": "#8c564b",
     },
-    "12": Object {
+    "12": {
       "cellId": 12,
       "cellSetKey": "b62028a1-ffa0-4f10-823d-93c9ddb88898",
       "cellSetName": "KO",
       "color": "#8c564b",
     },
-    "13": Object {
+    "13": {
       "cellId": 13,
       "cellSetKey": "b62028a1-ffa0-4f10-823d-93c9ddb88898",
       "cellSetName": "KO",
       "color": "#8c564b",
     },
-    "14": Object {
+    "14": {
       "cellId": 14,
       "cellSetKey": "b62028a1-ffa0-4f10-823d-93c9ddb88898",
       "cellSetName": "KO",
       "color": "#8c564b",
     },
-    "15": Object {
+    "15": {
       "cellId": 15,
       "cellSetKey": "b62028a1-ffa0-4f10-823d-93c9ddb88898",
       "cellSetName": "KO",
       "color": "#8c564b",
     },
-    "16": Object {
+    "16": {
       "cellId": 16,
       "cellSetKey": "b62028a1-ffa0-4f10-823d-93c9ddb88898",
       "cellSetName": "KO",
       "color": "#8c564b",
     },
-    "17": Object {
+    "17": {
       "cellId": 17,
       "cellSetKey": "b62028a1-ffa0-4f10-823d-93c9ddb88898",
       "cellSetName": "KO",
       "color": "#8c564b",
     },
-    "18": Object {
+    "18": {
       "cellId": 18,
       "cellSetKey": "b62028a1-ffa0-4f10-823d-93c9ddb88898",
       "cellSetName": "KO",
       "color": "#8c564b",
     },
-    "19": Object {
+    "19": {
       "cellId": 19,
       "cellSetKey": "b62028a1-ffa0-4f10-823d-93c9ddb88898",
       "cellSetName": "KO",
       "color": "#8c564b",
     },
-    "2": Object {
+    "2": {
       "cellId": 2,
       "cellSetKey": "b62028a1-ffa0-4f10-823d-93c9ddb88898",
       "cellSetName": "KO",
       "color": "#8c564b",
     },
-    "20": Object {
+    "20": {
       "cellId": 20,
       "cellSetKey": "b62028a1-ffa0-4f10-823d-93c9ddb88898",
       "cellSetName": "KO",
       "color": "#8c564b",
     },
-    "21": Object {
+    "21": {
       "cellId": 21,
       "cellSetKey": "b62028a1-ffa0-4f10-823d-93c9ddb88898",
       "cellSetName": "KO",
       "color": "#8c564b",
     },
-    "22": Object {
+    "22": {
       "cellId": 22,
       "cellSetKey": "b62028a1-ffa0-4f10-823d-93c9ddb88898",
       "cellSetName": "KO",
       "color": "#8c564b",
     },
-    "23": Object {
+    "23": {
       "cellId": 23,
       "cellSetKey": "b62028a1-ffa0-4f10-823d-93c9ddb88898",
       "cellSetName": "KO",
       "color": "#8c564b",
     },
-    "24": Object {
+    "24": {
       "cellId": 24,
       "cellSetKey": "b62028a1-ffa0-4f10-823d-93c9ddb88898",
       "cellSetName": "KO",
       "color": "#8c564b",
     },
-    "25": Object {
+    "25": {
       "cellId": 25,
       "cellSetKey": "b62028a1-ffa0-4f10-823d-93c9ddb88898",
       "cellSetName": "KO",
       "color": "#8c564b",
     },
-    "26": Object {
+    "26": {
       "cellId": 26,
       "cellSetKey": "b62028a1-ffa0-4f10-823d-93c9ddb88898",
       "cellSetName": "KO",
       "color": "#8c564b",
     },
-    "27": Object {
+    "27": {
       "cellId": 27,
       "cellSetKey": "b62028a1-ffa0-4f10-823d-93c9ddb88898",
       "cellSetName": "KO",
       "color": "#8c564b",
     },
-    "28": Object {
+    "28": {
       "cellId": 28,
       "cellSetKey": "b62028a1-ffa0-4f10-823d-93c9ddb88898",
       "cellSetName": "KO",
       "color": "#8c564b",
     },
-    "29": Object {
+    "29": {
       "cellId": 29,
       "cellSetKey": "b62028a1-ffa0-4f10-823d-93c9ddb88898",
       "cellSetName": "KO",
       "color": "#8c564b",
     },
-    "3": Object {
+    "3": {
       "cellId": 3,
       "cellSetKey": "b62028a1-ffa0-4f10-823d-93c9ddb88898",
       "cellSetName": "KO",
       "color": "#8c564b",
     },
-    "30": Object {
+    "30": {
       "cellId": 30,
       "cellSetKey": "b62028a1-ffa0-4f10-823d-93c9ddb88898",
       "cellSetName": "KO",
       "color": "#8c564b",
     },
-    "31": Object {
+    "31": {
       "cellId": 31,
       "cellSetKey": "b62028a1-ffa0-4f10-823d-93c9ddb88898",
       "cellSetName": "KO",
       "color": "#8c564b",
     },
-    "32": Object {
+    "32": {
       "cellId": 32,
       "cellSetKey": "b62028a1-ffa0-4f10-823d-93c9ddb88898",
       "cellSetName": "KO",
       "color": "#8c564b",
     },
-    "33": Object {
+    "33": {
       "cellId": 33,
       "cellSetKey": "b62028a1-ffa0-4f10-823d-93c9ddb88898",
       "cellSetName": "KO",
       "color": "#8c564b",
     },
-    "34": Object {
+    "34": {
       "cellId": 34,
       "cellSetKey": "b62028a1-ffa0-4f10-823d-93c9ddb88898",
       "cellSetName": "KO",
       "color": "#8c564b",
     },
-    "35": Object {
+    "35": {
       "cellId": 35,
       "cellSetKey": "b62028a1-ffa0-4f10-823d-93c9ddb88898",
       "cellSetName": "KO",
       "color": "#8c564b",
     },
-    "36": Object {
+    "36": {
       "cellId": 36,
       "cellSetKey": "b62028a1-ffa0-4f10-823d-93c9ddb88898",
       "cellSetName": "KO",
       "color": "#8c564b",
     },
-    "37": Object {
+    "37": {
       "cellId": 37,
       "cellSetKey": "b62028a1-ffa0-4f10-823d-93c9ddb88898",
       "cellSetName": "KO",
       "color": "#8c564b",
     },
-    "38": Object {
+    "38": {
       "cellId": 38,
       "cellSetKey": "b62028a1-ffa0-4f10-823d-93c9ddb88898",
       "cellSetName": "KO",
       "color": "#8c564b",
     },
-    "39": Object {
+    "39": {
       "cellId": 39,
       "cellSetKey": "b62028a1-ffa0-4f10-823d-93c9ddb88898",
       "cellSetName": "KO",
       "color": "#8c564b",
     },
-    "4": Object {
+    "4": {
       "cellId": 4,
       "cellSetKey": "b62028a1-ffa0-4f10-823d-93c9ddb88898",
       "cellSetName": "KO",
       "color": "#8c564b",
     },
-    "40": Object {
+    "40": {
       "cellId": 40,
       "cellSetKey": "b62028a1-ffa0-4f10-823d-93c9ddb88898",
       "cellSetName": "KO",
       "color": "#8c564b",
     },
-    "5": Object {
+    "5": {
       "cellId": 5,
       "cellSetKey": "b62028a1-ffa0-4f10-823d-93c9ddb88898",
       "cellSetName": "KO",
       "color": "#8c564b",
     },
-    "6": Object {
+    "6": {
       "cellId": 6,
       "cellSetKey": "b62028a1-ffa0-4f10-823d-93c9ddb88898",
       "cellSetName": "KO",
       "color": "#8c564b",
     },
-    "7": Object {
+    "7": {
       "cellId": 7,
       "cellSetKey": "b62028a1-ffa0-4f10-823d-93c9ddb88898",
       "cellSetName": "KO",
       "color": "#8c564b",
     },
-    "8": Object {
+    "8": {
       "cellId": 8,
       "cellSetKey": "b62028a1-ffa0-4f10-823d-93c9ddb88898",
       "cellSetName": "KO",
       "color": "#8c564b",
     },
-    "9": Object {
+    "9": {
       "cellId": 9,
       "cellSetKey": "b62028a1-ffa0-4f10-823d-93c9ddb88898",
       "cellSetName": "KO",
@@ -496,591 +496,591 @@ Object {
 `;
 
 exports[`filterCells works correctly with some repeated names in louvain clusters 1`] = `
-Object {
-  "cellSetLegendsData": Array [
-    Object {
+{
+  "cellSetLegendsData": [
+    {
       "color": "#e377c2",
       "key": "louvain-0",
       "name": "repeatedName",
     },
-    Object {
+    {
       "color": "#8c564b",
       "key": "louvain-1",
       "name": "Cluster 1",
     },
-    Object {
+    {
       "color": "#d62728",
       "key": "louvain-2",
       "name": "repeatedName",
     },
-    Object {
+    {
       "color": "#2ca02c",
       "key": "louvain-3",
       "name": "Cluster 3",
     },
-    Object {
+    {
       "color": "#ff7f0e",
       "key": "louvain-4",
       "name": "Cluster 4",
     },
-    Object {
+    {
       "color": "#1f77b4",
       "key": "louvain-5",
       "name": "Cluster 5",
     },
-    Object {
+    {
       "color": "#f8e71c",
       "key": "louvain-6",
       "name": "repeatedName",
     },
-    Object {
+    {
       "color": "#3957ff",
       "key": "louvain-7",
       "name": "Cluster 7",
     },
-    Object {
+    {
       "color": "#d3fe14",
       "key": "louvain-8",
       "name": "Cluster 8",
     },
-    Object {
+    {
       "color": "#c9080a",
       "key": "louvain-9",
       "name": "Cluster 9",
     },
-    Object {
+    {
       "color": "#fec7f8",
       "key": "louvain-10",
       "name": "Cluster 10",
     },
-    Object {
+    {
       "color": "#0b7b3e",
       "key": "louvain-11",
       "name": "Cluster 11",
     },
-    Object {
+    {
       "color": "#0bf0e9",
       "key": "louvain-12",
       "name": "Cluster 12",
     },
-    Object {
+    {
       "color": "#c203c8",
       "key": "louvain-13",
       "name": "Cluster 13",
     },
   ],
-  "filteredCells": Object {
-    "1": Object {
+  "filteredCells": {
+    "1": {
       "cellId": 1,
       "cellSetKey": "louvain-0",
       "cellSetName": "repeatedName",
       "color": "#e377c2",
     },
-    "10": Object {
+    "10": {
       "cellId": 10,
       "cellSetKey": "louvain-0",
       "cellSetName": "repeatedName",
       "color": "#e377c2",
     },
-    "100": Object {
+    "100": {
       "cellId": 100,
       "cellSetKey": "louvain-13",
       "cellSetName": "Cluster 13",
       "color": "#c203c8",
     },
-    "11": Object {
+    "11": {
       "cellId": 11,
       "cellSetKey": "louvain-0",
       "cellSetName": "repeatedName",
       "color": "#e377c2",
     },
-    "12": Object {
+    "12": {
       "cellId": 12,
       "cellSetKey": "louvain-0",
       "cellSetName": "repeatedName",
       "color": "#e377c2",
     },
-    "16": Object {
+    "16": {
       "cellId": 16,
       "cellSetKey": "louvain-0",
       "cellSetName": "repeatedName",
       "color": "#e377c2",
     },
-    "17": Object {
+    "17": {
       "cellId": 17,
       "cellSetKey": "louvain-0",
       "cellSetName": "repeatedName",
       "color": "#e377c2",
     },
-    "18": Object {
+    "18": {
       "cellId": 18,
       "cellSetKey": "louvain-0",
       "cellSetName": "repeatedName",
       "color": "#e377c2",
     },
-    "19": Object {
+    "19": {
       "cellId": 19,
       "cellSetKey": "louvain-0",
       "cellSetName": "repeatedName",
       "color": "#e377c2",
     },
-    "2": Object {
+    "2": {
       "cellId": 2,
       "cellSetKey": "louvain-0",
       "cellSetName": "repeatedName",
       "color": "#e377c2",
     },
-    "20": Object {
+    "20": {
       "cellId": 20,
       "cellSetKey": "louvain-0",
       "cellSetName": "repeatedName",
       "color": "#e377c2",
     },
-    "21": Object {
+    "21": {
       "cellId": 21,
       "cellSetKey": "louvain-0",
       "cellSetName": "repeatedName",
       "color": "#e377c2",
     },
-    "22": Object {
+    "22": {
       "cellId": 22,
       "cellSetKey": "louvain-0",
       "cellSetName": "repeatedName",
       "color": "#e377c2",
     },
-    "23": Object {
+    "23": {
       "cellId": 23,
       "cellSetKey": "louvain-0",
       "cellSetName": "repeatedName",
       "color": "#e377c2",
     },
-    "24": Object {
+    "24": {
       "cellId": 24,
       "cellSetKey": "louvain-0",
       "cellSetName": "repeatedName",
       "color": "#e377c2",
     },
-    "25": Object {
+    "25": {
       "cellId": 25,
       "cellSetKey": "louvain-0",
       "cellSetName": "repeatedName",
       "color": "#e377c2",
     },
-    "26": Object {
+    "26": {
       "cellId": 26,
       "cellSetKey": "louvain-0",
       "cellSetName": "repeatedName",
       "color": "#e377c2",
     },
-    "27": Object {
+    "27": {
       "cellId": 27,
       "cellSetKey": "louvain-0",
       "cellSetName": "repeatedName",
       "color": "#e377c2",
     },
-    "28": Object {
+    "28": {
       "cellId": 28,
       "cellSetKey": "louvain-0",
       "cellSetName": "repeatedName",
       "color": "#e377c2",
     },
-    "29": Object {
+    "29": {
       "cellId": 29,
       "cellSetKey": "louvain-0",
       "cellSetName": "repeatedName",
       "color": "#e377c2",
     },
-    "3": Object {
+    "3": {
       "cellId": 3,
       "cellSetKey": "louvain-0",
       "cellSetName": "repeatedName",
       "color": "#e377c2",
     },
-    "30": Object {
+    "30": {
       "cellId": 30,
       "cellSetKey": "louvain-0",
       "cellSetName": "repeatedName",
       "color": "#e377c2",
     },
-    "31": Object {
+    "31": {
       "cellId": 31,
       "cellSetKey": "louvain-1",
       "cellSetName": "Cluster 1",
       "color": "#8c564b",
     },
-    "32": Object {
+    "32": {
       "cellId": 32,
       "cellSetKey": "louvain-1",
       "cellSetName": "Cluster 1",
       "color": "#8c564b",
     },
-    "33": Object {
+    "33": {
       "cellId": 33,
       "cellSetKey": "louvain-1",
       "cellSetName": "Cluster 1",
       "color": "#8c564b",
     },
-    "34": Object {
+    "34": {
       "cellId": 34,
       "cellSetKey": "louvain-1",
       "cellSetName": "Cluster 1",
       "color": "#8c564b",
     },
-    "35": Object {
+    "35": {
       "cellId": 35,
       "cellSetKey": "louvain-1",
       "cellSetName": "Cluster 1",
       "color": "#8c564b",
     },
-    "36": Object {
+    "36": {
       "cellId": 36,
       "cellSetKey": "louvain-1",
       "cellSetName": "Cluster 1",
       "color": "#8c564b",
     },
-    "37": Object {
+    "37": {
       "cellId": 37,
       "cellSetKey": "louvain-1",
       "cellSetName": "Cluster 1",
       "color": "#8c564b",
     },
-    "38": Object {
+    "38": {
       "cellId": 38,
       "cellSetKey": "louvain-1",
       "cellSetName": "Cluster 1",
       "color": "#8c564b",
     },
-    "39": Object {
+    "39": {
       "cellId": 39,
       "cellSetKey": "louvain-1",
       "cellSetName": "Cluster 1",
       "color": "#8c564b",
     },
-    "4": Object {
+    "4": {
       "cellId": 4,
       "cellSetKey": "louvain-0",
       "cellSetName": "repeatedName",
       "color": "#e377c2",
     },
-    "40": Object {
+    "40": {
       "cellId": 40,
       "cellSetKey": "louvain-1",
       "cellSetName": "Cluster 1",
       "color": "#8c564b",
     },
-    "41": Object {
+    "41": {
       "cellId": 41,
       "cellSetKey": "louvain-1",
       "cellSetName": "Cluster 1",
       "color": "#8c564b",
     },
-    "42": Object {
+    "42": {
       "cellId": 42,
       "cellSetKey": "louvain-1",
       "cellSetName": "Cluster 1",
       "color": "#8c564b",
     },
-    "43": Object {
+    "43": {
       "cellId": 43,
       "cellSetKey": "louvain-1",
       "cellSetName": "Cluster 1",
       "color": "#8c564b",
     },
-    "47": Object {
+    "47": {
       "cellId": 47,
       "cellSetKey": "louvain-1",
       "cellSetName": "Cluster 1",
       "color": "#8c564b",
     },
-    "48": Object {
+    "48": {
       "cellId": 48,
       "cellSetKey": "louvain-1",
       "cellSetName": "Cluster 1",
       "color": "#8c564b",
     },
-    "49": Object {
+    "49": {
       "cellId": 49,
       "cellSetKey": "louvain-1",
       "cellSetName": "Cluster 1",
       "color": "#8c564b",
     },
-    "5": Object {
+    "5": {
       "cellId": 5,
       "cellSetKey": "louvain-0",
       "cellSetName": "repeatedName",
       "color": "#e377c2",
     },
-    "50": Object {
+    "50": {
       "cellId": 50,
       "cellSetKey": "louvain-1",
       "cellSetName": "Cluster 1",
       "color": "#8c564b",
     },
-    "51": Object {
+    "51": {
       "cellId": 51,
       "cellSetKey": "louvain-1",
       "cellSetName": "Cluster 1",
       "color": "#8c564b",
     },
-    "52": Object {
+    "52": {
       "cellId": 52,
       "cellSetKey": "louvain-1",
       "cellSetName": "Cluster 1",
       "color": "#8c564b",
     },
-    "53": Object {
+    "53": {
       "cellId": 53,
       "cellSetKey": "louvain-1",
       "cellSetName": "Cluster 1",
       "color": "#8c564b",
     },
-    "54": Object {
+    "54": {
       "cellId": 54,
       "cellSetKey": "louvain-1",
       "cellSetName": "Cluster 1",
       "color": "#8c564b",
     },
-    "55": Object {
+    "55": {
       "cellId": 55,
       "cellSetKey": "louvain-1",
       "cellSetName": "Cluster 1",
       "color": "#8c564b",
     },
-    "57": Object {
+    "57": {
       "cellId": 57,
       "cellSetKey": "louvain-2",
       "cellSetName": "repeatedName",
       "color": "#d62728",
     },
-    "58": Object {
+    "58": {
       "cellId": 58,
       "cellSetKey": "louvain-2",
       "cellSetName": "repeatedName",
       "color": "#d62728",
     },
-    "59": Object {
+    "59": {
       "cellId": 59,
       "cellSetKey": "louvain-2",
       "cellSetName": "repeatedName",
       "color": "#d62728",
     },
-    "6": Object {
+    "6": {
       "cellId": 6,
       "cellSetKey": "louvain-0",
       "cellSetName": "repeatedName",
       "color": "#e377c2",
     },
-    "60": Object {
+    "60": {
       "cellId": 60,
       "cellSetKey": "louvain-2",
       "cellSetName": "repeatedName",
       "color": "#d62728",
     },
-    "61": Object {
+    "61": {
       "cellId": 61,
       "cellSetKey": "louvain-3",
       "cellSetName": "Cluster 3",
       "color": "#2ca02c",
     },
-    "62": Object {
+    "62": {
       "cellId": 62,
       "cellSetKey": "louvain-3",
       "cellSetName": "Cluster 3",
       "color": "#2ca02c",
     },
-    "64": Object {
+    "64": {
       "cellId": 64,
       "cellSetKey": "louvain-3",
       "cellSetName": "Cluster 3",
       "color": "#2ca02c",
     },
-    "65": Object {
+    "65": {
       "cellId": 65,
       "cellSetKey": "louvain-3",
       "cellSetName": "Cluster 3",
       "color": "#2ca02c",
     },
-    "66": Object {
+    "66": {
       "cellId": 66,
       "cellSetKey": "louvain-4",
       "cellSetName": "Cluster 4",
       "color": "#ff7f0e",
     },
-    "68": Object {
+    "68": {
       "cellId": 68,
       "cellSetKey": "louvain-4",
       "cellSetName": "Cluster 4",
       "color": "#ff7f0e",
     },
-    "69": Object {
+    "69": {
       "cellId": 69,
       "cellSetKey": "louvain-4",
       "cellSetName": "Cluster 4",
       "color": "#ff7f0e",
     },
-    "7": Object {
+    "7": {
       "cellId": 7,
       "cellSetKey": "louvain-0",
       "cellSetName": "repeatedName",
       "color": "#e377c2",
     },
-    "70": Object {
+    "70": {
       "cellId": 70,
       "cellSetKey": "louvain-4",
       "cellSetName": "Cluster 4",
       "color": "#ff7f0e",
     },
-    "71": Object {
+    "71": {
       "cellId": 71,
       "cellSetKey": "louvain-5",
       "cellSetName": "Cluster 5",
       "color": "#1f77b4",
     },
-    "72": Object {
+    "72": {
       "cellId": 72,
       "cellSetKey": "louvain-5",
       "cellSetName": "Cluster 5",
       "color": "#1f77b4",
     },
-    "73": Object {
+    "73": {
       "cellId": 73,
       "cellSetKey": "louvain-5",
       "cellSetName": "Cluster 5",
       "color": "#1f77b4",
     },
-    "75": Object {
+    "75": {
       "cellId": 75,
       "cellSetKey": "louvain-5",
       "cellSetName": "Cluster 5",
       "color": "#1f77b4",
     },
-    "76": Object {
+    "76": {
       "cellId": 76,
       "cellSetKey": "louvain-6",
       "cellSetName": "repeatedName",
       "color": "#f8e71c",
     },
-    "77": Object {
+    "77": {
       "cellId": 77,
       "cellSetKey": "louvain-6",
       "cellSetName": "repeatedName",
       "color": "#f8e71c",
     },
-    "79": Object {
+    "79": {
       "cellId": 79,
       "cellSetKey": "louvain-6",
       "cellSetName": "repeatedName",
       "color": "#f8e71c",
     },
-    "8": Object {
+    "8": {
       "cellId": 8,
       "cellSetKey": "louvain-0",
       "cellSetName": "repeatedName",
       "color": "#e377c2",
     },
-    "80": Object {
+    "80": {
       "cellId": 80,
       "cellSetKey": "louvain-6",
       "cellSetName": "repeatedName",
       "color": "#f8e71c",
     },
-    "81": Object {
+    "81": {
       "cellId": 81,
       "cellSetKey": "louvain-7",
       "cellSetName": "Cluster 7",
       "color": "#3957ff",
     },
-    "82": Object {
+    "82": {
       "cellId": 82,
       "cellSetKey": "louvain-7",
       "cellSetName": "Cluster 7",
       "color": "#3957ff",
     },
-    "84": Object {
+    "84": {
       "cellId": 84,
       "cellSetKey": "louvain-7",
       "cellSetName": "Cluster 7",
       "color": "#3957ff",
     },
-    "85": Object {
+    "85": {
       "cellId": 85,
       "cellSetKey": "louvain-7",
       "cellSetName": "Cluster 7",
       "color": "#3957ff",
     },
-    "88": Object {
+    "88": {
       "cellId": 88,
       "cellSetKey": "louvain-8",
       "cellSetName": "Cluster 8",
       "color": "#d3fe14",
     },
-    "89": Object {
+    "89": {
       "cellId": 89,
       "cellSetKey": "louvain-8",
       "cellSetName": "Cluster 8",
       "color": "#d3fe14",
     },
-    "9": Object {
+    "9": {
       "cellId": 9,
       "cellSetKey": "louvain-0",
       "cellSetName": "repeatedName",
       "color": "#e377c2",
     },
-    "90": Object {
+    "90": {
       "cellId": 90,
       "cellSetKey": "louvain-8",
       "cellSetName": "Cluster 8",
       "color": "#d3fe14",
     },
-    "91": Object {
+    "91": {
       "cellId": 91,
       "cellSetKey": "louvain-9",
       "cellSetName": "Cluster 9",
       "color": "#c9080a",
     },
-    "92": Object {
+    "92": {
       "cellId": 92,
       "cellSetKey": "louvain-9",
       "cellSetName": "Cluster 9",
       "color": "#c9080a",
     },
-    "93": Object {
+    "93": {
       "cellId": 93,
       "cellSetKey": "louvain-9",
       "cellSetName": "Cluster 9",
       "color": "#c9080a",
     },
-    "94": Object {
+    "94": {
       "cellId": 94,
       "cellSetKey": "louvain-10",
       "cellSetName": "Cluster 10",
       "color": "#fec7f8",
     },
-    "95": Object {
+    "95": {
       "cellId": 95,
       "cellSetKey": "louvain-10",
       "cellSetName": "Cluster 10",
       "color": "#fec7f8",
     },
-    "96": Object {
+    "96": {
       "cellId": 96,
       "cellSetKey": "louvain-11",
       "cellSetName": "Cluster 11",
       "color": "#0b7b3e",
     },
-    "97": Object {
+    "97": {
       "cellId": 97,
       "cellSetKey": "louvain-11",
       "cellSetName": "Cluster 11",
       "color": "#0b7b3e",
     },
-    "98": Object {
+    "98": {
       "cellId": 98,
       "cellSetKey": "louvain-12",
       "cellSetName": "Cluster 12",
       "color": "#0bf0e9",
     },
-    "99": Object {
+    "99": {
       "cellId": 99,
       "cellSetKey": "louvain-12",
       "cellSetName": "Cluster 12",
@@ -1091,132 +1091,132 @@ Object {
 `;
 
 exports[`generateData generates correct data with 1 cluster 1`] = `
-Object {
-  "cellSetLegendsData": Array [
-    Object {
+{
+  "cellSetLegendsData": [
+    {
       "color": "#1f77b4",
       "key": "louvain-5",
       "name": "Cluster 5",
     },
   ],
-  "plotData": Array [
-    Object {
+  "plotData": [
+    {
       "x": 1,
       "y": 2,
     },
-    Object {
+    {
       "x": 1,
       "y": 2,
     },
-    Object {
+    {
       "x": 1,
       "y": 2,
     },
-    Object {
+    {
       "x": 1,
       "y": 2,
     },
-    Object {
+    {
       "x": 1,
       "y": 2,
     },
-    Object {
+    {
       "x": 1,
       "y": 2,
     },
-    Object {
+    {
       "x": 1,
       "y": 2,
     },
-    Object {
+    {
       "x": 1,
       "y": 2,
     },
-    Object {
+    {
       "x": 1,
       "y": 2,
     },
-    Object {
+    {
       "x": 1,
       "y": 2,
     },
-    Object {
+    {
       "x": 1,
       "y": 2,
     },
-    Object {
+    {
       "x": 1,
       "y": 2,
     },
-    Object {
+    {
       "x": 1,
       "y": 2,
     },
-    Object {
+    {
       "x": 1,
       "y": 2,
     },
-    Object {
+    {
       "x": 1,
       "y": 2,
     },
-    Object {
+    {
       "x": 1,
       "y": 2,
     },
-    Object {
+    {
       "x": 1,
       "y": 2,
     },
-    Object {
+    {
       "x": 1,
       "y": 2,
     },
-    Object {
+    {
       "x": 1,
       "y": 2,
     },
-    Object {
+    {
       "x": 1,
       "y": 2,
     },
-    Object {
+    {
       "x": 1,
       "y": 2,
     },
-    Object {
+    {
       "x": 1,
       "y": 2,
     },
-    Object {
+    {
       "x": 1,
       "y": 2,
     },
-    Object {
+    {
       "x": 1,
       "y": 2,
     },
-    Object {
+    {
       "x": 1,
       "y": 2,
     },
-    Object {
+    {
       "x": 1,
       "y": 2,
     },
-    Object {
+    {
       "x": 1,
       "y": 2,
     },
-    Object {
+    {
       "x": 1,
       "y": 2,
     },
-    Object {
+    {
       "x": 1,
       "y": 2,
     },
-    Object {
+    {
       "x": 1,
       "y": 2,
     },
@@ -1225,85 +1225,85 @@ Object {
 `;
 
 exports[`generateData generates correct data with all louvain clusters 1`] = `
-Object {
-  "cellSetLegendsData": Array [
-    Object {
+{
+  "cellSetLegendsData": [
+    {
       "color": "#e377c2",
       "key": "louvain-0",
       "name": "Cluster 0",
     },
-    Object {
+    {
       "color": "#8c564b",
       "key": "louvain-1",
       "name": "Cluster 1",
     },
-    Object {
+    {
       "color": "#d62728",
       "key": "louvain-2",
       "name": "Cluster 2",
     },
-    Object {
+    {
       "color": "#2ca02c",
       "key": "louvain-3",
       "name": "Cluster 3",
     },
-    Object {
+    {
       "color": "#ff7f0e",
       "key": "louvain-4",
       "name": "Cluster 4",
     },
-    Object {
+    {
       "color": "#1f77b4",
       "key": "louvain-5",
       "name": "Cluster 5",
     },
-    Object {
+    {
       "color": "#f8e71c",
       "key": "louvain-6",
       "name": "Cluster 6",
     },
-    Object {
+    {
       "color": "#3957ff",
       "key": "louvain-7",
       "name": "Cluster 7",
     },
-    Object {
+    {
       "color": "#d3fe14",
       "key": "louvain-8",
       "name": "Cluster 8",
     },
-    Object {
+    {
       "color": "#c9080a",
       "key": "louvain-9",
       "name": "Cluster 9",
     },
-    Object {
+    {
       "color": "#fec7f8",
       "key": "louvain-10",
       "name": "Cluster 10",
     },
-    Object {
+    {
       "color": "#0b7b3e",
       "key": "louvain-11",
       "name": "Cluster 11",
     },
-    Object {
+    {
       "color": "#0bf0e9",
       "key": "louvain-12",
       "name": "Cluster 12",
     },
-    Object {
+    {
       "color": "#c203c8",
       "key": "louvain-13",
       "name": "Cluster 13",
     },
   ],
-  "plotData": Array [
-    Object {
+  "plotData": [
+    {
       "x": 1,
       "y": 2,
     },
-    Object {
+    {
       "cellId": 1,
       "cellSetKey": "louvain-0",
       "cellSetName": "Cluster 0",
@@ -1311,7 +1311,7 @@ Object {
       "x": 1,
       "y": 2,
     },
-    Object {
+    {
       "cellId": 2,
       "cellSetKey": "louvain-0",
       "cellSetName": "Cluster 0",
@@ -1319,7 +1319,7 @@ Object {
       "x": 1,
       "y": 2,
     },
-    Object {
+    {
       "cellId": 3,
       "cellSetKey": "louvain-0",
       "cellSetName": "Cluster 0",
@@ -1327,7 +1327,7 @@ Object {
       "x": 1,
       "y": 2,
     },
-    Object {
+    {
       "cellId": 4,
       "cellSetKey": "louvain-0",
       "cellSetName": "Cluster 0",
@@ -1335,7 +1335,7 @@ Object {
       "x": 1,
       "y": 2,
     },
-    Object {
+    {
       "cellId": 5,
       "cellSetKey": "louvain-0",
       "cellSetName": "Cluster 0",
@@ -1343,7 +1343,7 @@ Object {
       "x": 1,
       "y": 2,
     },
-    Object {
+    {
       "cellId": 6,
       "cellSetKey": "louvain-0",
       "cellSetName": "Cluster 0",
@@ -1351,7 +1351,7 @@ Object {
       "x": 1,
       "y": 2,
     },
-    Object {
+    {
       "cellId": 7,
       "cellSetKey": "louvain-0",
       "cellSetName": "Cluster 0",
@@ -1359,7 +1359,7 @@ Object {
       "x": 1,
       "y": 2,
     },
-    Object {
+    {
       "cellId": 8,
       "cellSetKey": "louvain-0",
       "cellSetName": "Cluster 0",
@@ -1367,7 +1367,7 @@ Object {
       "x": 1,
       "y": 2,
     },
-    Object {
+    {
       "cellId": 9,
       "cellSetKey": "louvain-0",
       "cellSetName": "Cluster 0",
@@ -1375,7 +1375,7 @@ Object {
       "x": 1,
       "y": 2,
     },
-    Object {
+    {
       "cellId": 10,
       "cellSetKey": "louvain-0",
       "cellSetName": "Cluster 0",
@@ -1383,7 +1383,7 @@ Object {
       "x": 1,
       "y": 2,
     },
-    Object {
+    {
       "cellId": 11,
       "cellSetKey": "louvain-0",
       "cellSetName": "Cluster 0",
@@ -1391,7 +1391,7 @@ Object {
       "x": 1,
       "y": 2,
     },
-    Object {
+    {
       "cellId": 12,
       "cellSetKey": "louvain-0",
       "cellSetName": "Cluster 0",
@@ -1399,19 +1399,19 @@ Object {
       "x": 1,
       "y": 2,
     },
-    Object {
+    {
       "x": 1,
       "y": 2,
     },
-    Object {
+    {
       "x": 1,
       "y": 2,
     },
-    Object {
+    {
       "x": 1,
       "y": 2,
     },
-    Object {
+    {
       "cellId": 16,
       "cellSetKey": "louvain-0",
       "cellSetName": "Cluster 0",
@@ -1419,7 +1419,7 @@ Object {
       "x": 1,
       "y": 2,
     },
-    Object {
+    {
       "cellId": 17,
       "cellSetKey": "louvain-0",
       "cellSetName": "Cluster 0",
@@ -1427,7 +1427,7 @@ Object {
       "x": 1,
       "y": 2,
     },
-    Object {
+    {
       "cellId": 18,
       "cellSetKey": "louvain-0",
       "cellSetName": "Cluster 0",
@@ -1435,7 +1435,7 @@ Object {
       "x": 1,
       "y": 2,
     },
-    Object {
+    {
       "cellId": 19,
       "cellSetKey": "louvain-0",
       "cellSetName": "Cluster 0",
@@ -1443,7 +1443,7 @@ Object {
       "x": 1,
       "y": 2,
     },
-    Object {
+    {
       "cellId": 20,
       "cellSetKey": "louvain-0",
       "cellSetName": "Cluster 0",
@@ -1451,7 +1451,7 @@ Object {
       "x": 1,
       "y": 2,
     },
-    Object {
+    {
       "cellId": 21,
       "cellSetKey": "louvain-0",
       "cellSetName": "Cluster 0",
@@ -1459,7 +1459,7 @@ Object {
       "x": 1,
       "y": 2,
     },
-    Object {
+    {
       "cellId": 22,
       "cellSetKey": "louvain-0",
       "cellSetName": "Cluster 0",
@@ -1467,7 +1467,7 @@ Object {
       "x": 1,
       "y": 2,
     },
-    Object {
+    {
       "cellId": 23,
       "cellSetKey": "louvain-0",
       "cellSetName": "Cluster 0",
@@ -1475,7 +1475,7 @@ Object {
       "x": 1,
       "y": 2,
     },
-    Object {
+    {
       "cellId": 24,
       "cellSetKey": "louvain-0",
       "cellSetName": "Cluster 0",
@@ -1483,7 +1483,7 @@ Object {
       "x": 1,
       "y": 2,
     },
-    Object {
+    {
       "cellId": 25,
       "cellSetKey": "louvain-0",
       "cellSetName": "Cluster 0",
@@ -1491,7 +1491,7 @@ Object {
       "x": 1,
       "y": 2,
     },
-    Object {
+    {
       "cellId": 26,
       "cellSetKey": "louvain-0",
       "cellSetName": "Cluster 0",
@@ -1499,7 +1499,7 @@ Object {
       "x": 1,
       "y": 2,
     },
-    Object {
+    {
       "cellId": 27,
       "cellSetKey": "louvain-0",
       "cellSetName": "Cluster 0",
@@ -1507,7 +1507,7 @@ Object {
       "x": 1,
       "y": 2,
     },
-    Object {
+    {
       "cellId": 28,
       "cellSetKey": "louvain-0",
       "cellSetName": "Cluster 0",
@@ -1515,7 +1515,7 @@ Object {
       "x": 1,
       "y": 2,
     },
-    Object {
+    {
       "cellId": 29,
       "cellSetKey": "louvain-0",
       "cellSetName": "Cluster 0",

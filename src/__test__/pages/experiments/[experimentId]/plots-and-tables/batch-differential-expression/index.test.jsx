@@ -67,19 +67,22 @@ describe('Batch differential expression tests ', () => {
     expect(screen.getByText(/In batch for each sample\/group in:/i)).toBeInTheDocument();
     expect(screen.getByText(/Select samples or metadata.../i)).toBeInTheDocument();
   });
-  it('sending a request should work', async () => {
+
+  fit('sending a request should work', async () => {
     await renderPage();
 
-    const secondOption = screen.getByText(secondOptionText);
-    const computeButton = screen.getByText(/Compute/).closest('button');
+    const compareForCellSetsRadio = screen.getByLabelText(secondOptionText);
+    const computeButton = screen.getByText(/Compute and Download/).closest('button');
 
     // Initial state should have the Compute button disabled
     expect(computeButton).toBeDisabled();
 
     // Click the 'Generate a full list of marker genes for all cell sets' option
-    await act(() => userEvent.click(secondOption));
+    await act(() => userEvent.click(compareForCellSetsRadio));
     const dropdowns = screen.getAllByRole('combobox');
     expect(computeButton).toBeDisabled();
+
+    screen.debug(null, Infinity);
 
     await act(async () => {
       userEvent.click(dropdowns[0]);
@@ -95,7 +98,7 @@ describe('Batch differential expression tests ', () => {
     // The Compute button should now be enabled
     const button = screen.getByRole('button', { name: /Compute/ });
     expect(button).toBeEnabled();
-    fireEvent.click(button);
+    userEvent.click(button);
 
     expect(getBatchDiffExprSpy).toHaveBeenCalledWith('testae48e318dab9a1bd0bexperiment',
       {
