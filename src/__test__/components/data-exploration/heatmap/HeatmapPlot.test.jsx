@@ -1,8 +1,7 @@
-import _ from 'lodash';
 import React from 'react';
 import preloadAll from 'jest-next-dynamic';
 
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import { act } from 'react-dom/test-utils';
 
 import { dispatchWorkRequest } from 'utils/work/seekWorkResponse';
@@ -20,7 +19,6 @@ import mockAPI, {
   generateDefaultMockAPIResponses,
   delayedResponse,
   dispatchWorkRequestMock,
-  workerDataResult,
 } from '__test__/test-utils/mockAPI';
 
 import HeatmapPlot from 'components/data-exploration/heatmap/HeatmapPlot';
@@ -282,9 +280,7 @@ describe('HeatmapPlot', () => {
     dispatchWorkRequest.mockReset();
 
     // Mock each of the loadMarkerGenes calls caused by hiding a cell set
-    _.times(14, () => {
-      dispatchWorkRequest.mockImplementationOnce(dispatchWorkRequestMock(mockWorkerResponses));
-    });
+    dispatchWorkRequest.mockImplementationOnce(dispatchWorkRequestMock(mockWorkerResponses));
 
     // Last call (all the cellSets are hidden) throw the error
     dispatchWorkRequest.mockImplementationOnce(() => Promise.reject(new Error('No cells found')));
@@ -311,6 +307,7 @@ describe('HeatmapPlot', () => {
 
     // The plots shows an empty message
     expect(screen.getByText(/Unhide some cell sets to show the heatmap/i)).toBeInTheDocument();
+
   });
 
   it('Reacts to cellClass groupby being changed', async () => {
