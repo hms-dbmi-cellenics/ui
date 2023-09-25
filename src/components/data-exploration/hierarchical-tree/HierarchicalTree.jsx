@@ -12,7 +12,7 @@ import EditableField from 'components/EditableField';
 import ColorPicker from 'components/ColorPicker';
 import FocusButton from 'components/FocusButton';
 import HideButton from 'components/data-exploration/cell-sets-tool/HideButton';
-
+// import styles from '.hierarchicalTree.module.css';
 
 const HierarchicalTree = (props) => {
   const {
@@ -206,6 +206,7 @@ const HierarchicalTree = (props) => {
       onDrop={onDrop}
       switcherIcon={<DownOutlined />}
       defaultExpandAll
+      style={{ backgroundColor: '#f5f8fa' }}
     />
   );
 };
