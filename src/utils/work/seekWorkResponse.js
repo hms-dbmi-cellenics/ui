@@ -142,8 +142,8 @@ const dispatchWorkRequest = async (
 
   const responsePromise = new Promise((resolve, reject) => {
     io.on(`WorkResponse-${ETag}`, (res) => {
+      console.log('Recieved response from worker', res);
       const { response } = res;
-      console.log('Received response from worker', response);
       if (response.error) {
         const { errorCode, userMessage } = response;
         console.error(errorCode, userMessage);

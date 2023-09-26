@@ -57,12 +57,6 @@ const fetchWork = async (
     experimentId, body, dispatch, getState,
   );
 
-  console.log(experimentId,
-    body,
-    extras,
-    cacheUniquenessKey,
-    extraDependencies);
-
   const ETagProps = {
     experimentId,
     body,
@@ -71,7 +65,6 @@ const fetchWork = async (
     extraDependencies,
   };
 
-  console.log('IM CALLING THISS');
   const { ETag, data } = await seekWorkerResultsOrDispatchWork(
     experimentId,
     body,
