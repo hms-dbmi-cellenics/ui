@@ -31,6 +31,7 @@ import {
   colorInterpolator,
 } from 'utils/plotUtils';
 import getContainingCellSetsProperties from 'utils/cellSets/getContainingCellSetsProperties';
+import { or } from 'mathjs';
 
 const Scatterplot = dynamic(() => import('./DynamicVitessceEmbedding'), {
   ssr: false,
@@ -75,7 +76,8 @@ const Embedding = (props) => {
   const [selectedIds, setSelectedIds] = useState(new Set());
   const [cellColors, setCellColors] = useState({});
   const [cellInfoVisible, setCellInfoVisible] = useState(true);
-  const [view, setView] = useState({ target: [4, -4, 0], zoom: INITIAL_ZOOM });
+  const originalView = { target: [4, -4, 0], zoom: INITIAL_ZOOM };
+  const [view, setView] = useState(originalView);
 
   const showLoader = useMemo(() => {
     const dataIsLoaded = !data || loading;
@@ -323,9 +325,10 @@ const Embedding = (props) => {
               cellOpacity={0.8}
               cellRadius={cellRadius}
               // cellSelection={convertCellsData?.obsEmbeddingIndex}
-              obsEmbedding={convertedCellsData.obsEmbedding}
-              obsEmbeddingIndex={convertedCellsData.obsEmbeddingIndex}
+              obsEmbedding={convertedCellsData?.obsEmbedding}
+              obsEmbeddingIndex={convertedCellsData?.obsEmbeddingIndex}
               viewState={view}
+              originalViewState={originalView}
               setCellHighlight={setCellHighlight}
               theme='light'
               uuid={embeddingType}
