@@ -80,9 +80,6 @@ const convertCellsData = (results, hidden, properties) => {
     obsEmbeddingIndex.push(key.toString());
   });
 
-  data[0] = data[0];
-  data[1] = data[1];
-
   return {
     obsEmbedding: { data, shape: [data.length, results.length] },
     obsEmbeddingIndex
