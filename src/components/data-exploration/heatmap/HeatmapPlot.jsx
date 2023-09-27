@@ -266,7 +266,8 @@ const HeatmapPlot = (props) => {
     setHighlightedTrackData(obj);
   };
 
-  console.log("*****heatmapData*****", heatmapData.expressionMatrix)
+  console.log("*****heatmapData*****", heatmapData.expressionMatrix);
+  console.log("*** TODO: heatmap remove is broken");
 
   return (
     <div id='heatmap-container' onMouseLeave={clearCellInfo}>

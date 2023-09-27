@@ -191,6 +191,7 @@ const Embedding = (props) => {
   }, [selectedCell]);
 
   const setCellHighlight = useCallback((cell) => {
+    console.log("**** I am triggered: ", cell);
     // Keep last shown tooltip
     if (!cell) return;
 
@@ -315,22 +316,41 @@ const Embedding = (props) => {
         {renderExpressionView()}
         {
           data ? (
+            // TODO: recenter is not working
             <Scatterplot
+              cellColorEncoding="cellSetSelection"
+              cellColors={cellColorsForVitessce}
               cellOpacity={0.8}
               cellRadius={cellRadius}
+              // cellSelection={convertCellsData?.obsEmbeddingIndex}
+              obsEmbedding={convertedCellsData.obsEmbedding}
+              obsEmbeddingIndex={convertedCellsData.obsEmbeddingIndex}
+              viewState={view}
               setCellHighlight={setCellHighlight}
               theme='light'
               uuid={embeddingType}
-              viewState={view}
               updateViewInfo={updateViewInfo}
-              cells={convertedCellsData}
-              mapping='PCA'
-              setCellSelection={setCellsSelection}
-              cellColors={cellColorsForVitessce}
               setViewState={setViewState}
+              setCellSelection={setCellsSelection}
               getExpressionValue={getExpressionValue}
               getCellIsSelected={getCellIsSelected}
             />
+            // <Scatterplot
+            //   cellOpacity={0.8}
+            //   cellRadius={cellRadius}
+            //   setCellHighlight={setCellHighlight}
+            //   theme='light'
+            //   uuid={embeddingType}
+            //   viewState={view}
+            //   updateViewInfo={updateViewInfo}
+            //   cells={convertedCellsData}
+            //   mapping='PCA'
+            //   setCellSelection={setCellsSelection}
+            //   cellColors={cellColorsForVitessce}
+            //   setViewState={setViewState}
+            //   getExpressionValue={getExpressionValue}
+            //   getCellIsSelected={getCellIsSelected}
+            // />
           ) : ''
         }
         {
