@@ -36,7 +36,7 @@ const plotUuid = 'frequencyPlotMain';
 
 // simulating intial load of plot
 const customAPIResponses = {
-  [`/plots/${plotUuid}`]: () => statusResponse(404, 'Not Found'),
+  [`/plots/${plotUuid}$`]: () => statusResponse(404, 'Not Found'),
 };
 const mockApiResponses = _.merge(
   generateDefaultMockAPIResponses(fake.EXPERIMENT_ID), customAPIResponses,
@@ -103,7 +103,7 @@ describe('Frequency plots and tables index page', () => {
     const manyCellSetsResponse = {
       ...generateDefaultMockAPIResponses(fake.EXPERIMENT_ID),
       ...customAPIResponses,
-      [`experiments/${fake.EXPERIMENT_ID}/cellSets`]: () => promiseResponse(JSON.stringify(cellSetsData)),
+      [`experiments/${fake.EXPERIMENT_ID}/cellSets$`]: () => promiseResponse(JSON.stringify(cellSetsData)),
     };
 
     fetchMock.mockIf(/.*/, mockAPI(manyCellSetsResponse));

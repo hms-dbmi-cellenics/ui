@@ -71,6 +71,7 @@ jobs:
           echo "EOF" >> "$GITHUB_OUTPUT"
 
       - id: uncheck-integration-checkbox
+        if: steps.create-unchecked-pr-body.outputs.body != ''
         name: Uncheck the integration checkbox
         uses: tzkhan/pr-update-action@v2
         with:

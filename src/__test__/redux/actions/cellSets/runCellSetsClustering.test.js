@@ -12,7 +12,6 @@ const mockStore = configureStore([thunk]);
 
 jest.mock('utils/work/seekWorkResponse', () => ({
   __esModule: true, // this property makes it work
-  seekFromS3: jest.fn(() => new Promise((resolve) => { resolve(null); })),
   dispatchWorkRequest: jest.fn(),
 }));
 

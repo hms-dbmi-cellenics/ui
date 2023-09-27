@@ -2,7 +2,7 @@ import dayjs from 'dayjs';
 
 import getAuthJWT from 'utils/getAuthJWT';
 import fetchAPI from 'utils/http/fetchAPI';
-import unpackResult from 'utils/work/unpackResult';
+import unpackResult, { decompressUint8Array } from 'utils/work/unpackResult';
 import parseResult from 'utils/work/parseResult';
 import WorkTimeoutError from 'utils/errors/http/WorkTimeoutError';
 import WorkResponseError from 'utils/errors/http/WorkResponseError';
@@ -83,8 +83,8 @@ const dispatchWorkRequest = async (
   dispatch,
 ) => {
   const { default: connectionPromise } = await import('utils/socketConnection');
-  const io = await connectionPromise;
 
+  const io = await connectionPromise;
   const { name: taskName } = body;
 
   // for listGenes, markerHeatmap, & getEmbedding we set a long timeout for the worker
@@ -94,6 +94,7 @@ const dispatchWorkRequest = async (
   // and progresing.
   // this should be removed if we make each request run in a different worker
   const workerTimeoutDate = getWorkerTimeout(taskName, timeout);
+
   const authJWT = await getAuthJWT();
 
   const request = {
@@ -141,30 +142,43 @@ const dispatchWorkRequest = async (
   });
 
   const responsePromise = new Promise((resolve, reject) => {
-    io.on(`WorkResponse-${ETag}`, (res) => {
-      console.log('Recieved response from worker', res);
-      const { response } = res;
-      if (response.error) {
-        const { errorCode, userMessage } = response;
-        console.error(errorCode, userMessage);
+    io.on(`WorkResponse-${ETag}`, async (res) => {
+      // If type is object, then we received a notification with a signedUrl
+      // now we need to fetch the actual result from s3
+      if (typeof res === 'object') {
+        const { response } = res;
 
-        return reject(
-          new WorkResponseError(errorCode, userMessage, request),
-        );
+        if (response.error) {
+          const { errorCode, userMessage } = response;
+          console.error(errorCode, userMessage);
+
+          return reject(
+            new WorkResponseError(errorCode, userMessage, request),
+          );
+        }
+
+        return resolve({ signedUrl: response.signedUrl });
       }
 
-      // If no error, the response should be ready on S3.
-      // In this case, return true
-      return resolve();
+      // If type isn't object, then we have the actual work result,
+      // no further downloads are necessary, we just need to decompress and return it
+      const decompressedData = await decompressUint8Array(Uint8Array.from(Buffer.from(res, 'base64')));
+
+      return resolve({ data: parseResult(decompressedData) });
     });
   });
 
-  const result = Promise.race([timeoutPromise, responsePromise]);
+  // TODO test what happens when api throws an error here
+  await fetchAPI(
+    `/v2/workRequest/${experimentId}/${ETag}`,
+    {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(request),
+    },
+  );
 
-  // TODO switch to using normal WorkRequest for v2 requests
-  io.emit('WorkRequest-v2', request);
-
-  return result;
+  return await Promise.race([timeoutPromise, responsePromise]);
 };
 
 const seekWorkerResultsOrDispatchWork = async (
@@ -177,13 +191,17 @@ const seekWorkerResultsOrDispatchWork = async (
   dispatch,
 ) => {
   const url = `/v2/workResults/${experimentId}`;
-  const { ETag, signedUrl } = await fetchAPI(url, {
+
+  const workResults = await fetchAPI(url, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
     },
     body: JSON.stringify(ETagProps),
   });
+
+  const { ETag } = workResults;
+  let { signedUrl } = workResults;
 
   console.log('Recieved ETag: ', ETag, ' and signedUrl: ', signedUrl);
 
@@ -212,22 +230,21 @@ const seekWorkerResultsOrDispatchWork = async (
 
   // Otherwise subscribe to the worker socket using the Etag
   try {
-    await dispatchWorkRequest(
+    ({ signedUrl = null, data = null } = await dispatchWorkRequest(
       experimentId,
       body,
       timeout,
       ETag,
       requestProps,
       dispatch,
-    );
+    ));
 
-    console.log('Work request dispatched!');
-
-    const { ETag: newEtag, signedUrl: newSignedUrl } = await fetchAPI(url, ETagProps);
-
-    console.log('Recieved new ETag: ', newEtag, ' and signedUrl: ', newSignedUrl);
-
-    data = await downloadFromS3(newSignedUrl);
+    if (signedUrl) {
+      console.log('Recieved a signed URL... Downloading from S3');
+      data = await downloadFromS3(signedUrl);
+    } else {
+      console.log('Recieved parsed data');
+    }
 
     return { ETag, data };
   } catch (error) {

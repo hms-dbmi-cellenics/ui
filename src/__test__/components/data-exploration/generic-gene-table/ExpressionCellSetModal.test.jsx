@@ -25,7 +25,6 @@ const mockOnCancel = jest.fn();
 jest.mock('utils/pushNotificationMessage');
 
 jest.mock('utils/work/seekWorkResponse', () => ({
-  seekFromS3: jest.fn(),
   dispatchWorkRequest: jest.fn(),
 }));
 
@@ -103,7 +102,7 @@ describe('ExpressionCellSetModal', () => {
 
   it('Modal closes on success', async () => {
     dispatchWorkRequest.mockImplementationOnce(() => new Promise((resolve) => {
-      setTimeout(resolve(null), 2000);
+      setTimeout(resolve({ data: 'mockData' }), 2000);
     }));
 
     await renderExpressionCellSetModal(storeState);
