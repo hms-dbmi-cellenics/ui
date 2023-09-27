@@ -7,7 +7,6 @@ import mockAPI, { generateDefaultMockAPIResponses } from '__test__/test-utils/mo
 
 import unpackResult from 'utils/work/unpackResult';
 import parseResult from 'utils/work/parseResult';
-import _ from 'lodash';
 
 /**
  * jest.mock calls are automatically hoisted to the top of the javascript
@@ -16,14 +15,13 @@ import _ from 'lodash';
  * if they do not appear in the original file.
  */
 import * as socketConnectionMocks from 'utils/socketConnection';
+import { waitFor } from '@testing-library/dom';
 
 enableFetchMocks();
 uuidv4.mockImplementation(() => 'my-random-uuid');
 
 jest.mock('uuid');
-
 jest.mock('dayjs', () => () => jest.requireActual('dayjs')('4022-01-01T00:00:00.000Z'));
-
 jest.mock('utils/socketConnection', () => {
   const mockEmit = jest.fn();
   const mockOn = jest.fn();
@@ -38,8 +36,16 @@ jest.mock('utils/socketConnection', () => {
   };
 });
 
-jest.mock('utils/work/unpackResult');
 jest.mock('utils/work/parseResult');
+
+const mockResponseDataCompressed = 'mockResCompressed';
+const mockResponseDataDecompressed = 'mockResDecompressed';
+
+jest.mock('utils/work/unpackResult', () => ({
+  __esModule: true,
+  default: jest.fn(),
+  decompressUint8Array: jest.fn().mockImplementation(() => mockResponseDataDecompressed),
+}));
 
 const taskName = 'GetEmbedding';
 
@@ -51,6 +57,8 @@ describe('dispatchWorkRequest unit tests', () => {
     type: 'fake task',
   };
 
+  const dispatchMock = jest.fn();
+
   beforeEach(async () => {
     jest.clearAllMocks();
 
@@ -59,13 +67,9 @@ describe('dispatchWorkRequest unit tests', () => {
 
     const socketMock = new SocketMock();
 
-    socketConnectionMocks.mockEmit.mockImplementation((workRequestType, requestBody) => {
-      const responseBody = {
-        response: {
-          error: false,
-        },
-      };
+    parseResult.mockImplementationOnce(() => 'mockParsedResult');
 
+    socketConnectionMocks.mockEmit.mockImplementation((workRequestType, requestBody) => {
       const podInfo = {
         response: {
           podInfo: {
@@ -76,8 +80,10 @@ describe('dispatchWorkRequest unit tests', () => {
         },
       };
 
+      // mockDecompressUint8Array.mockReturnValue(Promise.resolve(mockResponseDataDecompressed));
+
       // This is a mocked response emit response from server
-      socketMock.socketClient.emit(`WorkResponse-${requestBody.ETag}`, responseBody);
+      socketMock.socketClient.emit(`WorkResponse-${requestBody.ETag}`, mockResponseDataCompressed);
       socketMock.socketClient.emit(`WorkerInfo-${fake.EXPERIMENT_ID}`, podInfo);
     });
 
@@ -89,57 +95,30 @@ describe('dispatchWorkRequest unit tests', () => {
     });
   });
 
-  it('Sends work to the backend when called', async () => {
+  it('Sends work to the worker when called', async () => {
     fetchMock.mockResponse(JSON.stringify({ signedUrl: 'http://www.apiUrl:portNum/path/blabla' }));
 
-    await dispatchWorkRequest(
-      experimentId, body, timeout, 'facefeed',
+    const resultPromise = dispatchWorkRequest(
+      experimentId, body, timeout, 'facefeed', null, dispatchMock,
     );
-    expect(socketConnectionMocks.mockEmit).toHaveBeenCalledWith('WorkRequest-v2', {
-      ETag: 'facefeed',
-      socketId: '5678',
-      experimentId: fake.EXPERIMENT_ID,
-      timeout: '4022-01-01T00:30:00.000Z',
-      body: { name: taskName, type: 'fake task' },
+
+    // Wait for subscription to WorkResponse-facefeed
+    await waitFor(() => {
+      expect(socketConnectionMocks.mockOn.mock.calls.length).toBeGreaterThan(0);
+
+      const [, workResponseHandler] = socketConnectionMocks.mockOn.mock.calls.find(([channel]) => channel === 'WorkResponse-facefeed');
+
+      workResponseHandler(mockResponseDataCompressed);
     });
 
-    expect(socketConnectionMocks.mockOn).toHaveBeenCalledTimes(3);
-  });
+    const result = await resultPromise;
 
-  it('Sends work to the backend when called for tasks with extended worker timeout', async () => {
-    fetchMock.mockResponse(JSON.stringify({ signedUrl: 'http://www.apiUrl:portNum/path/blabla' }));
+    expect(result).toEqual({ data: 'mockParsedResult' });
 
-    await dispatchWorkRequest(
-      experimentId, body, timeout, 'facefeed',
-    );
-    expect(socketConnectionMocks.mockEmit).toHaveBeenCalledWith('WorkRequest-v2', {
-      ETag: 'facefeed',
-      socketId: '5678',
-      experimentId: fake.EXPERIMENT_ID,
-      timeout: '4022-01-01T00:30:00.000Z',
-      body: { name: taskName, type: 'fake task' },
-    });
+    expect(parseResult).toHaveBeenCalledWith(mockResponseDataDecompressed);
 
     expect(socketConnectionMocks.mockOn).toHaveBeenCalledTimes(3);
-  });
-
-  it('Sends work to the backend when called for tasks without extended worker timeout', async () => {
-    fetchMock.mockResponse(JSON.stringify({ signedUrl: 'http://www.apiUrl:portNum/path/blabla' }));
-
-    const customBody = _.cloneDeepWith(body);
-    customBody.name = 'GeneExpression';
-    await dispatchWorkRequest(
-      experimentId, customBody, timeout, 'facefeed',
-    );
-    expect(socketConnectionMocks.mockEmit).toHaveBeenCalledWith('WorkRequest-v2', {
-      ETag: 'facefeed',
-      socketId: '5678',
-      experimentId: fake.EXPERIMENT_ID,
-      timeout: '4022-01-01T00:00:30.000Z',
-      body: { name: 'GeneExpression', type: 'fake task' },
-    });
-
-    expect(socketConnectionMocks.mockOn).toHaveBeenCalledTimes(3);
+    expect(socketConnectionMocks.mockOn.mock.calls.map(([eventName]) => eventName)).toMatchSnapshot('EventNames');
   });
 
   it('Returns an error if there is error in the response.', async () => {
@@ -168,52 +147,25 @@ describe('dispatchWorkRequest unit tests', () => {
     });
 
     expect(async () => {
-      await dispatchWorkRequest(experimentId, body, timeout, 'facefeed');
+      await dispatchWorkRequest(experimentId, body, timeout, 'facefeed', null, dispatchMock);
     }).rejects.toEqual(new Error('MOCK_ERROR_CODE: Mock worker error message'));
-  });
-  it('When using apiv2 correct work request is sent', async () => {
-    fetchMock.mockResponse(JSON.stringify({ signedUrl: 'http://www.apiUrl:portNum/path/blabla' }));
-
-    await dispatchWorkRequest(
-      experimentId, body, timeout, 'facefeed',
-    );
-    expect(socketConnectionMocks.mockEmit).toHaveBeenCalledWith('WorkRequest-v2', {
-      ETag: 'facefeed',
-      socketId: '5678',
-      experimentId: fake.EXPERIMENT_ID,
-      timeout: '4022-01-01T00:30:00.000Z',
-      body: { name: taskName, type: 'fake task' },
-    });
   });
 });
 
 describe('seekFromS3 unit tests', () => {
-  const experimentId = fake.EXPERIMENT_ID;
   const result = 'someResult';
-
-  const validResultPath = 'validResultPath';
-  const nonExistentResultPath = 'nonExistentResultPath';
-  const APIErrorPath = 'APIErrorPath';
-  const S3ErrorPath = 'S3ErrorPath';
 
   const validSignedUrl = 'https://s3.mock/validSignedUrl';
   const invalidSignedUrl = 'https://s3.mock/invalidSignedUrl';
 
-  const mockSignedUrl = { signedUrl: validSignedUrl };
-  const mockErrorSignedUrl = { signedUrl: invalidSignedUrl };
+  const s3ErrorResponse = new Response('Forbidden', { status: 403 });
 
   beforeAll(async () => {
     fetchMock.mockIf(/.*/, (req) => {
       const path = req.url;
 
-      if (path.endsWith(validResultPath)) return Promise.resolve(JSON.stringify(mockSignedUrl));
       if (path.endsWith(validSignedUrl)) return Promise.resolve(result);
-
-      if (path.endsWith(nonExistentResultPath)) return Promise.resolve(new Response('Not Found', { status: 404 }));
-      if (path.endsWith(APIErrorPath)) return Promise.resolve(new Response('Server error', { status: 500 }));
-
-      if (path.endsWith(S3ErrorPath)) return Promise.resolve(JSON.stringify(mockErrorSignedUrl));
-      if (path.endsWith(invalidSignedUrl)) return Promise.resolve(new Response('Forbidden', { status: 403 }));
+      if (path.endsWith(invalidSignedUrl)) return Promise.resolve(s3ErrorResponse);
 
       return {
         status: 500,
@@ -230,7 +182,7 @@ describe('seekFromS3 unit tests', () => {
     unpackResult.mockReturnValueOnce('mockUnpackedResult');
     parseResult.mockReturnValueOnce('mockParsedResult');
 
-    const finalResult = await seekFromS3(validResultPath, experimentId, taskName);
+    const finalResult = await seekFromS3(taskName, validSignedUrl);
 
     expect(finalResult).toEqual('mockParsedResult');
 
@@ -242,26 +194,9 @@ describe('seekFromS3 unit tests', () => {
     expect(parseResult).toHaveBeenCalledWith('mockUnpackedResult', taskName);
   });
 
-  it('Should return null if the work results is not found', async () => {
-    const response = await seekFromS3(nonExistentResultPath, experimentId, taskName);
-    expect(response).toEqual(null);
-  });
-
-  it('Should throw an error if the API returned an error (except 404)', async () => {
-    expect(async () => {
-      await seekFromS3(APIErrorPath, experimentId, taskName);
-    }).rejects.toThrow();
-  });
-
-  it('should throw an error if fetching to S3 returns an error', async () => {
-    expect(async () => {
-      await seekFromS3(S3ErrorPath, experimentId, taskName);
-    }).rejects.toThrow();
-  });
-
-  it('Works for apiv2 ', async () => {
-    // fetchMock.mockResponseOnce(JSON.stringify({ signedUrl: 'http://www.apiUrl:portNum/path/blabla' }));
-    await seekFromS3(validResultPath, experimentId, taskName);
-    expect(fetchMock.mock.calls[0]).toEqual(['http://localhost:3000/v2/workResults/testae48e318dab9a1bd0bexperiment/validResultPath', { headers: {} }]);
+  it('Should throw an error if fetching returns an error', async () => {
+    await expect(async () => {
+      await seekFromS3(taskName, invalidSignedUrl);
+    }).rejects.toThrow(new Error(`Error ${s3ErrorResponse.status}: ${s3ErrorResponse.text}`, { cause: s3ErrorResponse }));
   });
 });

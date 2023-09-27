@@ -44,7 +44,7 @@ enableFetchMocks();
 const mockAPIResponse = _.merge(
   generateDefaultMockAPIResponses(experimentId),
   {
-    [`experiments/${experimentId}/processingConfig`]: () => promiseResponse(
+    [`experiments/${experimentId}/processingConfig$`]: () => promiseResponse(
       JSON.stringify({ processingConfig }),
     ),
   },
@@ -118,7 +118,7 @@ describe('DownloadDataButton', () => {
     const qcFailMockAPIResponse = _.merge(
       {},
       mockAPIResponse,
-      { [`experiments/${experimentId}/backendStatus`]: () => promiseResponse(JSON.stringify(backendStatus)) },
+      { [`experiments/${experimentId}/backendStatus$`]: () => promiseResponse(JSON.stringify(backendStatus)) },
     );
 
     fetchMock.mockIf(/.*/, mockAPI(qcFailMockAPIResponse));
@@ -138,7 +138,7 @@ describe('DownloadDataButton', () => {
       {},
       mockAPIResponse,
       {
-        [`experiments/${experimentId}/processingConfig`]: () => promiseResponse(
+        [`experiments/${experimentId}/processingConfig$`]: () => promiseResponse(
           JSON.stringify({ processingConfig: processingConfigMissingSample }),
         ),
       },
@@ -237,7 +237,7 @@ describe('DownloadDataButton', () => {
     const loadingStatusApiResponse = _.merge(
       {},
       mockAPIResponse,
-      { [`experiments/${experimentId}/backendStatus`]: () => new Promise(() => { }) },
+      { [`experiments/${experimentId}/backendStatus$`]: () => new Promise(() => { }) },
     );
 
     fetchMock.mockIf(/.*/, mockAPI(loadingStatusApiResponse));

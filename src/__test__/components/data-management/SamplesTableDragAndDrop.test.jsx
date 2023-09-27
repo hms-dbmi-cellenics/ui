@@ -63,7 +63,7 @@ const experimentWithSamplesId = experimentWithSamples.id;
 
 // Mocking samples update / delete routes
 const customResponses = {
-  [`experiments/${experimentWithSamplesId}/samples/position`]: () => statusResponse(200, 'OK'),
+  [`experiments/${experimentWithSamplesId}/samples/position$`]: () => statusResponse(200, 'OK'),
 };
 
 const mockAPIResponse = _.merge(

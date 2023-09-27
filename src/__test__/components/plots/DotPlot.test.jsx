@@ -40,7 +40,7 @@ const experimentId = fake.EXPERIMENT_ID;
 const plotUuid = 'dotPlotMain';
 
 const customAPIResponses = {
-  [`/plots/${plotUuid}`]: () => statusResponse(404, 'Not found'),
+  [`/plots/${plotUuid}$`]: () => statusResponse(404, 'Not found'),
 };
 
 const mockAPIResponses = _.merge(
@@ -92,7 +92,7 @@ describe('DotPlot', () => {
   it('Shows an error if there is an error while loading cellSets', async () => {
     const errorResponse = {
       ...mockAPIResponses,
-      [`experiments/${experimentId}/cellSets`]: () => statusResponse(500, 'Some random error'),
+      [`experiments/${experimentId}/cellSets$`]: () => statusResponse(500, 'Some random error'),
     };
 
     fetchMock.mockIf(/.*/, mockAPI(errorResponse));

@@ -52,7 +52,7 @@ const createMockStore = (experimentNames) => {
     acc[idx] = {
       ...experimentTemplate,
       name,
-      id: idx,
+      id: idx.toString(),
     };
     return acc;
   }, {});

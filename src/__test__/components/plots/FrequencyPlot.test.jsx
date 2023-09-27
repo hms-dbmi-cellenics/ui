@@ -52,7 +52,7 @@ describe('Frequency plot tests', () => {
   it('Renders Loader instead of vega plot if  is being loaded', async () => {
     const cellSetErrorResponse = {
       ...generateDefaultMockAPIResponses(fake.EXPERIMENT_ID),
-      [`experiments/${fake.EXPERIMENT_ID}/cellSets`]: () => delayedResponse({ body: 'Not found', status: 404 }, 4000),
+      [`experiments/${fake.EXPERIMENT_ID}/cellSets$`]: () => delayedResponse({ body: 'Not found', status: 404 }, 4000),
     };
 
     fetchMock.mockIf(/.*/, mockAPI(cellSetErrorResponse));
