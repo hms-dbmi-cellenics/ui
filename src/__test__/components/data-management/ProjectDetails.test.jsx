@@ -9,9 +9,11 @@ import thunk from 'redux-thunk';
 import '@testing-library/jest-dom';
 import configureStore from 'redux-mock-store';
 import { act } from 'react-dom/test-utils';
-import { fireEvent } from '@testing-library/dom';
+
 import userEvent from '@testing-library/user-event';
-import { screen, render, waitFor } from '@testing-library/react';
+import {
+  screen, render, waitFor, fireEvent,
+} from '@testing-library/react';
 
 import * as createMetadataTrack from 'redux/actions/experiments/createMetadataTrack';
 import * as updateValueInMetadataTrack from 'redux/actions/experiments/updateValueInMetadataTrack';
@@ -222,9 +224,19 @@ describe('ProjectDetails', () => {
     await act(async () => {
       userEvent.click(menu);
     });
+    const propertyDropdown = screen.getByText('Sample level');
 
-    const options = await screen.getAllByRole('menuitem');
-    return options;
+    await act(async () => {
+      fireEvent.mouseOver(propertyDropdown);
+    });
+    await waitFor(() => screen.getByText('Create track'));
+
+    const menuItems = {
+      createTrack: screen.getByText('Create track'),
+      uploadFile: screen.getByText('Upload file'),
+      cellLevel: screen.getByText('Cell level'),
+    };
+    return menuItems;
   };
 
   it('Has a title, project ID and description', () => {
@@ -317,9 +329,9 @@ describe('ProjectDetails', () => {
       </Provider>,
     );
 
-    const options = await getMenuItems();
+    const menuOptions = await getMenuItems();
 
-    fireEvent.click(options[0]);
+    fireEvent.click(menuOptions.createTrack);
 
     const input = screen.getByDisplayValue('Track 1');
     fireEvent.change(input, { target: { value: 'myBrandNewMetadata' } });
@@ -337,9 +349,9 @@ describe('ProjectDetails', () => {
       </Provider>,
     );
 
-    const options = await getMenuItems();
+    const menuOptions = await getMenuItems();
 
-    fireEvent.click(options[0]);
+    fireEvent.click(menuOptions.createTrack);
 
     const input = screen.getByDisplayValue('Track 1');
     fireEvent.change(input, { target: { value: 'myBrandNewMetadata' } });
@@ -358,9 +370,9 @@ describe('ProjectDetails', () => {
       );
     });
 
-    const options = await getMenuItems();
+    const menuOptions = await getMenuItems();
 
-    fireEvent.click(options[0]);
+    fireEvent.click(menuOptions.createTrack);
     const input = screen.getByDisplayValue('Track 1');
     fireEvent.change(input, { target: { value: '  myBrandNewMetadata     ' } });
     fireEvent.keyDown(input, { key: 'Enter', code: 'Enter' });
@@ -385,9 +397,9 @@ describe('ProjectDetails', () => {
     });
 
     // Add track column
-    const options = await getMenuItems();
+    const menuOptions = await getMenuItems();
 
-    fireEvent.click(options[0]);
+    fireEvent.click(menuOptions.createTrack);
     fireEvent.keyDown(screen.getByDisplayValue('Track 1'), { key: 'Enter', code: 'Enter' });
 
     // Change track value for sample
