@@ -8,6 +8,12 @@ Enzyme.configure({ adapter: new Adapter() });
 
 jest.mock('localforage');
 jest.mock('utils/pushNotificationMessage');
+jest.mock('components/data-exploration/embedding/DynamicVitessceEmbedding', () => ({
+  Scatterplot: () => 'Mocked Scatterplot',
+}));
+jest.mock('components/data-exploration/heatmap/DynamicVitessceHeatmap', () => ({
+  Heatmap: () => 'Mocked Heatmap',
+}));
 
 beforeAll(async () => {
   // Add stuff that needs to run once, before all tests

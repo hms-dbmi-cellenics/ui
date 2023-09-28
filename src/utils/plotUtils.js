@@ -82,7 +82,7 @@ const convertCellsData = (results, hidden, properties) => {
 
   return {
     obsEmbedding: { data, shape: [data.length, results.length] },
-    obsEmbeddingIndex
+    obsEmbeddingIndex,
   };
 };
 

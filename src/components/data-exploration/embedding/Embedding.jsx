@@ -203,7 +203,7 @@ const Embedding = (props) => {
   }, []);
 
   const updateViewInfo = useCallback((viewInfo) => {
-    if (selectedCell && viewInfo.project) {
+    if (selectedCell && viewInfo.projectFromId) {
       const [x, y] = viewInfo.projectFromId(selectedCell);
       cellCoordinatesRef.current = {
         x,

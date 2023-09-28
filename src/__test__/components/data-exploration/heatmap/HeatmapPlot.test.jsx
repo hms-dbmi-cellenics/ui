@@ -53,6 +53,7 @@ jest.mock('utils/work/seekWorkResponse', () => ({
 
 let vitesscePropsSpy = null;
 jest.mock('next/dynamic', () => () => (props) => {
+  console.log("*** we are coming here: ", props);
   vitesscePropsSpy = props;
   return 'Sup Im a heatmap';
 });
@@ -127,8 +128,8 @@ describe('HeatmapPlot', () => {
     expect(screen.getByText(/Sup Im a heatmap/i)).toBeInTheDocument();
 
     // Renders correct cells and genes
-    expect(vitesscePropsSpy.expressionMatrix.rows).toMatchSnapshot();
-    expect(vitesscePropsSpy.expressionMatrix.cols).toMatchSnapshot();
+    expect(vitesscePropsSpy.uint8ObsFeatureMatrix).toMatchSnapshot();
+    expect(vitesscePropsSpy.featureIndex).toMatchSnapshot();
   });
 
   it('Shows loader message if cellSets are loading', async () => {
@@ -264,7 +265,7 @@ describe('HeatmapPlot', () => {
     expect(dispatchWorkRequest.mock.calls[0][1].name === 'MarkerHeatmap').toBe(true);
 
     // It shows cells in louvain-3
-    expect(isSubset(cellsInLouvain3, vitesscePropsSpy.expressionMatrix.rows)).toEqual(true);
+    expect(isSubset(cellsInLouvain3, vitesscePropsSpy.obsIndex)).toEqual(true);
 
     // If a louvain-3 is suddenly hidden
     await act(async () => {
@@ -328,9 +329,9 @@ describe('HeatmapPlot', () => {
     });
 
     // It doesn't reorder the genes
-    expect(vitesscePropsSpy.expressionMatrix.rows).toMatchSnapshot();
+    expect(vitesscePropsSpy.uint8ObsFeatureMatrix).toMatchSnapshot();
     // It reorders correctly
-    expect(vitesscePropsSpy.expressionMatrix.cols).toMatchSnapshot();
+    expect(vitesscePropsSpy.featureIndex).toMatchSnapshot();
   });
 
   it('Responds correctly to vitessce Heatmap callbacks', async () => {
@@ -341,8 +342,8 @@ describe('HeatmapPlot', () => {
     expect(screen.getByText(/Sup Im a heatmap/i)).toBeInTheDocument();
 
     // Renders the correct genes and cells
-    expect(vitesscePropsSpy.expressionMatrix.rows).toMatchSnapshot();
-    expect(vitesscePropsSpy.expressionMatrix.cols).toMatchSnapshot();
+    expect(vitesscePropsSpy.uint8ObsFeatureMatrix).toMatchSnapshot();
+    expect(vitesscePropsSpy.featureIndex).toMatchSnapshot();
 
     // On changing the view state
     const updatedViewState = { zoom: 15, target: [1, 1] };
