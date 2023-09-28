@@ -1,10 +1,13 @@
+import _ from 'lodash';
 import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import waitForActions from 'redux-mock-store-await-actions';
 import axios from 'axios';
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 
-import { SAMPLES_FILE_UPDATE } from 'redux/actionTypes/samples';
+import {
+  SAMPLES_CREATED, SAMPLES_FILE_UPDATE, SAMPLES_SAVED, SAMPLES_SAVING, SAMPLES_VALIDATING_UPDATED,
+} from 'redux/actionTypes/samples';
 import initialSampleState, { sampleTemplate } from 'redux/reducers/samples/initialState';
 import initialExperimentState, { experimentTemplate } from 'redux/reducers/experiments/initialState';
 
@@ -187,6 +190,13 @@ describe('processUpload', () => {
     const uploadedStatusProperties = uploadProperties.filter(
       ({ status }) => status === UploadStatus.UPLOADED,
     );
+
+    // Order is respected, SAMPLES_CREATED runs *before* SAMPLES_FILE_UPDATE
+    expect(_.map(store.getActions(), 'type')).toEqual([
+      ...Array(2).fill(SAMPLES_VALIDATING_UPDATED),
+      SAMPLES_SAVING, SAMPLES_CREATED, SAMPLES_SAVED,
+      ...Array(6).fill(SAMPLES_FILE_UPDATE),
+    ]);
 
     // There are 3 files actions with status uploading
     expect(uploadingStatusProperties.length).toEqual(3);
