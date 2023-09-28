@@ -203,6 +203,11 @@ const seekWorkerResultsOrDispatchWork = async (
   const { ETag } = workResults;
   let { signedUrl } = workResults;
 
+  if (body.name === 'MarkerHeatmap') {
+    console.log('MarkerHeatmap ETag: ', ETag);
+    console.log('MarkerHeatmap Extra dependencies: ', ETagProps.extraDependencies);
+  }
+
   console.log('Recieved ETag: ', ETag, ' and signedUrl: ', signedUrl);
 
   onETagGenerated(ETag);
