@@ -14,6 +14,8 @@ import getFileTypeV2 from 'utils/getFileTypeV2';
 import { sampleTech } from 'utils/constants';
 import fileUploadSpecifications from 'utils/upload/fileUploadSpecifications';
 import processMultipartUpload from 'utils/upload/processMultipartUpload';
+import endUserMessages from 'utils/endUserMessages';
+import pushNotificationMessage from 'utils/pushNotificationMessage';
 
 const prepareAndUploadFileToS3 = async (
   experimentId, sampleId, fileType, file, uploadUrlParams, dispatch,
@@ -66,6 +68,25 @@ const prepareAndUploadFileToS3 = async (
 const createAndUploadSingleFile = async (file, experimentId, sampleId, dispatch, selectedTech) => {
   const fileType = getFileTypeV2(file.name, selectedTech);
 
+  let uploadUrlParams;
+  try {
+    const metadata = getMetadata(file, selectedTech);
+
+    uploadUrlParams = await dispatch(
+      createSampleFile(
+        experimentId,
+        sampleId,
+        fileType,
+        file.size,
+        metadata,
+        file,
+      ),
+    );
+  } catch (e) {
+    pushNotificationMessage('error', endUserMessages.ERROR_BEGIN_SAMPLE_FILE_UPLOAD);
+    return;
+  }
+
   if (!file.compressed) {
     try {
       file.fileObject = await loadAndCompressIfNecessary(file, () => {
@@ -82,25 +103,6 @@ const createAndUploadSingleFile = async (file, experimentId, sampleId, dispatch,
       dispatch(updateSampleFileUpload(experimentId, sampleId, fileType, fileErrorStatus));
       return;
     }
-  }
-
-  let uploadUrlParams;
-  try {
-    const metadata = getMetadata(file, selectedTech);
-
-    uploadUrlParams = await dispatch(
-      createSampleFile(
-        experimentId,
-        sampleId,
-        fileType,
-        file.size,
-        metadata,
-        file,
-      ),
-    );
-  } catch (e) {
-    dispatch(updateSampleFileUpload(experimentId, sampleId, fileType, UploadStatus.UPLOAD_ERROR));
-    return;
   }
 
   await prepareAndUploadFileToS3(experimentId, sampleId, fileType, file, uploadUrlParams, dispatch);
