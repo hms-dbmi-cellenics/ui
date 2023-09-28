@@ -31,7 +31,6 @@ import {
   colorInterpolator,
 } from 'utils/plotUtils';
 import getContainingCellSetsProperties from 'utils/cellSets/getContainingCellSetsProperties';
-import { or } from 'mathjs';
 
 const Scatterplot = dynamic(() => import('./DynamicVitessceEmbedding'), {
   ssr: false,
@@ -193,7 +192,6 @@ const Embedding = (props) => {
   }, [selectedCell]);
 
   const setCellHighlight = useCallback((cell) => {
-    console.log("**** I am triggered: ", cell);
     // Keep last shown tooltip
     if (!cell) return;
 
@@ -206,7 +204,7 @@ const Embedding = (props) => {
 
   const updateViewInfo = useCallback((viewInfo) => {
     if (selectedCell && viewInfo.project) {
-      const [x, y] = viewInfo.project(selectedCell);
+      const [x, y] = viewInfo.projectFromId(selectedCell);
       cellCoordinatesRef.current = {
         x,
         y,
@@ -318,42 +316,24 @@ const Embedding = (props) => {
         {renderExpressionView()}
         {
           data ? (
-            // TODO: recenter is not working
             <Scatterplot
               cellColorEncoding="cellSetSelection"
-              cellColors={cellColorsForVitessce}
               cellOpacity={0.8}
               cellRadius={cellRadius}
-              // cellSelection={convertCellsData?.obsEmbeddingIndex}
-              obsEmbedding={convertedCellsData?.obsEmbedding}
-              obsEmbeddingIndex={convertedCellsData?.obsEmbeddingIndex}
-              viewState={view}
-              originalViewState={originalView}
               setCellHighlight={setCellHighlight}
               theme='light'
               uuid={embeddingType}
-              updateViewInfo={updateViewInfo}
+              viewState={view}
               setViewState={setViewState}
+              originalViewState={originalView}
+              updateViewInfo={updateViewInfo}
+              obsEmbedding={convertedCellsData?.obsEmbedding}
+              obsEmbeddingIndex={convertedCellsData?.obsEmbeddingIndex}
+              cellColors={cellColorsForVitessce}
               setCellSelection={setCellsSelection}
               getExpressionValue={getExpressionValue}
               getCellIsSelected={getCellIsSelected}
             />
-            // <Scatterplot
-            //   cellOpacity={0.8}
-            //   cellRadius={cellRadius}
-            //   setCellHighlight={setCellHighlight}
-            //   theme='light'
-            //   uuid={embeddingType}
-            //   viewState={view}
-            //   updateViewInfo={updateViewInfo}
-            //   cells={convertedCellsData}
-            //   mapping='PCA'
-            //   setCellSelection={setCellsSelection}
-            //   cellColors={cellColorsForVitessce}
-            //   setViewState={setViewState}
-            //   getExpressionValue={getExpressionValue}
-            //   getCellIsSelected={getCellIsSelected}
-            // />
           ) : ''
         }
         {
