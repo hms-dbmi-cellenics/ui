@@ -113,7 +113,6 @@ const dispatchWorkRequest = async (
     io.on(`WorkerInfo-${experimentId}`, (res) => {
       const { response: { podInfo: { creationTimestamp, phase } } } = res;
       const extraTime = getRemainingWorkerStartTime(creationTimestamp);
-      console.log('Received worker info', res, extraTime);
       // this worker info indicates that the work request has been received but the worker
       // is still spinning up so we will add extra time to account for that.
       if (phase === 'Pending' && extraTime > 0) {
@@ -135,7 +134,6 @@ const dispatchWorkRequest = async (
           },
         };
         dispatch(updateBackendStatus(experimentId, status));
-        console.log('Heartbeat with status', status);
         setOrRefreshTimeout(request, timeout, reject, ETag);
       }
     });
@@ -203,35 +201,20 @@ const seekWorkerResultsOrDispatchWork = async (
   const { ETag } = workResults;
   let { signedUrl } = workResults;
 
-  if (body.name === 'MarkerHeatmap') {
-    console.log('MarkerHeatmap ETag: ', ETag);
-    console.log('MarkerHeatmap Extra dependencies: ', ETagProps.extraDependencies);
-  }
-
-  console.log('Recieved ETag: ', ETag, ' and signedUrl: ', signedUrl);
-
   onETagGenerated(ETag);
 
   // First, let's try to fetch this information from the local cache.
   let data = await cache.get(ETag);
 
   if (data) {
-    console.log('Found locally cached results!');
     return { ETag, data };
   }
-
-  console.log('Didn\'t find locally cached results');
-  console.log('Looking in S3...');
 
   // If a signed url is returned, we know that results already exist
   if (signedUrl) {
-    console.log('Found S3 results!');
     data = await downloadFromS3(signedUrl);
     return { ETag, data };
   }
-
-  console.log('Didn\'t find S3 results');
-  console.log('Dispatching work request...');
 
   // Otherwise subscribe to the worker socket using the Etag
   try {
@@ -244,11 +227,9 @@ const seekWorkerResultsOrDispatchWork = async (
       dispatch,
     ));
 
+    // If signedUrl is null, then the data is already recieved and can be returned
     if (signedUrl) {
-      console.log('Recieved a signed URL... Downloading from S3');
       data = await downloadFromS3(signedUrl);
-    } else {
-      console.log('Recieved parsed data');
     }
 
     return { ETag, data };
