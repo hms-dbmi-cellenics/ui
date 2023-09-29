@@ -69,8 +69,6 @@ const loadDownsampledGeneExpressionDebounced = _.debounce(
           onETagGenerated: (ETag) => {
             requestETag = ETag;
 
-            console.log('OWEIjferoinDEBUG');
-
             // Dispatch loading state.
             dispatch({
               type: DOWNSAMPLED_GENES_LOADING,

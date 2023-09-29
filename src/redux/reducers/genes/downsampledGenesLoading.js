@@ -7,8 +7,6 @@ import getInitialState from './getInitialState';
 const downsampledGenesLoading = produce((draft, action) => {
   const { ETag, genes } = action.payload;
 
-  console.log('ETagweDebug');
-  console.log(ETag);
   if (ETag) {
     draft.expression.downsampledETag = ETag;
   }
