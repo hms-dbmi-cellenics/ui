@@ -1,28 +1,23 @@
 import fetchAPI from 'utils/http/fetchAPI';
 import handleError from 'utils/http/handleError';
-import dayjs from 'dayjs';
-import { loadSamples } from '../samples';
-import loadExperiments from './loadExperiments';
+import loadExperiments from 'redux/actions/experiments/loadExperiments';
 
 const createCellLevelMetadata = (experimentId, body) => async (dispatch) => {
-  const createdAt = dayjs().toISOString();
-
   try {
-    const uploadUrlParams = await fetchAPI(
+    const signedUploadUrl = await fetchAPI(
       `/v2/experiments/${experimentId}/cellLevel`,
       {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ ...body, createdAt }),
+        body: JSON.stringify(body),
       },
     );
 
     // refresh experiment & samples info to show new metadata
     await dispatch(loadExperiments());
-    await dispatch(loadSamples(experimentId));
-    return uploadUrlParams;
+    return signedUploadUrl;
   } catch (e) {
     handleError(e, e.userMessage);
   }

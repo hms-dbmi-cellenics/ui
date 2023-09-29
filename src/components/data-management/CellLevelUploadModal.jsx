@@ -22,7 +22,7 @@ import readFileToString from 'utils/upload/readFileToString';
 const { Text, Title, Paragraph } = Typography;
 
 const CellLevelUploadModal = (props) => {
-  const { onUpload, onCancel } = props;
+  const { onUpload, onCancel, uploading } = props;
 
   const [canUpload, setCanUpload] = useState(false);
   const [filesList, setFilesList] = useState([]);
@@ -66,6 +66,7 @@ const CellLevelUploadModal = (props) => {
           type='primary'
           key='create'
           block
+          loading={uploading}
           disabled={!canUpload}
           onClick={() => {
             onUpload(filesList[0]);
@@ -79,11 +80,27 @@ const CellLevelUploadModal = (props) => {
       <Row style={{ margin: '1rem 0' }}>
         <Col span={24}>
           <Title level={4}>
-            File upload Upload:
+            File Upload:
             <span style={{ color: 'red', marginRight: '2em' }}>*</span>
           </Title>
           <Paragraph>
-            Upload a single file containing the metadata in key-value tab-separated format (.tsv)
+            Tab-separated value file, with one row per barcode, containing the following columns:
+            <br />
+            <Text code> barcode (mandatory) </Text>
+            <br />
+            <Text code>samples (preferred): </Text>
+            {' '}
+            values should match sample names in the Data Management module
+            <br />
+            <b>Other cell-level metadata columns</b>
+            <br />
+            <br />
+
+            If there were duplicated barcodes, Cellenics will automatically attempt to de-duplicate them using the “samples” column if present.
+            If not, duplicated barcodes will be added to a “duplicated” cellset for manual annotation.
+
+            Only one tsv file is allowed per experiment. Uploading a new one will replace any previously existing cell-level metadata.
+
           </Paragraph>
         </Col>
       </Row>
@@ -148,15 +165,9 @@ const CellLevelUploadModal = (props) => {
 };
 
 CellLevelUploadModal.propTypes = {
-  onUpload: PropTypes.func,
-  onCancel: PropTypes.func,
-  currentSelectedTech: PropTypes.string,
-};
-
-CellLevelUploadModal.defaultProps = {
-  onUpload: null,
-  onCancel: null,
-  currentSelectedTech: null,
+  uploading: PropTypes.bool.isRequired,
+  onUpload: PropTypes.func.isRequired,
+  onCancel: PropTypes.func.isRequired,
 };
 
 export default CellLevelUploadModal;
