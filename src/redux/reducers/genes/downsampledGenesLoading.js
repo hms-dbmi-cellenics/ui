@@ -5,7 +5,7 @@ import _ from 'lodash';
 import getInitialState from './getInitialState';
 
 const downsampledGenesLoading = produce((draft, action) => {
-  const { ETag, genes } = action.payload;
+  const { ETag, genes, componentUuid } = action.payload;
 
   if (ETag) {
     draft.expression.downsampledETag = ETag;
@@ -17,6 +17,9 @@ const downsampledGenesLoading = produce((draft, action) => {
       genes,
     );
   }
+
+  draft.expression.views[componentUuid].fetching = true;
+  draft.expression.views[componentUuid].error = false;
 }, getInitialState());
 
 export default downsampledGenesLoading;
