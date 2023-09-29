@@ -19,7 +19,7 @@ const GeneReorderTool = (props) => {
   const dispatch = useDispatch();
 
   const config = useSelector((state) => state.componentConfig[plotUuid]?.config);
-  const genesLoading = useSelector((state) => state.genes.expression.loading);
+  const genesLoading = useSelector((state) => state.genes.expression.downsampled.loading);
 
   const [selectedGenesLocal, setSelectedGenesLocal] = useState([]);
 

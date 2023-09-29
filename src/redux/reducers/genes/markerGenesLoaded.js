@@ -26,7 +26,7 @@ const markerGenesLoaded = produce((draft, action) => {
     stats,
   );
 
-  draft.expression.downsampledCellOrder = cellOrder;
+  draft.expression.downsampled.cellOrder = cellOrder;
 
   draft.expression.views[plotUuid] = { fetching: false, error: false, data: orderedGeneNames };
 

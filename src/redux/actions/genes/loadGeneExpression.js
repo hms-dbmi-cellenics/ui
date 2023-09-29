@@ -13,7 +13,7 @@ const loadGeneExpression = (
   genes,
   componentUuid,
 ) => async (dispatch, getState) => {
-  const { loading, matrix } = getState().genes.expression;
+  const { loading, matrix } = getState().genes.expression.full;
 
   // If other gene expression data is already being loaded, don't dispatch.
   if (loading.length > 0) {

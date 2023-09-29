@@ -7,7 +7,9 @@ const upperCaseArray = (array) => (array?.map((element) => element.toUpperCase()
 const genesExpressionLoaded = (state, action) => {
   const {
     componentUuid, genes,
-    loadingStatus = _.difference(upperCaseArray(state.expression.loading), upperCaseArray(genes)),
+    loadingStatus = _.difference(
+      upperCaseArray(state.expression.full.loading), upperCaseArray(genes),
+    ),
     newGenes = undefined,
     downsampledCellOrder = null,
   } = action.payload;
@@ -55,8 +57,11 @@ const genesExpressionLoaded = (state, action) => {
           data: genes,
         },
       },
-      loading: loadingStatus,
-      downsampledCellOrder: downsampledCellOrder ?? state.expression.downsampledCellOrder,
+      full: {
+        ...state.expression.full,
+        loading: loadingStatus,
+      },
+      // downsampledCellOrder: downsampledCellOrder ?? state.expression.downsampledCellOrder,
     },
   };
 };

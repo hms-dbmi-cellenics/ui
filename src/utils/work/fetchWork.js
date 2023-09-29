@@ -33,6 +33,8 @@ const fetchGeneExpressionWorkWithoutLocalCache = async (
     getState,
   );
 
+  onETagGenerated(ETag);
+
   try {
     const { signedUrl, data } = await dispatchWorkRequest(
       experimentId,

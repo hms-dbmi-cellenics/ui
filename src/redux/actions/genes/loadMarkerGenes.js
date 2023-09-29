@@ -101,6 +101,8 @@ const loadMarkerGenes = (
       return;
     }
 
+    throw e;
+
     const errorMessage = handleError(e, endUserMessages.ERROR_FETCH_MARKER_GENES, undefined, false);
 
     dispatch({
