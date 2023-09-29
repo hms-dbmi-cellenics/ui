@@ -14,10 +14,7 @@ const downsampledGenesLoaded = (state, action) => {
     cellOrder,
   } = action.payload;
 
-  console.log('newGenesDebug');
-  console.log(newGenes);
-
-  // If there's any data to load, load it
+  // If there's any data to store, load it
   if (newGenes) {
     const {
       orderedGeneNames,
@@ -27,9 +24,6 @@ const downsampledGenesLoaded = (state, action) => {
       stats,
     } = newGenes;
 
-    // if (cellOrder === state.expression.downsampled.cellOrder) {
-    // If the cellOrder has changed, then the data we had stored up to now is no longer
-    // useful (it's for a cellOrder we no longer use), replace it
     state.expression.downsampled.matrix.setGeneExpression(
       orderedGeneNames,
       rawExpression,
@@ -37,16 +31,6 @@ const downsampledGenesLoaded = (state, action) => {
       zScore,
       stats,
     );
-    // } else {
-    //   // If the cellOrder matches, add it to what we already have stored
-    //   state.expression.full.matrix.pushGeneExpression(
-    //     orderedGeneNames,
-    //     rawExpression,
-    //     truncatedExpression,
-    //     zScore,
-    //     stats,
-    //   );
-    // }
   }
 
   return {
