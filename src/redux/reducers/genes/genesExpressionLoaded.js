@@ -23,7 +23,7 @@ const genesExpressionLoaded = (state, action) => {
     } = newGenes;
 
     if (downsampledCellOrder) {
-      state.expression.downsampledMatrix.setGeneExpression(
+      state.expression.downsampled.matrix.setGeneExpression(
         orderedGeneNames,
         rawExpression,
         truncatedExpression,
@@ -31,7 +31,7 @@ const genesExpressionLoaded = (state, action) => {
         stats,
       );
     } else {
-      state.expression.matrix.pushGeneExpression(
+      state.expression.full.matrix.pushGeneExpression(
         orderedGeneNames,
         rawExpression,
         truncatedExpression,

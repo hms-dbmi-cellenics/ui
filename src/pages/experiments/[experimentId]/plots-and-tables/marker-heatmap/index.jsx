@@ -50,10 +50,9 @@ const MarkerHeatmap = ({ experimentId }) => {
   const config = useSelector((state) => state.componentConfig[plotUuid]?.config);
   const configIsLoaded = useSelector((state) => !_.isNil(state.componentConfig[plotUuid]));
 
-  const { expression: expressionData } = useSelector((state) => state.genes);
   const {
-    error, loading, downsampledMatrix, downsampledCellOrder,
-  } = expressionData;
+    error, loading, matrix, cellOrder,
+  } = useSelector((state) => state.genes.expression.downsampled);
 
   const cellSets = useSelector(getCellSets());
   const { hierarchy, properties } = cellSets;
@@ -167,7 +166,7 @@ const MarkerHeatmap = ({ experimentId }) => {
     const getCellIdsForCluster = (clusterId) => properties[clusterId].cellIds;
 
     const getAverageExpressionForGene = (gene, currentCellIds) => {
-      const expressionValues = downsampledMatrix.getRawExpression(gene);
+      const expressionValues = matrix.getRawExpression(gene);
       let totalValue = 0;
       currentCellIds.forEach((cellId) => {
         totalValue += expressionValues[cellId];
@@ -229,7 +228,8 @@ const MarkerHeatmap = ({ experimentId }) => {
   };
 
   useEffect(() => {
-    if (!config || _.isEmpty(expressionData)) {
+    // if (!config || _.isEmpty(expressionData)) {
+    if (!config) {
       return;
     }
     if (loadedMarkerGenes.length && !config.selectedGenes.length) {
@@ -245,7 +245,7 @@ const MarkerHeatmap = ({ experimentId }) => {
 
   useEffect(() => {
     if (!cellSets.accessible
-      || _.isEmpty(expressionData)
+      // || _.isEmpty(expressionData)
       || _.isEmpty(loadedMarkerGenes)
       || !loading
       || !hierarchy?.length
@@ -255,7 +255,7 @@ const MarkerHeatmap = ({ experimentId }) => {
       return;
     }
 
-    const data = generateVegaData(downsampledCellOrder, downsampledMatrix, config, cellSets);
+    const data = generateVegaData(cellOrder, matrix, config, cellSets);
     const spec = generateSpec(config, 'Cluster ID', data, true);
 
     spec.description = 'Marker heatmap';
@@ -279,7 +279,7 @@ const MarkerHeatmap = ({ experimentId }) => {
     spec.marks.push(extraMarks);
 
     setVegaSpec(spec);
-  }, [config, downsampledCellOrder]);
+  }, [config, cellOrder]);
 
   useEffect(() => {
     dispatch(loadGeneList(experimentId));
@@ -479,7 +479,7 @@ const MarkerHeatmap = ({ experimentId }) => {
       return (<Loader experimentId={experimentId} />);
     }
 
-    if (downsampledCellOrder.length === 0) {
+    if (cellOrder.length === 0) {
       return (
         <Empty description='No matching cells found, try changing your settings in Select Data.' />
       );

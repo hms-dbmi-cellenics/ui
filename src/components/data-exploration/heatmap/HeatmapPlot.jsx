@@ -45,9 +45,9 @@ const HeatmapPlot = (props) => {
 
   const dispatch = useDispatch();
 
-  const loadingGenes = useSelector((state) => state.genes.expression.loading);
+  const loadingGenes = useSelector((state) => state.genes.expression.downsampled.loading);
   const downsampledCellOrder = useSelector(
-    (state) => state.genes.expression.downsampledCellOrder,
+    (state) => state.genes.expression.downsampled.cellOrder,
   );
 
   const { data: selectedGenes, fetching: fetchingGenes } = useSelector(
@@ -65,7 +65,10 @@ const HeatmapPlot = (props) => {
 
   const cellCoordinatesRef = useRef({ x: 200, y: 300 });
 
-  const expressionData = useSelector((state) => state.genes.expression);
+  const {
+    error: expressionDataError, matrix,
+  } = useSelector((state) => state.genes.expression.downsampled);
+
   const {
     loading: markerGenesLoading, error: markerGenesLoadingError,
   } = useSelector((state) => state.genes.markers);
@@ -88,9 +91,8 @@ const HeatmapPlot = (props) => {
     return groupedCellClasses.map((cellClass) => cellClass.children).flat();
   }, _.isEqual);
 
-  const expressionMatrix = useSelector((state) => state.genes.expression.downsampledMatrix);
+  const expressionMatrix = useSelector((state) => state.genes.expression.downsampled.matrix);
 
-  const { error: expressionDataError, downsampledMatrix } = expressionData;
   const viewError = useSelector((state) => state.genes.expression.views[COMPONENT_TYPE]?.error);
 
   const updateCellCoordinates = (newView) => {
@@ -148,7 +150,7 @@ const HeatmapPlot = (props) => {
     const data = generateVitessceData(
       downsampledCellOrder,
       selectedTracks,
-      downsampledMatrix,
+      matrix,
       selectedGenes,
       cellSets,
     );
