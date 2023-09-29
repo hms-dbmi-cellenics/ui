@@ -84,7 +84,7 @@ const withChangesState = {
 enableFetchMocks();
 
 const mockAPIResponses = generateDefaultMockAPIResponses(experimentId);
-const urlMatcher = `/v2/access/${experimentId}/check?url=%2Fv2%2Fexperiments%2F${experimentId}%2Fqc&method=POST`;
+const urlMatcher = `/v2/access/${experimentId}/check\\?url=%2Fv2%2Fexperiments%2F${experimentId}%2Fqc\\&method=POST$`;
 
 describe('ChangesNotAppliedModal', () => {
   beforeEach(() => {

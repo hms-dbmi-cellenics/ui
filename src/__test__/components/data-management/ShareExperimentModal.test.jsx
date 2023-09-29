@@ -26,7 +26,7 @@ describe('Share expeirment modal', () => {
   enableFetchMocks();
 
   const customAPIResponse = {
-    [`/access/${fake.EXPERIMENT_ID}`]: () => Promise.resolve(new Response(JSON.stringify([{
+    [`/access/${fake.EXPERIMENT_ID}$`]: () => Promise.resolve(new Response(JSON.stringify([{
       name: 'Bob',
       email: 'bob@bob.com',
       role: 'explorer',

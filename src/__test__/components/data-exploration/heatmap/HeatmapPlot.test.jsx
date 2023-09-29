@@ -5,7 +5,7 @@ import preloadAll from 'jest-next-dynamic';
 import { render, screen } from '@testing-library/react';
 import { act } from 'react-dom/test-utils';
 
-import { dispatchWorkRequest, seekFromS3 } from 'utils/work/seekWorkResponse';
+import { dispatchWorkRequest } from 'utils/work/seekWorkResponse';
 
 import { Provider } from 'react-redux';
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
@@ -19,6 +19,8 @@ import { makeStore } from 'redux/store';
 import mockAPI, {
   generateDefaultMockAPIResponses,
   delayedResponse,
+  dispatchWorkRequestMock,
+  workerDataResult,
 } from '__test__/test-utils/mockAPI';
 
 import HeatmapPlot from 'components/data-exploration/heatmap/HeatmapPlot';
@@ -50,7 +52,6 @@ jest.mock('object-hash', () => {
 jest.mock('utils/work/seekWorkResponse', () => ({
   __esModule: true,
   dispatchWorkRequest: jest.fn(() => true),
-  seekFromS3: jest.fn(),
 }));
 
 let vitesscePropsSpy = null;
@@ -67,8 +68,8 @@ jest.mock('lodash/sampleSize', () => ({
 enableFetchMocks();
 
 const mockWorkerResponses = {
-  '5-marker-genes': () => Promise.resolve(_.cloneDeep(markerGenesData5)),
-  '2-marker-genes': () => Promise.resolve(_.cloneDeep(markerGenesData2)),
+  '5-marker-genes': markerGenesData5,
+  '2-marker-genes': markerGenesData2,
 };
 
 const loadAndRenderDefaultHeatmap = async (storeState) => {
@@ -104,10 +105,9 @@ describe('HeatmapPlot', () => {
 
     fetchMock.mockIf(/.*/, mockAPI(mockAPIResponses));
 
-    seekFromS3
+    dispatchWorkRequest
       .mockReset()
-      .mockImplementationOnce(() => null)
-      .mockImplementationOnce((mockEtag) => mockWorkerResponses[mockEtag]());
+      .mockImplementationOnce(dispatchWorkRequestMock(mockWorkerResponses));
 
     vitesscePropsSpy = null;
 
@@ -118,6 +118,11 @@ describe('HeatmapPlot', () => {
   });
 
   it('Renders the heatmap component by default if everything loads', async () => {
+    fetchMock.mockIf(/.*/, mockAPI({
+      [`/v2/workRequest/${experimentId}/5-marker-genes$`]: () => Promise.resolve(JSON.stringify(true)),
+      ...mockAPIResponses,
+    }));
+
     await storeState.dispatch(loadCellSets(experimentId));
 
     await loadAndRenderDefaultHeatmap(storeState);
@@ -132,7 +137,7 @@ describe('HeatmapPlot', () => {
   it('Shows loader message if cellSets are loading', async () => {
     const mockLoadingAPIResponses = {
       ...mockWorkerResponses,
-      [`experiments/${experimentId}/cellSets`]: () => delayedResponse({ body: 'Not found', status: 404 }, 4000),
+      [`experiments/${experimentId}/cellSets$`]: () => delayedResponse({ body: 'Not found', status: 404 }, 4000),
     };
 
     fetchMock.mockIf(/.*/, mockAPI(mockLoadingAPIResponses));
@@ -146,16 +151,17 @@ describe('HeatmapPlot', () => {
 
   it('Shows loader message if the marker genes are loading', async () => {
     const customWorkerResponses = {
+      [`/v2/workRequest/${experimentId}/5-marker-genes`]: () => delayedResponse({ body: 'Not found', status: 404 }, 10000),
       ...mockWorkerResponses,
-      '5-marker-genes': () => delayedResponse({ body: 'Not found', status: 404 }, 4000),
     };
+
+    fetchMock.mockIf(/.*/, mockAPI(customWorkerResponses));
 
     await storeState.dispatch(loadCellSets(experimentId));
 
-    seekFromS3
+    dispatchWorkRequest
       .mockReset()
-      .mockImplementationOnce(() => null)
-      .mockImplementationOnce((mockEtag) => customWorkerResponses[mockEtag]());
+      .mockImplementationOnce(dispatchWorkRequestMock(mockWorkerResponses));
 
     await loadAndRenderDefaultHeatmap(storeState);
 
@@ -168,12 +174,9 @@ describe('HeatmapPlot', () => {
       'loading_gene_id-expression': () => delayedResponse({ body: 'Not found', status: 404 }, 4000),
     };
 
-    seekFromS3
+    dispatchWorkRequest
       .mockReset()
-      // 1st set of marker gene calls
-      .mockImplementationOnce((mockEtag) => customWorkerResponses[mockEtag]())
-      // 2nd set of marker gene calls
-      .mockImplementationOnce((mockEtag) => customWorkerResponses[mockEtag]());
+      .mockImplementation(dispatchWorkRequestMock(customWorkerResponses));
 
     await storeState.dispatch(loadCellSets(experimentId));
 
@@ -198,10 +201,10 @@ describe('HeatmapPlot', () => {
       '5-marker-genes': errorResponse,
     };
 
-    seekFromS3
+    dispatchWorkRequest
       .mockReset()
       .mockImplementationOnce(() => Promise.resolve(null))
-      .mockImplementationOnce((mockEtag) => customWorkerResponses[mockEtag]());
+      .mockImplementationOnce(dispatchWorkRequestMock(customWorkerResponses));
 
     await storeState.dispatch(loadCellSets(experimentId));
 
@@ -221,14 +224,12 @@ describe('HeatmapPlot', () => {
       .mockImplementationOnce(() => true)
       .mockImplementationOnce(errorResponse);
 
-    seekFromS3
+    dispatchWorkRequest
       .mockReset()
-      // 1st set of marker gene calls
-      .mockImplementationOnce(() => Promise.resolve(null))
-      .mockImplementationOnce((mockEtag) => customWorkerResponses[mockEtag]())
-      // 2nd set of marker gene calls
-      .mockImplementationOnce(() => Promise.resolve(null))
-      .mockImplementationOnce((mockEtag) => customWorkerResponses[mockEtag]());
+      // 1st marker gene call
+      .mockImplementationOnce(dispatchWorkRequestMock(customWorkerResponses))
+      // 2nd marker gene call
+      .mockImplementationOnce(dispatchWorkRequestMock(customWorkerResponses));
 
     await storeState.dispatch(loadCellSets(experimentId));
 
@@ -280,15 +281,15 @@ describe('HeatmapPlot', () => {
   });
 
   it('Shows an empty message when all cell sets are hidden ', async () => {
-    seekFromS3.mockReset();
+    dispatchWorkRequest.mockReset();
 
     // Mock each of the loadMarkerGenes calls caused by hiding a cell set
     _.times(14, () => {
-      seekFromS3.mockImplementationOnce((mockEtag) => mockWorkerResponses[mockEtag]());
+      dispatchWorkRequest.mockImplementationOnce(dispatchWorkRequestMock(mockWorkerResponses));
     });
 
     // Last call (all the cellSets are hidden) throw the error
-    seekFromS3.mockImplementationOnce(() => Promise.reject(new Error('No cells found')));
+    dispatchWorkRequest.mockImplementationOnce(() => Promise.reject(new Error('No cells found')));
 
     await storeState.dispatch(loadCellSets(experimentId));
 

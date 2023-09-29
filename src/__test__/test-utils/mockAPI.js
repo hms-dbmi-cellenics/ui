@@ -30,42 +30,50 @@ const delayedResponse = (response, delay = 10000, options = {}) => new Promise((
   }, delay);
 });
 
-const workerResponse = (body) => promiseResponse(body);
+const workerDataResult = (data) => Promise.resolve(_.cloneDeep({ data }));
+
+const dispatchWorkRequestMock = (
+  mockedResults,
+) => (_experimentId, _body, _timeout, ETag) => {
+  if (typeof mockedResults[ETag] === 'function') {
+    return mockedResults[ETag]();
+  }
+
+  return workerDataResult(mockedResults[ETag]);
+};
 
 const generateDefaultMockAPIResponses = (experimentId) => ({
-  [`experiments/${experimentId}`]: () => promiseResponse(
+  [`experiments/${experimentId}$`]: () => promiseResponse(
     JSON.stringify(responseData.experiments.find(({ id }) => id === experimentId)),
   ),
-  [`experiments/${experimentId}/processingConfig`]: () => promiseResponse(
+  [`experiments/${experimentId}/processingConfig$`]: () => promiseResponse(
     JSON.stringify(processingConfigData),
   ),
-  [`experiments/${experimentId}/cellSets`]: () => promiseResponse(
+  [`experiments/${experimentId}/cellSets$`]: () => promiseResponse(
     JSON.stringify(cellSetsData),
   ),
-  [`experiments/${experimentId}/backendStatus`]: () => promiseResponse(
+  [`experiments/${experimentId}/backendStatus$`]: () => promiseResponse(
     JSON.stringify(backendStatusData),
   ),
-  experiments: () => promiseResponse(
+  experiments$: () => promiseResponse(
     JSON.stringify(responseData.experiments),
   ),
-  [`experiments/${experimentId}/samples`]: () => promiseResponse(
+  [`experiments/${experimentId}/samples$`]: () => promiseResponse(
     JSON.stringify(responseData.samples[0]),
   ),
-  '/v2/experiments/examples': () => promiseResponse(
+  '/v2/experiments/examples$': () => promiseResponse(
     JSON.stringify(mockDemoExperiments),
   ),
-  'experiments/clone': () => promiseResponse(
+  'experiments/clone$': () => promiseResponse(
     JSON.stringify(fake.CLONED_EXPERIMENT_ID),
   ),
+  [`/v2/workRequest/${experimentId}/[^/]+$`]: () => statusResponse(200, 'OK'),
 });
 
 const mockAPI = (apiMapping) => (req) => {
   const path = req.url;
 
-  const key = _.find(
-    Object.keys(apiMapping),
-    (urlStub) => path.endsWith(urlStub),
-  );
+  const key = _.find(Object.keys(apiMapping), (matcherStr) => new RegExp(matcherStr).test(path));
 
   if (!key) {
     return statusResponse({
@@ -82,6 +90,7 @@ export {
   generateDefaultMockAPIResponses,
   promiseResponse,
   statusResponse,
-  workerResponse,
   delayedResponse,
+  workerDataResult,
+  dispatchWorkRequestMock,
 };
