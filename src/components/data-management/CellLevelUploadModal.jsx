@@ -41,9 +41,15 @@ const CellLevelUploadModal = (props) => {
 
     const file = droppedFiles[0];
     const data = await readFileToString(file);
+    const columnNames = data.trim().split('\n')[0].trim().split('\t');
+    const hasMetadataColumns = columnNames.some((name) => !['barcode', 'sample'].includes(name));
 
-    if (!data.trim().split('\n')[0].trim().split('\t').includes('barcode')) {
+    if (!columnNames.includes('barcode')) {
       handleError('error', endUserMessages.ERROR_CELL_LEVEL_COLUMN);
+      return;
+    }
+    if (!hasMetadataColumns) {
+      handleError('error', 'The selected file has no metadata columns.');
       return;
     }
     setFilesList([file]);
