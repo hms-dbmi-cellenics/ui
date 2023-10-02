@@ -264,25 +264,17 @@ jobs:
 
       - id: build-docker-image
         name: Build Docker image
-        uses: docker/build-push-action@v2
+        uses: docker/build-push-action@v5
         with:
           context: .
           file: ./Dockerfile
           platforms: linux/amd64
           tags: ${{ format('{0}/{1}:{2}', steps.login-ecr.outputs.registry, steps.ref.outputs.repo-name, steps.ref.outputs.image-tag) }}
-          push: false
-          load: true
+          push: true
+          provenance: false
           build-args: READONLY_API_TOKEN_GITHUB=${{ secrets.READONLY_API_TOKEN_GITHUB }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
-
-      - id: push
-        name: Push docker image to ECR
-        run: |-
-          echo Pushing image $IMAGE_NAME to ECR.
-          docker push $IMAGE_NAME
-        env:
-          IMAGE_NAME: ${{ format('{0}/{1}:{2}', steps.login-ecr.outputs.registry, steps.ref.outputs.repo-name, steps.ref.outputs.image-tag) }}
 
   deploy:
     name: Deploy to Kubernetes
