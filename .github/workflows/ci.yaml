@@ -277,14 +277,6 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
-      - id: push
-        name: Push docker image to ECR
-        run: |-
-          echo Pushing image $IMAGE_NAME to ECR.
-          docker push $IMAGE_NAME
-        env:
-          IMAGE_NAME: ${{ format('{0}/{1}:{2}', steps.login-ecr.outputs.registry, steps.ref.outputs.repo-name, steps.ref.outputs.image-tag) }}
-
   deploy:
     name: Deploy to Kubernetes
     runs-on: ubuntu-20.04
