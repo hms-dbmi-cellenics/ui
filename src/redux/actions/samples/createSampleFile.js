@@ -52,7 +52,7 @@ const createSampleFile = (
 
     return {
       ...uploadUrlParams,
-      sampleFileId: body.sampleFileId,
+      fileId: body.sampleFileId,
     };
   } catch (e) {
     dispatch(updateSampleFileUpload(experimentId, sampleId, type, UploadStatus.UPLOAD_ERROR));

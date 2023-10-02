@@ -1,3 +1,4 @@
+/* eslint-disable no-param-reassign */
 import React, { useState } from 'react';
 import {
   Menu, Dropdown, Button,
@@ -5,12 +6,17 @@ import {
 import PropTypes from 'prop-types';
 
 import { useSelector, useDispatch } from 'react-redux';
+import UploadStatus from 'utils/upload/UploadStatus';
 
 import uploadMetadataFile from 'redux/actions/experiments/uploadMetadataFile';
 import { sampleTech } from 'utils/constants';
-import createCellLevelMetadata from 'redux/actions/experiments/createCellLevelMetadata';
-import { putPartInS3 } from 'utils/upload/processMultipartUpload';
+import {
+  createCellLevelMetadata,
+  updateCellLevelMetadataFileUpload,
+} from 'redux/actions/experiments';
+import { prepareAndUploadFileToS3 } from 'utils/upload/processUpload';
 import pushNotificationMessage from 'utils/pushNotificationMessage';
+import loadAndCompressIfNecessary from 'utils/upload/loadAndCompressIfNecessary';
 import MetadataUploadModal from './MetadataUploadModal';
 import CellLevelUploadModal from './CellLevelUploadModal';
 
@@ -32,14 +38,24 @@ const AddMetadataButton = ({ samplesTableRef }) => {
   };
 
   const onUploadCellLevelMetadata = async (file) => {
-    const body = {
+    const getSignedURLsParams = {
       name: file.name,
+      size: file.size,
     };
+
     setCellLevelUploading(true);
-    const signedUploadURL = await dispatch(createCellLevelMetadata(activeExperimentId, body));
+    const onUpdateUploadStatus = (status, percentProgress = 0) => {
+      dispatch(updateCellLevelMetadataFileUpload(activeExperimentId, status, percentProgress));
+    };
+    const uploadUrlParams = await dispatch(
+      createCellLevelMetadata(activeExperimentId, getSignedURLsParams),
+    );
+    file.fileObject = await loadAndCompressIfNecessary(
+      file, () => onUpdateUploadStatus(UploadStatus.COMPRESSING),
+    );
 
     try {
-      await putPartInS3(file, signedUploadURL, (progressEvent) => console.log('uploaded ', progressEvent.loaded, ' of total ', progressEvent.total));
+      await prepareAndUploadFileToS3(file, uploadUrlParams, 'cellLevel', onUpdateUploadStatus);
     } catch (e) {
       pushNotificationMessage('error', 'Something went wrong while uploading your metadata file.');
       console.log(e);

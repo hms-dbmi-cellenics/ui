@@ -11,6 +11,7 @@ import {
   Empty,
   Divider,
   List,
+  Table,
 } from 'antd';
 import { CheckCircleTwoTone, DeleteOutlined } from '@ant-design/icons';
 import Dropzone from 'react-dropzone';
@@ -55,6 +56,92 @@ const CellLevelUploadModal = (props) => {
     setFilesList(newArray);
   };
 
+  const fileFormatTable = {
+    columns: [
+      {
+        title: 'barcode',
+        dataIndex: 'barcode',
+        key: 'barcode',
+      },
+      {
+        title: 'samples',
+        dataIndex: 'samples',
+        key: 'samples',
+      },
+      {
+        title: 'var1',
+        dataIndex: 'var1',
+        key: 'var',
+      },
+      {
+        title: 'var2',
+        dataIndex: 'var2',
+        key: 'var2',
+      },
+    ],
+    dataSource: [
+      {
+        barcode: 'barcode-1',
+        samples: 'sample_1',
+        var1: 'value_a',
+        var2: 'value_x',
+      }, {
+        barcode: 'barcode-2',
+        samples: 'sample_1',
+        var1: 'value_a',
+        var2: 'value_y',
+      }, {
+        barcode: 'barcode-3',
+        samples: 'sample_2',
+        var1: 'value_b',
+        var2: 'value_z',
+      },
+    ],
+  };
+  const exampleTable = {
+    columns: [
+      {
+        title: 'barcode',
+        dataIndex: 'barcode',
+        key: 'barcode',
+      },
+      {
+        title: 'samples',
+        dataIndex: 'samples',
+        key: 'samples',
+      },
+      {
+        title: 'cell_lineage',
+        dataIndex: 'cell_lineage',
+        key: 'cell_lineage',
+      },
+      {
+        title: 'cell_type',
+        dataIndex: 'cell_type',
+        key: 'cell_type',
+      },
+    ],
+    dataSource: [
+      {
+        barcode: 'ACTACT',
+        samples: 'Acute',
+        cell_lineage: 'Lymphoid',
+        cell_type: 'B-Cell',
+      },
+      {
+        barcode: 'GCATGC',
+        samples: 'Convalescent',
+        cell_lineage: 'Lymphoid',
+        cell_type: 'CD8_T-Cell',
+      },
+      {
+        barcode: 'GATCGA',
+        samples: 'Acute',
+        cell_lineage: 'Myeloid',
+        cell_type: 'Monocyte',
+      },
+    ],
+  };
   return (
     <Modal
       title=''
@@ -84,23 +171,32 @@ const CellLevelUploadModal = (props) => {
             <span style={{ color: 'red', marginRight: '2em' }}>*</span>
           </Title>
           <Paragraph>
-            Tab-separated value file, with one row per barcode, containing the following columns:
-            <br />
-            <Text code> barcode (mandatory) </Text>
-            <br />
-            <Text code>samples (preferred): </Text>
+            Upload a single file, containing the cell-level metadata in a tab-separated format (.tsv) file.
             {' '}
-            values should match sample names in the Data Management module
             <br />
-            <b>Other cell-level metadata columns</b>
+            Column
+            {' '}
+            <b>barcode</b>
+            {' '}
+            is mandatory,
+            {' '}
+            <b>sample</b>
+            {' '}
+            is preferred for de-duplication if required.
             <br />
+            <Table size='small' pagination={false} dataSource={fileFormatTable.dataSource} columns={fileFormatTable.columns} />
+            {' '}
             <br />
-
-            If there were duplicated barcodes, Cellenics will automatically attempt to de-duplicate them using the “samples” column if present.
-            If not, duplicated barcodes will be added to a “duplicated” cellset for manual annotation.
-
-            Only one tsv file is allowed per experiment. Uploading a new one will replace any previously existing cell-level metadata.
-
+            For example if you have two samples,
+            {' '}
+            <b>Acute</b>
+            {' '}
+            and
+            {' '}
+            <b>Convalescent</b>
+            {' '}
+            and you want to add cell-type annotation, you would write a file as follows:
+            <Table size='small' pagination={false} dataSource={exampleTable.dataSource} columns={exampleTable.columns} />
           </Paragraph>
         </Col>
       </Row>
