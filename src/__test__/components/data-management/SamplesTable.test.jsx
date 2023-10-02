@@ -126,7 +126,7 @@ describe('Samples table', () => {
   it('Does not show prompt to upload datasets if samples are available', async () => {
     await renderSamplesTable(storeState);
 
-    waitFor(() => {
+    await waitFor(() => {
       expect(screen.queryByText(/Start uploading your samples by clicking on Add data./i)).toBeNull();
       expect(screen.queryByText(/Don't have data\? Get started using one of our example datasets:/i)).toBeNull();
     });
@@ -135,11 +135,7 @@ describe('Samples table', () => {
   it('Should show all the samples', async () => {
     await renderSamplesTable(storeState);
 
-    Object.values(samples).forEach((sample) => {
-      expect(screen.getByText(sample.name)).toBeInTheDocument();
-    });
-
-    waitFor(() => {
+    await waitFor(() => {
       Object.values(samples).forEach((sample) => {
         expect(screen.getByText(sample.name)).toBeInTheDocument();
       });
@@ -159,7 +155,7 @@ describe('Samples table', () => {
 
     await renderSamplesTable(missingSampleStore);
 
-    waitFor(() => {
+    await waitFor(() => {
       Object.values(samples).forEach((sample) => {
         expect(screen.queryByText(sample.name)).not.toBeInTheDocument();
       });
@@ -177,7 +173,7 @@ describe('Samples table', () => {
 
     await renderSamplesTable(validatingExpStore);
 
-    waitFor(() => {
+    await waitFor(() => {
       Object.values(samples).forEach((sample) => {
         expect(screen.queryByText(sample.name)).not.toBeInTheDocument();
       });
@@ -197,7 +193,7 @@ describe('Samples table', () => {
 
     await renderSamplesTable(validatingExpStore);
 
-    waitFor(() => {
+    await waitFor(() => {
       Object.values(samples).forEach((sample) => {
         expect(screen.getByText(sample.name)).toBeInTheDocument();
       });
@@ -234,7 +230,7 @@ describe('Samples table', () => {
       userEvent.click(firstSampleSaveButton);
     });
 
-    waitFor(() => {
+    await waitFor(() => {
       // Changed sample name should not exist
       expect(screen.queryByText(sampleNameToChange)).toBeNull();
 
@@ -261,7 +257,7 @@ describe('Samples table', () => {
     const sampleNames = Object.values(samples).map((sample) => sample.name);
     const deletedSampleName = sampleNames.shift();
 
-    waitFor(() => {
+    await waitFor(() => {
       // Deleted sample should not exist
       expect(screen.queryByText(deletedSampleName)).toBeNull();
 
