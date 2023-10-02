@@ -8,6 +8,8 @@ Enzyme.configure({ adapter: new Adapter() });
 
 jest.mock('localforage');
 jest.mock('utils/pushNotificationMessage');
+
+// This is needed, because the unit tests don't register the Vitessce imports
 jest.mock('components/data-exploration/embedding/DynamicVitessceEmbedding', () => ({
   Scatterplot: () => 'Mocked Scatterplot',
 }));
