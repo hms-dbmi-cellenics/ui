@@ -61,7 +61,6 @@ const prepareAndUploadFileToS3 = async (
   return parts;
 };
 
-// todo rename function to be uploadsamplefile
 const createAndUploadSampleFile = async (file, experimentId, sampleId, dispatch, selectedTech) => {
   const fileType = getFileTypeV2(file.name, selectedTech);
 

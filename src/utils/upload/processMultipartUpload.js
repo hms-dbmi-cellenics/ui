@@ -44,5 +44,5 @@ const processMultipartUpload = async (file, signedUrls, createOnUploadProgressFo
     PartNumber: index + 1,
   }));
 };
-export { putPartInS3 };
+
 export default processMultipartUpload;
