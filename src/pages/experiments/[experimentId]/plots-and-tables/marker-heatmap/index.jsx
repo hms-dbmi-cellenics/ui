@@ -37,6 +37,7 @@ import PlotLegendAlert, { MAX_LEGEND_ITEMS } from 'components/plots/helpers/Plot
 
 import ScrollOnDrag from 'components/plots/ScrollOnDrag';
 import useConditionalEffect from 'utils/customHooks/useConditionalEffect';
+import useRunOnceEffect from 'utils/customHooks/useRunOnceEffect';
 
 const { Panel } = Collapse;
 const plotUuid = 'markerHeatmapPlotMain';
@@ -106,6 +107,20 @@ const MarkerHeatmap = ({ experimentId }) => {
     if (showAlert) updatePlotWithChanges({ legend: { showAlert, enabled: !showAlert } });
   }, [configIsLoaded, cellSets.accessible]);
 
+  useRunOnceEffect(() => {
+    // On first load no selected genes, so fill in with markers
+    dispatch(loadMarkerGenes(
+      experimentId,
+      plotUuid,
+      {
+        numGenes: config.nMarkerGenes,
+        groupedTracks: config.groupedTracks,
+        selectedCellSet: config.selectedCellSet,
+        selectedPoints: config.selectedPoints,
+      },
+    ));
+  }, []);
+
   useConditionalEffect(() => {
     if (
       !(
@@ -119,25 +134,37 @@ const MarkerHeatmap = ({ experimentId }) => {
       )
     ) return;
 
-    // On first load no selected genes, so fill in with markers
-    if (config.selectedGenes.length === 0) {
-      dispatch(loadMarkerGenes(
-        experimentId,
-        plotUuid,
-        {
-          numGenes: config.nMarkerGenes,
-          groupedTracks: config.groupedTracks,
-          selectedCellSet: config.selectedCellSet,
-          selectedPoints: config.selectedPoints,
-        },
-      ));
-    } else {
+    if (config.selectedGenes.length > 0) {
       dispatch(loadDownsampledGeneExpression(
         experimentId,
         config.selectedGenes,
         plotUuid,
       ));
     }
+
+    // if (config.selectedGenes)
+
+    // // On first load no selected genes, so fill in with markers
+    // {
+    //   if (config.selectedGenes.length === 0) {
+    //     dispatch(loadMarkerGenes(
+    //       experimentId,
+    //       plotUuid,
+    //       {
+    //         numGenes: config.nMarkerGenes,
+    //         groupedTracks: config.groupedTracks,
+    //         selectedCellSet: config.selectedCellSet,
+    //         selectedPoints: config.selectedPoints,
+    //       },
+    //     ));
+    //   } else {
+    //     dispatch(loadDownsampledGeneExpression(
+    //       experimentId,
+    //       config.selectedGenes,
+    //       plotUuid,
+    //     ));
+    //   }
+    // }
   }, [
     config?.nMarkerGenes,
     config?.groupedTracks,
