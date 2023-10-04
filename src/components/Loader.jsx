@@ -60,7 +60,6 @@ const Loader = ({ experimentId }) => {
     () => (experimentId ? `/v2/experiments/${experimentId}/backendStatus` : null),
     fetchAPI,
   );
-  console.log('workerStatus', workerStatus);
 
   if (!workerStatus) {
     return (
