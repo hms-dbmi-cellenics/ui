@@ -11,6 +11,7 @@ import fetchWork from 'utils/work/fetchWork';
 import getTimeoutForWorkerTask from 'utils/getTimeoutForWorkerTask';
 // import { findLoadedGenes } from 'utils/genes';
 
+// Debounce so that we only fetch once the settings are done being set up
 const loadDownsampledGeneExpressionDebounced = _.debounce(
   async (
     experimentId,
@@ -36,8 +37,8 @@ const loadDownsampledGeneExpressionDebounced = _.debounce(
     // console.log('genesDebug');
     // console.log(genes);
 
-    // TODO This doesn't work for downsampled because we also should check the groupBy's
-    // And compare to see if the params involved have changed or not
+    // TODO reusing loaded genes doesn't work for downsampled because we also should
+    // check the groupBy's and compare to see if the params involved have changed or not
     // Check opinions on whether this is worth adding or not
     //
     // if (genesToLoad.length === 0) {
