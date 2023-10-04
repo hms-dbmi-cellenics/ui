@@ -140,8 +140,6 @@ const HeatmapPlot = (props) => {
 
   useConditionalEffect(() => {
     if (
-      // TODO look into this why it trigger failures
-      // _.isNil(selectedGenes)
       selectedGenes?.length === 0
       || cellSets.hierarchy.length === 0
       || downsampledCellOrder?.length === 0
@@ -290,6 +288,14 @@ const HeatmapPlot = (props) => {
     return (
       <center>
         <Empty description='Unhide some cell sets to show the heatmap' />
+      </center>
+    );
+  }
+
+  if (selectedGenes.length === 0) {
+    return (
+      <center>
+        <Empty description='No genes selected, add some to show the heatmap' />
       </center>
     );
   }
