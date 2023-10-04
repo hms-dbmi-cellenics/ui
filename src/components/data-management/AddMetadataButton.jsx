@@ -1,7 +1,7 @@
 /* eslint-disable no-param-reassign */
 import React, { useState } from 'react';
 import {
-  Menu, Dropdown, Button,
+  Menu, Dropdown, Button, Tooltip,
 } from 'antd';
 import PropTypes from 'prop-types';
 
@@ -86,12 +86,17 @@ const AddMetadataButton = ({ samplesTableRef }) => {
                 Upload file
               </Menu.Item>
             </Menu.SubMenu>
-            <Menu.Item
-              key='cell-level'
-              onClick={() => setCellLevelUploadVisible(true)}
-            >
-              Cell level
-            </Menu.Item>
+            <Tooltip title='Feature coming soon!'>
+              <div>
+                <Menu.Item
+                  key='cell-level'
+                  onClick={() => setCellLevelUploadVisible(true)}
+                  disabled
+                >
+                  Cell level
+                </Menu.Item>
+              </div>
+            </Tooltip>
           </Menu>
         )}
         trigger={['click']}
