@@ -7,6 +7,7 @@ import {
 
 import fetchWork from 'utils/work/fetchWork';
 import getTimeoutForWorkerTask from 'utils/getTimeoutForWorkerTask';
+import { findLoadedGenes } from 'utils/genes';
 
 const loadGeneExpression = (
   experimentId,
@@ -19,8 +20,19 @@ const loadGeneExpression = (
   if (loading.length > 0) {
     return null;
   }
+  const { genesToLoad, genesAlreadyLoaded } = findLoadedGenes(matrix, genes);
 
-  const upperCaseArray = (array) => (array.map((element) => element.toUpperCase()));
+  if (genesToLoad.length === 0) {
+    // All genes are already loaded.
+    return dispatch({
+      type: GENES_EXPRESSION_LOADED,
+      payload: {
+        experimentId,
+        componentUuid,
+        genes: genesAlreadyLoaded,
+      },
+    });
+  }
 
   // Dispatch loading state.
   dispatch({
@@ -32,34 +44,9 @@ const loadGeneExpression = (
     },
   });
 
-  // Check which of the genes we actually need to load. Only do this if
-  // we are not forced to reload all of the data.
-  let genesToFetch = [...genes];
-  const genesAlreadyLoaded = matrix.getStoredGenes();
-
-  genesToFetch = genesToFetch.filter(
-    (gene) => !new Set(upperCaseArray(genesAlreadyLoaded)).has(gene.toUpperCase()),
-  );
-
-  const displayedGenes = genesAlreadyLoaded.filter(
-    (gene) => upperCaseArray(genes).includes(gene.toUpperCase()),
-  );
-
-  if (genesToFetch.length === 0) {
-    // All genes are already loaded.
-    return dispatch({
-      type: GENES_EXPRESSION_LOADED,
-      payload: {
-        experimentId,
-        componentUuid,
-        genes: displayedGenes,
-      },
-    });
-  }
-
   const body = {
     name: 'GeneExpression',
-    genes: genesToFetch,
+    genes: genesToLoad,
     downsampled: false,
   };
 
@@ -80,7 +67,7 @@ const loadGeneExpression = (
     const truncatedExpression = SparseMatrix.fromJSON(truncatedExpressionJson);
     const zScore = SparseMatrix.fromJSON(zScoreJson);
 
-    const fetchedGenes = _.concat(displayedGenes, orderedGeneNames);
+    const fetchedGenes = _.concat(genesAlreadyLoaded, orderedGeneNames);
 
     dispatch({
       type: GENES_EXPRESSION_LOADED,

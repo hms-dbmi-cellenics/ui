@@ -25,6 +25,7 @@ import getContainingCellSetsProperties from 'utils/cellSets/getContainingCellSet
 import useConditionalEffect from 'utils/customHooks/useConditionalEffect';
 import generateVitessceData from 'components/plots/helpers/heatmap/vitessce/generateVitessceData';
 import { loadCellSets } from 'redux/actions/cellSets';
+import useRunOnceEffect from 'utils/customHooks/useRunOnceEffect';
 
 const COMPONENT_TYPE = 'interactiveHeatmap';
 
@@ -166,14 +167,18 @@ const HeatmapPlot = (props) => {
     cellSets.properties,
   ]);
 
-  useConditionalEffect(() => {
+  useRunOnceEffect(() => {
     if (
       !cellSets.accessible
       || !louvainClustersResolution
       || !heatmapSettings.groupedTracks
       || !heatmapSettings.selectedCellSet
       || !heatmapSettings.selectedPoints
-    ) return;
+    ) return false;
+
+    if (!_.isNil(selectedGenes)) {
+      return true;
+    }
 
     const { groupedTracks, selectedCellSet, selectedPoints } = heatmapSettings;
 
@@ -184,21 +189,59 @@ const HeatmapPlot = (props) => {
       hiddenCellSets: cellSets.hidden,
     };
 
+    dispatch(loadMarkerGenes(
+      experimentId,
+      COMPONENT_TYPE,
+      { numGenes: nMarkerGenes, ...downsampleSettings },
+    ));
+
+    return true;
+  }, [
+    louvainClustersResolution,
+    cellSets.accessible,
+    heatmapSettings?.groupedTracks,
+    heatmapSettings?.selectedCellSet,
+    heatmapSettings?.selectedPoints,
+    cellSets.hidden,
+    groupedCellSets,
+  ]);
+
+  useConditionalEffect(() => {
+    if (
+      !cellSets.accessible
+      || !louvainClustersResolution
+      || !heatmapSettings.groupedTracks
+      || !heatmapSettings.selectedCellSet
+      || !heatmapSettings.selectedPoints
+    ) return;
+
+    // const { groupedTracks, selectedCellSet, selectedPoints } = heatmapSettings;
+
+    // const downsampleSettings = {
+    //   groupedTracks,
+    //   selectedCellSet,
+    //   selectedPoints,
+    //   hiddenCellSets: cellSets.hidden,
+    // };
+
     // If selectedGenes are not set, load marker genes instead (first load)
-    if (_.isNil(selectedGenes)) {
-      dispatch(loadMarkerGenes(
-        experimentId,
-        COMPONENT_TYPE,
-        { numGenes: nMarkerGenes, ...downsampleSettings },
-      ));
-    } else {
-      // Load current genes
-      dispatch(loadDownsampledGeneExpression(
-        experimentId,
-        selectedGenes,
-        COMPONENT_TYPE,
-      ));
-    }
+    // if (_.isNil(selectedGenes)) {
+    //   dispatch(loadMarkerGenes(
+    //     experimentId,
+    //     COMPONENT_TYPE,
+    //     { numGenes: nMarkerGenes, ...downsampleSettings },
+    //   ));
+    // } else {
+
+    if (_.isNil(selectedGenes)) return;
+
+    // Load current genes
+    dispatch(loadDownsampledGeneExpression(
+      experimentId,
+      selectedGenes,
+      COMPONENT_TYPE,
+    ));
+    // }
   }, [
     louvainClustersResolution,
     cellSets.accessible,

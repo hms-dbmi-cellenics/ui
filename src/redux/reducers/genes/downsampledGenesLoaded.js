@@ -1,18 +1,19 @@
 import _ from 'lodash';
 
-import { initialViewState } from './getInitialState';
-
-const upperCaseArray = (array) => (array?.map((element) => element.toUpperCase()));
+import { initialViewState } from 'redux/reducers/genes/getInitialState';
+import { upperCaseArray } from 'utils/genes';
 
 const downsampledGenesLoaded = (state, action) => {
   const {
-    componentUuid, genes,
+    componentUuid,
+    genes,
     loadingStatus = _.difference(
       upperCaseArray(state.expression.downsampled.loading), upperCaseArray(genes),
     ),
     newGenes = undefined,
-    cellOrder,
   } = action.payload;
+
+  let cellOrderToStore = state.expression.downsampled.cellOrder;
 
   // If there's any data to store, load it
   if (newGenes) {
@@ -22,6 +23,7 @@ const downsampledGenesLoaded = (state, action) => {
       truncatedExpression,
       zScore,
       stats,
+      cellOrder,
     } = newGenes;
 
     state.expression.downsampled.matrix.setGeneExpression(
@@ -31,6 +33,8 @@ const downsampledGenesLoaded = (state, action) => {
       zScore,
       stats,
     );
+
+    cellOrderToStore = cellOrder;
   }
 
   return {
@@ -50,7 +54,7 @@ const downsampledGenesLoaded = (state, action) => {
       downsampled: {
         ...state.expression.downsampled,
         loading: loadingStatus,
-        cellOrder,
+        cellOrder: cellOrderToStore,
       },
     },
   };

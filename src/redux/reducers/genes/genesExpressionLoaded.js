@@ -1,8 +1,7 @@
 import _ from 'lodash';
 
+import { upperCaseArray } from 'utils/genes';
 import { initialViewState } from './getInitialState';
-
-const upperCaseArray = (array) => (array?.map((element) => element.toUpperCase()));
 
 const genesExpressionLoaded = (state, action) => {
   const {
@@ -11,7 +10,6 @@ const genesExpressionLoaded = (state, action) => {
       upperCaseArray(state.expression.full.loading), upperCaseArray(genes),
     ),
     newGenes = undefined,
-    downsampledCellOrder = null,
   } = action.payload;
 
   // If there's any data to load, load it
@@ -24,23 +22,13 @@ const genesExpressionLoaded = (state, action) => {
       stats,
     } = newGenes;
 
-    if (downsampledCellOrder) {
-      state.expression.downsampled.matrix.setGeneExpression(
-        orderedGeneNames,
-        rawExpression,
-        truncatedExpression,
-        zScore,
-        stats,
-      );
-    } else {
-      state.expression.full.matrix.pushGeneExpression(
-        orderedGeneNames,
-        rawExpression,
-        truncatedExpression,
-        zScore,
-        stats,
-      );
-    }
+    state.expression.full.matrix.pushGeneExpression(
+      orderedGeneNames,
+      rawExpression,
+      truncatedExpression,
+      zScore,
+      stats,
+    );
   }
 
   return {
@@ -61,7 +49,6 @@ const genesExpressionLoaded = (state, action) => {
         ...state.expression.full,
         loading: loadingStatus,
       },
-      // downsampledCellOrder: downsampledCellOrder ?? state.expression.downsampledCellOrder,
     },
   };
 };

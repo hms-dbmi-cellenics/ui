@@ -9,6 +9,7 @@ import {
 
 import fetchWork from 'utils/work/fetchWork';
 import getTimeoutForWorkerTask from 'utils/getTimeoutForWorkerTask';
+import { findLoadedGenes } from 'utils/genes';
 
 const loadDownsampledGeneExpressionDebounced = _.debounce(
   async (
@@ -20,6 +21,8 @@ const loadDownsampledGeneExpressionDebounced = _.debounce(
   ) => {
     const state = getState();
 
+    const { matrix } = state.genes.expression.downsampled;
+
     const {
       groupedTracks,
       selectedCellSet,
@@ -27,6 +30,20 @@ const loadDownsampledGeneExpressionDebounced = _.debounce(
     } = state.componentConfig[componentUuid]?.config;
 
     const hiddenCellSets = Array.from(state.cellSets.hidden);
+
+    const { genesToLoad, genesAlreadyLoaded } = findLoadedGenes(matrix, genes);
+
+    if (genesToLoad.length === 0) {
+      // All genes are already loaded.
+      return dispatch({
+        type: DOWNSAMPLED_GENES_LOADED,
+        payload: {
+          experimentId,
+          componentUuid,
+          genes: genesAlreadyLoaded,
+        },
+      });
+    }
 
     // Dispatch loading state.
     dispatch({
@@ -103,8 +120,8 @@ const loadDownsampledGeneExpressionDebounced = _.debounce(
             rawExpression,
             truncatedExpression,
             zScore,
+            cellOrder,
           },
-          cellOrder,
         },
       });
     } catch (error) {
