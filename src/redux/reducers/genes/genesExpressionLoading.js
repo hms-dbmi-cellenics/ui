@@ -17,7 +17,10 @@ const genesExpressionLoading = (state, action) => {
           error: false,
         },
       },
-      loading: _.union(state.expression.loading, genes),
+      full: {
+        ...state.expression.full,
+        loading: _.union(state.expression.full.loading, genes),
+      },
       error: false,
     },
   };
