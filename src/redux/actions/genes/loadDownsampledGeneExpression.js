@@ -9,6 +9,7 @@ import {
 
 import fetchWork from 'utils/work/fetchWork';
 import getTimeoutForWorkerTask from 'utils/getTimeoutForWorkerTask';
+import { findLoadedGenes } from 'utils/genes';
 // import { findLoadedGenes } from 'utils/genes';
 
 // Debounce so that we only fetch once the settings are done being set up
@@ -22,7 +23,10 @@ const loadDownsampledGeneExpressionDebounced = _.debounce(
   ) => {
     const state = getState();
 
-    // const { matrix } = state.genes.expression.downsampled;
+    const {
+      matrix,
+      downsampleSettings: oldDownsampleSettings,
+    } = state.genes.expression.downsampled;
 
     const {
       groupedTracks,
@@ -32,26 +36,26 @@ const loadDownsampledGeneExpressionDebounced = _.debounce(
 
     const hiddenCellSets = Array.from(state.cellSets.hidden);
 
-    // const { genesToLoad, genesAlreadyLoaded } = findLoadedGenes(matrix, genes);
+    const newDownsampleSettings = {
+      selectedCellSet,
+      groupedTracks,
+      selectedPoints,
+      hiddenCellSets,
+    };
 
-    // console.log('genesDebug');
-    // console.log(genes);
+    const { genesToLoad, genesAlreadyLoaded } = findLoadedGenes(matrix, genes);
 
-    // TODO reusing loaded genes doesn't work for downsampled because we also should
-    // check the groupBy's and compare to see if the params involved have changed or not
-    // Check opinions on whether this is worth adding or not
-    //
-    // if (genesToLoad.length === 0) {
-    //   // All genes are already loaded.
-    //   return dispatch({
-    //     type: DOWNSAMPLED_GENES_LOADED,
-    //     payload: {
-    //       experimentId,
-    //       componentUuid,
-    //       genes: genesAlreadyLoaded,
-    //     },
-    //   });
-    // }
+    if (_.isEqual(oldDownsampleSettings, newDownsampleSettings) && genesToLoad.length === 0) {
+      // All genes are already loaded.
+      return dispatch({
+        type: DOWNSAMPLED_GENES_LOADED,
+        payload: {
+          experimentId,
+          componentUuid,
+          genes: genesAlreadyLoaded,
+        },
+      });
+    }
 
     // Dispatch loading state.
     dispatch({
@@ -67,12 +71,7 @@ const loadDownsampledGeneExpressionDebounced = _.debounce(
       name: 'GeneExpression',
       genes,
       downsampled: true,
-      downsampleSettings: {
-        selectedCellSet,
-        groupedTracks,
-        selectedPoints,
-        hiddenCellSets,
-      },
+      downsampleSettings: newDownsampleSettings,
     };
 
     const timeout = getTimeoutForWorkerTask(getState(), 'GeneExpression');
@@ -129,6 +128,7 @@ const loadDownsampledGeneExpressionDebounced = _.debounce(
             truncatedExpression,
             zScore,
             cellOrder,
+            downsampleSettings: newDownsampleSettings,
           },
         },
       });

@@ -20,15 +20,17 @@ const loadMarkerGenes = (
     hiddenCellSets = [],
   } = options;
 
+  const downsampleSettings = {
+    selectedCellSet,
+    groupedTracks,
+    selectedPoints,
+    hiddenCellSets: Array.from(hiddenCellSets),
+  };
+
   const body = {
     name: 'MarkerHeatmap',
     nGenes: numGenes,
-    downsampleSettings: {
-      selectedCellSet,
-      groupedTracks,
-      selectedPoints,
-      hiddenCellSets: Array.from(hiddenCellSets),
-    },
+    downsampleSettings,
   };
 
   try {
@@ -78,6 +80,7 @@ const loadMarkerGenes = (
           zScore,
           stats,
           cellOrder,
+          downsampleSettings,
         },
       },
     });
@@ -101,6 +104,7 @@ const loadMarkerGenes = (
       return;
     }
 
+    // TODO LOOK into this
     throw e;
 
     const errorMessage = handleError(e, endUserMessages.ERROR_FETCH_MARKER_GENES, undefined, false);

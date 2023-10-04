@@ -140,7 +140,9 @@ const HeatmapPlot = (props) => {
 
   useConditionalEffect(() => {
     if (
-      _.isNil(selectedGenes)
+      // TODO look into this why it trigger failures
+      // _.isNil(selectedGenes)
+      selectedGenes?.length === 0
       || cellSets.hierarchy.length === 0
       || downsampledCellOrder?.length === 0
     ) { return; }
