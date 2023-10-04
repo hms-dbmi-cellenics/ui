@@ -232,7 +232,7 @@ const ContentWrapper = (props) => {
         background: 'linear-gradient(315deg, #5B070A 0%, #8f0b10 30%, #A80D12 100%)',
         paddingLeft: '32px',
         paddingTop: '15px',
-        paddingBottom: '15px',
+        paddingBottom: '10px',
         pointerEvents: 'none',
         userSelect: 'none',
       }}
