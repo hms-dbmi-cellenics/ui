@@ -9,7 +9,7 @@ import {
 
 import fetchWork from 'utils/work/fetchWork';
 import getTimeoutForWorkerTask from 'utils/getTimeoutForWorkerTask';
-import { findLoadedGenes } from 'utils/genes';
+// import { findLoadedGenes } from 'utils/genes';
 
 const loadDownsampledGeneExpressionDebounced = _.debounce(
   async (
@@ -21,7 +21,7 @@ const loadDownsampledGeneExpressionDebounced = _.debounce(
   ) => {
     const state = getState();
 
-    const { matrix } = state.genes.expression.downsampled;
+    // const { matrix } = state.genes.expression.downsampled;
 
     const {
       groupedTracks,
@@ -31,19 +31,26 @@ const loadDownsampledGeneExpressionDebounced = _.debounce(
 
     const hiddenCellSets = Array.from(state.cellSets.hidden);
 
-    const { genesToLoad, genesAlreadyLoaded } = findLoadedGenes(matrix, genes);
+    // const { genesToLoad, genesAlreadyLoaded } = findLoadedGenes(matrix, genes);
 
-    if (genesToLoad.length === 0) {
-      // All genes are already loaded.
-      return dispatch({
-        type: DOWNSAMPLED_GENES_LOADED,
-        payload: {
-          experimentId,
-          componentUuid,
-          genes: genesAlreadyLoaded,
-        },
-      });
-    }
+    // console.log('genesDebug');
+    // console.log(genes);
+
+    // TODO This doesn't work for downsampled because we also should check the groupBy's
+    // And compare to see if the params involved have changed or not
+    // Check opinions on whether this is worth adding or not
+    //
+    // if (genesToLoad.length === 0) {
+    //   // All genes are already loaded.
+    //   return dispatch({
+    //     type: DOWNSAMPLED_GENES_LOADED,
+    //     payload: {
+    //       experimentId,
+    //       componentUuid,
+    //       genes: genesAlreadyLoaded,
+    //     },
+    //   });
+    // }
 
     // Dispatch loading state.
     dispatch({

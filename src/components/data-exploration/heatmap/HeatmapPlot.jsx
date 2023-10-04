@@ -139,7 +139,8 @@ const HeatmapPlot = (props) => {
   }, [selectedGenes, loadingGenes, markerGenesLoading]);
 
   useConditionalEffect(() => {
-    if (!selectedGenes?.length > 0
+    if (
+      _.isNil(selectedGenes)
       || cellSets.hierarchy.length === 0
       || downsampledCellOrder?.length === 0
     ) { return; }
@@ -215,24 +216,6 @@ const HeatmapPlot = (props) => {
       || !heatmapSettings.selectedPoints
     ) return;
 
-    // const { groupedTracks, selectedCellSet, selectedPoints } = heatmapSettings;
-
-    // const downsampleSettings = {
-    //   groupedTracks,
-    //   selectedCellSet,
-    //   selectedPoints,
-    //   hiddenCellSets: cellSets.hidden,
-    // };
-
-    // If selectedGenes are not set, load marker genes instead (first load)
-    // if (_.isNil(selectedGenes)) {
-    //   dispatch(loadMarkerGenes(
-    //     experimentId,
-    //     COMPONENT_TYPE,
-    //     { numGenes: nMarkerGenes, ...downsampleSettings },
-    //   ));
-    // } else {
-
     if (_.isNil(selectedGenes)) return;
 
     // Load current genes
@@ -276,9 +259,9 @@ const HeatmapPlot = (props) => {
       <PlatformError
         error={expressionDataError}
         onClick={() => {
-          const { groupedTracks, selectedCellSet, selectedPoints } = heatmapSettings;
-
           if (markerGenesLoadingError) {
+            const { groupedTracks, selectedCellSet, selectedPoints } = heatmapSettings;
+
             dispatch(loadMarkerGenes(
               experimentId,
               COMPONENT_TYPE,
