@@ -1,7 +1,7 @@
 import React from 'react';
 import dayjs from 'dayjs';
 
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import userEvent from '@testing-library/user-event';
 import { act } from 'react-dom/test-utils';
@@ -35,9 +35,6 @@ const experimentState = {
 };
 
 const mockStore = configureMockStore([thunk]);
-
-// Based on https://stackoverflow.com/a/51045733
-const flushPromises = () => new Promise(setImmediate);
 
 describe('ProjectCard', () => {
   beforeEach(() => {
@@ -100,15 +97,15 @@ describe('ProjectCard', () => {
     // Click save changes button
     userEvent.click(screen.getByRole('button', { name: 'Save' }));
 
-    await flushPromises();
-
-    expect(fetchMock).toHaveBeenCalledWith(
-      `http://localhost:3000/v2/experiments/${experimentId}`,
-      {
-        body: JSON.stringify({ name: 'new experiment name' }),
-        headers: { 'Content-Type': 'application/json' },
-        method: 'PATCH',
-      },
-    );
+    await waitFor(() => {
+      expect(fetchMock).toHaveBeenCalledWith(
+        `http://localhost:3000/v2/experiments/${experimentId}`,
+        {
+          body: JSON.stringify({ name: 'new experiment name' }),
+          headers: { 'Content-Type': 'application/json' },
+          method: 'PATCH',
+        },
+      );
+    });
   });
 });

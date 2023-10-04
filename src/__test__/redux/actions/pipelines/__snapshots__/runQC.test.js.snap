@@ -1,20 +1,20 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`runQC action Dispatches events properly 1`] = `
-Array [
-  Object {
-    "payload": Object {},
+[
+  {
+    "payload": {},
     "type": "experimentSettings/startQC",
   },
 ]
 `;
 
 exports[`runQC action Dispatches events properly 2`] = `
-Array [
+[
   "http://localhost:3000/v2/experiments/experiment-id/qc",
-  Object {
-    "body": "{\\"processingConfig\\":[{\\"name\\":\\"cellSizeDistribution\\",\\"body\\":{\\"sample1, sample2\\":{\\"auto\\":true,\\"enabled\\":true,\\"filterSettings\\":{\\"minCellSize\\":10800,\\"binStep\\":200}}}}]}",
-    "headers": Object {
+  {
+    "body": "{"processingConfig":[{"name":"cellSizeDistribution","body":{"sample1, sample2":{"auto":true,"enabled":true,"filterSettings":{"minCellSize":10800,"binStep":200}}}}]}",
+    "headers": {
       "Content-Type": "application/json",
     },
     "method": "POST",
@@ -22,16 +22,16 @@ Array [
 ]
 `;
 
-exports[`runQC action Dispatches status error if loading fails 1`] = `Array []`;
+exports[`runQC action Dispatches status error if loading fails 1`] = `[]`;
 
 exports[`runQC action Runs only the embedding if only changed filter was configureEmbedding 1`] = `
-Array [
-  Object {
-    "payload": Object {},
+[
+  {
+    "payload": {},
     "type": "experimentSettings/discardChangedQCFilters",
   },
-  Object {
-    "payload": Object {
+  {
+    "payload": {
       "embeddingType": "umap",
     },
     "type": "embeddings/loading",

@@ -1,32 +1,32 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`updateValueInMetadataTrack action Dispatches error when theres an error updating 1`] = `
-Array [
-  Object {
+[
+  {
     "message": "Saving sample...",
   },
-  Object {
+  {
     "error": "We couldn't save your data.",
   },
 ]
 `;
 
 exports[`updateValueInMetadataTrack action Works correctly 1`] = `
-Array [
-  Object {
+[
+  {
     "message": "Saving sample...",
   },
-  Object {
+  {
     "key": "Track_1",
     "sampleUuid": "mockSampleId",
     "value": "mockNewValue",
   },
-  Object {
+  {
     "experimentId": "mockExperimentId",
   },
-  Object {
+  {
     "experimentId": "mockExperimentId",
-    "status": Object {},
+    "status": {},
   },
 ]
 `;

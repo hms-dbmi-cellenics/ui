@@ -4,7 +4,7 @@ import { experiments, samples } from '__test__/test-utils/mockData';
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 import { loadExperiments, setActiveExperiment } from 'redux/actions/experiments';
 import mockAPI, { generateDefaultMockAPIResponses, promiseResponse, statusResponse } from '__test__/test-utils/mockAPI';
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 
 import { Provider } from 'react-redux';
 import React from 'react';
@@ -67,7 +67,9 @@ const renderSamplesTable = async (store) => {
   await act(async () => {
     renderComponents = render(
       <Provider store={store}>
-        {samplesTableFactory()}
+        <div style={{ minHeight: '200px', minWidth: '500px' }}>
+          {samplesTableFactory()}
+        </div>
       </Provider>,
     );
   });
@@ -104,6 +106,7 @@ let storeState = null;
 
 describe('Samples table', () => {
   beforeEach(async () => {
+    jest.clearAllMocks();
     fetchMock.mockClear();
     fetchMock.mockIf(/.*/, mockAPI(mockAPIResponse));
 
@@ -123,15 +126,19 @@ describe('Samples table', () => {
   it('Does not show prompt to upload datasets if samples are available', async () => {
     await renderSamplesTable(storeState);
 
-    expect(screen.queryByText(/Start uploading your samples by clicking on Add data./i)).toBeNull();
-    expect(screen.queryByText(/Don't have data\? Get started using one of our example datasets:/i)).toBeNull();
+    await waitFor(() => {
+      expect(screen.queryByText(/Start uploading your samples by clicking on Add data./i)).toBeNull();
+      expect(screen.queryByText(/Don't have data\? Get started using one of our example datasets:/i)).toBeNull();
+    });
   });
 
   it('Should show all the samples', async () => {
     await renderSamplesTable(storeState);
 
-    Object.values(samples).forEach((sample) => {
-      expect(screen.getByText(sample.name)).toBeInTheDocument();
+    await waitFor(() => {
+      Object.values(samples).forEach((sample) => {
+        expect(screen.getByText(sample.name)).toBeInTheDocument();
+      });
     });
   });
 
@@ -148,8 +155,10 @@ describe('Samples table', () => {
 
     await renderSamplesTable(missingSampleStore);
 
-    Object.values(samples).forEach((sample) => {
-      expect(screen.queryByText(sample.name)).not.toBeInTheDocument();
+    await waitFor(() => {
+      Object.values(samples).forEach((sample) => {
+        expect(screen.queryByText(sample.name)).not.toBeInTheDocument();
+      });
     });
   });
 
@@ -164,11 +173,13 @@ describe('Samples table', () => {
 
     await renderSamplesTable(validatingExpStore);
 
-    Object.values(samples).forEach((sample) => {
-      expect(screen.queryByText(sample.name)).not.toBeInTheDocument();
-    });
+    await waitFor(() => {
+      Object.values(samples).forEach((sample) => {
+        expect(screen.queryByText(sample.name)).not.toBeInTheDocument();
+      });
 
-    expect(screen.getByText('We\'re validating your samples ...')).toBeDefined();
+      expect(screen.getByText('We\'re validating your samples ...')).toBeDefined();
+    });
   });
 
   it('Should show the samples if theres validation going on but not for active experiment', async () => {
@@ -182,11 +193,13 @@ describe('Samples table', () => {
 
     await renderSamplesTable(validatingExpStore);
 
-    Object.values(samples).forEach((sample) => {
-      expect(screen.getByText(sample.name)).toBeInTheDocument();
-    });
+    await waitFor(() => {
+      Object.values(samples).forEach((sample) => {
+        expect(screen.getByText(sample.name)).toBeInTheDocument();
+      });
 
-    expect(screen.queryByText('We\'re validating your samples ...')).not.toBeInTheDocument();
+      expect(screen.queryByText('We\'re validating your samples ...')).not.toBeInTheDocument();
+    });
   });
 
   it('Renaming the sample renames the sample', async () => {
@@ -197,11 +210,7 @@ describe('Samples table', () => {
 
     await renderSamplesTable(storeState);
 
-    const firstSampleEditButton = screen.getAllByLabelText(/Edit/i)[0];
-
-    await act(async () => {
-      userEvent.click(firstSampleEditButton);
-    });
+    userEvent.click(screen.getAllByRole('button', { name: 'Edit' })[0]);
 
     const editBox = screen.getByDisplayValue(sampleNameToChange);
 
@@ -221,15 +230,17 @@ describe('Samples table', () => {
       userEvent.click(firstSampleSaveButton);
     });
 
-    // Changed sample name should not exist
-    expect(screen.queryByText(sampleNameToChange)).toBeNull();
+    await waitFor(() => {
+      // Changed sample name should not exist
+      expect(screen.queryByText(sampleNameToChange)).toBeNull();
 
-    // New name should exist
-    expect(screen.getByText(newSampleName)).toBeInTheDocument();
+      // New name should exist
+      expect(screen.getByText(newSampleName)).toBeInTheDocument();
 
-    // Remaining samples should still exist
-    sampleNames.forEach((sampleName) => {
-      expect(screen.getByText(sampleName)).toBeInTheDocument();
+      // Remaining samples should still exist
+      sampleNames.forEach((sampleName) => {
+        expect(screen.getByText(sampleName)).toBeInTheDocument();
+      });
     });
   });
 
@@ -246,27 +257,24 @@ describe('Samples table', () => {
     const sampleNames = Object.values(samples).map((sample) => sample.name);
     const deletedSampleName = sampleNames.shift();
 
-    // Deleted sample should not exist
-    expect(screen.queryByText(deletedSampleName)).toBeNull();
+    await waitFor(() => {
+      // Deleted sample should not exist
+      expect(screen.queryByText(deletedSampleName)).toBeNull();
 
-    // Remaining samples should still exist
-    sampleNames.forEach((sampleName) => {
-      expect(screen.getByText(sampleName)).toBeInTheDocument();
+      // Remaining samples should still exist
+      sampleNames.forEach((sampleName) => {
+        expect(screen.getByText(sampleName)).toBeInTheDocument();
+      });
     });
   });
 
-  describe('Example experiments functionality', () => {
-    beforeEach(async () => {
-      await renderSamplesTable(storeState);
+  it('Example experiments show up in an empty experiment', async () => {
+    await renderSamplesTable(storeState);
 
-      // Load project without samples
-      await act(async () => {
-        await storeState.dispatch(setActiveExperiment(experimentWithoutSamplesId));
-      });
-    });
+    await storeState.dispatch(setActiveExperiment(experimentWithoutSamplesId));
 
-    it('Example experiments show up in an empty experiment', async () => {
-      expect(screen.getByText(/Start uploading your samples by clicking on Add data./i)).toBeInTheDocument();
+    waitFor(() => {
+      expect(screen.getByText(/Start uploading your samples by clicking on Add samples./i)).toBeInTheDocument();
       expect(screen.getByText(/Don't have data\? Get started using one of our example datasets!/i)).toBeInTheDocument();
     });
   });

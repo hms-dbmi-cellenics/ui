@@ -1,11 +1,21 @@
 import '@testing-library/jest-dom/extend-expect';
-import { configure } from 'enzyme';
-import Adapter from 'enzyme-adapter-react-16';
 import preloadAll from 'jest-next-dynamic';
 
-configure({ adapter: new Adapter() });
+import Enzyme from 'enzyme';
+import Adapter from '@wojtekmaj/enzyme-adapter-react-17';
+
+Enzyme.configure({ adapter: new Adapter() });
+
 jest.mock('localforage');
 jest.mock('utils/pushNotificationMessage');
+
+// This is needed, because the unit tests don't register the Vitessce imports
+jest.mock('components/data-exploration/embedding/DynamicVitessceEmbedding', () => ({
+  Scatterplot: () => 'Mocked Scatterplot',
+}));
+jest.mock('components/data-exploration/heatmap/DynamicVitessceHeatmap', () => ({
+  Heatmap: () => 'Mocked Heatmap',
+}));
 
 beforeAll(async () => {
   // Add stuff that needs to run once, before all tests

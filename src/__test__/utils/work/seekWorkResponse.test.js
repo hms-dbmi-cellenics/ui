@@ -15,7 +15,7 @@ import parseResult from 'utils/work/parseResult';
  * if they do not appear in the original file.
  */
 import * as socketConnectionMocks from 'utils/socketConnection';
-import { waitFor } from '@testing-library/dom';
+import { waitFor } from '@testing-library/react';
 
 enableFetchMocks();
 uuidv4.mockImplementation(() => 'my-random-uuid');
