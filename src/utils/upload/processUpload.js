@@ -18,7 +18,7 @@ import endUserMessages from 'utils/endUserMessages';
 import pushNotificationMessage from 'utils/pushNotificationMessage';
 
 const prepareAndUploadFileToS3 = async (
-  file, uploadUrlParams, type, onStatusUpdate = () => {},
+  file, uploadUrlParams, type, onStatusUpdate = () => { },
 ) => {
   let parts = null;
   const { signedUrls, uploadId, fileId } = uploadUrlParams;
@@ -64,17 +64,14 @@ const prepareAndUploadFileToS3 = async (
 const createAndUploadSampleFile = async (file, experimentId, sampleId, dispatch, selectedTech) => {
   const fileType = getFileTypeV2(file.name, selectedTech);
 
-  let uploadUrlParams;
-  try {
-    const metadata = getMetadata(file, selectedTech);
+  let sampleFileId;
 
-    uploadUrlParams = await dispatch(
+  try {
+    sampleFileId = await dispatch(
       createSampleFile(
         experimentId,
         sampleId,
         fileType,
-        file.size,
-        metadata,
         file,
       ),
     );
@@ -90,6 +87,7 @@ const createAndUploadSampleFile = async (file, experimentId, sampleId, dispatch,
           experimentId, sampleId, fileType, UploadStatus.COMPRESSING,
         ));
       });
+
       file.size = Buffer.byteLength(file.fileObject);
     } catch (e) {
       const fileErrorStatus = e.message === 'aborted'
@@ -101,13 +99,43 @@ const createAndUploadSampleFile = async (file, experimentId, sampleId, dispatch,
     }
   }
 
-  const updateSampleFileUploadProgress = (status, percentProgress = 0) => dispatch(
-    updateSampleFileUpload(
-      experimentId, sampleId, fileType, status, percentProgress,
-    ),
-  );
-  await prepareAndUploadFileToS3(file, uploadUrlParams, 'sample', updateSampleFileUploadProgress);
+  try {
+    const { signedUrls, uploadId } = await beginSampleFileUpload(
+      experimentId,
+      sampleFileId,
+      file.size,
+      getMetadata(file, selectedTech),
+    );
+
+    const updateSampleFileUploadProgress = (status, percentProgress = 0) => dispatch(
+      updateSampleFileUpload(
+        experimentId, sampleId, fileType, status, percentProgress,
+      ),
+    );
+
+    const uploadUrlParams = { signedUrls, uploadId, fileId: sampleFileId };
+
+    console.log('uploadUrlParamsDebug');
+    console.log(uploadUrlParams);
+
+    await prepareAndUploadFileToS3(file, uploadUrlParams, 'sample', updateSampleFileUploadProgress);
+  } catch (e) {
+    dispatch(updateSampleFileUpload(
+      experimentId, sampleId, fileType, UploadStatus.UPLOAD_ERROR,
+    ));
+  }
 };
+
+const beginSampleFileUpload = async (experimentId, sampleFileId, size, metadata) => await fetchAPI(
+  `/v2/experiments/${experimentId}/sampleFiles/${sampleFileId}/beginUpload`,
+  {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ size, metadata }),
+  },
+);
 
 const getMetadata = (file, selectedTech) => {
   const metadata = {};
