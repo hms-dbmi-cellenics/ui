@@ -214,9 +214,8 @@ const HeatmapPlot = (props) => {
       || !heatmapSettings.groupedTracks
       || !heatmapSettings.selectedCellSet
       || !heatmapSettings.selectedPoints
+      || !selectedGenes?.length > 0
     ) return;
-
-    if (_.isNil(selectedGenes)) return;
 
     // Load current genes
     dispatch(loadDownsampledGeneExpression(

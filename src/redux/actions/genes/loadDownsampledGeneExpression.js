@@ -36,6 +36,18 @@ const loadDownsampledGeneExpressionDebounced = _.debounce(
       hiddenCellSets,
     };
 
+    if (genes.length === 0) {
+      dispatch({
+        type: DOWNSAMPLED_GENES_LOADED,
+        payload: {
+          componentUuid,
+          genes,
+        },
+      });
+
+      return;
+    }
+
     // Dispatch loading state.
     dispatch({
       type: DOWNSAMPLED_GENES_LOADING,
