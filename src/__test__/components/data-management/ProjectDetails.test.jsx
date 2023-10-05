@@ -10,7 +10,9 @@ import '@testing-library/jest-dom';
 import configureStore from 'redux-mock-store';
 import { act } from 'react-dom/test-utils';
 import userEvent from '@testing-library/user-event';
-import { screen, render, waitFor } from '@testing-library/react';
+import {
+  screen, render, waitFor, fireEvent,
+} from '@testing-library/react';
 
 import mockedCreateMetadataTrack from 'redux/actions/experiments/createMetadataTrack';
 import mockedUpdateValueInMetadataTrack from 'redux/actions/experiments/updateValueInMetadataTrack';
@@ -216,9 +218,19 @@ describe('ProjectDetails', () => {
     await act(async () => {
       userEvent.click(menu);
     });
+    const propertyDropdown = screen.getByText('Sample level');
 
-    const options = await screen.getAllByRole('menuitem');
-    return options;
+    await act(async () => {
+      fireEvent.mouseOver(propertyDropdown);
+    });
+    await waitFor(() => screen.getByText('Create track'));
+
+    const menuItems = {
+      createTrack: screen.getByText('Create track'),
+      uploadFile: screen.getByText('Upload file'),
+      cellLevel: screen.getByText('Cell level'),
+    };
+    return menuItems;
   };
 
   it('Has a title, project ID and description', () => {
@@ -311,10 +323,8 @@ describe('ProjectDetails', () => {
       </Provider>,
     );
 
-    const options = await getMenuItems();
-
-    userEvent.click(options[0]);
-
+    const menuOptions = await getMenuItems();
+    userEvent.click(menuOptions.createTrack);
     const input = screen.getByDisplayValue('Track 1');
     userEvent.type(input, '{selectall}{backspace}myBrandNewMetadata{enter}');
 
@@ -330,9 +340,8 @@ describe('ProjectDetails', () => {
       </Provider>,
     );
 
-    const options = await getMenuItems();
-
-    userEvent.click(options[0]);
+    const menuOptions = await getMenuItems();
+    userEvent.click(menuOptions.createTrack);
 
     const input = screen.getByDisplayValue('Track 1');
     userEvent.type(input, '{selectall}{backspace}myBrandNewMetadata{esc}');
@@ -350,9 +359,10 @@ describe('ProjectDetails', () => {
       );
     });
 
-    const options = await getMenuItems();
+    const menuOptions = await getMenuItems();
 
-    userEvent.click(options[0]);
+    userEvent.click(menuOptions.createTrack);
+
     const input = screen.getByDisplayValue('Track 1');
     userEvent.type(input, '{selectall}{backspace}  myBrandNewMetadata     {enter}');
 
@@ -376,17 +386,19 @@ describe('ProjectDetails', () => {
     });
 
     // Add track column
-    const options = await getMenuItems();
+    const menuOptions = await getMenuItems();
 
-    userEvent.click(options[0]);
-    userEvent.type(screen.getByDisplayValue('Track 1'), '{enter}');
+    fireEvent.click(menuOptions.createTrack);
+    fireEvent.keyDown(screen.getByDisplayValue('Track 1'), { key: 'Enter', code: 'Enter' });
 
     // Change track value for sample
-    userEvent.click(screen.getAllByRole('button', { name: 'Edit' })[1]);
+
+    act(() => userEvent.click(screen.getAllByRole('button', { name: 'Edit' })[1]));
 
     const input = screen.getByRole('textbox');
-    userEvent.type(input, '{selectall}{backspace}  myBrandNewMetadataWithWhitespaces     ');
-    userEvent.click(screen.getByRole('button', { name: 'Save' }));
+    fireEvent.change(input, { target: { value: '  myBrandNewMetadataWithWhitespaces     ' } });
+
+    act(() => userEvent.click(screen.getByRole('button', { name: 'Save' })));
 
     expect(mockedUpdateValueInMetadataTrack).toHaveBeenCalledTimes(1);
     expect(mockedUpdateValueInMetadataTrack).toHaveBeenCalledWith('experiment-1', 'sample-1', 'metadata-1', 'myBrandNewMetadataWithWhitespaces');

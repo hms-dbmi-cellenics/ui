@@ -12,6 +12,8 @@ import deleteMetadataTrack from './deleteMetadataTrack';
 import updateValueInMetadataTrack from './updateValueInMetadataTrack';
 import cloneExperiment from './cloneExperiment';
 import reloadExperimentInfo from './reloadExperimentInfo';
+import updateCellLevelMetadataFileUpload from './updateCellLevelMetadataFileUpload';
+import createCellLevelMetadata from './createCellLevelMetadata';
 
 export {
   createExperiment,
@@ -28,4 +30,6 @@ export {
   updateValueInMetadataTrack,
   cloneExperiment,
   reloadExperimentInfo,
+  updateCellLevelMetadataFileUpload,
+  createCellLevelMetadata,
 };
