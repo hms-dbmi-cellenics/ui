@@ -10,7 +10,6 @@ import {
 import fetchWork from 'utils/work/fetchWork';
 import getTimeoutForWorkerTask from 'utils/getTimeoutForWorkerTask';
 import { findLoadedGenes } from 'utils/genes';
-// import { findLoadedGenes } from 'utils/genes';
 
 // Debounce so that we only fetch once the settings are done being set up
 const loadDownsampledGeneExpressionDebounced = _.debounce(
