@@ -8,7 +8,7 @@ const downsampledGenesLoading = produce((draft, action) => {
   const { ETag, genes, componentUuid } = action.payload;
 
   if (ETag) {
-    draft.expression.downsampledETag = ETag;
+    draft.expression.downsampled.ETag = ETag;
   }
 
   if (genes) {
