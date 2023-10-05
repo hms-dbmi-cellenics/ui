@@ -30,9 +30,10 @@ import {
 } from 'utils/plotUtils';
 import getContainingCellSetsProperties from 'utils/cellSets/getContainingCellSetsProperties';
 
-const Scatterplot = dynamic(() => import('./DynamicVitessceEmbedding'), {
-  ssr: false,
-});
+const Scatterplot = dynamic(
+  () => import('../DynamicVitessceWrappers').then((mod) => mod.Scatterplot),
+  { ssr: false },
+);
 
 const INITIAL_ZOOM = 4.00;
 const cellRadiusFromZoom = (zoom) => zoom ** 3 / 50;

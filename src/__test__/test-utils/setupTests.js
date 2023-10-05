@@ -10,10 +10,8 @@ jest.mock('localforage');
 jest.mock('utils/pushNotificationMessage');
 
 // This is needed, because the unit tests don't register the Vitessce imports
-jest.mock('components/data-exploration/embedding/DynamicVitessceEmbedding', () => ({
+jest.mock('components/data-exploration/DynamicVitessceWrappers', () => ({
   Scatterplot: () => 'Mocked Scatterplot',
-}));
-jest.mock('components/data-exploration/heatmap/DynamicVitessceHeatmap', () => ({
   Heatmap: () => 'Mocked Heatmap',
 }));
 

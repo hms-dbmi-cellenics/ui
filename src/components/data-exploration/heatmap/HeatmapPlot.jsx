@@ -26,9 +26,10 @@ import { loadCellSets } from 'redux/actions/cellSets';
 
 const COMPONENT_TYPE = 'interactiveHeatmap';
 
-const Heatmap = dynamic(() => import('./DynamicVitessceHeatmap'), {
-  ssr: false,
-});
+const Heatmap = dynamic(
+  () => import('../DynamicVitessceWrappers').then((mod) => mod.Heatmap),
+  { ssr: false },
+);
 
 // import { Heatmap } from '@vitessce/heatmap';
 
