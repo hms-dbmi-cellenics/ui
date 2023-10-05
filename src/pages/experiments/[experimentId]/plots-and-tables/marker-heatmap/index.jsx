@@ -108,18 +108,40 @@ const MarkerHeatmap = ({ experimentId }) => {
   }, [configIsLoaded, cellSets.accessible]);
 
   useRunOnceEffect(() => {
-    // On first load no selected genes, so fill in with markers
-    dispatch(loadMarkerGenes(
-      experimentId,
-      plotUuid,
-      {
-        numGenes: config.nMarkerGenes,
-        groupedTracks: config.groupedTracks,
-        selectedCellSet: config.selectedCellSet,
-        selectedPoints: config.selectedPoints,
-      },
-    ));
-  }, []);
+    if (
+      config?.nMarkerGenes
+      && config?.groupedTracks
+      && config?.selectedCellSet
+      && config?.selectedPoints
+      && hierarchy?.length
+      && selectedCellSetClassAvailable
+    ) {
+      // On first load no selected genes, so fill in with markers
+      dispatch(loadMarkerGenes(
+        experimentId,
+        plotUuid,
+        {
+          numGenes: config.nMarkerGenes,
+          groupedTracks: config.groupedTracks,
+          selectedCellSet: config.selectedCellSet,
+          selectedPoints: config.selectedPoints,
+        },
+      ));
+
+      return true;
+    }
+
+    return false;
+  }, [
+    config?.nMarkerGenes,
+    config?.groupedTracks,
+    config?.selectedCellSet,
+    config?.selectedPoints,
+    hierarchy,
+    cellSets.accessible,
+    louvainClustersResolution,
+    groupedCellSets,
+  ]);
 
   useConditionalEffect(() => {
     if (
@@ -141,30 +163,6 @@ const MarkerHeatmap = ({ experimentId }) => {
         plotUuid,
       ));
     }
-
-    // if (config.selectedGenes)
-
-    // // On first load no selected genes, so fill in with markers
-    // {
-    //   if (config.selectedGenes.length === 0) {
-    //     dispatch(loadMarkerGenes(
-    //       experimentId,
-    //       plotUuid,
-    //       {
-    //         numGenes: config.nMarkerGenes,
-    //         groupedTracks: config.groupedTracks,
-    //         selectedCellSet: config.selectedCellSet,
-    //         selectedPoints: config.selectedPoints,
-    //       },
-    //     ));
-    //   } else {
-    //     dispatch(loadDownsampledGeneExpression(
-    //       experimentId,
-    //       config.selectedGenes,
-    //       plotUuid,
-    //     ));
-    //   }
-    // }
   }, [
     config?.nMarkerGenes,
     config?.groupedTracks,
