@@ -14,7 +14,6 @@ const downsampledGenesLoaded = (state, action) => {
   } = action.payload;
 
   let cellOrderToStore = state.expression.downsampled.cellOrder;
-  let downsampleSettingsToStore = state.expression.downsampled.downsampleSettings;
 
   // If there's any data to store, load it
   if (newGenes) {
@@ -25,7 +24,6 @@ const downsampledGenesLoaded = (state, action) => {
       zScore,
       stats,
       cellOrder,
-      downsampleSettings,
     } = newGenes;
 
     state.expression.downsampled.matrix.setGeneExpression(
@@ -37,7 +35,6 @@ const downsampledGenesLoaded = (state, action) => {
     );
 
     cellOrderToStore = cellOrder;
-    downsampleSettingsToStore = downsampleSettings;
   }
 
   return {
@@ -58,7 +55,6 @@ const downsampledGenesLoaded = (state, action) => {
         ...state.expression.downsampled,
         loading: loadingStatus,
         cellOrder: cellOrderToStore,
-        downsampleSettings: downsampleSettingsToStore,
       },
     },
   };

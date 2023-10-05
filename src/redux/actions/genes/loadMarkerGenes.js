@@ -80,7 +80,6 @@ const loadMarkerGenes = (
           zScore,
           stats,
           cellOrder,
-          downsampleSettings,
         },
       },
     });

@@ -24,7 +24,6 @@ const getInitialState = () => ({
       error: false,
       matrix: new ExpressionMatrix(),
       cellOrder: [],
-      downsampleSettings: null,
       ETag: null,
     },
   },

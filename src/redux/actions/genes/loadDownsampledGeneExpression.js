@@ -9,7 +9,6 @@ import {
 
 import fetchWork from 'utils/work/fetchWork';
 import getTimeoutForWorkerTask from 'utils/getTimeoutForWorkerTask';
-import { findLoadedGenes } from 'utils/genes';
 
 // Debounce so that we only fetch once the settings are done being set up
 const loadDownsampledGeneExpressionDebounced = _.debounce(
@@ -23,11 +22,6 @@ const loadDownsampledGeneExpressionDebounced = _.debounce(
     const state = getState();
 
     const {
-      matrix,
-      downsampleSettings: oldDownsampleSettings,
-    } = state.genes.expression.downsampled;
-
-    const {
       groupedTracks,
       selectedCellSet,
       selectedPoints,
@@ -35,26 +29,12 @@ const loadDownsampledGeneExpressionDebounced = _.debounce(
 
     const hiddenCellSets = Array.from(state.cellSets.hidden);
 
-    const newDownsampleSettings = {
+    const downsampleSettings = {
       selectedCellSet,
       groupedTracks,
       selectedPoints,
       hiddenCellSets,
     };
-
-    const { genesToLoad, genesAlreadyLoaded } = findLoadedGenes(matrix, genes);
-
-    if (_.isEqual(oldDownsampleSettings, newDownsampleSettings) && genesToLoad.length === 0) {
-      // All genes are already loaded.
-      return dispatch({
-        type: DOWNSAMPLED_GENES_LOADED,
-        payload: {
-          experimentId,
-          componentUuid,
-          genes: genesAlreadyLoaded,
-        },
-      });
-    }
 
     // Dispatch loading state.
     dispatch({
@@ -70,7 +50,7 @@ const loadDownsampledGeneExpressionDebounced = _.debounce(
       name: 'GeneExpression',
       genes,
       downsampled: true,
-      downsampleSettings: newDownsampleSettings,
+      downsampleSettings,
     };
 
     const timeout = getTimeoutForWorkerTask(getState(), 'GeneExpression');
@@ -127,7 +107,6 @@ const loadDownsampledGeneExpressionDebounced = _.debounce(
             truncatedExpression,
             zScore,
             cellOrder,
-            downsampleSettings: newDownsampleSettings,
           },
         },
       });
