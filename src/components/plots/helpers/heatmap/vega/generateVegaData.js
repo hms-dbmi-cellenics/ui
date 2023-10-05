@@ -5,7 +5,7 @@ import { reversed } from 'utils/arrayUtils';
 const generateVegaData = (
   cellOrder, expressionMatrix, heatmapSettings, cellSets,
 ) => {
-  const { selectedGenes, selectedTracks, guardlines } = heatmapSettings;
+  const { selectedGenes, selectedTracks, guardLines } = heatmapSettings;
   const trackOrder = reversed(selectedTracks);
 
   const data = {
@@ -26,7 +26,7 @@ const generateVegaData = (
       cellOrder,
       rootNode,
       cellSets,
-      guardlines,
+      guardLines,
     ),
   );
 
