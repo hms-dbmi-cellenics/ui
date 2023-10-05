@@ -115,9 +115,6 @@ const createAndUploadSampleFile = async (file, experimentId, sampleId, dispatch,
 
     const uploadUrlParams = { signedUrls, uploadId, fileId: sampleFileId };
 
-    console.log('uploadUrlParamsDebug');
-    console.log(uploadUrlParams);
-
     await prepareAndUploadFileToS3(file, uploadUrlParams, 'sample', updateSampleFileUploadProgress);
   } catch (e) {
     dispatch(updateSampleFileUpload(
