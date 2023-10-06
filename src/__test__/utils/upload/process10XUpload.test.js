@@ -109,8 +109,10 @@ jest.mock('utils/upload/loadAndCompressIfNecessary',
     },
   ));
 
+const sampleFileId = 'mockSampleFileId';
+
 jest.mock('uuid', () => ({
-  v4: jest.fn(() => 'sample-uuid'),
+  v4: jest.fn(() => sampleFileId),
 }));
 
 jest.mock('axios', () => ({
@@ -123,18 +125,44 @@ jest.mock('utils/upload/validate10x');
 
 let store = null;
 
+const mockProcessUploadCalls = () => {
+  const sampleId = 'mockSampleId';
+
+  const mockUploadUrlParams = {
+    signedUrls: ['theSignedUrl'],
+    uploadId: 'some_id',
+  };
+
+  fetchMock.mockIf(/.*/, ({ url }) => {
+    let result;
+
+    if (url.endsWith(`/v2/experiments/${mockExperimentId}/samples`)) {
+      result = { status: 200, body: JSON.stringify({ WT13: sampleId }) };
+    }
+
+    if (new RegExp(`/v2/experiments/${mockExperimentId}/samples/.*/sampleFiles/.*`).test(url)) {
+      result = { status: 200, body: JSON.stringify({}) };
+    }
+
+    if (url.endsWith(`/v2/experiments/${mockExperimentId}/sampleFiles/${sampleFileId}/beginUpload`)) {
+      result = { status: 200, body: JSON.stringify(mockUploadUrlParams) };
+    }
+
+    if (url.endsWith('/v2/completeMultipartUpload')) {
+      result = { status: 200, body: JSON.stringify({}) };
+    }
+
+    return Promise.resolve(result);
+  });
+};
+
 describe('processUpload', () => {
   beforeEach(() => {
     jest.clearAllMocks();
 
-    const mockUploadUrlParams = {
-      signedUrls: ['theSignedUrl'],
-      uploadId: 'some_id',
-    };
-
     fetchMock.resetMocks();
     fetchMock.doMock();
-    fetchMock.mockResponse(JSON.stringify(mockUploadUrlParams), { status: 200 });
+    mockProcessUploadCalls();
 
     store = mockStore(initialState);
   });
@@ -214,6 +242,8 @@ describe('processUpload', () => {
       }],
       { matcher: waitForActions.matchers.containing },
     );
+
+    expect(fetchMock.mock.calls).toMatchSnapshot('fetch calls');
   });
 
   it('Uploads and updates redux correctly when there are no errors with cellranger v2', async () => {
@@ -284,6 +314,8 @@ describe('processUpload', () => {
       }],
       { matcher: waitForActions.matchers.containing },
     );
+
+    expect(fetchMock.mock.calls).toMatchSnapshot('fetch calls');
   });
 
   it('Updates redux correctly when there are file upload errors', async () => {
@@ -340,6 +372,8 @@ describe('processUpload', () => {
     expect(errorFileProperties.length).toEqual(3);
     // There are no file actions with status successfully uploaded
     expect(uploadedFileProperties.length).toEqual(0);
+
+    expect(fetchMock.mock.calls).toMatchSnapshot('fetch calls');
   });
 
   it('Should not upload files if there are errors creating samples in the api', async () => {
@@ -357,6 +391,55 @@ describe('processUpload', () => {
     await waitFor(() => {
       expect(axios.request).not.toHaveBeenCalled();
     });
+
+    expect(fetchMock.mock.calls).toMatchSnapshot('fetch calls');
+
+    // Informs user of error
+    expect(pushNotificationMessage).toHaveBeenCalledWith('error', 'We couldn\'t create your sample. Please try uploading it again');
+  });
+
+  it('Should not upload files if there are errors beginning the multipart upload in the api', async () => {
+    const sampleId = 'mockSampleId';
+
+    fetchMock.mockIf(/.*/, ({ url }) => {
+      let result;
+
+      if (url.endsWith(`/v2/experiments/${mockExperimentId}/samples`)) {
+        result = { status: 200, body: JSON.stringify({ WT13: sampleId }) };
+      }
+
+      if (new RegExp(`/v2/experiments/${mockExperimentId}/samples/.*/sampleFiles/.*`).test(url)) {
+        result = { status: 200, body: JSON.stringify({}) };
+      }
+
+      if (url.endsWith(`/v2/experiments/${mockExperimentId}/sampleFiles/${sampleFileId}/beginUpload`)) {
+        return Promise.reject(new Error('Some error in the api'));
+      }
+
+      return Promise.resolve(result);
+    });
+
+    await processUpload(
+      getValidFiles('v3'),
+      sampleType,
+      store.getState().samples,
+      mockExperimentId,
+      store.dispatch,
+    );
+
+    await waitForActions(
+      store,
+      new Array(3).fill({
+        type: SAMPLES_FILE_UPDATE,
+        payload: { fileDiff: { upload: { status: UploadStatus.UPLOAD_ERROR } } },
+      }),
+      { matcher: waitForActions.matchers.containing },
+    );
+
+    // Uploads didn't begin
+    expect(axios.request).not.toHaveBeenCalled();
+
+    expect(fetchMock.mock.calls).toMatchSnapshot('fetch calls');
   });
 
   it('Should not upload sample and show notification if uploaded sample is invalid', async () => {
