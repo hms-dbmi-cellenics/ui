@@ -19,7 +19,6 @@ const GeneReorderTool = (props) => {
   const dispatch = useDispatch();
 
   const config = useSelector((state) => state.componentConfig[plotUuid]?.config);
-  const genesLoading = useSelector((state) => state.genes.expression.downsampled.loading);
 
   const [selectedGenesLocal, setSelectedGenesLocal] = useState([]);
 
@@ -80,7 +79,6 @@ const GeneReorderTool = (props) => {
           {treeNode.title}
           <Button
             type='text'
-            disabled={genesLoading.length > 0}
             onClick={() => {
               onNodeDelete(treeNode.key);
             }}
@@ -98,7 +96,7 @@ const GeneReorderTool = (props) => {
 
   useEffect(() => {
     setRenderedTreeData(renderTitles(geneTreeData));
-  }, [geneTreeData, genesLoading]);
+  }, [geneTreeData]);
 
   return (
     <HierarchicalTreeGenes
