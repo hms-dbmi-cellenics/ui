@@ -1,5 +1,110 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`processUpload Should not upload files if there are errors beginning the multipart upload in the api: fetch calls 1`] = `
+Array [
+  Array [
+    "http://localhost:3000/v2/experiments/project-uuid/samples",
+    Object {
+      "body": "[{\\"name\\":\\"WT13\\",\\"sampleTechnology\\":\\"10x\\",\\"options\\":{}}]",
+      "headers": Object {
+        "Content-Type": "application/json",
+      },
+      "method": "POST",
+    },
+  ],
+  Array [
+    "http://localhost:3000/v2/experiments/project-uuid/samples/mockSampleId/sampleFiles/features10x",
+    Object {
+      "body": "{\\"sampleFileId\\":\\"mockSampleFileId\\",\\"size\\":1024}",
+      "headers": Object {
+        "Content-Type": "application/json",
+      },
+      "method": "POST",
+    },
+  ],
+  Array [
+    "http://localhost:3000/v2/experiments/project-uuid/samples/mockSampleId/sampleFiles/barcodes10x",
+    Object {
+      "body": "{\\"sampleFileId\\":\\"mockSampleFileId\\",\\"size\\":1024}",
+      "headers": Object {
+        "Content-Type": "application/json",
+      },
+      "method": "POST",
+    },
+  ],
+  Array [
+    "http://localhost:3000/v2/experiments/project-uuid/samples/mockSampleId/sampleFiles/matrix10x",
+    Object {
+      "body": "{\\"sampleFileId\\":\\"mockSampleFileId\\",\\"size\\":1024}",
+      "headers": Object {
+        "Content-Type": "application/json",
+      },
+      "method": "POST",
+    },
+  ],
+  Array [
+    "http://localhost:3000/v2/experiments/project-uuid/sampleFiles/mockSampleFileId/beginUpload",
+    Object {
+      "body": "{\\"size\\":1024,\\"metadata\\":{\\"cellranger_version\\":\\"v3\\"}}",
+      "headers": Object {
+        "Content-Type": "application/json",
+      },
+      "method": "POST",
+    },
+  ],
+  Array [
+    "http://localhost:3000/v2/experiments/project-uuid/sampleFiles/mockSampleFileId/beginUpload",
+    Object {
+      "body": "{\\"size\\":1024,\\"metadata\\":{}}",
+      "headers": Object {
+        "Content-Type": "application/json",
+      },
+      "method": "POST",
+    },
+  ],
+  Array [
+    "http://localhost:3000/v2/experiments/project-uuid/sampleFiles/mockSampleFileId/beginUpload",
+    Object {
+      "body": "{\\"size\\":1024,\\"metadata\\":{}}",
+      "headers": Object {
+        "Content-Type": "application/json",
+      },
+      "method": "POST",
+    },
+  ],
+  Array [
+    "http://localhost:3000/v2/experiments/project-uuid/samples/mockSampleId/sampleFiles/features10x",
+    Object {
+      "body": "{\\"uploadStatus\\":\\"uploadError\\"}",
+      "headers": Object {
+        "Content-Type": "application/json",
+      },
+      "method": "PATCH",
+    },
+  ],
+  Array [
+    "http://localhost:3000/v2/experiments/project-uuid/samples/mockSampleId/sampleFiles/barcodes10x",
+    Object {
+      "body": "{\\"uploadStatus\\":\\"uploadError\\"}",
+      "headers": Object {
+        "Content-Type": "application/json",
+      },
+      "method": "PATCH",
+    },
+  ],
+  Array [
+    "http://localhost:3000/v2/experiments/project-uuid/samples/mockSampleId/sampleFiles/matrix10x",
+    Object {
+      "body": "{\\"uploadStatus\\":\\"uploadError\\"}",
+      "headers": Object {
+        "Content-Type": "application/json",
+      },
+      "method": "PATCH",
+    },
+  ],
+]
+`;
+
 exports[`processUpload Uploads and updates redux correctly when there are no errors with cellranger v2 1`] = `
 [
   {
