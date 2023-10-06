@@ -393,6 +393,9 @@ describe('processUpload', () => {
     });
 
     expect(fetchMock.mock.calls).toMatchSnapshot('fetch calls');
+
+    // Informs user of error
+    expect(pushNotificationMessage).toHaveBeenCalledWith('error', 'We couldn\'t create your sample. Please try uploading it again');
   });
 
   it('Should not upload files if there are errors beginning the multipart upload in the api', async () => {
