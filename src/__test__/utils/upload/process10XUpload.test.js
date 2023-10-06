@@ -372,6 +372,8 @@ describe('processUpload', () => {
     expect(errorFileProperties.length).toEqual(3);
     // There are no file actions with status successfully uploaded
     expect(uploadedFileProperties.length).toEqual(0);
+
+    expect(fetchMock.mock.calls).toMatchSnapshot('fetch calls');
   });
 
   it('Should not upload files if there are errors creating samples in the api', async () => {
@@ -389,6 +391,8 @@ describe('processUpload', () => {
     await waitFor(() => {
       expect(axios.request).not.toHaveBeenCalled();
     });
+
+    expect(fetchMock.mock.calls).toMatchSnapshot('fetch calls');
   });
 
   it('Should not upload files if there are errors beginning the multipart upload in the api', async () => {
