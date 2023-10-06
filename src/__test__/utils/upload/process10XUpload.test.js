@@ -242,6 +242,8 @@ describe('processUpload', () => {
       }],
       { matcher: waitForActions.matchers.containing },
     );
+
+    expect(fetchMock.mock.calls).toMatchSnapshot('fetch calls');
   });
 
   it('Uploads and updates redux correctly when there are no errors with cellranger v2', async () => {
