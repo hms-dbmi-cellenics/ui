@@ -314,6 +314,8 @@ describe('processUpload', () => {
       }],
       { matcher: waitForActions.matchers.containing },
     );
+
+    expect(fetchMock.mock.calls).toMatchSnapshot('fetch calls');
   });
 
   it('Updates redux correctly when there are file upload errors', async () => {
