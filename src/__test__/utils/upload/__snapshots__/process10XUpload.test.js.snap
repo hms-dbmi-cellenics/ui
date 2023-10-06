@@ -105,6 +105,21 @@ exports[`processUpload Should not upload files if there are errors beginning the
 ]
 `;
 
+exports[`processUpload Should not upload files if there are errors creating samples in the api: fetch calls 1`] = `
+[
+  [
+    "http://localhost:3000/v2/experiments/project-uuid/samples",
+    {
+      "body": "[{"name":"WT13","sampleTechnology":"10x","options":{}}]",
+      "headers": {
+        "Content-Type": "application/json",
+      },
+      "method": "POST",
+    },
+  ],
+]
+`;
+
 exports[`processUpload Updates redux correctly when there are file upload errors: fetch calls 1`] = `
 [
   [
