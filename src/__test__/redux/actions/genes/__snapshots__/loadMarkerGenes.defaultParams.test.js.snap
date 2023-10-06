@@ -1,31 +1,31 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`loadEmbedding action loadEmbedding generates correct hash params body for ETag: marker heatmap - hash call params 1`] = `
-Array [
-  Array [
-    Object {
-      "body": Object {
+[
+  [
+    {
+      "body": {
         "cellSetKey": "louvain",
-        "groupByClasses": Array [
+        "groupByClasses": [
           "louvain",
         ],
-        "hiddenCellSetKeys": Array [],
+        "hiddenCellSetKeys": [],
         "nGenes": 5,
         "name": "MarkerHeatmap",
         "selectedPoints": "All",
       },
       "cacheUniquenessKey": null,
       "experimentId": "6463cb35-3e08-4e94-a181-6d155a5ca570",
-      "extraDependencies": Array [
-        Object {
+      "extraDependencies": [
+        {
           "method": "louvain",
-          "methodSettings": Object {
-            "louvain": Object {
+          "methodSettings": {
+            "louvain": {
               "resolution": 0.8,
             },
           },
         },
-        Array [
+        [
           "louvain",
         ],
         1,

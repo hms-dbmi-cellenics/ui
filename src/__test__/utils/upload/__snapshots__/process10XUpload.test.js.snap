@@ -1,28 +1,28 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`processUpload Uploads and updates redux correctly when there are no errors with cellranger v2 1`] = `
-Array [
-  Object {
+[
+  {
     "data": Blob {},
-    "headers": Object {
+    "headers": {
       "Content-Type": "application/octet-stream",
     },
     "method": "put",
     "onUploadProgress": [Function],
     "url": "theSignedUrl",
   },
-  Object {
+  {
     "data": Blob {},
-    "headers": Object {
+    "headers": {
       "Content-Type": "application/octet-stream",
     },
     "method": "put",
     "onUploadProgress": [Function],
     "url": "theSignedUrl",
   },
-  Object {
+  {
     "data": Blob {},
-    "headers": Object {
+    "headers": {
       "Content-Type": "application/octet-stream",
     },
     "method": "put",
@@ -33,28 +33,28 @@ Array [
 `;
 
 exports[`processUpload Uploads and updates redux correctly when there are no errors with cellranger v3 1`] = `
-Array [
-  Object {
+[
+  {
     "data": Blob {},
-    "headers": Object {
+    "headers": {
       "Content-Type": "application/octet-stream",
     },
     "method": "put",
     "onUploadProgress": [Function],
     "url": "theSignedUrl",
   },
-  Object {
+  {
     "data": Blob {},
-    "headers": Object {
+    "headers": {
       "Content-Type": "application/octet-stream",
     },
     "method": "put",
     "onUploadProgress": [Function],
     "url": "theSignedUrl",
   },
-  Object {
+  {
     "data": Blob {},
-    "headers": Object {
+    "headers": {
       "Content-Type": "application/octet-stream",
     },
     "method": "put",

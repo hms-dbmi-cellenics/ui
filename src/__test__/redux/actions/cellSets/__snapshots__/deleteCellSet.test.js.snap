@@ -1,8 +1,8 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`deleteCellSet action Dispatches an action to delete cell set to the reducer 1`] = `
-Object {
-  "payload": Object {
+{
+  "payload": {
     "key": "my-key",
   },
   "type": "cellSets/delete",
@@ -10,9 +10,9 @@ Object {
 `;
 
 exports[`deleteCellSet action Sends fetch to the API when a cell set is deleted 1`] = `
-Object {
-  "body": "[{\\"$match\\":{\\"query\\":\\"$[?(@.key == \\\\\\"scratchpad\\\\\\")]\\",\\"value\\":{\\"children\\":[{\\"$match\\":{\\"query\\":\\"$[?(@.key == \\\\\\"my-key\\\\\\")]\\",\\"value\\":{\\"$remove\\":true}}}]}}}]",
-  "headers": Object {
+{
+  "body": "[{"$match":{"query":"$[?(@.key == \\"scratchpad\\")]","value":{"children":[{"$match":{"query":"$[?(@.key == \\"my-key\\")]","value":{"$remove":true}}}]}}}]",
+  "headers": {
     "Content-Type": "application/boschni-json-merger+json",
   },
   "method": "PATCH",
@@ -20,9 +20,9 @@ Object {
 `;
 
 exports[`deleteCellSet action Uses V2 URL when using API version V2 1`] = `
-Object {
-  "body": "[{\\"$match\\":{\\"query\\":\\"$[?(@.key == \\\\\\"scratchpad\\\\\\")]\\",\\"value\\":{\\"children\\":[{\\"$match\\":{\\"query\\":\\"$[?(@.key == \\\\\\"my-key\\\\\\")]\\",\\"value\\":{\\"$remove\\":true}}}]}}}]",
-  "headers": Object {
+{
+  "body": "[{"$match":{"query":"$[?(@.key == \\"scratchpad\\")]","value":{"children":[{"$match":{"query":"$[?(@.key == \\"my-key\\")]","value":{"$remove":true}}}]}}}]",
+  "headers": {
     "Content-Type": "application/boschni-json-merger+json",
   },
   "method": "PATCH",

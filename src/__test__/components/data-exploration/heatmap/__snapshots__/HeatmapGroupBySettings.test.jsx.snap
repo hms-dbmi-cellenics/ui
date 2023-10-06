@@ -1,10 +1,10 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`HeatmapGroupBySettings interacting with the groupby add/remove options will trigger the appropriate actions 1`] = `
-Object {
-  "payload": Object {
-    "configChanges": Object {
-      "groupedTracks": Array [
+{
+  "payload": {
+    "configChanges": {
+      "groupedTracks": [
         "sample",
         "louvain",
       ],
@@ -16,10 +16,10 @@ Object {
 `;
 
 exports[`HeatmapGroupBySettings interacting with the groupby add/remove options will trigger the appropriate actions 2`] = `
-Object {
-  "payload": Object {
-    "configChanges": Object {
-      "groupedTracks": Array [
+{
+  "payload": {
+    "configChanges": {
+      "groupedTracks": [
         "sample",
         "louvain",
       ],
@@ -31,10 +31,10 @@ Object {
 `;
 
 exports[`HeatmapGroupBySettings interacting with the groupby reorder options will trigger the appropriate actions 1`] = `
-Object {
-  "payload": Object {
-    "configChanges": Object {
-      "groupedTracks": Array [
+{
+  "payload": {
+    "configChanges": {
+      "groupedTracks": [
         "louvain",
         "sample",
       ],

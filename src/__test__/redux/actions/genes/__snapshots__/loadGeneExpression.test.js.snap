@@ -1,11 +1,11 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`loadGeneExpression action Dispatches appropriately on failure 1`] = `
-Object {
-  "payload": Object {
+{
+  "payload": {
     "componentUuid": "asd",
     "experimentId": "1234",
-    "genes": Array [
+    "genes": [
       "a",
       "b",
       "c",
@@ -16,12 +16,12 @@ Object {
 `;
 
 exports[`loadGeneExpression action Dispatches appropriately on failure 2`] = `
-Object {
-  "payload": Object {
+{
+  "payload": {
     "componentUuid": "asd",
     "error": [Error: random error!],
     "experimentId": "1234",
-    "genes": Array [
+    "genes": [
       "a",
       "b",
       "c",
@@ -32,80 +32,80 @@ Object {
 `;
 
 exports[`loadGeneExpression action Dispatches appropriately on success 1`] = `
-Array [
-  Object {
+[
+  {
     "componentUuid": "asd",
     "experimentId": "1234",
-    "genes": Array [
+    "genes": [
       "a",
       "b",
       "c",
     ],
   },
-  Object {
+  {
     "componentUuid": "asd",
-    "genes": Array [
+    "genes": [
       "geneA",
     ],
-    "newGenes": Object {
-      "orderedGeneNames": Array [
+    "newGenes": {
+      "orderedGeneNames": [
         "geneA",
       ],
-      "rawExpression": Object {
+      "rawExpression": {
         "datatype": undefined,
-        "index": Array [],
+        "index": [],
         "mathjs": "SparseMatrix",
-        "ptr": Array [
+        "ptr": [
           0,
           0,
         ],
-        "size": Array [
+        "size": [
           1,
           1,
         ],
-        "values": Array [],
+        "values": [],
       },
-      "stats": Object {
-        "rawMean": Array [
+      "stats": {
+        "rawMean": [
           1,
         ],
-        "rawStdev": Array [
+        "rawStdev": [
           0,
         ],
-        "truncatedMax": Array [
+        "truncatedMax": [
           1,
         ],
-        "truncatedMin": Array [
+        "truncatedMin": [
           1,
         ],
       },
-      "truncatedExpression": Object {
+      "truncatedExpression": {
         "datatype": undefined,
-        "index": Array [],
+        "index": [],
         "mathjs": "SparseMatrix",
-        "ptr": Array [
+        "ptr": [
           0,
           0,
         ],
-        "size": Array [
+        "size": [
           1,
           1,
         ],
-        "values": Array [],
+        "values": [],
       },
-      "zScore": Object {
+      "zScore": {
         "datatype": undefined,
-        "index": Array [],
+        "index": [],
         "mathjs": "SparseMatrix",
-        "ptr": Array [
+        "ptr": [
           0,
           0,
         ],
-        "size": Array [
+        "size": [
           1,
           1,
         ],
-        "values": Array [],
+        "values": [],
       },
     },
   },
@@ -113,11 +113,11 @@ Array [
 `;
 
 exports[`loadGeneExpression action Dispatches appropriately on unrun pipeline 1`] = `
-Object {
-  "payload": Object {
+{
+  "payload": {
     "componentUuid": "asd",
     "experimentId": "1234",
-    "genes": Array [
+    "genes": [
       "a",
       "b",
       "c",
@@ -128,12 +128,12 @@ Object {
 `;
 
 exports[`loadGeneExpression action Dispatches appropriately on unrun pipeline 2`] = `
-Object {
-  "payload": Object {
+{
+  "payload": {
     "componentUuid": "asd",
     "error": [Error: random error!],
     "experimentId": "1234",
-    "genes": Array [
+    "genes": [
       "a",
       "b",
       "c",
@@ -145,11 +145,11 @@ Object {
 
 exports[`loadGeneExpression action Does not send work for already loaded expression data. 1`] = `
 [MockFunction] {
-  "calls": Array [
-    Array [
+  "calls": [
+    [
       "1234",
-      Object {
-        "genes": Array [
+      {
+        "genes": [
           "b",
           "c",
         ],
@@ -157,13 +157,13 @@ exports[`loadGeneExpression action Does not send work for already loaded express
       },
       [Function],
       [Function],
-      Object {
+      {
         "timeout": 60,
       },
     ],
   ],
-  "results": Array [
-    Object {
+  "results": [
+    {
       "type": "return",
       "value": Promise {},
     },

@@ -1,4 +1,3 @@
-import _ from 'lodash';
 import React from 'react';
 import preloadAll from 'jest-next-dynamic';
 
@@ -20,7 +19,6 @@ import mockAPI, {
   generateDefaultMockAPIResponses,
   delayedResponse,
   dispatchWorkRequestMock,
-  workerDataResult,
 } from '__test__/test-utils/mockAPI';
 
 import HeatmapPlot from 'components/data-exploration/heatmap/HeatmapPlot';
@@ -41,8 +39,7 @@ const experimentId = fake.EXPERIMENT_ID;
 // EtagParams is the object that's passed to the function which generates ETag in fetchWork
 jest.mock('object-hash', () => {
   const objectHash = jest.requireActual('object-hash');
-  const mockWorkResultETag = jest.requireActual('__test__/test-utils/mockWorkResultETag').default;
-
+  const mockWorkResultETag = jest.requireActual('__test__/test-utils/mockWorkResultETag');
   const mockWorkRequestETag = (ETagParams) => `${ETagParams.body.nGenes}-marker-genes`;
   const mockGeneExpressionETag = (ETagParams) => `${ETagParams.missingGenesBody.genes.join('-')}-expression`;
 
@@ -56,6 +53,7 @@ jest.mock('utils/work/seekWorkResponse', () => ({
 
 let vitesscePropsSpy = null;
 jest.mock('next/dynamic', () => () => (props) => {
+  console.log("*** we are coming here: ", props);
   vitesscePropsSpy = props;
   return 'Sup Im a heatmap';
 });
@@ -130,8 +128,8 @@ describe('HeatmapPlot', () => {
     expect(screen.getByText(/Sup Im a heatmap/i)).toBeInTheDocument();
 
     // Renders correct cells and genes
-    expect(vitesscePropsSpy.expressionMatrix.rows).toMatchSnapshot();
-    expect(vitesscePropsSpy.expressionMatrix.cols).toMatchSnapshot();
+    expect(vitesscePropsSpy.uint8ObsFeatureMatrix).toMatchSnapshot();
+    expect(vitesscePropsSpy.featureIndex).toMatchSnapshot();
   });
 
   it('Shows loader message if cellSets are loading', async () => {
@@ -168,7 +166,7 @@ describe('HeatmapPlot', () => {
     expect(screen.getByText(/Assigning a worker to your analysis/i)).toBeInTheDocument();
   });
 
-  it('Shows loader message if the marker genes are loaded but theres other selected genes still loading', async (done) => {
+  it('Shows loader message if the marker genes are loaded but there\'s other selected genes still loading', async () => {
     const customWorkerResponses = {
       ...mockWorkerResponses,
       'loading_gene_id-expression': () => delayedResponse({ body: 'Not found', status: 404 }, 4000),
@@ -192,7 +190,6 @@ describe('HeatmapPlot', () => {
 
     // Loading screen shows up
     expect(screen.getByText(/Assigning a worker to your analysis/i)).toBeInTheDocument();
-    done();
   });
 
   it('Handles marker genes loading error correctly', async () => {
@@ -268,7 +265,7 @@ describe('HeatmapPlot', () => {
     expect(dispatchWorkRequest.mock.calls[0][1].name === 'MarkerHeatmap').toBe(true);
 
     // It shows cells in louvain-3
-    expect(isSubset(cellsInLouvain3, vitesscePropsSpy.expressionMatrix.rows)).toEqual(true);
+    expect(isSubset(cellsInLouvain3, vitesscePropsSpy.obsIndex)).toEqual(true);
 
     // If a louvain-3 is suddenly hidden
     await act(async () => {
@@ -284,9 +281,7 @@ describe('HeatmapPlot', () => {
     dispatchWorkRequest.mockReset();
 
     // Mock each of the loadMarkerGenes calls caused by hiding a cell set
-    _.times(14, () => {
-      dispatchWorkRequest.mockImplementationOnce(dispatchWorkRequestMock(mockWorkerResponses));
-    });
+    dispatchWorkRequest.mockImplementationOnce(dispatchWorkRequestMock(mockWorkerResponses));
 
     // Last call (all the cellSets are hidden) throw the error
     dispatchWorkRequest.mockImplementationOnce(() => Promise.reject(new Error('No cells found')));
@@ -312,7 +307,8 @@ describe('HeatmapPlot', () => {
     });
 
     // The plots shows an empty message
-    screen.getByText(/Unhide some cell sets to show the heatmap/i);
+    expect(screen.getByText(/Unhide some cell sets to show the heatmap/i)).toBeInTheDocument();
+
   });
 
   it('Reacts to cellClass groupby being changed', async () => {
@@ -333,12 +329,12 @@ describe('HeatmapPlot', () => {
     });
 
     // It doesn't reorder the genes
-    expect(vitesscePropsSpy.expressionMatrix.rows).toMatchSnapshot();
+    expect(vitesscePropsSpy.uint8ObsFeatureMatrix).toMatchSnapshot();
     // It reorders correctly
-    expect(vitesscePropsSpy.expressionMatrix.cols).toMatchSnapshot();
+    expect(vitesscePropsSpy.featureIndex).toMatchSnapshot();
   });
 
-  it('Responds correctly to vitessce Heatmap callbacks', async (done) => {
+  it('Responds correctly to vitessce Heatmap callbacks', async () => {
     await storeState.dispatch(loadCellSets(experimentId));
 
     await loadAndRenderDefaultHeatmap(storeState);
@@ -346,8 +342,8 @@ describe('HeatmapPlot', () => {
     expect(screen.getByText(/Sup Im a heatmap/i)).toBeInTheDocument();
 
     // Renders the correct genes and cells
-    expect(vitesscePropsSpy.expressionMatrix.rows).toMatchSnapshot();
-    expect(vitesscePropsSpy.expressionMatrix.cols).toMatchSnapshot();
+    expect(vitesscePropsSpy.uint8ObsFeatureMatrix).toMatchSnapshot();
+    expect(vitesscePropsSpy.featureIndex).toMatchSnapshot();
 
     // On changing the view state
     const updatedViewState = { zoom: 15, target: [1, 1] };
@@ -400,6 +396,5 @@ describe('HeatmapPlot', () => {
 
     // And doesn't show the normal cell info again
     expect(screen.queryByText(/Gene name:/i)).not.toBeInTheDocument();
-    done();
   });
 });

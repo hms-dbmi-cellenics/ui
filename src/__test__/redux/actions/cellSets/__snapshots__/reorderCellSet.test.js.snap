@@ -1,9 +1,9 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`reorderCellSet action Uses V2 URL when using API version V2 1`] = `
-Object {
-  "body": "[{\\"$match\\":{\\"query\\":\\"$[?(@.key == \\\\\\"root\\\\\\")]\\",\\"value\\":{\\"children\\":[{\\"$match\\":{\\"query\\":\\"$[?(@.key == \\\\\\"child\\\\\\")]\\",\\"value\\":{\\"$move\\":5}}}]}}}]",
-  "headers": Object {
+{
+  "body": "[{"$match":{"query":"$[?(@.key == \\"root\\")]","value":{"children":[{"$match":{"query":"$[?(@.key == \\"child\\")]","value":{"$move":5}}}]}}}]",
+  "headers": {
     "Content-Type": "application/boschni-json-merger+json",
   },
   "method": "PATCH",
@@ -11,8 +11,8 @@ Object {
 `;
 
 exports[`reorderCellSet action Works correctly 1`] = `
-Object {
-  "payload": Object {
+{
+  "payload": {
     "cellClassKey": "root",
     "cellSetKey": "child",
     "newPosition": 5,
@@ -22,9 +22,9 @@ Object {
 `;
 
 exports[`reorderCellSet action Works correctly 2`] = `
-Object {
-  "body": "[{\\"$match\\":{\\"query\\":\\"$[?(@.key == \\\\\\"root\\\\\\")]\\",\\"value\\":{\\"children\\":[{\\"$match\\":{\\"query\\":\\"$[?(@.key == \\\\\\"child\\\\\\")]\\",\\"value\\":{\\"$move\\":5}}}]}}}]",
-  "headers": Object {
+{
+  "body": "[{"$match":{"query":"$[?(@.key == \\"root\\")]","value":{"children":[{"$match":{"query":"$[?(@.key == \\"child\\")]","value":{"$move":5}}}]}}}]",
+  "headers": {
     "Content-Type": "application/boschni-json-merger+json",
   },
   "method": "PATCH",

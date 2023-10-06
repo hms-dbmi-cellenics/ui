@@ -1,22 +1,22 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`updateExperiment Handles error if api request fails 1`] = `
-Array [
+[
   undefined,
-  Object {
+  {
     "error": "We couldn't save your data.",
   },
 ]
 `;
 
 exports[`updateExperiment Works correctly 1`] = `
-Array [
-  Object {
+[
+  {
     "type": "experiments/saving",
   },
-  Object {
-    "payload": Object {
-      "experiment": Object {
+  {
+    "payload": {
+      "experiment": {
         "name": "newName",
       },
       "experimentId": "experiment-1",
@@ -26,4 +26,4 @@ Array [
 ]
 `;
 
-exports[`updateExperiment Works correctly 2`] = `"{\\"name\\":\\"newName\\"}"`;
+exports[`updateExperiment Works correctly 2`] = `"{"name":"newName"}"`;

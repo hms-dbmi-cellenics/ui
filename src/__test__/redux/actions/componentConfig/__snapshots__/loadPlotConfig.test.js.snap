@@ -1,9 +1,9 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`loadPlotConfig Loads config properly 1`] = `
-Object {
-  "config": Object {
-    "axes": Object {
+{
+  "config": {
+    "axes": {
       "domainWidth": 2,
       "gridOpacity": 0,
       "gridWidth": 10,
@@ -14,7 +14,7 @@ Object {
       "xAxisText": "#UMIs in cell",
       "yAxisText": "#UMIs * #Cells",
     },
-    "axesRanges": Object {
+    "axesRanges": {
       "xAxisAuto": true,
       "xMax": 10,
       "xMin": 0,
@@ -22,32 +22,32 @@ Object {
       "yMax": 10,
       "yMin": 0,
     },
-    "colour": Object {
+    "colour": {
       "gradient": "default",
       "invert": "standard",
       "masterColour": "#000000",
       "reverseColourBar": false,
       "toggleInvert": "#FFFFFF",
     },
-    "dimensions": Object {
+    "dimensions": {
       "height": 400,
       "width": 530,
     },
-    "fontStyle": Object {
+    "fontStyle": {
       "colour": "#000000",
       "font": "sans-serif",
     },
-    "labels": Object {
+    "labels": {
       "enabled": true,
       "size": 18,
     },
-    "legend": Object {
+    "legend": {
       "colour": "#000000",
       "enabled": true,
       "position": "right",
       "showAlert": false,
     },
-    "marker": Object {
+    "marker": {
       "opacity": 5,
       "shape": "circle",
       "showOpacity": true,
@@ -55,7 +55,7 @@ Object {
     },
     "minCellSize": 10800,
     "spec": "1.0.0",
-    "title": Object {
+    "title": {
       "anchor": "start",
       "dx": 10,
       "fontSize": 20,
@@ -66,7 +66,7 @@ Object {
   "experimentId": "testae48e318dab9a1bd0bexperiment",
   "loading": false,
   "outstandingChanges": false,
-  "plotData": Array [
+  "plotData": [
     1,
     2,
     3,
@@ -77,9 +77,9 @@ Object {
 `;
 
 exports[`loadPlotConfig Loads default initial config for plots if plot config is not found 1`] = `
-Object {
-  "config": Object {
-    "axes": Object {
+{
+  "config": {
+    "axes": {
       "domainWidth": 2,
       "gridOpacity": 0,
       "gridWidth": 10,
@@ -90,7 +90,7 @@ Object {
       "xAxisText": "#UMIs in cell",
       "yAxisText": "#UMIs * #Cells",
     },
-    "axesRanges": Object {
+    "axesRanges": {
       "xAxisAuto": true,
       "xMax": 10,
       "xMin": 0,
@@ -98,32 +98,32 @@ Object {
       "yMax": 10,
       "yMin": 0,
     },
-    "colour": Object {
+    "colour": {
       "gradient": "default",
       "invert": "standard",
       "masterColour": "#000000",
       "reverseColourBar": false,
       "toggleInvert": "#FFFFFF",
     },
-    "dimensions": Object {
+    "dimensions": {
       "height": 400,
       "width": 530,
     },
-    "fontStyle": Object {
+    "fontStyle": {
       "colour": "#000000",
       "font": "sans-serif",
     },
-    "labels": Object {
+    "labels": {
       "enabled": true,
       "size": 18,
     },
-    "legend": Object {
+    "legend": {
       "colour": "#000000",
       "enabled": true,
       "position": "right",
       "showAlert": false,
     },
-    "marker": Object {
+    "marker": {
       "opacity": 5,
       "shape": "circle",
       "showOpacity": true,
@@ -131,7 +131,7 @@ Object {
     },
     "minCellSize": 10800,
     "spec": "1.0.0",
-    "title": Object {
+    "title": {
       "anchor": "start",
       "dx": 10,
       "fontSize": 20,
@@ -142,7 +142,7 @@ Object {
   "experimentId": "testae48e318dab9a1bd0bexperiment",
   "loading": false,
   "outstandingChanges": false,
-  "plotData": Array [],
+  "plotData": [],
   "plotType": "cellSizeDistributionHistogram",
 }
 `;

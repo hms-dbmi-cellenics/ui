@@ -4,6 +4,7 @@ import thunk from 'redux-thunk';
 import waitForActions from 'redux-mock-store-await-actions';
 import axios from 'axios';
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
+import { waitFor } from '@testing-library/react';
 
 import {
   SAMPLES_CREATED, SAMPLES_FILE_UPDATE, SAMPLES_SAVED, SAMPLES_SAVING, SAMPLES_VALIDATING_UPDATED,
@@ -12,7 +13,6 @@ import initialSampleState, { sampleTemplate } from 'redux/reducers/samples/initi
 import initialExperimentState, { experimentTemplate } from 'redux/reducers/experiments/initialState';
 
 import UploadStatus from 'utils/upload/UploadStatus';
-import { waitFor } from '@testing-library/dom';
 
 import processUpload from 'utils/upload/processUpload';
 
@@ -97,8 +97,6 @@ const initialState = {
   },
 };
 
-// Based on https://stackoverflow.com/a/51045733
-const flushPromises = () => new Promise(setImmediate);
 const mockStore = configureMockStore([thunk]);
 
 jest.mock('utils/upload/loadAndCompressIfNecessary',
@@ -179,9 +177,6 @@ describe('processUpload', () => {
     expect(mockAxiosCalls[1].data).toBeInstanceOf(Blob);
     expect(mockAxiosCalls[2].data).toBeInstanceOf(Blob);
 
-    // Wait until all put promises are resolved
-    await flushPromises();
-
     const fileUpdateActions = store.getActions().filter(
       (action) => action.type === SAMPLES_FILE_UPDATE,
     );
@@ -258,9 +253,6 @@ describe('processUpload', () => {
     expect(mockAxiosCalls[0].data).toBeInstanceOf(Blob);
     expect(mockAxiosCalls[1].data).toBeInstanceOf(Blob);
     expect(mockAxiosCalls[2].data).toBeInstanceOf(Blob);
-
-    // Wait until all put promises are resolved
-    await flushPromises();
 
     const fileUpdateActions = store.getActions().filter(
       (action) => action.type === SAMPLES_FILE_UPDATE,
