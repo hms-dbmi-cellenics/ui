@@ -148,6 +148,10 @@ const mockProcessUploadCalls = () => {
       result = { status: 200, body: JSON.stringify(mockUploadUrlParams) };
     }
 
+    if (url.endsWith('/v2/completeMultipartUpload')) {
+      result = { status: 200, body: JSON.stringify({}) };
+    }
+
     return Promise.resolve(result);
   });
 };
@@ -158,7 +162,7 @@ describe('processUpload', () => {
 
     fetchMock.resetMocks();
     fetchMock.doMock();
-    fetchMock.mockResponse(Promise.resolve({ status: 200 }));
+    mockProcessUploadCalls();
 
     store = mockStore(initialState);
   });
