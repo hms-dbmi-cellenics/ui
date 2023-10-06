@@ -8,8 +8,6 @@ import { mount } from 'enzyme';
 import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import preloadAll from 'jest-next-dynamic';
-// eslint-disable-next-line import/extensions
-import { Scatterplot } from 'vitessce/dist/umd/production/scatterplot.min';
 import Embedding from 'components/data-exploration/embedding/Embedding';
 import CrossHair from 'components/data-exploration/embedding/CrossHair';
 import CellInfo from 'components/data-exploration/CellInfo';
@@ -29,6 +27,12 @@ const width = 100;
 const height = 200;
 
 const initialExperimentState = generateExperimentSettingsMock([]);
+
+let vitesscePropsSpy = null;
+jest.mock('next/dynamic', () => () => (props) => {
+  vitesscePropsSpy = props;
+  return 'Sup Im an embedding';
+});
 
 describe('Embedding', () => {
   const initialState = {
@@ -84,6 +88,8 @@ describe('Embedding', () => {
     // Clears the database and adds some testing data.
     store = mockStore(initialState);
 
+    vitesscePropsSpy = null;
+
     component = mount(
       <Provider store={store}>
         <Embedding experimentId='1234' width={width} height={height} />
@@ -96,12 +102,9 @@ describe('Embedding', () => {
   });
 
   it('renders correctly a PCA embedding', () => {
-    const scatterplot = component.find(Scatterplot);
-
-    expect(component.find('Embedding').length).toEqual(1);
+    const scatterplot = component.find('Embedding');
     expect(scatterplot.length).toEqual(1);
-    expect(scatterplot.getElement().props.mapping).toEqual('PCA');
-    expect(scatterplot.getElement().props.cellColors).toEqual(
+    expect(vitesscePropsSpy.cellColors).toEqual(
       new Map(
         Object.entries({
           // cell #2 and #3 are in louvain which is currently in focus. They should be red.
@@ -114,40 +117,22 @@ describe('Embedding', () => {
     // cell info is not rendered when there is no cell information
     expect(component.find(CellInfo).length).toEqual(0);
 
-    expect(scatterplot.getElement().props.cells).toEqual(
+    expect(vitesscePropsSpy.obsEmbedding).toEqual(
       {
-        0: {
-          mappings: {
-            PCA: [-13, 32],
-          },
-        },
-        1: {
-          mappings: {
-            PCA: [6, 7],
-          },
-        },
-        2: {
-          mappings: {
-            PCA: [43, 9],
-          },
-        },
-        3: {
-          mappings: {
-            PCA: [57, 3],
-          },
-        },
-      },
+        data: [[-13, 6, 43, 57], [32, 7, 9, 3]],
+        shape: [2, 4]
+      }
     );
+    expect(vitesscePropsSpy.obsEmbeddingIndex).toEqual(['0', '1', '2', '3']);
   });
 
   it('renders correctly a popover on lasso selection and closes it on cancel', () => {
-    const scatterplot = component.find(Scatterplot);
     expect(component.find('ClusterPopover').length).toEqual(0);
 
     const selectedCellIds = new Set([1, 2]);
     // lasso select cells 1 and 2
     act(() => {
-      scatterplot.getElement().props.setCellSelection(selectedCellIds);
+      vitesscePropsSpy.setCellSelection(selectedCellIds);
     });
     component.update();
     let popover = component.find('ClusterPopover');
@@ -164,12 +149,11 @@ describe('Embedding', () => {
   });
 
   it('does not render the popover after lasso selection of 0 cells', () => {
-    const scatterplot = component.find(Scatterplot);
     const selectedCellIds = new Set();
 
     // lasso select cells 1 and 2
     act(() => {
-      scatterplot.getElement().props.setCellSelection(selectedCellIds);
+      vitesscePropsSpy.setCellSelection(selectedCellIds);
     });
     component.update();
 
@@ -177,11 +161,10 @@ describe('Embedding', () => {
   });
 
   it('does not render cell info and crosshair when the popover is open', () => {
-    const scatterplot = component.find(Scatterplot);
     // lasso select cells 1 and 2
     const selectedCellIds = new Set([1, 2]);
     act(() => {
-      scatterplot.getElement().props.setCellSelection(selectedCellIds);
+      vitesscePropsSpy.setCellSelection(selectedCellIds);
     });
     component.update();
 
@@ -191,13 +174,12 @@ describe('Embedding', () => {
   });
 
   it('renders correctly a popover on lasso selection and creates a new cluster on create', () => {
-    const scatterplot = component.find(Scatterplot);
     expect(component.find('ClusterPopover').length).toEqual(0);
 
     // lasso select cells 1 and 2
     const selectedCellIds = new Set([1, 2]);
     act(() => {
-      scatterplot.getElement().props.setCellSelection(selectedCellIds);
+      vitesscePropsSpy.setCellSelection(selectedCellIds);
     });
     component.update();
     const popover = component.find('ClusterPopover');
@@ -216,11 +198,9 @@ describe('Embedding', () => {
   });
 
   it('dispatches an action with updated cell information on hover', () => {
-    const scatterplot = component.find(Scatterplot);
-
     // hover over cells
     act(() => {
-      scatterplot.getElement().props.setCellHighlight(1);
+      vitesscePropsSpy.setCellHighlight(1);
     });
 
     expect(store.getActions().length).toEqual(1);
@@ -231,23 +211,18 @@ describe('Embedding', () => {
   it('renders CrossHair and CellInfo components when user hovers over cell', () => {
     store = mockStore(initialState);
 
-    const mockProject = jest.fn((cellId) => store.getState().embeddings.umap.data[cellId]);
+    const mockProjectFromId = jest.fn((cellId) => {
+      return store.getState().embeddings.umap.data[cellId];
+    });
 
     const cellCoordinates = {
-      project: mockProject,
+      projectFromId: mockProjectFromId,
     };
-
-    component = mount(
-      <Provider store={store}>
-        <Embedding experimentId='1234' width={width} height={height} />
-      </Provider>,
-    );
-    const scatterplot = component.find(Scatterplot);
 
     // hover over cells
     act(() => {
       component.find('div.vitessce-container').simulate('mouseMove');
-      scatterplot.getElement().props.updateViewInfo(cellCoordinates);
+      vitesscePropsSpy.updateViewInfo(cellCoordinates);
     });
 
     component.update();
@@ -255,8 +230,8 @@ describe('Embedding', () => {
     const crossHairs = component.find(CrossHair);
     const cellInfo = component.find(CellInfo);
 
-    expect(mockProject).toHaveBeenCalledTimes(1);
-    expect(mockProject).toHaveBeenCalledWith(store.getState().cellInfo.cellId);
+    expect(mockProjectFromId).toHaveBeenCalledTimes(1);
+    expect(mockProjectFromId).toHaveBeenCalledWith(store.getState().cellInfo.cellId);
     expect(crossHairs.length).toEqual(1);
     expect(crossHairs.props().coordinates.current).toEqual(
       {
@@ -273,24 +248,19 @@ describe('Embedding', () => {
   it('does not render CrossHair and CellInfo components when user zooms in or out of the embedding', () => {
     store = mockStore(initialState);
 
-    const mockProject = jest.fn((cellId) => store.getState().embeddings.umap.data[cellId]);
+    const mockProjectFromId = jest.fn((cellId) => {
+      return store.getState().embeddings.umap.data[cellId];
+    });
 
     const cellCoordinates = {
-      project: mockProject,
+      projectFromId: mockProjectFromId,
     };
-
-    component = mount(
-      <Provider store={store}>
-        <Embedding experimentId='1234' width={width} height={height} />
-      </Provider>,
-    );
-    const scatterplot = component.find(Scatterplot);
 
     // hover over cells
     act(() => {
       component.find('div.vitessce-container').simulate('mouseMove');
       component.find('div.vitessce-container').simulate('wheel');
-      scatterplot.getElement().props.updateViewInfo(cellCoordinates);
+      vitesscePropsSpy.updateViewInfo(cellCoordinates);
     });
 
     component.update();
@@ -298,8 +268,8 @@ describe('Embedding', () => {
     const crossHairs = component.find(CrossHair);
     const cellInfo = component.find(CellInfo);
 
-    expect(mockProject).toHaveBeenCalledTimes(1);
-    expect(mockProject).toHaveBeenCalledWith(store.getState().cellInfo.cellId);
+    expect(mockProjectFromId).toHaveBeenCalledTimes(1);
+    expect(mockProjectFromId).toHaveBeenCalledWith(store.getState().cellInfo.cellId);
     expect(crossHairs.length).toEqual(0);
     expect(cellInfo.length).toEqual(0);
   });

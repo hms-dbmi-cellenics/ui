@@ -2,11 +2,7 @@
 const fs = require('fs');
 const path = require('path');
 const util = require('util');
-
-const withPlugins = require('next-compose-plugins');
-const less = require('@zeit/next-less');
-const css = require('@zeit/next-css');
-const images = require('next-images');
+const withAntdLess = require('next-plugin-antd-less');
 
 const lessToJS = require('less-vars-to-js');
 const withBundleAnalyzer = require('@next/bundle-analyzer')({
@@ -29,21 +25,20 @@ const themeVariables = lessToJS(
   ),
 );
 
-// fix antd bug in dev development
-const devAntd = '@import "~antd/dist/antd.less";\n';
-const stylesData = fs.readFileSync(
-  path.resolve(__dirname, './assets/_styles.less'),
-  'utf-8',
-);
-fs.writeFileSync(
-  path.resolve(__dirname, './assets/self-styles.less'),
-  isDev ? `${devAntd}${stylesData}` : stylesData,
-  'utf-8',
-);
-
 // fix: prevents error when .css files are required by node
 if (typeof require !== 'undefined') {
   require.extensions['.less'] = () => { };
+}
+
+let accountId = process.env.AWS_ACCOUNT_ID;
+if (isDev) {
+  if (process.env.DEV_ACCOUNT === undefined) {
+    throw new Error(
+      `In local environment, DEV_ACCOUNT is expected to be set, possible values are: ${Object.keys(AccountId)} or "other" for other aws accounts`,
+    );
+  }
+
+  accountId = AccountId[process.env.DEV_ACCOUNT];
 }
 
 const nextConfig = {
@@ -68,8 +63,13 @@ const nextConfig = {
     ];
   },
   experimental: {
-    productionBrowserSourceMaps: true,
+    esmExternals: 'loose',
   },
+  publicRuntimeConfig: {
+    domainName: process.env.DOMAIN_NAME,
+    accountId,
+  },
+  productionBrowserSourceMaps: true,
   webpack: (config, params) => {
     const { dev } = params;
 
@@ -99,32 +99,20 @@ const nextConfig = {
   },
 };
 
-let accountId = process.env.AWS_ACCOUNT_ID;
-if (isDev) {
-  if (process.env.DEV_ACCOUNT === undefined) {
-    throw new Error(
-      `In local environment, DEV_ACCOUNT is expected to be set, possible values are: ${Object.keys(AccountId)} or "other" for other aws accounts`,
-    );
-  }
-
-  accountId = AccountId[process.env.DEV_ACCOUNT];
-}
-
-module.exports = withPlugins([
+const plugins = [
   [withBundleAnalyzer],
-  [images],
-  [less, {
-    lessLoaderOptions: {
-      javascriptEnabled: true,
-      modifyVars: themeVariables,
-      localIdentName: '[local]___[hash:base64:5]',
-    },
+  [withAntdLess, {
+    modifyVars: themeVariables,
+    localIdentName: '[local]--[hash:base64:4]',
   }],
-  [css],
-  {
-    publicRuntimeConfig: {
-      domainName: process.env.DOMAIN_NAME,
-      accountId,
-    },
+];
+
+module.exports = () => plugins.reduce(
+  (acc, plugin) => {
+    if (!Array.isArray(plugin)) return plugin(acc);
+
+    const [fn, params] = plugin;
+    return fn(acc, params);
   },
-], nextConfig);
+  nextConfig,
+);

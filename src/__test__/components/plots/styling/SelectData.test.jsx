@@ -1,7 +1,7 @@
 import createTestComponentFactory from '__test__/test-utils/testComponentFactory';
 import SelectData from 'components/plots/styling/SelectData';
-import { render, screen, fireEvent } from '@testing-library/react';
-
+import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { initialPlotConfigStates } from 'redux/reducers/componentConfig/initialState';
 
 import mockCellSets from '__test__/data/cell_sets.json';
@@ -107,17 +107,8 @@ describe('Select Data', () => {
       );
     });
 
-    const firstSelect = screen.getByRole('combobox', { name: 'selectCellSets' });
-
-    await act(async () => {
-      fireEvent.change(firstSelect, { target: { value: 'Samples' } });
-    });
-
-    const option = screen.getByText(/Samples/);
-
-    await act(async () => {
-      fireEvent.click(option);
-    });
+    userEvent.click(screen.getByRole('combobox', { name: 'selectCellSets' }));
+    userEvent.click(screen.getByText(/Samples/));
 
     expect(mockOnUpdate).toHaveBeenCalledTimes(1);
   });
@@ -131,28 +122,13 @@ describe('Select Data', () => {
 
     const cellSetSelect = screen.getByRole('combobox', { name: 'selectCellSets' });
 
-    // Change to samples so that we can choose Cluster
-    await act(async () => {
-      fireEvent.change(cellSetSelect, { target: { value: 'Samples' } });
-    });
+    // Changing first option
+    userEvent.click(screen.getByRole('combobox', { name: 'selectCellSets' }));
+    userEvent.click(screen.getByText(/Samples/));
 
-    const cellSetOption = screen.getByText(/Samples/);
-
-    await act(async () => {
-      fireEvent.click(cellSetOption);
-    });
-
-    const pointsSelect = screen.getByRole('combobox', { name: 'selectPoints' });
-
-    await act(async () => {
-      fireEvent.change(pointsSelect, { target: { value: 'All' } });
-    });
-
-    const pointOption = screen.getByText(/Cluster 9/);
-
-    await act(async () => {
-      fireEvent.click(pointOption);
-    });
+    // Changing second option
+    userEvent.click(screen.getByRole('combobox', { name: 'selectPoints' }));
+    userEvent.click(screen.getByText(/Cluster 9/));
 
     expect(mockOnUpdate).toHaveBeenCalledTimes(1);
   });

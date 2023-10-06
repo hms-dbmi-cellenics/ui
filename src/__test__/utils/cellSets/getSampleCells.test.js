@@ -21,7 +21,7 @@ describe('Get sample cells', () => {
     expect(allCellIds.length).toEqual(numCells);
 
     expect(allCellIds[0]).toMatchInlineSnapshot(`
-      Object {
+      {
         "cellId": 1,
         "cellSetKey": "louvain-0",
       }
@@ -34,7 +34,9 @@ describe('Get sample cells', () => {
       hierarchy: [],
     };
 
-    expect(() => { getSampleCells(emptyCellSets, 'louvain-0'); }).not.toThrow();
+    expect(() => {
+      getSampleCells(emptyCellSets, 'louvain-0');
+    }).not.toThrow();
     expect(getSampleCells(emptyCellSets, 'louvain-0')).toEqual([]);
   });
 });

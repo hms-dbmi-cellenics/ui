@@ -1,9 +1,9 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`ViolinIndex Adds a new plot to multi view: new-config 1`] = `
-Object {
-  "config": Object {
-    "axes": Object {
+{
+  "config": {
+    "axes": {
       "domainWidth": 2,
       "gridOpacity": 0,
       "gridWidth": 10,
@@ -14,42 +14,42 @@ Object {
       "xAxisText": "",
       "yAxisText": "",
     },
-    "axesRanges": Object {
+    "axesRanges": {
       "yAxisAuto": true,
       "yMax": 10,
       "yMin": 0,
     },
-    "colour": Object {
+    "colour": {
       "gradient": "default",
       "invert": "standard",
       "masterColour": "#000000",
       "reverseColourBar": false,
       "toggleInvert": "#FFFFFF",
     },
-    "dimensions": Object {
+    "dimensions": {
       "height": 400,
       "width": 550,
     },
-    "fontStyle": Object {
+    "fontStyle": {
       "colour": "#000000",
       "font": "sans-serif",
     },
     "kdeBandwidth": 0.3,
-    "keepValuesOnReset": Array [
+    "keepValuesOnReset": [
       "shownGene",
       "title",
     ],
-    "labels": Object {
+    "labels": {
       "enabled": true,
       "size": 18,
     },
-    "legend": Object {
+    "legend": {
       "colour": "#000000",
       "enabled": false,
       "position": "right",
       "showAlert": false,
     },
-    "marker": Object {
+    "marker": {
       "opacity": 5,
       "shape": "circle",
       "showOpacity": true,
@@ -62,7 +62,7 @@ Object {
     "shownGene": "Ccl5",
     "spec": "1.0.0",
     "statisticsVisible": false,
-    "title": Object {
+    "title": {
       "anchor": "start",
       "dx": 0,
       "fontSize": 20,
@@ -73,7 +73,7 @@ Object {
   "experimentId": "testae48e318dab9a1bd0bexperiment",
   "loading": false,
   "outstandingChanges": true,
-  "plotData": Array [],
+  "plotData": [],
   "plotType": "violin",
 }
 `;

@@ -1,12 +1,12 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`deleteMetadataTrack action Works correctly 1`] = `
-Array [
-  Object {
+[
+  {
     "experimentId": "experiment-1234",
     "key": "Test",
   },
-  Object {
+  {
     "metadataKey": "Test",
     "sampleUuid": "sample-1234",
   },
