@@ -4,13 +4,13 @@ import waitForActions from 'redux-mock-store-await-actions';
 import axios from 'axios';
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 import { sampleTech } from 'utils/constants';
+import { waitFor } from '@testing-library/react';
 
 import { SAMPLES_FILE_UPDATE } from 'redux/actionTypes/samples';
 import initialSampleState, { sampleTemplate } from 'redux/reducers/samples/initialState';
 import initialExperimentState, { experimentTemplate } from 'redux/reducers/experiments/initialState';
 
 import UploadStatus from 'utils/upload/UploadStatus';
-import { waitFor } from '@testing-library/dom';
 
 import processUpload from 'utils/upload/processUpload';
 
@@ -64,8 +64,7 @@ const initialState = {
     },
   },
 };
-// Based on https://stackoverflow.com/a/51045733
-const flushPromises = () => new Promise(setImmediate);
+
 const mockStore = configureMockStore([thunk]);
 
 jest.mock('uuid', () => ({
@@ -129,9 +128,6 @@ describe('processUpload', () => {
     // Each put call is made with the correct information
     expect(mockAxiosCalls[0].url).toBe('theSignedUrl1');
     expect(mockAxiosCalls[1].url).toBe('theSignedUrl2');
-
-    // Wait until all put promises are resolved
-    await flushPromises();
 
     const fileUpdateActions = store.getActions().filter(
       (action) => action.type === SAMPLES_FILE_UPDATE,

@@ -1,33 +1,33 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`downloadFromUrl Downloads from url 1`] = `
-Object {
+{
   "click": [MockFunction] {
-    "calls": Array [
-      Array [],
+    "calls": [
+      [],
     ],
-    "results": Array [
-      Object {
+    "results": [
+      {
         "type": "return",
         "value": undefined,
       },
     ],
   },
   "href": "https://www.example.com/download",
-  "style": Object {
+  "style": {
     "display": "none",
   },
 }
 `;
 
 exports[`downloadFromUrl Uses filename if provided 1`] = `
-Object {
+{
   "click": [MockFunction] {
-    "calls": Array [
-      Array [],
+    "calls": [
+      [],
     ],
-    "results": Array [
-      Object {
+    "results": [
+      {
         "type": "return",
         "value": undefined,
       },
@@ -35,7 +35,7 @@ Object {
   },
   "download": "mockFileName",
   "href": "https://www.example.com/download",
-  "style": Object {
+  "style": {
     "display": "none",
   },
 }

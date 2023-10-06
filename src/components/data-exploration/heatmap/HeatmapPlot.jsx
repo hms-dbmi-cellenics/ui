@@ -30,12 +30,14 @@ import useRunOnceEffect from 'utils/customHooks/useRunOnceEffect';
 const COMPONENT_TYPE = 'interactiveHeatmap';
 
 const Heatmap = dynamic(
-  () => import('vitessce/dist/umd/production/heatmap.min').then((mod) => mod.Heatmap),
+  () => import('../DynamicVitessceWrappers').then((mod) => mod.Heatmap),
   { ssr: false },
 );
 
+// import { Heatmap } from '@vitessce/heatmap';
+
 // To avoid it sticking to the right too much (the left already has some margin)
-const heatmapRightMargin = 50;
+const heatmapRightMargin = 30;
 const heatmapBottomMargin = 40;
 const nMarkerGenes = 5;
 
@@ -333,10 +335,13 @@ const HeatmapPlot = (props) => {
         height={height - heatmapBottomMargin}
         colormap='plasma'
         colormapRange={[0.0, 1.0]}
-        expressionMatrix={heatmapData.expressionMatrix}
+        setColorEncoding={() => { }}
+        uint8ObsFeatureMatrix={heatmapData.expressionMatrix.matrix}
+        featureIndex={heatmapData.expressionMatrix.cols}
+        obsIndex={heatmapData.expressionMatrix.rows}
         cellColors={heatmapData.metadataTracks.dataPoints}
         cellColorLabels={heatmapData.metadataTracks.labels}
-        hideTopLabels
+        hideObservationLabels
         transpose
         viewState={viewState}
         setViewState={setViewState}

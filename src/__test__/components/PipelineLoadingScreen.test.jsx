@@ -3,12 +3,14 @@ import { Provider } from 'react-redux';
 import { mount, shallow } from 'enzyme';
 import thunk from 'redux-thunk';
 import {
-  Result, Button, Progress,
+  Result, Button, Progress, Typography,
 } from 'antd';
 import configureMockStore from 'redux-mock-store';
 import fetchAPI from 'utils/http/fetchAPI';
 import GEM2SLoadingScreen from 'components/GEM2SLoadingScreen';
 import '__test__/test-utils/setupTests';
+
+const { Title, Text } = Typography;
 
 const mockStore = configureMockStore([thunk]);
 
@@ -111,7 +113,6 @@ describe('GEM2SLoadingScreen', () => {
         <GEM2SLoadingScreen pipelineStatus='subsetting' completedSteps={completedSteps} steps={steps} experimentName={experimentName} pipelineType='gem2s' />
       </Provider>,
     );
-
-    expect(component.find('Title').first().text()).toEqual(`Subsetting cell sets into${experimentName}`);
+    expect(component.find(Title).first().text()).toEqual(`Subsetting cell sets into${experimentName}`);
   });
 });

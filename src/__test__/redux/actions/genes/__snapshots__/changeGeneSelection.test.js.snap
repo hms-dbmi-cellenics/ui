@@ -1,10 +1,10 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`changeGeneSelection action Dispatches deselect event when select event specified 1`] = `
-Object {
-  "payload": Object {
+{
+  "payload": {
     "experimentId": "1234",
-    "genes": Array [
+    "genes": [
       "a",
       "b",
       "c",
@@ -16,10 +16,10 @@ Object {
 `;
 
 exports[`changeGeneSelection action Dispatches select event when select event specified 1`] = `
-Object {
-  "payload": Object {
+{
+  "payload": {
     "experimentId": "1234",
-    "genes": Array [
+    "genes": [
       "a",
       "b",
       "c",

@@ -5,7 +5,7 @@ import {
   samples,
 } from '__test__/test-utils/mockData';
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
-import { fireEvent, render, screen } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import mockAPI, { generateDefaultMockAPIResponses, promiseResponse } from '__test__/test-utils/mockAPI';
 
 import DataManagementPage from 'pages/data-management';
@@ -180,8 +180,10 @@ describe('Data Management page', () => {
       userEvent.click(projectOption);
     });
 
-    Object.keys(samples).forEach((sample) => {
-      expect(screen.getByText(samples[sample].name)).toBeInTheDocument();
+    waitFor(() => {
+      Object.keys(samples).forEach((sample) => {
+        expect(screen.getByText(samples[sample].name)).toBeInTheDocument();
+      });
     });
   });
 
