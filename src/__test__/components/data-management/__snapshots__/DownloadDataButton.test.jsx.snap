@@ -1,11 +1,11 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`DownloadDataButton Downloads processed matrix properly 1`] = `
-Array [
-  Array [
+[
+  [
     "testae48e318dab9a1bd0bexperiment-0",
-    Object {
-      "config": Object {
+    {
+      "config": {
         "distanceMetric": "cosine",
         "minimumDistance": 0.3,
       },
@@ -15,19 +15,19 @@ Array [
     },
     [Function],
     [Function],
-    Object {
+    {
       "timeout": 900,
     },
   ],
-  Array [
+  [
     "testae48e318dab9a1bd0bexperiment-0",
-    Object {
+    {
       "embeddingETag": "40425699abc7c16fbf3430b3d4ff3f3e",
       "name": "DownloadAnnotSeuratObject",
     },
     [Function],
     [Function],
-    Object {
+    {
       "timeout": 180,
     },
   ],

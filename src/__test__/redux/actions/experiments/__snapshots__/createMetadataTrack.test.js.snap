@@ -1,25 +1,25 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`createMetadataTrack action Works correctly 1`] = `
-Array [
-  Object {
+[
+  {
     "experimentId": "expeirment-1",
     "key": "Test_track",
   },
-  Object {
-    "sample": Object {
-      "metadata": Object {
+  {
+    "sample": {
+      "metadata": {
         "Test_track": "N.A.",
       },
     },
     "sampleUuid": "sample1",
   },
-  Object {
+  {
     "experimentId": "expeirment-1",
   },
-  Object {
+  {
     "experimentId": "expeirment-1",
-    "status": Object {},
+    "status": {},
   },
 ]
 `;

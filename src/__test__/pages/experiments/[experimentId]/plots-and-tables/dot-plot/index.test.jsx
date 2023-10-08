@@ -2,9 +2,9 @@ import React from 'react';
 import _ from 'lodash';
 
 import { act } from 'react-dom/test-utils';
-import { render, screen } from '@testing-library/react';
+import { render, screen, fireEvent, within, waitFor } from '@testing-library/react';
 import { mount } from 'enzyme';
-import { fireEvent, waitFor, within } from '@testing-library/dom';
+
 import '@testing-library/jest-dom';
 import { Provider } from 'react-redux';
 
@@ -48,7 +48,7 @@ jest.mock('react-resize-detector', () => (props) => {
 
 jest.mock('object-hash', () => {
   const objectHash = jest.requireActual('object-hash');
-  const mockWorkResultETag = jest.requireActual('__test__/test-utils/mockWorkResultETag').default;
+  const mockWorkResultETag = jest.requireActual('__test__/test-utils/mockWorkResultETag');
 
   const mockWorkRequestETag = (ETagParams) => {
     if (ETagParams.body.name === 'ListGenes') return 'paginated-gene-expression';
@@ -263,32 +263,23 @@ describe('Dot plot page', () => {
     expect(dispatchWorkRequest).toHaveBeenCalledTimes(3);
 
     // Select data
-    await act(async () => {
-      userEvent.click(screen.getByText(/Select data/i));
-    });
+    userEvent.click(screen.getByText(/Select data/i));
 
     // Select samples
     const selectBaseCells = screen.getByRole('combobox', { name: 'selectCellSets' });
-
-    await act(async () => {
-      await userEvent.click(selectBaseCells);
-    });
+    userEvent.click(selectBaseCells);
 
     const baseOption = screen.getByTitle(/Samples/);
-
-    await act(async () => {
-      fireEvent.click(baseOption);
-    });
+    userEvent.click(baseOption);
 
     // Call to load dot plot
-    expect(dispatchWorkRequest).toHaveBeenCalledTimes(4);
+    await waitFor(() => {
+      expect(dispatchWorkRequest).toHaveBeenCalledTimes(4);
+    });
 
     // Select the filter sets
     const selectFilterCells = screen.getByRole('combobox', { name: 'selectPoints' });
-
-    await act(async () => {
-      await userEvent.click(selectFilterCells);
-    });
+    userEvent.click(selectFilterCells);
 
     const filterOption = screen.getByTitle(/Copied WT2/);
 

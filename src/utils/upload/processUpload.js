@@ -18,10 +18,10 @@ import endUserMessages from 'utils/endUserMessages';
 import pushNotificationMessage from 'utils/pushNotificationMessage';
 
 const prepareAndUploadFileToS3 = async (
-  experimentId, sampleId, fileType, file, uploadUrlParams, dispatch,
+  file, uploadUrlParams, type, onStatusUpdate = () => { },
 ) => {
   let parts = null;
-  const { signedUrls, uploadId, sampleFileId } = uploadUrlParams;
+  const { signedUrls, uploadId, fileId } = uploadUrlParams;
 
   const uploadedPartSizes = new Array(signedUrls.length).fill(0);
   const totalSize = file.size;
@@ -31,17 +31,12 @@ const prepareAndUploadFileToS3 = async (
     const totalUploaded = _.sum(uploadedPartSizes);
     const percentProgress = Math.floor((totalUploaded * 100) / totalSize);
 
-    dispatch(
-      updateSampleFileUpload(
-        experimentId, sampleId, fileType, UploadStatus.UPLOADING, percentProgress ?? 0,
-      ),
-    );
+    onStatusUpdate(UploadStatus.UPLOADING, percentProgress);
   };
-
   try {
     parts = await processMultipartUpload(file, signedUrls, createOnUploadProgressForPart);
   } catch (e) {
-    dispatch(updateSampleFileUpload(experimentId, sampleId, fileType, UploadStatus.UPLOAD_ERROR));
+    onStatusUpdate(UploadStatus.UPLOAD_ERROR);
     return;
   }
 
@@ -49,7 +44,8 @@ const prepareAndUploadFileToS3 = async (
   const body = {
     parts,
     uploadId,
-    sampleFileId,
+    fileId,
+    type,
   };
 
   await fetchAPI(requestUrl,
@@ -61,24 +57,21 @@ const prepareAndUploadFileToS3 = async (
       body: JSON.stringify(body),
     });
 
-  dispatch(updateSampleFileUpload(experimentId, sampleId, fileType, UploadStatus.UPLOADED));
+  onStatusUpdate(UploadStatus.UPLOADED, 100);
   return parts;
 };
 
-const createAndUploadSingleFile = async (file, experimentId, sampleId, dispatch, selectedTech) => {
+const createAndUploadSampleFile = async (file, experimentId, sampleId, dispatch, selectedTech) => {
   const fileType = getFileTypeV2(file.name, selectedTech);
 
-  let uploadUrlParams;
-  try {
-    const metadata = getMetadata(file, selectedTech);
+  let sampleFileId;
 
-    uploadUrlParams = await dispatch(
+  try {
+    sampleFileId = await dispatch(
       createSampleFile(
         experimentId,
         sampleId,
         fileType,
-        file.size,
-        metadata,
         file,
       ),
     );
@@ -94,6 +87,7 @@ const createAndUploadSingleFile = async (file, experimentId, sampleId, dispatch,
           experimentId, sampleId, fileType, UploadStatus.COMPRESSING,
         ));
       });
+
       file.size = Buffer.byteLength(file.fileObject);
     } catch (e) {
       const fileErrorStatus = e.message === 'aborted'
@@ -105,8 +99,40 @@ const createAndUploadSingleFile = async (file, experimentId, sampleId, dispatch,
     }
   }
 
-  await prepareAndUploadFileToS3(experimentId, sampleId, fileType, file, uploadUrlParams, dispatch);
+  try {
+    const { signedUrls, uploadId } = await beginSampleFileUpload(
+      experimentId,
+      sampleFileId,
+      file.size,
+      getMetadata(file, selectedTech),
+    );
+
+    const updateSampleFileUploadProgress = (status, percentProgress = 0) => dispatch(
+      updateSampleFileUpload(
+        experimentId, sampleId, fileType, status, percentProgress,
+      ),
+    );
+
+    const uploadUrlParams = { signedUrls, uploadId, fileId: sampleFileId };
+
+    await prepareAndUploadFileToS3(file, uploadUrlParams, 'sample', updateSampleFileUploadProgress);
+  } catch (e) {
+    dispatch(updateSampleFileUpload(
+      experimentId, sampleId, fileType, UploadStatus.UPLOAD_ERROR,
+    ));
+  }
 };
+
+const beginSampleFileUpload = async (experimentId, sampleFileId, size, metadata) => await fetchAPI(
+  `/v2/experiments/${experimentId}/sampleFiles/${sampleFileId}/beginUpload`,
+  {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ size, metadata }),
+  },
+);
 
 const getMetadata = (file, selectedTech) => {
   const metadata = {};
@@ -172,7 +198,7 @@ const processUpload = async (filesList, technology, samples, experimentId, dispa
     validSamplesList.forEach(([name, sample]) => {
       Object.values(sample.files).forEach((file) => {
         promises.push(
-          async () => await createAndUploadSingleFile(
+          async () => await createAndUploadSampleFile(
             file,
             experimentId,
             sampleIdsByName[name],
@@ -238,7 +264,8 @@ const fileObjectToFileRecord = async (fileObject, technology) => {
 
 export {
   fileObjectToFileRecord,
-  createAndUploadSingleFile,
+  createAndUploadSampleFile,
+  prepareAndUploadFileToS3,
 };
 
 export default processUpload;

@@ -1,17 +1,17 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`RepositoryTable Cloning from example experiments works correctly 1`] = `
-Array [
-  Array [
+[
+  [
     "/v2/experiments/1/clone",
-    Object {
-      "headers": Object {
+    {
+      "headers": {
         "Content-Type": "application/json",
       },
       "method": "POST",
     },
   ],
-  Array [
+  [
     "/v2/experiments",
   ],
 ]

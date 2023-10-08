@@ -1,8 +1,8 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`createExperiment Works correctly 1`] = `
-Object {
-  "experiment": Object {
+{
+  "experiment": {
     "createdAt": "2020-01-01T00:00:00.000Z",
     "description": "description",
     "id": "f85035ac-de1e-4928-bed6-f55ef15b58f1",
@@ -11,4 +11,4 @@ Object {
 }
 `;
 
-exports[`createExperiment Works correctly 2`] = `"{\\"id\\":\\"f85035ac-de1e-4928-bed6-f55ef15b58f1\\",\\"name\\":\\"name\\",\\"description\\":\\"description\\"}"`;
+exports[`createExperiment Works correctly 2`] = `"{"id":"f85035ac-de1e-4928-bed6-f55ef15b58f1","name":"name","description":"description"}"`;

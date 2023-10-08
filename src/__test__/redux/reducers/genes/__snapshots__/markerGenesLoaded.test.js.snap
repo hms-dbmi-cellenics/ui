@@ -1,9 +1,9 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`markerGenesLoaded returns correct state 1`] = `
-Object {
-  "expression": Object {
-    "downsampledCellOrder": Array [
+{
+  "expression": {
+    "downsampledCellOrder": [
       0,
       1,
       2,
@@ -16,12 +16,12 @@ Object {
       9,
     ],
     "downsampledMatrix": ExpressionMatrix {
-      "geneIndexes": Object {
+      "geneIndexes": {
         "geneA": 0,
       },
-      "rawGeneExpressions": Object {
+      "rawGeneExpressions": {
         "datatype": undefined,
-        "index": Array [
+        "index": [
           1,
           2,
           3,
@@ -33,15 +33,15 @@ Object {
           9,
         ],
         "mathjs": "SparseMatrix",
-        "ptr": Array [
+        "ptr": [
           0,
           9,
         ],
-        "size": Array [
+        "size": [
           10,
           1,
         ],
-        "values": Array [
+        "values": [
           1,
           2,
           3,
@@ -54,23 +54,23 @@ Object {
         ],
       },
       "setGeneExpression": [Function],
-      "stats": Object {
-        "rawMean": Array [
+      "stats": {
+        "rawMean": [
           1,
         ],
-        "rawStdev": Array [
+        "rawStdev": [
           0,
         ],
-        "truncatedMax": Array [
+        "truncatedMax": [
           1,
         ],
-        "truncatedMin": Array [
+        "truncatedMin": [
           1,
         ],
       },
-      "truncatedGeneExpressions": Object {
+      "truncatedGeneExpressions": {
         "datatype": undefined,
-        "index": Array [
+        "index": [
           1,
           2,
           3,
@@ -82,15 +82,15 @@ Object {
           9,
         ],
         "mathjs": "SparseMatrix",
-        "ptr": Array [
+        "ptr": [
           0,
           9,
         ],
-        "size": Array [
+        "size": [
           10,
           1,
         ],
-        "values": Array [
+        "values": [
           1,
           2,
           3,
@@ -102,9 +102,9 @@ Object {
           9,
         ],
       },
-      "zScore": Object {
+      "zScore": {
         "datatype": undefined,
-        "index": Array [
+        "index": [
           1,
           2,
           3,
@@ -116,15 +116,15 @@ Object {
           9,
         ],
         "mathjs": "SparseMatrix",
-        "ptr": Array [
+        "ptr": [
           0,
           9,
         ],
-        "size": Array [
+        "size": [
           10,
           1,
         ],
-        "values": Array [
+        "values": [
           1,
           2,
           3,
@@ -138,59 +138,59 @@ Object {
       },
     },
     "error": false,
-    "loading": Array [],
+    "loading": [],
     "matrix": ExpressionMatrix {
-      "geneIndexes": Object {},
-      "rawGeneExpressions": Object {
+      "geneIndexes": {},
+      "rawGeneExpressions": {
         "datatype": undefined,
-        "index": Array [],
+        "index": [],
         "mathjs": "SparseMatrix",
-        "ptr": Array [
+        "ptr": [
           0,
         ],
-        "size": Array [
+        "size": [
           0,
           0,
         ],
-        "values": Array [],
+        "values": [],
       },
       "setGeneExpression": [Function],
-      "stats": Object {
-        "rawMean": Array [],
-        "rawStdev": Array [],
-        "truncatedMax": Array [],
-        "truncatedMin": Array [],
+      "stats": {
+        "rawMean": [],
+        "rawStdev": [],
+        "truncatedMax": [],
+        "truncatedMin": [],
       },
-      "truncatedGeneExpressions": Object {
+      "truncatedGeneExpressions": {
         "datatype": undefined,
-        "index": Array [],
+        "index": [],
         "mathjs": "SparseMatrix",
-        "ptr": Array [
+        "ptr": [
           0,
         ],
-        "size": Array [
+        "size": [
           0,
           0,
         ],
-        "values": Array [],
+        "values": [],
       },
-      "zScore": Object {
+      "zScore": {
         "datatype": undefined,
-        "index": Array [],
+        "index": [],
         "mathjs": "SparseMatrix",
-        "ptr": Array [
+        "ptr": [
           0,
         ],
-        "size": Array [
+        "size": [
           0,
           0,
         ],
-        "values": Array [],
+        "values": [],
       },
     },
-    "views": Object {
-      "interactiveHeatmap": Object {
-        "data": Array [
+    "views": {
+      "interactiveHeatmap": {
+        "data": [
           "geneA",
         ],
         "error": false,
@@ -199,16 +199,16 @@ Object {
     },
   },
   "focused": undefined,
-  "markers": Object {
+  "markers": {
     "ETag": null,
     "error": false,
     "loading": false,
   },
-  "properties": Object {
-    "data": Object {},
-    "loading": Array [],
-    "views": Object {},
+  "properties": {
+    "data": {},
+    "loading": [],
+    "views": {},
   },
-  "selected": Array [],
+  "selected": [],
 }
 `;

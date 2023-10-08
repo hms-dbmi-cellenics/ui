@@ -7,8 +7,8 @@ import { act } from 'react-dom/test-utils';
 
 import { Provider } from 'react-redux';
 import userEvent from '@testing-library/user-event';
-import * as updateExperiment from 'redux/actions/experiments/updateExperiment';
-import * as loadExperiments from 'redux/actions/experiments/loadExperiments';
+import updateExperiment from 'redux/actions/experiments/updateExperiment';
+import loadExperiments from 'redux/actions/experiments/loadExperiments';
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 
 import { makeStore } from 'redux/store';
@@ -18,17 +18,13 @@ let storeState = null;
 
 const experimentId = fake.EXPERIMENT_ID;
 
+jest.mock('redux/actions/experiments/updateExperiment', () => jest.fn(() => ({ type: 'MOCK_ACTION' })));
+jest.mock('redux/actions/experiments/loadExperiments', () => jest.fn(() => ({ type: 'MOCK_ACTION' })));
+
 describe('Notify by email component', () => {
-  let updateExperimentSpy;
-  let loadExperimentsSpy;
 
   beforeEach(() => {
     jest.clearAllMocks();
-    updateExperimentSpy = jest.spyOn(updateExperiment, 'default');
-    loadExperimentsSpy = jest.spyOn(loadExperiments, 'default');
-    enableFetchMocks();
-    fetchMock.resetMocks();
-    fetchMock.doMock();
     storeState = makeStore();
   });
 
@@ -53,13 +49,13 @@ describe('Notify by email component', () => {
     await renderNotifyByEmail();
     const toggle = screen.getByRole('switch');
     userEvent.click(toggle);
-    expect(updateExperimentSpy).toHaveBeenLastCalledWith(experimentId, { notifyByEmail: true });
+    expect(updateExperiment).toHaveBeenLastCalledWith(experimentId, { notifyByEmail: true });
     userEvent.click(toggle);
-    expect(updateExperimentSpy).toHaveBeenCalledTimes(2);
+    expect(updateExperiment).toHaveBeenCalledTimes(2);
   });
 
   it('loads experiments if non-existent', async () => {
     await renderNotifyByEmail();
-    expect(loadExperimentsSpy).toHaveBeenCalledTimes(1);
+    expect(loadExperiments).toHaveBeenCalledTimes(1);
   });
 });
