@@ -7,7 +7,6 @@ import ProjectsListContainer from 'components/data-management/ProjectsListContai
 import { Provider } from 'react-redux';
 import React from 'react';
 import { act } from 'react-dom/test-utils';
-import { fireEvent } from '@testing-library/dom';
 import { makeStore } from 'redux/store';
 import userEvent from '@testing-library/user-event';
 
@@ -53,7 +52,7 @@ describe('ProjectsList', () => {
     await act(async () => {
       userEvent.click(createNewProjectButton);
     });
-    fireEvent.click(screen.getByText('Upload Project'));
+    userEvent.click(screen.getByText('Upload Project'));
 
     expect(onCreateNewProjectMock).toHaveBeenCalledTimes(1);
   });
@@ -70,7 +69,7 @@ describe('ProjectsList', () => {
     await act(async () => {
       userEvent.click(createNewProjectButton);
     });
-    fireEvent.click(screen.getByText('Select from Dataset Repository'));
+    userEvent.click(screen.getByText('Select from Dataset Repository'));
 
     expect(mockNavigateTo.mock.calls).toMatchSnapshot();
   });

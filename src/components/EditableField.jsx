@@ -100,6 +100,7 @@ const EditableField = (props) => {
         <>
           <Input
             data-testid='editableFieldInput'
+            aria-label='Input'
             autoFocus
             onChange={onChange}
             onClick={(e) => e.stopPropagation()}

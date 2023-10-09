@@ -6,6 +6,7 @@ import {
 } from '@ant-design/icons';
 
 import HierarchicalTree from 'components/data-exploration/hierarchical-tree/HierarchicalTree';
+
 import waitForComponentToPaint from '__test__/test-utils/waitForComponentToPaint';
 
 import fake from '__test__/test-utils/constants';
@@ -380,11 +381,10 @@ describe('HierarchicalTree', () => {
         shouldExpandKeys
       />,
     );
-
     await waitForComponentToPaint(component);
 
-    const childEditableField = component.find('EditableField').at(0);
-    const parentEditableField = component.find('EditableField').at(2);
+    const childEditableField = component.find('EditableField').at(1);
+    const parentEditableField = component.find('EditableField').at(0);
 
     // The child node can be edited
     expect(childEditableField.find(EditOutlined)).toHaveLength(1);
@@ -419,8 +419,8 @@ describe('HierarchicalTree', () => {
 
     await waitForComponentToPaint(component);
 
-    const childEditableField = component.find('EditableField').at(0);
-    const parentEditableField = component.find('EditableField').at(2);
+    const childEditableField = component.find('EditableField').at(1);
+    const parentEditableField = component.find('EditableField').at(0);
 
     // The child node can be edited
     expect(childEditableField.find(DeleteOutlined)).toHaveLength(1);

@@ -7,7 +7,7 @@
         {
             "name": "Debug develop in Chrome",
             "request": "launch",
-            "type": "pwa-chrome",
+            "type": "chrome",
             "url": "https://ui-default.scp-staging.biomage.net/",
             "webRoot": "${workspaceFolder}"
         },
@@ -23,7 +23,7 @@
             "request": "launch",
             "cwd": "${workspaceFolder}",
             "runtimeExecutable": "npm",
-            "runtimeArgs": ["test"]
+            "runtimeArgs": ["test"],
         },
     ]
 }

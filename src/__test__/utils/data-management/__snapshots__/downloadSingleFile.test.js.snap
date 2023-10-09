@@ -1,11 +1,11 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`downloadFromUrl Downloads from url 1`] = `
-Array [
-  Array [
+[
+  [
     "http://localhost:3000/v2/experiments/testae48e318dab9a1bd0bexperiment/samples/test9188-d682-test-mock-cb6d644cmock/files/features10x/downloadUrl",
-    Object {
-      "headers": Object {},
+    {
+      "headers": {},
     },
   ],
 ]

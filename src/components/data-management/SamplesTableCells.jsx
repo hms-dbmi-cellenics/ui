@@ -17,6 +17,8 @@ import UploadStatus, { messageForStatus } from 'utils/upload/UploadStatus';
 import EditableField from '../EditableField';
 import UploadDetailsModal from './UploadDetailsModal';
 
+import styles from 'components/data-management/SamplesTableCells.module.css';
+
 const { Text } = Typography;
 
 const UploadDivStyle = {
@@ -54,7 +56,7 @@ const UploadCell = (props) => {
     if (status === UploadStatus.UPLOADED) {
       return (
         <div
-          className='hoverSelectCursor'
+          className={styles.hoverSelectCursor}
           onClick={showDetails}
           onKeyDown={showDetails}
           style={{ ...UploadDivStyle, flexDirection: 'column' }}
@@ -86,7 +88,7 @@ const UploadCell = (props) => {
     if (status === UploadStatus.UPLOAD_ERROR) {
       return (
         <div
-          className='hoverSelectCursor'
+          className={styles.hoverSelectCursor}
           style={{ ...UploadDivStyle, flexDirection: 'column' }}
           onClick={showDetails}
           onKeyDown={showDetails}
