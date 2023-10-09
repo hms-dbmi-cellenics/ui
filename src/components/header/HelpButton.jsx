@@ -5,17 +5,22 @@ import getDomainSpecificContent from 'utils/getDomainSpecificContent';
 
 const HelpButton = () => {
   const [visible, setVisible] = useState(false);
-  const overlay = () => (
-    <Card size='small' style={{ padding: '1em', width: '265px' }}>
-      {getDomainSpecificContent('HelpButton')}
-    </Card>
-  );
+  const menuItems = [
+    {
+      label: (
+        <Card size='small' style={{ padding: '1em', width: '265px' }}>
+          {getDomainSpecificContent('HelpButton')}
+        </Card>
+      ),
+      key: 'help-button-contents'
+    }
+  ]
 
   return (
     <Dropdown
-      visible={visible}
-      onVisibleChange={(v) => setVisible(v)}
-      overlay={overlay}
+      open={visible}
+      onOpenChange={(v) => setVisible(v)}
+      menu={{ items: menuItems }}
       placement='bottomRight'
       trigger='click'
     >

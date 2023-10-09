@@ -113,18 +113,17 @@ describe('HeatmapGroupBySettings', () => {
 
     // there's a dropdown
     const dropdown = component.find(Dropdown);
-    const submenu = shallow(<div>{dropdown.prop('overlay')}</div>);
-    const subMenuItems = submenu.find('MenuItem');
+    const menuItems = dropdown.props().menu.items;
 
     // With two items.
-    expect(subMenuItems.length).toEqual(2);
+    expect(menuItems.length).toEqual(2);
 
     // each of which should have the right names.
-    expect(subMenuItems.at(0).find('div').text()).toEqual('louvain clusters');
-    expect(subMenuItems.at(1).find('div').text()).toEqual('Sample');
+    expect(menuItems[0].label.props.children[1]).toEqual('louvain clusters');
+    expect(menuItems[1].label.props.children[1]).toEqual('Sample');
   });
 
-  test('interacting with the groupby add/remove options will trigger the appropriate actions', async () => {
+  it('interacting with the groupby add/remove options will trigger the appropriate actions', async () => {
     const store = mockStore({
       ...initialState,
     });
@@ -139,12 +138,11 @@ describe('HeatmapGroupBySettings', () => {
     expect(component.find('HeatmapGroupBySettings').length).toEqual(1);
 
     const dropdown = component.find(Dropdown);
-    const submenu = shallow(<div>{dropdown.prop('overlay')}</div>);
-    const subMenuItems = submenu.find('MenuItem');
+    const menuItems = dropdown.props().menu.items;
 
     // When the other group by is clicked...
-    const buttons = subMenuItems.find(Button);
-    act(() => { buttons.at(0).simulate('click'); });
+    const buttons = menuItems[0].label.props.children;
+    act(() => { buttons[0].props.onClick() });
     component.update();
 
     await waitForActions(store, [UPDATE_CONFIG]);
@@ -170,7 +168,7 @@ describe('HeatmapGroupBySettings', () => {
     expect(groupByItems.at(1).text()).toEqual('louvain clusters');
 
     // when the groupby is clicked again
-    act(() => { buttons.at(0).simulate('click'); });
+    act(() => { buttons[0].props.onClick() });
     component.update();
 
     await waitForActions(store, [UPDATE_CONFIG]);
@@ -189,7 +187,7 @@ describe('HeatmapGroupBySettings', () => {
     expect(groupByItems.at(0).text()).toEqual('Sample');
   });
 
-  test('interacting with the groupby reorder options will trigger the appropriate actions', async () => {
+  it('interacting with the groupby reorder options will trigger the appropriate actions', async () => {
     const store = mockStore({
       ...initialState,
     });
@@ -204,12 +202,11 @@ describe('HeatmapGroupBySettings', () => {
     expect(component.find('HeatmapGroupBySettings').length).toEqual(1);
 
     const dropdown = component.find(Dropdown);
-    const submenu = shallow(<div>{dropdown.prop('overlay')}</div>);
-    const subMenuItems = submenu.find('MenuItem');
+    const menuItems = dropdown.props().menu.items;
 
     // Add a louvain group by
-    const addButtons = subMenuItems.find(Button);
-    act(() => { addButtons.at(0).simulate('click'); });
+    const addButtons = menuItems[0].label.props.children;
+    act(() => { addButtons[0].props.onClick() });
 
     await waitForActions(store, [UPDATE_CONFIG]);
     component.update();
