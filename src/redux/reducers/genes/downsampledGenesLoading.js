@@ -2,7 +2,7 @@
 import produce, { original } from 'immer';
 import _ from 'lodash';
 
-import getInitialState from './getInitialState';
+import getInitialState, { initialViewState } from 'redux/reducers/genes/getInitialState';
 
 const downsampledGenesLoading = produce((draft, action) => {
   const { ETag, genes, componentUuid } = action.payload;
@@ -16,6 +16,11 @@ const downsampledGenesLoading = produce((draft, action) => {
       original(draft).expression.downsampled.loading,
       genes,
     );
+  }
+
+  // If the view hasn't stored properties yet, then set initial state
+  if (_.isNil(draft.expression.views[componentUuid])) {
+    draft.expression.views[componentUuid] = initialViewState;
   }
 
   draft.expression.views[componentUuid].fetching = true;

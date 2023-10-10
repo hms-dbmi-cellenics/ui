@@ -27,6 +27,8 @@ const GeneReorderTool = (props) => {
   }, [config?.selectedGenes]);
 
   const debouncedOnDelete = useCallback(_.debounce((newGenes) => {
+    dispatch(updatePlotConfig(plotUuid, { selectedGenes: newGenes }));
+
     onDelete(newGenes);
   }, 1000), []);
 

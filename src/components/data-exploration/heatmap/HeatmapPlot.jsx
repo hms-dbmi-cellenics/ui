@@ -225,7 +225,6 @@ const HeatmapPlot = (props) => {
       selectedGenes,
       COMPONENT_TYPE,
     ));
-    // }
   }, [
     louvainClustersResolution,
     cellSets.accessible,

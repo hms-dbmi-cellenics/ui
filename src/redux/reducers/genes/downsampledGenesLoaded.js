@@ -49,6 +49,7 @@ const downsampledGenesLoaded = (state, action) => {
           fetching: false,
           error: false,
           data: genes,
+          markers: false,
         },
       },
       downsampled: {

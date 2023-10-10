@@ -37,7 +37,6 @@ import PlotLegendAlert, { MAX_LEGEND_ITEMS } from 'components/plots/helpers/Plot
 
 import ScrollOnDrag from 'components/plots/ScrollOnDrag';
 import useConditionalEffect from 'utils/customHooks/useConditionalEffect';
-import useRunOnceEffect from 'utils/customHooks/useRunOnceEffect';
 
 const { Panel } = Collapse;
 const plotUuid = 'markerHeatmapPlotMain';
@@ -66,9 +65,9 @@ const MarkerHeatmap = ({ experimentId }) => {
     getCellSetsHierarchyByKeys([config?.selectedCellSet]),
   )[0]?.children?.length;
 
-  const loadedMarkerGenes = useSelector(
-    (state) => state.genes.expression.views[plotUuid]?.data,
-  ) || [];
+  const { data: loadedGenes = [], markers: loadedGenesAreMarkers = false } = useSelector(
+    (state) => state.genes.expression.views[plotUuid],
+  ) || {};
 
   const {
     loading: markerGenesLoading,
@@ -107,43 +106,7 @@ const MarkerHeatmap = ({ experimentId }) => {
     if (showAlert) updatePlotWithChanges({ legend: { showAlert, enabled: !showAlert } });
   }, [configIsLoaded, cellSets.accessible]);
 
-  useRunOnceEffect(() => {
-    if (
-      config?.nMarkerGenes
-      && config?.groupedTracks
-      && config?.selectedCellSet
-      && config?.selectedPoints
-      && hierarchy?.length
-      && selectedCellSetClassAvailable
-    ) {
-      // On first load no selected genes, so fill in with markers
-      dispatch(loadMarkerGenes(
-        experimentId,
-        plotUuid,
-        {
-          numGenes: config.nMarkerGenes,
-          groupedTracks: config.groupedTracks,
-          selectedCellSet: config.selectedCellSet,
-          selectedPoints: config.selectedPoints,
-        },
-      ));
-
-      return true;
-    }
-
-    return false;
-  }, [
-    config?.nMarkerGenes,
-    config?.groupedTracks,
-    config?.selectedCellSet,
-    config?.selectedPoints,
-    hierarchy,
-    cellSets.accessible,
-    louvainClustersResolution,
-    groupedCellSets,
-  ]);
-
-  useConditionalEffect(() => {
+  useEffect(() => {
     if (
       !(
         louvainClustersResolution
@@ -156,15 +119,41 @@ const MarkerHeatmap = ({ experimentId }) => {
       )
     ) return;
 
-    if (config.selectedGenes.length > 0) {
-      dispatch(loadDownsampledGeneExpression(
-        experimentId,
-        config.selectedGenes,
-        plotUuid,
-      ));
+    dispatch(loadMarkerGenes(
+      experimentId,
+      plotUuid,
+      {
+        numGenes: config.nMarkerGenes,
+        groupedTracks: config.groupedTracks,
+        selectedCellSet: config.selectedCellSet,
+        selectedPoints: config.selectedPoints,
+      },
+    ));
+  }, [config?.nMarkerGenes]);
+
+  useConditionalEffect(() => {
+    if (
+      !(
+        louvainClustersResolution
+        && config?.groupedTracks
+        && config?.selectedCellSet
+        && config?.selectedPoints
+        && hierarchy?.length
+        && selectedCellSetClassAvailable
+        && config?.selectedGenes.length > 0
+      )
+    ) {
+      return;
     }
+
+    // Genes loading is managed by loadMarkerGenes, skip
+    if (loadedGenesAreMarkers && _.isEqual(config.selectedGenes, loadedGenes)) {
+      return;
+    }
+
+    dispatch(loadDownsampledGeneExpression(experimentId, config?.selectedGenes, plotUuid));
   }, [
-    config?.nMarkerGenes,
+    config?.selectedGenes,
     config?.groupedTracks,
     config?.selectedCellSet,
     config?.selectedPoints,
@@ -173,6 +162,19 @@ const MarkerHeatmap = ({ experimentId }) => {
     louvainClustersResolution,
     groupedCellSets,
   ]);
+
+  // When marker genes have been loaded, update the config with those
+  useConditionalEffect(() => {
+    console.log('HOLA1Debug');
+    if (!config || _.isEqual(loadedGenes, config.selectedGenes)) {
+      console.log('HOLA2Debug');
+      return;
+    }
+
+    console.log('HOLA3Debug');
+
+    updatePlotWithChanges({ selectedGenes: loadedGenes });
+  }, [loadedGenes, loadedGenesAreMarkers]);
 
   useEffect(() => {
     if (!config) {
@@ -232,46 +234,31 @@ const MarkerHeatmap = ({ experimentId }) => {
     return newOrder;
   };
 
-  const reSortGenes = () => {
-    const newGenes = _.difference(loadedMarkerGenes, config.selectedGenes);
-    let newOrder;
+  // TODO Try to remove this
+  // const reSortGenes = () => {
+  //   const newGenes = _.difference(loadedGenes, config.selectedGenes);
+  //   let newOrder;
 
-    if (!newGenes.length) {
-      // gene was removed instead of added - no need to sort
-      const removedGenes = _.difference(config.selectedGenes, loadedMarkerGenes);
-      newOrder = _.cloneDeep(config.selectedGenes);
-      newOrder = newOrder.filter((gene) => !removedGenes.includes(gene));
-    } else if (newGenes.length === 1) {
-      // single gene difference - added manually by user
-      newOrder = sortGenes(newGenes);
-    } else {
-      // selected data was changed
-      newOrder = loadedMarkerGenes;
-    }
+  //   if (!newGenes.length) {
+  //     // gene was removed instead of added - no need to sort
+  //     const removedGenes = _.difference(config.selectedGenes, loadedGenes);
+  //     newOrder = _.cloneDeep(config.selectedGenes);
+  //     newOrder = newOrder.filter((gene) => !removedGenes.includes(gene));
+  //   } else if (newGenes.length === 1) {
+  //     // single gene difference - added manually by user
+  //     newOrder = sortGenes(newGenes);
+  //   } else {
+  //     // selected data was changed
+  //     newOrder = loadedGenes;
+  //   }
 
-    return newOrder;
-  };
-
-  useEffect(() => {
-    // if (!config || _.isEmpty(expressionData)) {
-    if (!config) {
-      return;
-    }
-    if (loadedMarkerGenes.length && !config.selectedGenes.length) {
-      updatePlotWithChanges({ selectedGenes: loadedMarkerGenes });
-      return;
-    }
-
-    if (loadedMarkerGenes.length !== config.selectedGenes.length) {
-      const newOrder = reSortGenes();
-      updatePlotWithChanges({ selectedGenes: newOrder });
-    }
-  }, [loadedMarkerGenes, config?.selectedGenes]);
+  //   return newOrder;
+  // };
 
   useEffect(() => {
-    if (!cellSets.accessible
-      // || _.isEmpty(expressionData)
-      || _.isEmpty(loadedMarkerGenes)
+    if (
+      !cellSets.accessible
+      || _.isEmpty(loadedGenes)
       || !loading
       || !hierarchy?.length
       || markerGenesLoadingError
@@ -510,7 +497,7 @@ const MarkerHeatmap = ({ experimentId }) => {
       );
     }
 
-    if (loadedMarkerGenes.length === 0) {
+    if (loadedGenes.length === 0) {
       return (
         <Empty description='Add some genes to this heatmap to get started.' />
       );
