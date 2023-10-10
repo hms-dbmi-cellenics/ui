@@ -165,13 +165,9 @@ const MarkerHeatmap = ({ experimentId }) => {
 
   // When marker genes have been loaded, update the config with those
   useConditionalEffect(() => {
-    console.log('HOLA1Debug');
     if (!config || _.isEqual(loadedGenes, config.selectedGenes)) {
-      console.log('HOLA2Debug');
       return;
     }
-
-    console.log('HOLA3Debug');
 
     updatePlotWithChanges({ selectedGenes: loadedGenes });
   }, [loadedGenes, loadedGenesAreMarkers]);
