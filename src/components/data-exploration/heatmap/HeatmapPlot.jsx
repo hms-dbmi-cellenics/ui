@@ -86,8 +86,8 @@ const HeatmapPlot = (props) => {
   const viewError = useSelector((state) => state.genes.expression.views[COMPONENT_TYPE]?.error);
 
   const updateCellCoordinates = (newView) => {
-    if (cellHighlight && newView.project) {
-      const [x, y] = newView.project(cellHighlight, geneHighlight);
+    if (cellHighlight && newView.projectFromId) {
+      const [x, y] = newView.projectFromId(cellHighlight, geneHighlight);
 
       cellCoordinatesRef.current = {
         x,
