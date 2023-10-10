@@ -183,53 +183,6 @@ const MarkerHeatmap = ({ experimentId }) => {
     );
   }, [config?.selectedCellSet]);
 
-  const sortGenes = (newGenes) => {
-    const clusters = hierarchy.find((cluster) => cluster.key === config.selectedCellSet).children;
-
-    const getCellIdsForCluster = (clusterId) => properties[clusterId].cellIds;
-
-    const getAverageExpressionForGene = (gene, currentCellIds) => {
-      const expressionValues = matrix.getRawExpression(gene);
-      let totalValue = 0;
-      currentCellIds.forEach((cellId) => {
-        totalValue += expressionValues[cellId];
-      });
-      return totalValue / currentCellIds.size;
-    };
-
-    const getClusterForGene = (gene) => {
-      const maxAverageExpression = { expression: 0, clusterId: -1 };
-
-      clusters.forEach((cluster, clusterIndx) => {
-        const currentCellIds = getCellIdsForCluster(cluster.key);
-        const currentAverageExpression = getAverageExpressionForGene(gene, currentCellIds);
-        if (currentAverageExpression > maxAverageExpression.expression) {
-          maxAverageExpression.expression = currentAverageExpression;
-          maxAverageExpression.clusterId = clusterIndx;
-        }
-      });
-
-      return maxAverageExpression.clusterId;
-    };
-
-    const newOrder = _.cloneDeep(config.selectedGenes);
-
-    newGenes.forEach((gene) => {
-      const clusterIndx = getClusterForGene(gene);
-      newOrder.forEach((oldGene) => {
-        if (!_.includes(newOrder, gene)) {
-          const currentClusterIndx = getClusterForGene(oldGene);
-          if (currentClusterIndx === clusterIndx) {
-            const geneIndex = newOrder.indexOf(oldGene);
-            newOrder.splice(geneIndex, 0, gene);
-          }
-        }
-      });
-    });
-
-    return newOrder;
-  };
-
   useEffect(() => {
     if (
       !cellSets.accessible
