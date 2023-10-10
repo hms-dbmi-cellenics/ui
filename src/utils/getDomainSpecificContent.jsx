@@ -31,14 +31,14 @@ const reusedContent = {
   ExtraLogoText: (
     <text
       style={{ outlineStyle: 'none' }}
-      x='1px'
       fontWeight='400'
       textRendering='geometricPrecision'
       fontFamily='IBM Plex Sans'
-      y='45px'
       fill='#F0F2F5'
       fontSize='9.00px'
       textAnchor='start'
+      dominantBaseline='middle'
+      y='20'
     >
       provided by Biomage
     </text>

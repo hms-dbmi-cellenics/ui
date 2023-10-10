@@ -229,29 +229,30 @@ const ContentWrapper = (props) => {
   const BigLogo = () => (
     <div
       style={{
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
         background: 'linear-gradient(315deg, #5B070A 0%, #8f0b10 30%, #A80D12 100%)',
-        paddingLeft: '32px',
-        paddingTop: '15px',
+        paddingTop: '10px',
         paddingBottom: '10px',
         pointerEvents: 'none',
         userSelect: 'none',
       }}
     >
-      <svg xmlns='http://www.w3.org/2000/svg' width={200} height={47}>
+      <svg xmlns='http://www.w3.org/2000/svg' width={200} height={50}>
         <defs id='svg_document_defs'>
           <style id='IBM Plex Sans_Google_Webfont_import'>@import url(https://fonts.googleapis.com/css?family=IBM+Plex+Sans);</style>
         </defs>
-        <g>
+        <g transform='translate(20, 25)'>
           <text
             style={{ outlineStyle: 'none' }}
-            x='1px'
             fontWeight='500'
             textRendering='geometricPrecision'
             fontFamily='IBM Plex Sans'
-            y='25px'
             fill='#F0F2F5'
             fontSize='25.00px'
             textAnchor='start'
+            dominantBaseline='middle'
           >
             Cellenics®
           </text>
