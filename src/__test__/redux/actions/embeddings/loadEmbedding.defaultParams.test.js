@@ -13,7 +13,7 @@ import { loadBackendStatus } from 'redux/actions/backendStatus';
 import { loadEmbedding } from 'redux/actions/embedding';
 import loadProcessingSettings from 'redux/actions/experimentSettings/processingConfig/loadProcessingSettings';
 import { makeStore } from 'redux/store';
-import { seekFromS3 } from 'utils/work/seekWorkResponse';
+import { dispatchWorkRequest } from 'utils/work/seekWorkResponse';
 
 jest.mock('utils/getTimeoutForWorkerTask', () => ({
   __esModule: true, // this property makes it work
@@ -23,7 +23,6 @@ enableFetchMocks();
 jest.mock('utils/work/seekWorkResponse', () => ({
   __esModule: true, // this property makes it work
   dispatchWorkRequest: jest.fn(() => true),
-  seekFromS3: jest.fn(),
 }));
 
 jest.mock('utils/work/createObjectHash');
@@ -62,8 +61,8 @@ const date = new Date(1458619200000);
 backendStatusData.pipeline.startDate = date.toISOString();
 
 const customAPIResponses = {
-  [`experiments/${experimentId}/processingConfig`]: () => promiseResponse(JSON.stringify(experimentSettings.processing)),
-  [`experiments/${experimentId}/backendStatus`]: () => promiseResponse(
+  [`experiments/${experimentId}/processingConfig$`]: () => promiseResponse(JSON.stringify(experimentSettings.processing)),
+  [`experiments/${experimentId}/backendStatus$`]: () => promiseResponse(
     JSON.stringify(backendStatusData),
   ),
 };
@@ -81,10 +80,10 @@ describe('loadEmbedding action', () => {
     fetchMock.doMock();
     fetchMock.mockIf(/.*/, mockAPI(mockApiResponses));
 
-    seekFromS3
+    dispatchWorkRequest
       .mockReset()
-      .mockImplementationOnce(() => null)
       .mockImplementationOnce(() => Promise.resolve([[1, 2], [3, 4]]));
+
     createObjectHash.mockImplementation((object) => MD5(object));
 
     store = makeStore();

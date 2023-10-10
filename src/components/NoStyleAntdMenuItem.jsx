@@ -4,8 +4,6 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { Menu } from 'antd';
 
-import 'utils/css/no-style-menu-item.css';
-
 // When using antd's Menu we are forced to wrap things in Menu.Item to
 // avoid having duplicate components.
 // Menu.Item adds styling, margins and hover style effects that we don't need,

@@ -50,7 +50,7 @@ const defaultAPIResponse = generateDefaultMockAPIResponses(
 );
 
 const responses = _.merge(defaultAPIResponse, {
-  [`/v2/access/${fake.EXPERIMENT_ID}-1`]: () => (
+  [`/v2/access/${fake.EXPERIMENT_ID}-1$`]: () => (
     Promise.resolve(
       new Response(JSON.stringify(
         [{

@@ -12,8 +12,6 @@ const createSampleFile = (
   experimentId,
   sampleId,
   type,
-  size,
-  metadata,
   fileForApiV1,
 ) => async (dispatch) => {
   const updatedAt = dayjs().toISOString();
@@ -22,8 +20,7 @@ const createSampleFile = (
     const url = `/v2/experiments/${experimentId}/samples/${sampleId}/sampleFiles/${type}`;
     const body = {
       sampleFileId: uuidv4(),
-      size,
-      metadata,
+      size: fileForApiV1.size,
     };
 
     dispatch({
@@ -39,7 +36,7 @@ const createSampleFile = (
       },
     });
 
-    const uploadUrlParams = await fetchAPI(
+    await fetchAPI(
       url,
       {
         method: 'POST',
@@ -50,10 +47,7 @@ const createSampleFile = (
       },
     );
 
-    return {
-      ...uploadUrlParams,
-      sampleFileId: body.sampleFileId,
-    };
+    return body.sampleFileId;
   } catch (e) {
     dispatch(updateSampleFileUpload(experimentId, sampleId, type, UploadStatus.UPLOAD_ERROR));
 

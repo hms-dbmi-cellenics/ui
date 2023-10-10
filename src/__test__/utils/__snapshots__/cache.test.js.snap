@@ -1,16 +1,16 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`cache get if cache hit, put item on top 1`] = `
-Object {
-  "key1": Object {
+{
+  "key1": {
     "next": null,
     "previous": "key3",
   },
-  "key2": Object {
+  "key2": {
     "next": "key3",
     "previous": null,
   },
-  "key3": Object {
+  "key3": {
     "next": "key1",
     "previous": "key2",
   },
@@ -18,53 +18,53 @@ Object {
 `;
 
 exports[`cache get remove item that ttl expired - Many items in cache 1`] = `
-Object {
-  "key1": Object {
+{
+  "key1": {
     "next": "key3",
     "previous": null,
   },
-  "key3": Object {
+  "key3": {
     "next": null,
     "previous": "key1",
   },
 }
 `;
 
-exports[`cache get remove item that ttl expired - Ony one item in cache 1`] = `Object {}`;
+exports[`cache get remove item that ttl expired - Ony one item in cache 1`] = `{}`;
 
 exports[`cache init Initialises the cache successfully 1`] = `
-Object {
-  "key1": Object {
+{
+  "key1": {
     "next": "key2",
     "previous": null,
   },
-  "key2": Object {
+  "key2": {
     "next": "key3",
     "previous": "key1",
   },
-  "key3": Object {
+  "key3": {
     "next": null,
     "previous": "key2",
   },
 }
 `;
 
-exports[`cache init Will not initialise if it is already initialised 1`] = `Object {}`;
+exports[`cache init Will not initialise if it is already initialised 1`] = `{}`;
 
 exports[`cache set Evicts item if cache size exceeds 1`] = `
-Object {
-  "key2": Object {
+{
+  "key2": {
     "next": null,
     "previous": null,
   },
 }
 `;
 
-exports[`cache set Rejects invalid cache 1`] = `Object {}`;
+exports[`cache set Rejects invalid cache 1`] = `{}`;
 
 exports[`cache set set items to cache correctly 1`] = `
-Object {
-  "key1": Object {
+{
+  "key1": {
     "next": null,
     "previous": null,
   },
@@ -72,12 +72,12 @@ Object {
 `;
 
 exports[`cache set set items to cache correctly 2`] = `
-Object {
-  "key1": Object {
+{
+  "key1": {
     "next": "key2",
     "previous": null,
   },
-  "key2": Object {
+  "key2": {
     "next": null,
     "previous": "key1",
   },

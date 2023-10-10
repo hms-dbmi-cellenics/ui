@@ -13,6 +13,7 @@ import {
   EXPERIMENTS_METADATA_DELETE,
   EXPERIMENTS_METADATA_RENAME,
   EXPERIMENTS_SET_ACTIVE,
+  EXPERIMENT_CELL_METADATA_UPDATED,
 } from 'redux/actionTypes/experiments';
 
 import { SAMPLES_CREATED, SAMPLES_DELETE } from 'redux/actionTypes/samples';
@@ -31,7 +32,7 @@ import experimentsMetadataCreate from './experimentsMetadataCreate';
 import experimentsMetadataRename from './experimentsMetadataRename';
 import experimentsMetadataDelete from './experimentsMetadataDelete';
 import experimentsSaved from './experimentsSaved';
-
+import experimentCellMetadataUpdated from './experimentCellMetadataUpdated';
 import samplesDelete from './samplesDelete';
 import samplesCreated from './samplesCreated';
 
@@ -101,6 +102,10 @@ const experimentsReducer = (state = initialState, action) => {
 
     case EXPERIMENT_SETTINGS_PIPELINE_VERSION_UPDATED: {
       return pipelineVersionUpdated(state, action);
+    }
+
+    case EXPERIMENT_CELL_METADATA_UPDATED: {
+      return experimentCellMetadataUpdated(state, action);
     }
 
     default: {

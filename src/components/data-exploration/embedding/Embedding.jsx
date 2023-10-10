@@ -9,8 +9,6 @@ import {
 } from 'react-redux';
 import PropTypes from 'prop-types';
 import * as vega from 'vega';
-import 'vitessce/dist/es/production/static/css/index.css';
-
 import ClusterPopover from 'components/data-exploration/embedding/ClusterPopover';
 import CrossHair from 'components/data-exploration/embedding/CrossHair';
 import CellInfo from 'components/data-exploration/CellInfo';
@@ -33,7 +31,7 @@ import {
 import getContainingCellSetsProperties from 'utils/cellSets/getContainingCellSetsProperties';
 
 const Scatterplot = dynamic(
-  () => import('vitessce/dist/umd/production/scatterplot.min').then((mod) => mod.Scatterplot),
+  () => import('../DynamicVitessceWrappers').then((mod) => mod.Scatterplot),
   { ssr: false },
 );
 
@@ -76,7 +74,15 @@ const Embedding = (props) => {
   const [selectedIds, setSelectedIds] = useState(new Set());
   const [cellColors, setCellColors] = useState({});
   const [cellInfoVisible, setCellInfoVisible] = useState(true);
-  const [view, setView] = useState({ target: [4, -4, 0], zoom: INITIAL_ZOOM });
+  const originalView = { target: [4, -4, 0], zoom: INITIAL_ZOOM };
+  const [view, setView] = useState(originalView);
+
+  const showLoader = useMemo(() => {
+    const dataIsLoaded = !data || loading;
+    const geneLoadedIfNecessary = focusData.store === 'genes' && !expressionMatrix.geneIsLoaded(focusData.key);
+
+    return dataIsLoaded || geneLoadedIfNecessary;
+  });
 
   // Load embedding settings if they aren't already.
   useEffect(() => {
@@ -196,8 +202,8 @@ const Embedding = (props) => {
   }, []);
 
   const updateViewInfo = useCallback((viewInfo) => {
-    if (selectedCell && viewInfo.project) {
-      const [x, y] = viewInfo.project(selectedCell);
+    if (selectedCell && viewInfo.projectFromId) {
+      const [x, y] = viewInfo.projectFromId(selectedCell);
       cellCoordinatesRef.current = {
         x,
         y,
@@ -237,21 +243,6 @@ const Embedding = (props) => {
       ),
     );
   };
-
-  // Embedding data is loading.
-  if (!data || loading) {
-    return (<center><Loader experimentId={experimentId} size='large' /></center>);
-  }
-
-  // The selected gene in can be present in both expression.loading
-  // and expression.matrix loaded genes.
-  // To make sure that the gene is really loading, we have to check if
-  // it exists in the loading array and is not present in the data array
-  if (focusData.store === 'genes'
-    && !expressionMatrix.geneIsLoaded(focusData.key)
-    && expressionLoading.includes(focusData.key)) {
-    return (<center><Loader experimentId={experimentId} size='large' /></center>);
-  }
 
   // The embedding couldn't load. Display an error condition.
   if (error) {
@@ -300,69 +291,79 @@ const Embedding = (props) => {
   };
 
   return (
-    <div
-      className='vitessce-container vitessce-theme-light'
-      style={{ width, height, position: 'relative' }}
-      // make sure that the crosshairs don't break zooming in and out of the embedding
-      onWheel={() => { setCellInfoVisible(false); }}
-      onMouseMove={() => {
-        if (!cellInfoVisible) {
-          setCellInfoVisible(true);
-        }
-      }}
-      onMouseLeave={clearCellHighlight}
-      onClick={clearCellHighlight}
-      onKeyPress={clearCellHighlight}
-    >
-      {renderExpressionView()}
-      {
-        data ? (
-          <Scatterplot
-            cellOpacity={0.8}
-            cellRadius={cellRadius}
-            setCellHighlight={setCellHighlight}
-            theme='light'
-            uuid={embeddingType}
-            viewState={view}
-            updateViewInfo={updateViewInfo}
-            cells={convertedCellsData}
-            mapping='PCA'
-            setCellSelection={setCellsSelection}
-            cellColors={cellColorsForVitessce}
-            setViewState={setViewState}
-            getExpressionValue={getExpressionValue}
-            getCellIsSelected={getCellIsSelected}
-          />
-        ) : ''
-      }
-      {
-        createClusterPopover
-          ? (
-            <ClusterPopover
-              visible
-              popoverPosition={cellCoordinatesRef}
-              onCreate={onCreateCluster}
-              onCancel={() => setCreateClusterPopover(false)}
+    <>
+      {showLoader && <center><Loader experimentId={experimentId} size='large' /></center>}
+      <div
+        className='vitessce-container vitessce-theme-light'
+        style={{
+          width,
+          height,
+          position: 'relative',
+          display: showLoader ? 'none' : 'block',
+        }}
+        // make sure that the crosshairs don't break zooming in and out of the embedding
+        onWheel={() => { setCellInfoVisible(false); }}
+        onMouseMove={() => {
+          if (!cellInfoVisible) {
+            setCellInfoVisible(true);
+          }
+        }}
+        onMouseLeave={clearCellHighlight}
+        onClick={clearCellHighlight}
+        onKeyPress={clearCellHighlight}
+      >
+        {renderExpressionView()}
+        {
+          data ? (
+            <Scatterplot
+              cellColorEncoding="cellSetSelection"
+              cellOpacity={0.8}
+              cellRadius={cellRadius}
+              setCellHighlight={setCellHighlight}
+              theme='light'
+              uuid={embeddingType}
+              viewState={view}
+              setViewState={setViewState}
+              originalViewState={originalView}
+              updateViewInfo={updateViewInfo}
+              obsEmbedding={convertedCellsData?.obsEmbedding}
+              obsEmbeddingIndex={convertedCellsData?.obsEmbeddingIndex}
+              cellColors={cellColorsForVitessce}
+              setCellSelection={setCellsSelection}
+              getExpressionValue={getExpressionValue}
+              getCellIsSelected={getCellIsSelected}
             />
-          ) : (
-            (cellInfoVisible && cellInfoTooltip) ? (
-              <div>
-                <CellInfo
-                  containerWidth={width}
-                  containerHeight={height}
-                  componentType={embeddingType}
-                  coordinates={cellCoordinatesRef.current}
-                  cellInfo={cellInfoTooltip}
-                />
-                <CrossHair
-                  componentType={embeddingType}
-                  coordinates={cellCoordinatesRef}
-                />
-              </div>
-            ) : <></>
-          )
-      }
-    </div>
+          ) : ''
+        }
+        {
+          createClusterPopover
+            ? (
+              <ClusterPopover
+                visible
+                popoverPosition={cellCoordinatesRef}
+                onCreate={onCreateCluster}
+                onCancel={() => setCreateClusterPopover(false)}
+              />
+            ) : (
+              (cellInfoVisible && cellInfoTooltip) ? (
+                <div>
+                  <CellInfo
+                    containerWidth={width}
+                    containerHeight={height}
+                    componentType={embeddingType}
+                    coordinates={cellCoordinatesRef.current}
+                    cellInfo={cellInfoTooltip}
+                  />
+                  <CrossHair
+                    componentType={embeddingType}
+                    coordinates={cellCoordinatesRef}
+                  />
+                </div>
+              ) : <></>
+            )
+        }
+      </div>
+    </>
   );
 };
 

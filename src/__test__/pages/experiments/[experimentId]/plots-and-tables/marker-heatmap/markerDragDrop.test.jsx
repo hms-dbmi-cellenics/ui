@@ -7,7 +7,7 @@ import { act } from 'react-dom/test-utils';
 import { Provider } from 'react-redux';
 import { loadBackendStatus } from 'redux/actions/backendStatus';
 import { makeStore } from 'redux/store';
-import { seekFromS3 } from 'utils/work/seekWorkResponse';
+import { dispatchWorkRequest } from 'utils/work/seekWorkResponse';
 import expressionDataFAKEGENE from '__test__/data/gene_expression_FAKEGENE.json';
 import markerGenesData2 from '__test__/data/marker_genes_2.json';
 import markerGenesData5 from '__test__/data/marker_genes_5.json';
@@ -17,6 +17,7 @@ import preloadAll from 'jest-next-dynamic';
 
 import fake from '__test__/test-utils/constants';
 import mockAPI, {
+  dispatchWorkRequestMock,
   generateDefaultMockAPIResponses,
   promiseResponse,
   statusResponse,
@@ -36,7 +37,7 @@ jest.mock('react-resize-detector', () => (props) => {
 // EtagParams is the object that's passed to the function which generates ETag in fetchWork
 jest.mock('object-hash', () => {
   const objectHash = jest.requireActual('object-hash');
-  const mockWorkResultETag = jest.requireActual('__test__/test-utils/mockWorkResultETag').default;
+  const mockWorkResultETag = jest.requireActual('__test__/test-utils/mockWorkResultETag');
 
   const mockWorkRequestETag = (ETagParams) => {
     if (ETagParams.body.name === 'ListGenes') return 'ListGenes';
@@ -59,15 +60,14 @@ jest.mock('localforage', () => ({
 
 jest.mock('utils/work/seekWorkResponse', () => ({
   __esModule: true,
-  dispatchWorkRequest: jest.fn(() => true),
-  seekFromS3: jest.fn(),
+  dispatchWorkRequest: jest.fn(),
 }));
 
 const mockWorkerResponses = {
-  '5-marker-genes': () => Promise.resolve(_.cloneDeep(markerGenesData5)),
-  '2-marker-genes': () => Promise.resolve(_.cloneDeep(markerGenesData2)),
-  'FAKEGENE-expression': () => Promise.resolve(_.cloneDeep(expressionDataFAKEGENE)),
-  ListGenes: () => Promise.resolve(geneList),
+  '5-marker-genes': markerGenesData5,
+  '2-marker-genes': markerGenesData2,
+  'FAKEGENE-expression': expressionDataFAKEGENE,
+  ListGenes: geneList,
 };
 
 const experimentId = fake.EXPERIMENT_ID;
@@ -75,10 +75,14 @@ const plotUuid = 'markerHeatmapPlotMain';
 let storeState = null;
 
 const customAPIResponses = {
-  [`/plots/${plotUuid}`]: (req) => {
+  [`/plots/${plotUuid}$`]: (req) => {
     if (req.method === 'PUT') return promiseResponse(JSON.stringify('OK'));
     return statusResponse(404, 'Not Found');
   },
+  [`/v2/workRequest/${experimentId}/5-marker-genes$`]: () => statusResponse(200, 'OK'),
+  [`/v2/workRequest/${experimentId}/2-marker-genes$`]: () => statusResponse(200, 'OK'),
+  [`/v2/workRequest/${experimentId}/FAKEGENE-expression$`]: () => statusResponse(200, 'OK'),
+  [`/v2/workRequest/${experimentId}/ListGenes$`]: () => statusResponse(200, 'OK'),
 };
 
 const defaultResponses = _.merge(
@@ -123,9 +127,9 @@ describe('Drag and drop enzyme tests', () => {
   beforeEach(async () => {
     jest.clearAllMocks();
 
-    seekFromS3
+    dispatchWorkRequest
       .mockReset()
-      .mockImplementation((Etag) => mockWorkerResponses[Etag]());
+      .mockImplementation(dispatchWorkRequestMock(mockWorkerResponses));
 
     enableFetchMocks();
     fetchMock.resetMocks();

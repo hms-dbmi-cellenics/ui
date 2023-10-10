@@ -2,12 +2,11 @@ import React from 'react';
 
 import _ from 'lodash';
 import {
-  render, screen, fireEvent, waitFor,
+  render, screen, fireEvent, waitFor, within,
 } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
 import { act } from 'react-dom/test-utils';
-import { within } from '@testing-library/dom';
 
 import { Provider } from 'react-redux';
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
@@ -18,9 +17,6 @@ import { makeStore } from 'redux/store';
 import CellSetsTool from 'components/data-exploration/cell-sets-tool/CellSetsTool';
 import { createCellSet } from 'redux/actions/cellSets';
 
-import { selectOption } from '__test__/test-utils/rtlHelpers';
-
-import '__test__/test-utils/setupTests';
 import { dispatchWorkRequest } from 'utils/work/seekWorkResponse';
 import mockAPI, { generateDefaultMockAPIResponses, promiseResponse } from '__test__/test-utils/mockAPI';
 import { loadBackendStatus } from 'redux/actions/backendStatus';
@@ -28,7 +24,6 @@ import { loadBackendStatus } from 'redux/actions/backendStatus';
 enableFetchMocks();
 
 jest.mock('utils/work/seekWorkResponse', () => ({
-  seekFromS3: jest.fn(),
   dispatchWorkRequest: jest.fn(),
 }));
 
@@ -105,7 +100,7 @@ let storeState;
 
 // Mocking samples update / delete routes
 const customResponses = {
-  [`experiments/${experimentId}/cellSets`]: () => promiseResponse(JSON.stringify(cellSetsData)),
+  [`experiments/${experimentId}/cellSets$`]: () => promiseResponse(JSON.stringify(cellSetsData)),
 };
 const mockAPIResponse = _.merge(
   generateDefaultMockAPIResponses(experimentId),
@@ -452,20 +447,9 @@ describe('CellSetsTool', () => {
 
     screen.getByText('New Cluster');
     const newClusterKey = getClusterByName('New Cluster');
-
-    const cluster0CellIds = louvainClusters.find(({ name }) => name === 'Cluster 0').cellIds;
-    const allCellIds = sampleList.reduce(
-      (sumCellIds, { cellIds }) => sumCellIds.concat(cellIds),
-      [],
-    );
-
     const actualComplement = storeState.getState().cellSets.properties[newClusterKey].cellIds;
-    const expectedComplement = new Set(
-      allCellIds.filter((cellId) => !cluster0CellIds.includes(cellId)),
-    );
 
-    // complement = the whole dataset - first cluster
-    expect(actualComplement).toEqual(expectedComplement);
+    expect(actualComplement).toMatchSnapshot();
   });
 
   it('Scratchpad cluster deletion works ', async () => {
@@ -697,7 +681,7 @@ describe('CellSetsTool', () => {
   it('Annotated cell sets has delete buttons', async () => {
     const mockAPICellClassAPIResponse = {
       ...mockAPIResponse,
-      [`experiments/${experimentId}/cellSets`]: () => promiseResponse(JSON.stringify(cellSetsWithAnnotatedCellClass)),
+      [`experiments/${experimentId}/cellSets$`]: () => promiseResponse(JSON.stringify(cellSetsWithAnnotatedCellClass)),
     };
 
     fetchMock.mockIf(/.*/, mockAPI(mockAPICellClassAPIResponse));
@@ -722,7 +706,7 @@ describe('CellSetsTool', () => {
   it('Deleting annotated cell class deletes the cell class and the cell sets', async () => {
     const mockAPICellClassAPIResponse = {
       ...mockAPIResponse,
-      [`experiments/${experimentId}/cellSets`]: () => promiseResponse(JSON.stringify(cellSetsWithAnnotatedCellClass)),
+      [`experiments/${experimentId}/cellSets$`]: () => promiseResponse(JSON.stringify(cellSetsWithAnnotatedCellClass)),
     };
 
     fetchMock.mockIf(/.*/, mockAPI(mockAPICellClassAPIResponse));
@@ -804,11 +788,13 @@ describe('AnnotateClustersTool', () => {
     const tissueSelector = screen.getAllByRole('combobox')[0];
     const speciesSelector = screen.getAllByRole('combobox')[1];
 
-    // Select options
-    await act(async () => {
-      await selectOption(/Liver/, tissueSelector);
-      await selectOption(/mouse/, speciesSelector);
-    });
+    // Choose the liver option
+    userEvent.click(tissueSelector);
+    userEvent.click(screen.getByText(/Liver/));
+
+    // Choose the mouse option
+    userEvent.click(speciesSelector);
+    userEvent.click(screen.getAllByText(/mouse/)[1]);
 
     // Now the button's enabled
     const button = screen.getByRole('button', { name: /Compute/ });

@@ -1,6 +1,6 @@
 /* eslint-disable global-require */
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
-import mockAPI, { generateDefaultMockAPIResponses } from '__test__/test-utils/mockAPI';
+import mockAPI, { generateDefaultMockAPIResponses, workerDataResult } from '__test__/test-utils/mockAPI';
 
 import fetchWork from 'utils/work/fetchWork';
 import { getFourGenesMatrix } from '__test__/utils/ExpressionMatrix/testMatrixes';
@@ -48,10 +48,9 @@ describe('fetchWork', () => {
 
     jest.clearAllMocks();
 
-    mockSeekFromS3
+    mockDispatchWorkRequest
       .mockReset()
-      .mockImplementationOnce(() => null)
-      .mockImplementationOnce(() => mockGenesListData);
+      .mockImplementationOnce(() => workerDataResult(mockGenesListData));
 
     fetchMock.resetMocks();
     fetchMock.mockIf(/.*/, mockAPI(generateDefaultMockAPIResponses(experimentId)));
@@ -62,10 +61,9 @@ describe('fetchWork', () => {
   });
 
   it('runs correctly for gene expression work request', async () => {
-    mockSeekFromS3
+    mockDispatchWorkRequest
       .mockReset()
-      .mockImplementationOnce(() => null)
-      .mockImplementation(() => (getFourGenesMatrix()));
+      .mockImplementation(() => workerDataResult(getFourGenesMatrix()));
 
     const res = await fetchWork(
       experimentId,
@@ -95,7 +93,7 @@ describe('fetchWork', () => {
     //   expectedResponse.D,
     // );
     expect(res).toMatchSnapshot();
-    expect(mockSeekFromS3).toHaveBeenCalledTimes(2);
+    expect(mockSeekFromS3).toHaveBeenCalledTimes(0);
   });
 
   it('runs correctly for non gene expression work request', async () => {
@@ -121,14 +119,14 @@ describe('fetchWork', () => {
       NON_GENE_EXPRESSION_ETAG,
       mockGenesListData,
     );
-    expect(mockSeekFromS3).toHaveBeenCalledTimes(2);
+    expect(mockSeekFromS3).toHaveBeenCalledTimes(0);
     expect(res).toEqual(mockGenesListData);
   });
 
   it('Throws an error if the dispatched work request throws an error', async () => {
-    mockDispatchWorkRequest.mockImplementationOnce(() => {
-      throw new Error('Worker timeout');
-    });
+    mockDispatchWorkRequest
+      .mockReset()
+      .mockImplementationOnce(() => Promise.reject(new Error('Worker timeout')));
 
     await expect(
       fetchWork(
@@ -143,8 +141,8 @@ describe('fetchWork', () => {
     expect(mockCacheGet).toHaveBeenCalledTimes(1);
     expect(mockCacheSet).not.toHaveBeenCalled();
 
-    // Only called once when checking for the work result in S3
-    expect(mockSeekFromS3).toHaveBeenCalledTimes(1);
+    // Not called ever because result is received straight from dispatchWorkRequest
+    expect(mockSeekFromS3).toHaveBeenCalledTimes(0);
   });
 
   it('does not change ETag if caching is enabled', async () => {

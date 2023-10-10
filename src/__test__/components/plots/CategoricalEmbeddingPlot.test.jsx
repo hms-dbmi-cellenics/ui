@@ -9,11 +9,13 @@ import CategoricalEmbeddingPlot from 'components/plots/CategoricalEmbeddingPlot'
 
 import { initialPlotConfigStates } from 'redux/reducers/componentConfig/initialState';
 
-import mockAPI, { generateDefaultMockAPIResponses, statusResponse, delayedResponse } from '__test__/test-utils/mockAPI';
+import mockAPI, {
+  generateDefaultMockAPIResponses, statusResponse, delayedResponse, dispatchWorkRequestMock,
+} from '__test__/test-utils/mockAPI';
 import createTestComponentFactory from '__test__/test-utils/testComponentFactory';
 import fake from '__test__/test-utils/constants';
 import mockEmbedding from '__test__/data/embedding.json';
-import { seekFromS3 } from 'utils/work/seekWorkResponse';
+import { dispatchWorkRequest } from 'utils/work/seekWorkResponse';
 import { loadBackendStatus } from 'redux/actions/backendStatus';
 import WorkResponseError from 'utils/errors/http/WorkResponseError';
 
@@ -25,7 +27,7 @@ const experimentId = fake.EXPERIMENT_ID;
 // EtagParams is the object that's passed to the function which generates ETag in fetchWork
 jest.mock('object-hash', () => {
   const objectHash = jest.requireActual('object-hash');
-  const mockWorkResultETag = jest.requireActual('__test__/test-utils/mockWorkResultETag').default;
+  const mockWorkResultETag = jest.requireActual('__test__/test-utils/mockWorkResultETag');
 
   const mockWorkRequestETag = () => 'embedding';
 
@@ -34,12 +36,11 @@ jest.mock('object-hash', () => {
 
 jest.mock('utils/work/seekWorkResponse', () => ({
   __esModule: true,
-  dispatchWorkRequest: jest.fn(() => true),
-  seekFromS3: jest.fn(),
+  dispatchWorkRequest: jest.fn(),
 }));
 
 const mockWorkerResponses = {
-  embedding: () => Promise.resolve(mockEmbedding),
+  embedding: mockEmbedding,
 };
 
 const defaultAPIResponse = generateDefaultMockAPIResponses(experimentId);
@@ -73,10 +74,9 @@ describe('Categorical embedding plot', () => {
     fetchMock.resetMocks();
     fetchMock.mockIf(/.*/, mockAPI(defaultAPIResponse));
 
-    seekFromS3
+    dispatchWorkRequest
       .mockReset()
-      .mockImplementationOnce(() => null)
-      .mockImplementationOnce((mockEtag) => mockWorkerResponses[mockEtag]());
+      .mockImplementationOnce(dispatchWorkRequestMock(mockWorkerResponses));
 
     storeState = makeStore();
     await storeState.dispatch(loadBackendStatus(experimentId));
@@ -104,7 +104,7 @@ describe('Categorical embedding plot', () => {
   it('Shows a loader if cell sets is loading', async () => {
     const cellSetErrorResponse = {
       ...defaultAPIResponse,
-      [`experiments/${experimentId}/cellSets`]: () => delayedResponse({ body: 'Not found', status: 404 }, 4000),
+      [`experiments/${experimentId}/cellSets$`]: () => delayedResponse({ body: 'Not found', status: 404 }, 4000),
     };
 
     fetchMock.mockIf(/.*/, mockAPI(cellSetErrorResponse));
@@ -118,7 +118,7 @@ describe('Categorical embedding plot', () => {
   it('Shows an error if fetching cell sets throw an error', async () => {
     const cellSetErrorResponse = {
       ...defaultAPIResponse,
-      [`experiments/${experimentId}/cellSets`]: () => statusResponse(500, 'some random error'),
+      [`experiments/${experimentId}/cellSets$`]: () => statusResponse(500, 'some random error'),
     };
 
     fetchMock.mockIf(/.*/, mockAPI(cellSetErrorResponse));
@@ -130,9 +130,8 @@ describe('Categorical embedding plot', () => {
   });
 
   it('Shows a loader if embedding data is loading', async () => {
-    seekFromS3
+    dispatchWorkRequest
       .mockReset()
-      .mockImplementationOnce(() => null)
       .mockImplementationOnce(() => delayedResponse({ body: 'Not found', status: 404 }, 4000));
 
     await renderCategoricalEmbeddingPlot(storeState);
@@ -142,9 +141,8 @@ describe('Categorical embedding plot', () => {
   });
 
   it('Shows an error if there is an error fetching embedding', async () => {
-    seekFromS3
+    dispatchWorkRequest
       .mockReset()
-      .mockImplementationOnce(() => null)
       .mockImplementationOnce(() => Promise.reject(new WorkResponseError('some random error')));
 
     await renderCategoricalEmbeddingPlot(storeState);
