@@ -106,7 +106,9 @@ const MarkerHeatmap = ({ experimentId }) => {
     if (showAlert) updatePlotWithChanges({ legend: { showAlert, enabled: !showAlert } });
   }, [configIsLoaded, cellSets.accessible]);
 
-  useEffect(() => {
+  // Should only run when nMarkerGenes is changed
+  // lazy because it shouldn't run when the component is created
+  useConditionalEffect(() => {
     if (
       !(
         louvainClustersResolution
@@ -129,7 +131,7 @@ const MarkerHeatmap = ({ experimentId }) => {
         selectedPoints: config.selectedPoints,
       },
     ));
-  }, [config?.nMarkerGenes]);
+  }, [config?.nMarkerGenes], { lazy: true });
 
   useConditionalEffect(() => {
     if (
@@ -412,10 +414,12 @@ const MarkerHeatmap = ({ experimentId }) => {
       );
     }
 
-    if (!config
+    if (
+      !config
       || loading.length > 0
       || !cellSets.accessible
-      || markerGenesLoading) {
+      || markerGenesLoading
+    ) {
       return (<Loader experimentId={experimentId} />);
     }
 
