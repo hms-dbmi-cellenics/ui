@@ -230,27 +230,6 @@ const MarkerHeatmap = ({ experimentId }) => {
     return newOrder;
   };
 
-  // TODO Try to remove this
-  // const reSortGenes = () => {
-  //   const newGenes = _.difference(loadedGenes, config.selectedGenes);
-  //   let newOrder;
-
-  //   if (!newGenes.length) {
-  //     // gene was removed instead of added - no need to sort
-  //     const removedGenes = _.difference(config.selectedGenes, loadedGenes);
-  //     newOrder = _.cloneDeep(config.selectedGenes);
-  //     newOrder = newOrder.filter((gene) => !removedGenes.includes(gene));
-  //   } else if (newGenes.length === 1) {
-  //     // single gene difference - added manually by user
-  //     newOrder = sortGenes(newGenes);
-  //   } else {
-  //     // selected data was changed
-  //     newOrder = loadedGenes;
-  //   }
-
-  //   return newOrder;
-  // };
-
   useEffect(() => {
     if (
       !cellSets.accessible
