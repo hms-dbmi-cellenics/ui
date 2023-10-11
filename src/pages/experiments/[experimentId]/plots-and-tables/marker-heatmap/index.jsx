@@ -55,7 +55,7 @@ const MarkerHeatmap = ({ experimentId }) => {
   } = useSelector((state) => state.genes.expression.downsampled);
 
   const cellSets = useSelector(getCellSets());
-  const { hierarchy, properties } = cellSets;
+  const { hierarchy } = cellSets;
 
   const selectedCellSetClassAvailable = useSelector(
     getCellSetsHierarchyByKeys([config?.selectedCellSet]),
@@ -93,6 +93,19 @@ const MarkerHeatmap = ({ experimentId }) => {
   }, []);
 
   const updatePlotWithChanges = (updatedField) => {
+    if (updatedField.nMarkerGenes) {
+      dispatch(loadMarkerGenes(
+        experimentId,
+        plotUuid,
+        {
+          numGenes: updatedField.nMarkerGenes,
+          groupedTracks: config.groupedTracks,
+          selectedCellSet: config.selectedCellSet,
+          selectedPoints: config.selectedPoints,
+        },
+      ));
+    }
+
     dispatch(updatePlotConfig(plotUuid, updatedField));
   };
 
@@ -106,45 +119,35 @@ const MarkerHeatmap = ({ experimentId }) => {
     if (showAlert) updatePlotWithChanges({ legend: { showAlert, enabled: !showAlert } });
   }, [configIsLoaded, cellSets.accessible]);
 
-  // Should only run when nMarkerGenes is changed
-  // lazy because it shouldn't run when the component is created
-  useConditionalEffect(() => {
-    if (
-      !(
-        louvainClustersResolution
-        && config?.nMarkerGenes
-        && config?.groupedTracks
-        && config?.selectedCellSet
-        && config?.selectedPoints
-        && hierarchy?.length
-        && selectedCellSetClassAvailable
-      )
-    ) return;
-
-    dispatch(loadMarkerGenes(
-      experimentId,
-      plotUuid,
-      {
-        numGenes: config.nMarkerGenes,
-        groupedTracks: config.groupedTracks,
-        selectedCellSet: config.selectedCellSet,
-        selectedPoints: config.selectedPoints,
-      },
-    ));
-  }, [config?.nMarkerGenes], { lazy: true });
+  // If the plot has never been loaded (so has no selectedGenes), then load the marker genes
+  useEffect(() => {
+    if (config?.selectedGenes === null) {
+      dispatch(loadMarkerGenes(
+        experimentId,
+        plotUuid,
+        {
+          numGenes: config.nMarkerGenes,
+          groupedTracks: config.groupedTracks,
+          selectedCellSet: config.selectedCellSet,
+          selectedPoints: config.selectedPoints,
+        },
+      ));
+    }
+  }, [config]);
 
   useConditionalEffect(() => {
-    if (
-      !(
-        louvainClustersResolution
-        && config?.groupedTracks
-        && config?.selectedCellSet
-        && config?.selectedPoints
-        && hierarchy?.length
-        && selectedCellSetClassAvailable
-        && config?.selectedGenes.length > 0
-      )
-    ) {
+    const expectedConditions = (
+      louvainClustersResolution
+      && config?.groupedTracks
+      && config?.selectedCellSet
+      && config?.selectedPoints
+      && hierarchy?.length
+      && selectedCellSetClassAvailable
+      && config?.selectedGenes?.length > 0
+      && !markerGenesLoading
+    );
+
+    if (!expectedConditions) {
       return;
     }
 
@@ -152,6 +155,9 @@ const MarkerHeatmap = ({ experimentId }) => {
     if (loadedGenesAreMarkers && _.isEqual(config.selectedGenes, loadedGenes)) {
       return;
     }
+
+    console.log('configselectedGenesDebug');
+    console.log(config.selectedGenes);
 
     dispatch(loadDownsampledGeneExpression(experimentId, config?.selectedGenes, plotUuid));
   }, [
@@ -193,6 +199,7 @@ const MarkerHeatmap = ({ experimentId }) => {
       || !hierarchy?.length
       || markerGenesLoadingError
       || markerGenesLoading
+      || config?.selectedGenes === null
     ) {
       return;
     }
@@ -311,7 +318,7 @@ const MarkerHeatmap = ({ experimentId }) => {
           onReset={onReset}
           onGenesChange={onGenesChange}
           onGenesSelect={onGenesSelect}
-          showGeneTable={config.selectedGenes.length > 0}
+          showGeneTable={config.selectedGenes?.length > 0}
         />
         <div style={{ paddingTop: '10px' }}>
           <p>Gene labels:</p>
