@@ -13,7 +13,7 @@ import {
 import { loadExperiments, setActiveExperiment } from 'redux/actions/experiments';
 
 import PropTypes from 'prop-types';
-import React from 'react';
+import React, { useState } from 'react';
 import fetchAPI from 'utils/http/fetchAPI';
 import { modules } from 'utils/constants';
 import { useAppRouter } from 'utils/AppRouteProvider';
@@ -23,7 +23,10 @@ import { techNamesToDisplay } from 'utils/upload/fileUploadSpecifications';
 const { Paragraph } = Typography;
 
 const RepositoryTable = (props) => {
+  const [experimentCloning, setExperimentCloning] = useState(false);
+
   const cloneExperiment = async (exampleExperimentId) => {
+    setExperimentCloning(true);
     const url = `/v2/experiments/${exampleExperimentId}/clone`;
 
     const newExperimentId = await fetchAPI(
@@ -36,6 +39,7 @@ const RepositoryTable = (props) => {
 
     await dispatch(loadExperiments());
     await dispatch(setActiveExperiment(newExperimentId));
+    setExperimentCloning(false);
     navigateTo(modules.DATA_MANAGEMENT, { experimentId: newExperimentId });
   };
 
@@ -44,7 +48,7 @@ const RepositoryTable = (props) => {
   const formatData = (data) => data.map((row) => ({
     key: row.id,
     name: row.name,
-    explore: <Tooltip title='Click to explore this project.'><Button type='primary' aria-label='clone' onClick={() => cloneExperiment(row.id)}>Explore</Button></Tooltip>,
+    explore: <Tooltip title='Click to explore this project.'><Button type='primary' loading={experimentCloning} aria-label='clone' onClick={() => cloneExperiment(row.id)}>Explore</Button></Tooltip>,
     publication: <a href={row.publicationUrl}>{row.publicationTitle}</a>,
     dataSource: <a href={row.dataSourceUrl}>{row.dataSourceTitle}</a>,
     species: row.species,
