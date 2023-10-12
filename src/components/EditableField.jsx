@@ -60,7 +60,6 @@ const EditableField = (props) => {
 
   const onChange = (e) => {
     const { value: newValueRaw } = e.target;
-
     const newValue = formatter(newValueRaw);
 
     if (validationFunc) {
@@ -104,7 +103,9 @@ const EditableField = (props) => {
             aria-label='Input'
             autoFocus
             onChange={onChange}
+            onClick={(e) => e.stopPropagation()}
             size='small'
+            draggable
             defaultValue={editedValue}
             onKeyDown={onKeyDown}
           />
