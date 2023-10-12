@@ -3,7 +3,8 @@ import {
   GENES_PROPERTIES_LOADING, GENES_PROPERTIES_LOADED_PAGINATED, GENES_PROPERTIES_ERROR,
   GENES_SELECT, GENES_DESELECT,
   GENES_EXPRESSION_LOADING, GENES_EXPRESSION_LOADED, GENES_EXPRESSION_ERROR,
-  MARKER_GENES_LOADING, DOWNSAMPLED_GENES_LOADING, MARKER_GENES_LOADED, MARKER_GENES_ERROR, DOWNSAMPLED_GENES_LOADED,
+  MARKER_GENES_LOADING, MARKER_GENES_LOADED, MARKER_GENES_ERROR,
+  DOWNSAMPLED_GENES_LOADING, DOWNSAMPLED_GENES_LOADED, DOWNSAMPLED_GENES_ERROR,
 } from 'redux/actionTypes/genes';
 
 import { EXPERIMENT_SETTINGS_QC_START } from 'redux/actionTypes/experimentSettings';
@@ -25,6 +26,7 @@ import markerGenesLoaded from 'redux/reducers/genes/markerGenesLoaded';
 
 import genesSelect from 'redux/reducers/genes/genesSelect';
 import genesDeselect from 'redux/reducers/genes/genesDeselect';
+import downsampledGenesError from './downsampledGenesError';
 
 const genesReducer = (state = getInitialState(), action) => {
   switch (action.type) {
@@ -63,6 +65,9 @@ const genesReducer = (state = getInitialState(), action) => {
     }
     case DOWNSAMPLED_GENES_LOADED: {
       return downsampledGenesLoaded(state, action);
+    }
+    case DOWNSAMPLED_GENES_ERROR: {
+      return downsampledGenesError(state, action);
     }
     case MARKER_GENES_LOADED: {
       return markerGenesLoaded(state, action);

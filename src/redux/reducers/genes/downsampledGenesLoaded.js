@@ -55,6 +55,7 @@ const downsampledGenesLoaded = (state, action) => {
       downsampled: {
         ...state.expression.downsampled,
         loading: loadingStatus,
+        error: false,
         cellOrder: cellOrderToStore,
       },
     },

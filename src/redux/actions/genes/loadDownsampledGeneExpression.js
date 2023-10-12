@@ -5,6 +5,7 @@ import {
   GENES_EXPRESSION_ERROR,
   DOWNSAMPLED_GENES_LOADING,
   DOWNSAMPLED_GENES_LOADED,
+  DOWNSAMPLED_GENES_ERROR,
 } from 'redux/actionTypes/genes';
 
 import fetchWork from 'utils/work/fetchWork';
@@ -124,7 +125,7 @@ const loadDownsampledGeneExpressionDebounced = _.debounce(
       });
     } catch (error) {
       dispatch({
-        type: GENES_EXPRESSION_ERROR,
+        type: DOWNSAMPLED_GENES_ERROR,
         payload: {
           experimentId,
           componentUuid,

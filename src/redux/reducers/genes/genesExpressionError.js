@@ -17,8 +17,11 @@ const genesExpressionError = (state, action) => {
           error,
         },
       },
-      loading: _.difference(state.properties.loading, genes),
-      error,
+      full: {
+        ...state.properties.full,
+        loading: _.difference(state.properties.full.loading, genes),
+        error,
+      },
     },
   };
 };
