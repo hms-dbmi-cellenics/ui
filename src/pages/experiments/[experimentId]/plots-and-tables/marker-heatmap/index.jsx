@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   Collapse,
   Skeleton,
@@ -92,7 +92,7 @@ const MarkerHeatmap = ({ experimentId }) => {
     if (!hierarchy?.length) dispatch(loadCellSets(experimentId));
   }, []);
 
-  const updatePlotWithChanges = (updatedField) => {
+  const userUpdatedPlotWithChanges = (updatedField) => {
     if (updatedField.nMarkerGenes) {
       dispatch(loadMarkerGenes(
         experimentId,
@@ -104,6 +104,8 @@ const MarkerHeatmap = ({ experimentId }) => {
           selectedPoints: config.selectedPoints,
         },
       ));
+    } else if (updatedField.selectedGenes) {
+      dispatch(loadDownsampledGeneExpression(experimentId, updatedField.selectedGenes, plotUuid));
     }
 
     dispatch(updatePlotConfig(plotUuid, updatedField));
@@ -116,7 +118,7 @@ const MarkerHeatmap = ({ experimentId }) => {
 
     const showAlert = numLegendItems > MAX_LEGEND_ITEMS;
 
-    if (showAlert) updatePlotWithChanges({ legend: { showAlert, enabled: !showAlert } });
+    if (showAlert) userUpdatedPlotWithChanges({ legend: { showAlert, enabled: !showAlert } });
   }, [configIsLoaded, cellSets.accessible]);
 
   // If the plot has never been loaded (so has no selectedGenes), then load the marker genes
@@ -146,22 +148,10 @@ const MarkerHeatmap = ({ experimentId }) => {
       && config?.selectedGenes?.length > 0
       && !markerGenesLoading
     );
-
-    if (!expectedConditions) {
-      return;
-    }
-
-    // Genes loading is managed by loadMarkerGenes, skip
-    if (loadedGenesAreMarkers && _.isEqual(config.selectedGenes, loadedGenes)) {
-      return;
-    }
-
-    console.log('configselectedGenesDebug');
-    console.log(config.selectedGenes);
+    if (!expectedConditions) return;
 
     dispatch(loadDownsampledGeneExpression(experimentId, config?.selectedGenes, plotUuid));
   }, [
-    config?.selectedGenes,
     config?.groupedTracks,
     config?.selectedCellSet,
     config?.selectedPoints,
@@ -177,7 +167,9 @@ const MarkerHeatmap = ({ experimentId }) => {
       return;
     }
 
-    updatePlotWithChanges({ selectedGenes: loadedGenes });
+    // IMPORTANT This update is NOT performed by a user action, but by loadMarkerGenes work result
+    // So don't replace this with userUpdatedPlotWithChanges
+    dispatch(updatePlotConfig(plotUuid, { selectedGenes: loadedGenes }));
   }, [loadedGenes, loadedGenesAreMarkers]);
 
   useEffect(() => {
@@ -186,7 +178,7 @@ const MarkerHeatmap = ({ experimentId }) => {
     }
 
     // grouping and metadata tracks should change when data is changed
-    updatePlotWithChanges(
+    userUpdatedPlotWithChanges(
       { selectedTracks: [config.selectedCellSet], groupedTracks: [config.selectedCellSet] },
     );
   }, [config?.selectedCellSet]);
@@ -314,7 +306,7 @@ const MarkerHeatmap = ({ experimentId }) => {
           config={config}
           plotUuid={plotUuid}
           genesToDisable={config.selectedGenes}
-          onUpdate={updatePlotWithChanges}
+          onUpdate={userUpdatedPlotWithChanges}
           onReset={onReset}
           onGenesChange={onGenesChange}
           onGenesSelect={onGenesSelect}
@@ -324,7 +316,7 @@ const MarkerHeatmap = ({ experimentId }) => {
           <p>Gene labels:</p>
           <Radio.Group
             onChange={
-              (e) => updatePlotWithChanges({ showGeneLabels: e.target.value })
+              (e) => userUpdatedPlotWithChanges({ showGeneLabels: e.target.value })
             }
             value={config.showGeneLabels}
           >
@@ -336,7 +328,7 @@ const MarkerHeatmap = ({ experimentId }) => {
       <Panel header='Select data' key='select-data'>
         <SelectData
           config={config}
-          onUpdate={updatePlotWithChanges}
+          onUpdate={userUpdatedPlotWithChanges}
           cellSets={cellSets}
           firstSelectionText='Select the cell sets or metadata to show markers for'
           secondSelectionText='Select the cell set, sample or metadata group to be shown'
@@ -345,7 +337,7 @@ const MarkerHeatmap = ({ experimentId }) => {
       <Panel header='Cluster guardlines' key='cluster-guardlines'>
         <Radio.Group
           value={config.guardLines}
-          onChange={(e) => updatePlotWithChanges({ guardLines: e.target.value })}
+          onChange={(e) => userUpdatedPlotWithChanges({ guardLines: e.target.value })}
         >
           <Radio value>Show</Radio>
           <Radio value={false}>Hide</Radio>
