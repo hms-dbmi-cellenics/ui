@@ -6,6 +6,7 @@ import unpackResult, { decompressUint8Array } from 'utils/work/unpackResult';
 import parseResult from 'utils/work/parseResult';
 import WorkTimeoutError from 'utils/errors/http/WorkTimeoutError';
 import WorkResponseError from 'utils/errors/http/WorkResponseError';
+import httpStatusCodes from 'utils/http/httpStatusCodes';
 
 import { updateBackendStatus } from 'redux/actions/backendStatus';
 
@@ -27,7 +28,9 @@ const getRemainingWorkerStartTime = (creationTimestamp) => {
 
 const seekFromS3 = async (taskName, signedUrl) => {
   const response = await fetch(signedUrl);
-
+  if (response.status === httpStatusCodes.NOT_FOUND) {
+    return null;
+  }
   if (!response.ok) {
     throw new Error(`Error ${response.status}: ${response.text}`, { cause: response });
   }
