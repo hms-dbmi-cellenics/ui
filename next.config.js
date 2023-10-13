@@ -33,9 +33,11 @@ if (typeof require !== 'undefined') {
 let accountId = process.env.AWS_ACCOUNT_ID;
 if (isDev) {
   if (process.env.DEV_ACCOUNT === undefined) {
-    throw new Error(
-      `In local environment, DEV_ACCOUNT is expected to be set, possible values are: ${Object.keys(AccountId)} or "other" for other aws accounts`,
-    );
+    const errorMessage = `In local environment, DEV_ACCOUNT is expected to be set, possible values are: ${Object.keys(AccountId)} or "other" for other aws accounts`;
+
+    console.log(errorMessage);
+
+    throw new Error(errorMessage);
   }
 
   accountId = AccountId[process.env.DEV_ACCOUNT];
