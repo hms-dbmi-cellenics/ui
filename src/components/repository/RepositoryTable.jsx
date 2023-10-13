@@ -48,7 +48,7 @@ const RepositoryTable = (props) => {
   const formatData = (data) => data.map((row) => ({
     key: row.id,
     name: row.name,
-    explore: <Tooltip title='Click to explore this project.'><Button type='primary' loading={experimentCloning} aria-label='clone' onClick={() => cloneExperiment(row.id)}>Explore</Button></Tooltip>,
+    explore: <Tooltip title='Click to explore this project.'><Button type='primary' disabled={experimentCloning} aria-label='clone' onClick={() => cloneExperiment(row.id)}>Explore</Button></Tooltip>,
     publication: <a href={row.publicationUrl}>{row.publicationTitle}</a>,
     dataSource: <a href={row.dataSourceUrl}>{row.dataSourceTitle}</a>,
     species: row.species,
