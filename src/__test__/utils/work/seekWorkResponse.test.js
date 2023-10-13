@@ -157,8 +157,10 @@ describe('seekFromS3 unit tests', () => {
 
   const validSignedUrl = 'https://s3.mock/validSignedUrl';
   const invalidSignedUrl = 'https://s3.mock/invalidSignedUrl';
+  const notFoundSignedUrl = 'https://s3.mock/notFoundSignedUrl';
 
   const s3ErrorResponse = new Response('Forbidden', { status: 403 });
+  const notFoundErrorResponse = new Response('NotFound', { status: 404 });
 
   beforeAll(async () => {
     fetchMock.mockIf(/.*/, (req) => {
@@ -166,6 +168,7 @@ describe('seekFromS3 unit tests', () => {
 
       if (path.endsWith(validSignedUrl)) return Promise.resolve(result);
       if (path.endsWith(invalidSignedUrl)) return Promise.resolve(s3ErrorResponse);
+      if (path.endsWith(notFoundSignedUrl)) return Promise.resolve(notFoundErrorResponse);
 
       return {
         status: 500,
@@ -176,6 +179,12 @@ describe('seekFromS3 unit tests', () => {
 
   beforeEach(async () => {
     jest.clearAllMocks();
+  });
+
+  it('Should return null when response status is not found', async () => {
+    const finalResult = await seekFromS3(taskName, notFoundSignedUrl);
+
+    expect(finalResult).toBeNull();
   });
 
   it('Should return results correctly', async () => {
