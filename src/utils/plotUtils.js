@@ -53,33 +53,39 @@ const renderCellSetColors = (rootKey, cellSetHierarchy, cellSetProperties) => {
   return colors;
 };
 
-const colorByGeneExpression = (truncatedExpression, min, max) => {
+const colorByGeneExpression = (truncatedExpression, min, max = 4) => {
+  if (max === 0) max = 4;
+
   const scaleFunction = vega.scale('sequential')()
     .domain([min, max])
     .interpolator(colorInterpolator);
-
   return Object.fromEntries(truncatedExpression.map(
-    (expressionValue, cellId) => [cellId, cssRgbToRgb(scaleFunction(expressionValue))],
+    (expressionValue, cellId) => [cellId, cssRgbToRgb(scaleFunction(expressionValue))]
+    ,
   ));
 };
 
 const convertCellsData = (results, hidden, properties) => {
-  const data = {};
+  const data = [[], []];
+  const obsEmbeddingIndex = [];
 
   const hiddenCells = union([...hidden], properties);
   results.forEach((value, key) => {
     if (hiddenCells.has(key)) {
       return;
     }
-
-    data[key] = {
-      mappings: {
-        PCA: value,
-      },
-    };
+    if (value.length !== 2) {
+      throw new Error('Unexpected number of embedding dimensions');
+    }
+    data[0].push(value[0]);
+    data[1].push(value[1]);
+    obsEmbeddingIndex.push(key.toString());
   });
 
-  return data;
+  return {
+    obsEmbedding: { data, shape: [data.length, results.length] },
+    obsEmbeddingIndex,
+  };
 };
 
 const updateStatus = () => { };

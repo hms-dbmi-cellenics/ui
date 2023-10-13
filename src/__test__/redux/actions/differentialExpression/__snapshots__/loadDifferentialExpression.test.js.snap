@@ -1,9 +1,9 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`loadDifferentialExpression action Dispatches appropriately on failure 1`] = `
-Object {
-  "payload": Object {
-    "advancedFilters": Array [],
+{
+  "payload": {
+    "advancedFilters": [],
     "experimentId": "1234",
   },
   "type": "diffExpr/loading",
@@ -11,8 +11,8 @@ Object {
 `;
 
 exports[`loadDifferentialExpression action Dispatches appropriately on failure 2`] = `
-Object {
-  "payload": Object {
+{
+  "payload": {
     "error": [Error: random error!],
     "experimentId": "1234",
   },
@@ -21,9 +21,9 @@ Object {
 `;
 
 exports[`loadDifferentialExpression action Dispatches appropriately on success for comparison between samples 1`] = `
-Object {
-  "payload": Object {
-    "advancedFilters": Array [],
+{
+  "payload": {
+    "advancedFilters": [],
     "experimentId": "1234",
   },
   "type": "diffExpr/loading",
@@ -31,40 +31,40 @@ Object {
 `;
 
 exports[`loadDifferentialExpression action Dispatches appropriately on success for comparison between samples 2`] = `
-Object {
-  "payload": Object {
-    "comparisonGroup": Object {
+{
+  "payload": {
+    "comparisonGroup": {
       "basis": "condition/condition-control",
       "cellSet": "louvain/louvain-0",
       "compareWith": "louvain/louvain-1",
     },
     "comparisonType": "within",
-    "data": Array [
-      Object {
+    "data": [
+      {
         "AveExpr": 3.054,
         "Gene": "EASAD0",
         "gene_names": "A",
         "logFC": -1.427,
       },
-      Object {
+      {
         "AveExpr": 2.356,
         "Gene": "ENASD23",
         "gene_names": "B",
         "logFC": -2.427,
       },
-      Object {
+      {
         "AveExpr": 2.19,
         "Gene": "EN34S",
         "gene_names": "C",
         "logFC": -3.427,
       },
-      Object {
+      {
         "AveExpr": 2.189,
         "Gene": "ENSD33",
         "gene_names": "D",
         "logFC": -4.427,
       },
-      Object {
+      {
         "AveExpr": 1.788,
         "Gene": "ENASD233",
         "gene_names": "E",
@@ -79,9 +79,9 @@ Object {
 `;
 
 exports[`loadDifferentialExpression action Dispatches appropriately on success for comparison within a sample 1`] = `
-Object {
-  "payload": Object {
-    "advancedFilters": Array [],
+{
+  "payload": {
+    "advancedFilters": [],
     "experimentId": "1234",
   },
   "type": "diffExpr/loading",
@@ -89,16 +89,16 @@ Object {
 `;
 
 exports[`loadDifferentialExpression action Dispatches appropriately on success for comparison within a sample 2`] = `
-Object {
-  "payload": Object {
-    "comparisonGroup": Object {
+{
+  "payload": {
+    "comparisonGroup": {
       "basis": "condition/condition-control",
       "cellSet": "louvain/louvain-0",
       "compareWith": "louvain/louvain-1",
     },
     "comparisonType": "within",
-    "data": Array [
-      Object {
+    "data": [
+      {
         "Gene": "EASAD0",
         "auc": "0.1",
         "gene_names": "A",
@@ -108,7 +108,7 @@ Object {
         "pct_1": "100",
         "pct_2": "100",
       },
-      Object {
+      {
         "Gene": "ENASD23",
         "auc": "0.2",
         "gene_names": "B",
@@ -118,7 +118,7 @@ Object {
         "pct_1": "90",
         "pct_2": "90",
       },
-      Object {
+      {
         "Gene": "EN34S",
         "auc": "0.3",
         "gene_names": "C",
@@ -128,7 +128,7 @@ Object {
         "pct_1": "80",
         "pct_2": "80",
       },
-      Object {
+      {
         "Gene": "ENSD33",
         "auc": "0.4",
         "gene_names": "D",
@@ -138,7 +138,7 @@ Object {
         "pct_1": "70",
         "pct_2": "70",
       },
-      Object {
+      {
         "Gene": "ENASD233",
         "auc": "0.5",
         "gene_names": "E",
@@ -157,23 +157,23 @@ Object {
 `;
 
 exports[`loadDifferentialExpression action Doesnt crash if total is 0 1`] = `
-Array [
-  Object {
-    "payload": Object {
-      "advancedFilters": Array [],
+[
+  {
+    "payload": {
+      "advancedFilters": [],
       "experimentId": "1234",
     },
     "type": "diffExpr/loading",
   },
-  Object {
-    "payload": Object {
-      "comparisonGroup": Object {
+  {
+    "payload": {
+      "comparisonGroup": {
         "basis": "condition/condition-control",
         "cellSet": "louvain/louvain-0",
         "compareWith": "louvain/louvain-1",
       },
       "comparisonType": "within",
-      "data": Array [],
+      "data": [],
       "experimentId": "1234",
       "total": 0,
     },

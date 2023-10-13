@@ -4,6 +4,7 @@ import { screen, render } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import { makeStore } from 'redux/store';
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
+import * as PlotSpecGenerators from 'utils/plotSpecs/generateEmbeddingContinuousSpec';
 
 import { dispatchWorkRequest } from 'utils/work/seekWorkResponse';
 import { loadBackendStatus } from 'redux/actions/backendStatus';
@@ -31,7 +32,7 @@ const experimentId = fake.EXPERIMENT_ID;
 // EtagParams is the object that's passed to the function which generates ETag in fetchWork
 jest.mock('object-hash', () => {
   const objectHash = jest.requireActual('object-hash');
-  const mockWorkResultETag = jest.requireActual('__test__/test-utils/mockWorkResultETag').default;
+  const mockWorkResultETag = jest.requireActual('__test__/test-utils/mockWorkResultETag');
 
   const mockWorkRequestETag = () => 'embedding';
 
@@ -99,6 +100,29 @@ describe('Continuous embedding plot', () => {
     await renderContinuousEmbeddingPlot(storeState);
 
     expect(screen.getByRole('graphics-document', { name: 'Continuous embedding plot' })).toBeInTheDocument();
+  });
+
+  it('Calls generateData with truncatedPlotData when config.truncatedValues is true', async () => {
+    // Spy on the function
+    const generateDataSpy = jest.spyOn(PlotSpecGenerators, 'generateData');
+
+    await renderContinuousEmbeddingPlot(storeState, {
+      config: {
+        ...initialPlotConfigStates.embeddingContinuous,
+        truncatedValues: true,
+      },
+    });
+
+    // Check if generateData was called with truncatedPlotData
+    expect(generateDataSpy).toHaveBeenCalledWith(
+      expect.anything(), // cellSets
+      expect.anything(), // selectedSample
+      truncatedPlotData, // truncatedPlotData
+      expect.anything(), // embeddingData
+    );
+
+    // Cleanup
+    generateDataSpy.mockRestore();
   });
 
   it('Shows a loader if there is no config', async () => {

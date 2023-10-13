@@ -8,9 +8,15 @@ const srcFolder = [
   path.resolve(__dirname, '../src/redux'),
 ];
 
-const webpackConfigRules = (config, { dev, isServer }) => {
+const webpackConfigRules = (config, { dev }) => {
   // Download fonts and vector graphics instead of direct linking.
   const rules = [
+    {
+      test: /\.(js|jsx)$/,
+      exclude: /(node_modules|bower_components)/,
+      loader: 'babel-loader',
+      options: { presets: ['@babel/preset-env', '@babel/preset-react'] },
+    },
     {
       test: /\.(ttf|eot|svg)$/,
       use: {
@@ -59,27 +65,6 @@ const webpackConfigRules = (config, { dev, isServer }) => {
         },
       },
       loader: 'eslint-loader',
-    });
-  }
-
-  if (isServer) {
-    // deal antd style
-    const antStyles = /antd\/.*?\/style.*?/;
-    const origExternals = [...config.externals];
-    config.externals = [
-      (context, request, callback) => {
-        if (request.match(antStyles)) return callback();
-        if (typeof origExternals[0] === 'function') {
-          origExternals[0](context, request, callback);
-        } else {
-          callback();
-        }
-      },
-      ...(typeof origExternals[0] === 'function' ? [] : origExternals),
-    ];
-    config.module.rules.unshift({
-      test: antStyles,
-      use: 'null-loader',
     });
   }
 

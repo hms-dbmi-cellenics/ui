@@ -1,8 +1,8 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`loadEmbedding action Dispatches error action on unsuccessful loading 1`] = `
-Object {
-  "payload": Object {
+{
+  "payload": {
     "embeddingType": "umap",
   },
   "type": "embeddings/loading",
@@ -10,8 +10,8 @@ Object {
 `;
 
 exports[`loadEmbedding action Dispatches error action on unsuccessful loading 2`] = `
-Object {
-  "payload": Object {
+{
+  "payload": {
     "embeddingType": "umap",
     "error": [Error: random error!],
     "experimentId": "1234",
@@ -21,8 +21,8 @@ Object {
 `;
 
 exports[`loadEmbedding action Dispatches on a previous error condition 1`] = `
-Object {
-  "payload": Object {
+{
+  "payload": {
     "embeddingType": "umap",
   },
   "type": "embeddings/loading",
@@ -30,14 +30,14 @@ Object {
 `;
 
 exports[`loadEmbedding action Dispatches on a previous error condition 2`] = `
-Object {
-  "payload": Object {
-    "data": Array [
-      Array [
+{
+  "payload": {
+    "data": [
+      [
         1,
         2,
       ],
-      Array [
+      [
         3,
         4,
       ],
@@ -50,8 +50,8 @@ Object {
 `;
 
 exports[`loadEmbedding action Dispatches on a previously unseen embedding 1`] = `
-Object {
-  "payload": Object {
+{
+  "payload": {
     "embeddingType": "umap",
   },
   "type": "embeddings/loading",
@@ -59,14 +59,14 @@ Object {
 `;
 
 exports[`loadEmbedding action Dispatches on a previously unseen embedding 2`] = `
-Object {
-  "payload": Object {
-    "data": Array [
-      Array [
+{
+  "payload": {
+    "data": [
+      [
         1,
         2,
       ],
-      Array [
+      [
         3,
         4,
       ],
@@ -79,8 +79,8 @@ Object {
 `;
 
 exports[`loadEmbedding action Dispatches on if forceReload is set to true 1`] = `
-Object {
-  "payload": Object {
+{
+  "payload": {
     "embeddingType": "umap",
   },
   "type": "embeddings/loading",
@@ -88,14 +88,14 @@ Object {
 `;
 
 exports[`loadEmbedding action Dispatches on if forceReload is set to true 2`] = `
-Object {
-  "payload": Object {
-    "data": Array [
-      Array [
+{
+  "payload": {
+    "data": [
+      [
         1,
         2,
       ],
-      Array [
+      [
         3,
         4,
       ],

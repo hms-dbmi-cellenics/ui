@@ -1,55 +1,55 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`Get trajectory plot starting nodes Dispatches the correct events 1`] = `
-Object {
-  "payload": Object {
-    "plotData": Object {
-      "nodes": Object {
-        "connectedNodes": Array [
-          Array [
+{
+  "payload": {
+    "plotData": {
+      "nodes": {
+        "connectedNodes": [
+          [
             25,
             36,
           ],
-          Array [
+          [
             9,
             42,
           ],
-          Array [
+          [
             34,
             50,
           ],
-          Array [
+          [
             8,
             66,
           ],
-          Array [
+          [
             34,
           ],
-          Array [
+          [
             30,
             50,
           ],
-          Array [
+          [
             57,
           ],
-          Array [
+          [
             10,
             65,
           ],
-          Array [
+          [
             3,
             38,
           ],
-          Array [
+          [
             1,
             23,
           ],
-          Array [
+          [
             7,
             20,
           ],
         ],
-        "x": Array [
+        "x": [
           -5.728,
           -6.766,
           -6.762,
@@ -62,7 +62,7 @@ Object {
           -6.701,
           -5.161,
         ],
-        "y": Array [
+        "y": [
           3.525,
           2.781,
           3.571,

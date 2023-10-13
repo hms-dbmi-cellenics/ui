@@ -11,6 +11,7 @@ import {
   Empty,
   Divider,
   List,
+  Table,
 } from 'antd';
 import { CheckCircleTwoTone, DeleteOutlined } from '@ant-design/icons';
 import Dropzone from 'react-dropzone';
@@ -28,13 +29,37 @@ const formatExample = [
   ['sample_name_1', 'metadata_key_2', 'metadata_value_2'],
   ['sample_name_2', 'metadata_key_2', 'metadata_value_3'],
 ];
-
+const withCodeText = (text) => <Text code>{text}</Text>;
 const exampleFile = [
   ['Acute', 'Status', 'Tumor'],
   ['Convalescent', 'Status', 'Normal'],
   ['Convalescent', 'Gender', 'Female'],
 ];
+const formatExampleTable = {
+  columns: [
+    { dataIndex: 'sample_name' },
+    { dataIndex: 'metadata_key' },
+    { dataIndex: 'metadata_value' },
+  ],
+  dataSource: formatExample.map((item) => ({
+    sample_name: withCodeText(item[0]),
+    metadata_key: withCodeText(item[1]),
+    metadata_value: withCodeText(item[2]),
+  })),
+};
 
+const exampleFileTable = {
+  columns: [
+    { dataIndex: 'samples' },
+    { dataIndex: 'status' },
+    { dataIndex: 'gender_or_other' },
+  ],
+  dataSource: exampleFile.map((item) => ({
+    samples: withCodeText(item[0]),
+    status: withCodeText(item[1]),
+    gender_or_other: withCodeText(item[2]),
+  })),
+};
 const MetadataUploadModal = (props) => {
   const { onUpload, onCancel } = props;
 
@@ -103,24 +128,7 @@ const MetadataUploadModal = (props) => {
             Upload a single file containing the metadata in key-value tab-separated format (.tsv)
             as follows:
           </Paragraph>
-          <List
-            dataSource={formatExample}
-            size='small'
-            itemLayout='vertical'
-            bordered
-            renderItem={(item) => (
-              <List.Item>
-                {
-                  item.map((fileName, i) => (
-                    <span key={fileName}>
-                      <Text code>{`${fileName}`}</Text>
-                      {i !== item.length - 1 && '     '}
-                    </span>
-                  ))
-                }
-              </List.Item>
-            )}
-          />
+          <Table size='small' style={{ width: '50%' }} showHeader={false} pagination={false} dataSource={formatExampleTable.dataSource} columns={formatExampleTable.columns} />
         </Col>
       </Row>
       <Row style={{ margin: '1rem 0' }}>
@@ -144,24 +152,7 @@ const MetadataUploadModal = (props) => {
             <Text code>Female</Text>
             you would write a file as follows:
           </Paragraph>
-          <List
-            dataSource={exampleFile}
-            size='small'
-            itemLayout='vertical'
-            bordered
-            renderItem={(item) => (
-              <List.Item>
-                {
-                  item.map((fileName, i) => (
-                    <span key={fileName}>
-                      <Text code>{`${fileName}`}</Text>
-                      {i !== item.length - 1 && '     '}
-                    </span>
-                  ))
-                }
-              </List.Item>
-            )}
-          />
+          <Table size='small' style={{ width: '40%' }} pagination={false} showHeader={false} dataSource={exampleFileTable.dataSource} columns={exampleFileTable.columns} />
         </Col>
       </Row>
 

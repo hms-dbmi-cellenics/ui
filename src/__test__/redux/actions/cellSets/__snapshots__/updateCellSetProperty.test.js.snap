@@ -1,10 +1,10 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`updateCellSetProperty action Dispatches an action to update property to the reducer when not using a root node 1`] = `
-Object {
-  "payload": Object {
+{
+  "payload": {
     "cellSetKey": "child",
-    "dataUpdated": Object {
+    "dataUpdated": {
       "name": "Some node!",
     },
   },
@@ -13,10 +13,10 @@ Object {
 `;
 
 exports[`updateCellSetProperty action Dispatches an action to update property to the reducer when using a root node 1`] = `
-Object {
-  "payload": Object {
+{
+  "payload": {
     "cellSetKey": "root",
-    "dataUpdated": Object {
+    "dataUpdated": {
       "name": "Some node!",
     },
   },
@@ -25,9 +25,9 @@ Object {
 `;
 
 exports[`updateCellSetProperty action Sends fetch to the API when a cell set's property is updated 1`] = `
-Object {
-  "body": "[{\\"$match\\":{\\"query\\":\\"$[?(@.key == \\\\\\"root\\\\\\")]\\",\\"value\\":{\\"children\\":[{\\"$match\\":{\\"query\\":\\"$[?(@.key == \\\\\\"child\\\\\\")]\\",\\"value\\":{\\"name\\":\\"Some node!\\"}}}]}}}]",
-  "headers": Object {
+{
+  "body": "[{"$match":{"query":"$[?(@.key == \\"root\\")]","value":{"children":[{"$match":{"query":"$[?(@.key == \\"child\\")]","value":{"name":"Some node!"}}}]}}}]",
+  "headers": {
     "Content-Type": "application/boschni-json-merger+json",
   },
   "method": "PATCH",

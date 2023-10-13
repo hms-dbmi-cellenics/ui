@@ -9,8 +9,6 @@ import {
 } from 'react-redux';
 import PropTypes from 'prop-types';
 import * as vega from 'vega';
-import 'vitessce/dist/es/production/static/css/index.css';
-
 import ClusterPopover from 'components/data-exploration/embedding/ClusterPopover';
 import CrossHair from 'components/data-exploration/embedding/CrossHair';
 import CellInfo from 'components/data-exploration/CellInfo';
@@ -33,7 +31,7 @@ import {
 import getContainingCellSetsProperties from 'utils/cellSets/getContainingCellSetsProperties';
 
 const Scatterplot = dynamic(
-  () => import('vitessce/dist/umd/production/scatterplot.min').then((mod) => mod.Scatterplot),
+  () => import('../DynamicVitessceWrappers').then((mod) => mod.Scatterplot),
   { ssr: false },
 );
 
@@ -76,7 +74,8 @@ const Embedding = (props) => {
   const [selectedIds, setSelectedIds] = useState(new Set());
   const [cellColors, setCellColors] = useState({});
   const [cellInfoVisible, setCellInfoVisible] = useState(true);
-  const [view, setView] = useState({ target: [4, -4, 0], zoom: INITIAL_ZOOM });
+  const originalView = { target: [4, -4, 0], zoom: INITIAL_ZOOM };
+  const [view, setView] = useState(originalView);
 
   const showLoader = useMemo(() => {
     const dataIsLoaded = !data || loading;
@@ -203,8 +202,8 @@ const Embedding = (props) => {
   }, []);
 
   const updateViewInfo = useCallback((viewInfo) => {
-    if (selectedCell && viewInfo.project) {
-      const [x, y] = viewInfo.project(selectedCell);
+    if (selectedCell && viewInfo.projectFromId) {
+      const [x, y] = viewInfo.projectFromId(selectedCell);
       cellCoordinatesRef.current = {
         x,
         y,
@@ -317,18 +316,20 @@ const Embedding = (props) => {
         {
           data ? (
             <Scatterplot
+              cellColorEncoding="cellSetSelection"
               cellOpacity={0.8}
               cellRadius={cellRadius}
               setCellHighlight={setCellHighlight}
               theme='light'
               uuid={embeddingType}
               viewState={view}
-              updateViewInfo={updateViewInfo}
-              cells={convertedCellsData}
-              mapping='PCA'
-              setCellSelection={setCellsSelection}
-              cellColors={cellColorsForVitessce}
               setViewState={setViewState}
+              originalViewState={originalView}
+              updateViewInfo={updateViewInfo}
+              obsEmbedding={convertedCellsData?.obsEmbedding}
+              obsEmbeddingIndex={convertedCellsData?.obsEmbeddingIndex}
+              cellColors={cellColorsForVitessce}
+              setCellSelection={setCellsSelection}
               getExpressionValue={getExpressionValue}
               getCellIsSelected={getCellIsSelected}
             />
