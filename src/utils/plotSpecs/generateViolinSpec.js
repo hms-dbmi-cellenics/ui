@@ -480,7 +480,7 @@ const generateData = (
     currentCellIds
       .filter(shouldBeDisplayed)
       .forEach((cellId) => {
-        if (selectedExpression[cellId]) {
+        if (selectedExpression[cellId] || selectedExpression[cellId] === 0) {
           const cell = {
             group: cellSetId,
             y: selectedExpression[cellId],
