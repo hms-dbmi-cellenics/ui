@@ -477,19 +477,20 @@ const generateData = (
 
   cellSetsIds.forEach((cellSetId) => {
     const currentCellIds = Array.from(properties[cellSetId].cellIds);
-
     currentCellIds
       .filter(shouldBeDisplayed)
       .forEach((cellId) => {
-        const cell = {
-          group: cellSetId,
-          y: selectedExpression[cellId],
-        };
+        if (selectedExpression[cellId]) {
+          const cell = {
+            group: cellSetId,
+            y: selectedExpression[cellId],
+          };
 
-        cell.x = 0.25 + Math.random() / 2;
+          cell.x = 0.25 + Math.random() / 2;
 
-        if (cell.y !== null) {
-          cells.push(cell);
+          if (cell.y !== null) {
+            cells.push(cell);
+          }
         }
       });
   });
