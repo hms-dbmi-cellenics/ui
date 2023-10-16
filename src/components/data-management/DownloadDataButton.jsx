@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import _ from 'lodash';
 import {
-  Menu, Tooltip, Dropdown, Button, Space,
+  Tooltip, Dropdown, Button, Space,
 } from 'antd';
 
 import { useSelector, useDispatch } from 'react-redux';
@@ -79,64 +79,64 @@ const DownloadDataButton = () => {
     }
   };
 
+  const menuItems = [
+    {
+      key: 'download-processed-seurat',
+      disabled: !pipelineHasRun || backendLoading,
+      onClick: (e) => {
+        e.domEvent.stopPropagation();
+        downloadExperimentData('processed-matrix');
+      },
+      label: (
+        <Tooltip
+          title={
+            pipelineHasRun
+              ? 'With Data Processing filters and settings applied'
+              : 'Launch analysis to process data'
+          }
+          placement='left'
+        >
+          <Space>
+            Processed Seurat object (.rds)
+            {downloadingProcessedSeurat && <ClipLoader size={20} color='#8f0b10' />}
+          </Space>
+        </Tooltip>
+      )
+    },
+    {
+      key: 'download-processing-settings',
+      disabled: !allSamplesAnalysed || backendLoading,
+      onClick: () => {
+        const config = _.omit(experimentSettings.processing, ['meta']);
+        const filteredConfig = filterQCParameters(
+          config, activeExperiment.sampleIds, samples,
+        );
+        const blob = exportQCParameters(filteredConfig);
+        saveAs(blob, `${activeExperimentId.split('-')[0]}_settings.txt`);
+      },
+      label: (
+        allSamplesAnalysed
+          ? 'Data Processing settings (.txt)'
+          : (
+            <Tooltip title='One or more of your samples has yet to be analysed' placement='left'>
+              Data Processing settings (.txt)
+            </Tooltip>
+          )
+      )
+    }
+  ]
+
   return (
     <Dropdown
-      visible={dropdownExpanded}
-      onVisibleChange={(visible) => setDropdownExpanded(visible)}
+      open={dropdownExpanded}
+      onOpenChange={(visible) => setDropdownExpanded(visible)}
       trigger={['click']}
-      overlay={() => (
-        <Menu
-          onClick={(e) => {
-            if (e.key !== 'download-processed-seurat') setDropdownExpanded(false);
-          }}
-        >
-          <Menu.Item
-            key='download-processed-seurat'
-            disabled={!pipelineHasRun || backendLoading}
-            onClick={(e) => {
-              e.domEvent.stopPropagation();
-
-              downloadExperimentData('processed-matrix');
-            }}
-          >
-            <Tooltip
-              title={
-                pipelineHasRun
-                  ? 'With Data Processing filters and settings applied'
-                  : 'Launch analysis to process data'
-              }
-              placement='left'
-            >
-              <Space>
-                Processed Seurat object (.rds)
-                {downloadingProcessedSeurat && <ClipLoader size={20} color='#8f0b10' />}
-              </Space>
-            </Tooltip>
-          </Menu.Item>
-          <Menu.Item
-            disabled={!allSamplesAnalysed || backendLoading}
-            key='download-processing-settings'
-            onClick={() => {
-              const config = _.omit(experimentSettings.processing, ['meta']);
-              const filteredConfig = filterQCParameters(
-                config, activeExperiment.sampleIds, samples,
-              );
-              const blob = exportQCParameters(filteredConfig);
-              saveAs(blob, `${activeExperimentId.split('-')[0]}_settings.txt`);
-            }}
-          >
-            {
-              allSamplesAnalysed
-                ? 'Data Processing settings (.txt)'
-                : (
-                  <Tooltip title='One or more of your samples has yet to be analysed' placement='left'>
-                    Data Processing settings (.txt)
-                  </Tooltip>
-                )
-            }
-          </Menu.Item>
-        </Menu>
-      )}
+      menu={{
+        items: menuItems,
+        onClick: (e) => {
+          if (e.key !== 'download-processed-seurat') setDropdownExpanded(false);
+        }
+      }}
       placement='bottomRight'
       disabled={
         experiments.ids.length === 0
