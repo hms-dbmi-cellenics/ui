@@ -33,10 +33,12 @@ const getTimeoutForWorkerTask = (state, taskName) => {
     case 'TrajectoryAnalysisPseudotime': {
       return ((0.6 * nCells) / nClusters) + baseTimeout;
     }
+    case 'GetNormalizedExpression': {
+      return 900;
+    }
     case 'GeneExpression':
     case 'GetMitochondrialContent':
     case 'GetDoubletScore':
-    case 'GetNormalizedExpression':
     case 'DownloadAnnotSeuratObject':
     case 'DifferentialExpression':
     case 'GetNUmis':
