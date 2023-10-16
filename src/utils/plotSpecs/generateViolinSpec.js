@@ -480,6 +480,7 @@ const generateData = (
     currentCellIds
       .filter(shouldBeDisplayed)
       .forEach((cellId) => {
+        // ignore the cells which are unfiltered
         if (selectedExpression[cellId] || selectedExpression[cellId] === 0) {
           const cell = {
             group: cellSetId,
