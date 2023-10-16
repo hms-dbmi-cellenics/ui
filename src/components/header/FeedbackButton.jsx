@@ -105,37 +105,40 @@ const FeedbackButton = () => {
     }
   };
 
-  const overlay = () => (
-    <div>
-      <Card size='small'>
-        <Space direction='vertical' style={{ width: '100%' }}>
-          <TextArea
-            value={feedbackText}
-            onChange={(e) => {
-              setFeedbackText(e.target.value);
-            }}
-            rows={4}
-            placeholder='Please write your message here to provide feedback or report issues on Cellenics. A member of our team will get back to you as soon as possible.'
-            bordered={false}
-            ref={(ref) => { if (ref) { ref.focus(); } }}
-            style={{
-              resize: 'none', width: 300, border: 'none', outline: 'none',
-            }}
-          />
-          <Space>
-            <Button size='small' onClick={() => setVisible(false)}>Cancel</Button>
-            <Button size='small' type='primary' onClick={submitFeedback}>Send</Button>
+  const menuItems = [
+    {
+      label: (
+        <Card size='small'>
+          <Space direction='vertical' style={{ width: '100%' }}>
+            <TextArea
+              value={feedbackText}
+              onChange={(e) => {
+                setFeedbackText(e.target.value);
+              }}
+              rows={4}
+              placeholder='Please write your message here to provide feedback or report issues on Cellenics. A member of our team will get back to you as soon as possible.'
+              bordered={false}
+              ref={(ref) => { if (ref) { ref.focus(); } }}
+              style={{
+                resize: 'none', width: 300, border: 'none', outline: 'none',
+              }}
+            />
+            <Space>
+              <Button size='small' onClick={() => setVisible(false)}>Cancel</Button>
+              <Button size='small' type='primary' onClick={submitFeedback}>Send</Button>
+            </Space>
           </Space>
-        </Space>
-      </Card>
-    </div>
-  );
+        </Card>
+      ),
+      key: 'feedback-button-contents'
+    }
+  ]
 
   return (
     <Dropdown
-      visible={visible}
-      onVisibleChange={(v) => setVisible(v)}
-      overlay={overlay}
+      open={visible}
+      onOpenChange={(v) => setVisible(v)}
+      menu={{ items: menuItems }}
       placement='bottomRight'
       trigger='click'
     >
