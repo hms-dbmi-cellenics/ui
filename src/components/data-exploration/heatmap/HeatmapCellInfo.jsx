@@ -77,7 +77,10 @@ HeatmapCellInfo.propTypes = {
   containerHeight: PropTypes.number.isRequired,
   cellId: PropTypes.string.isRequired,
   geneName: PropTypes.string.isRequired,
-  geneExpression: PropTypes.number.isRequired,
+  geneExpression: PropTypes.oneOfType([
+    PropTypes.arrayOf(PropTypes.number),
+    PropTypes.oneOf([undefined, null])
+  ]),
   coordinates: PropTypes.object.isRequired,
 };
 
