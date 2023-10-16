@@ -39,24 +39,37 @@ const UserButton = () => {
     });
   }, []);
 
-  const content = () => (
-    <Menu>
-      <Menu.ItemGroup key='g1' title={`Signed in as ${user?.attributes.name}`} />
-      <Menu.Item key='profile' disabled>Your profile</Menu.Item>
-      <Menu.Item key='settings'>
+  const menuItems = [
+    {
+      type: 'group',
+      label: `Signed in as ${user?.attributes.name}`,
+      key: 'singed-in-username'
+    },
+    {
+      disabled: true,
+      label: 'Your profile',
+      key: 'user-profile'
+    },
+    {
+      label: (
         <Link href='/settings/profile'>
           Settings
         </Link>
-      </Menu.Item>
-      <Menu.Divider />
-      <Menu.Item key='logout' onClick={async () => Auth.signOut()}>Sign out</Menu.Item>
-    </Menu>
-  );
+      ),
+      key: 'user-settings'
+    },
+    {
+      type: 'divider',
+    },
+    {
+      label: 'Sign out',
+      key: 'user-signout',
+      onClick: async () => { Auth.signOut() },
+    }
+  ]
 
-  // This eventually needs to become a Dropdown with a menu.
-  // For now, we can just put the login stuff direclty into the popover.
   return user ? (
-    <Dropdown overlay={content()} trigger={['click']}>
+    <Dropdown menu={{ items: menuItems }} trigger={['click']} >
       <Button
         aria-label='User settings'
         type='text'
@@ -76,7 +89,7 @@ const UserButton = () => {
           </Avatar>
         )}
       />
-    </Dropdown>
+    </Dropdown >
   ) : (
     <Button
       type='dashed'

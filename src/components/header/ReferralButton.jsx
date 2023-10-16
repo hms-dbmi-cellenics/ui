@@ -117,50 +117,53 @@ const ReferralButton = () => {
     }
   };
 
-  const overlay = () => (
-    <div>
-      <Card size='small'>
-        <Space direction='vertical' style={{ width: '100%' }}>
-          <Input
-            addonBefore='To: '
-            label='Email'
-            onChange={(e) => {
-              const { isValid } = validateInput(e.target.value, rules.VALID_EMAIL);
+  const menuItems = [
+    {
+      label: (
+        <Card size='small'>
+          <Space direction='vertical' style={{ width: '100%' }}>
+            <Input
+              addonBefore='To: '
+              label='Email'
+              onChange={(e) => {
+                const { isValid } = validateInput(e.target.value, rules.VALID_EMAIL);
 
-              setIsEmailValid(isValid);
-              setEmail(e.target.value);
-            }}
-            placeholder={'Your friend\'s email address'}
-          />
-          <TextArea
-            value={customMessage}
-            label='Custom message'
-            onChange={(e) => {
-              setCustomMessage(e.target.value);
-            }}
-            rows={4}
-            style={{
-              resize: 'none', width: 300, outline: 'none',
-            }}
-          />
-          <Space>
-            <Button size='small' onClick={() => setVisible(false)}>Cancel</Button>
-            <Tooltip
-              title={!isEmailValid ? 'Please enter a valid email address' : ''}
-            >
-              <Button size='small' type='primary' disabled={!isEmailValid} onClick={submitReferral}>Send invite</Button>
-            </Tooltip>
+                setIsEmailValid(isValid);
+                setEmail(e.target.value);
+              }}
+              placeholder={'Your friend\'s email address'}
+            />
+            <TextArea
+              value={customMessage}
+              label='Custom message'
+              onChange={(e) => {
+                setCustomMessage(e.target.value);
+              }}
+              rows={4}
+              style={{
+                resize: 'none', width: 300, outline: 'none',
+              }}
+            />
+            <Space>
+              <Button size='small' onClick={() => setVisible(false)}>Cancel</Button>
+              <Tooltip
+                title={!isEmailValid ? 'Please enter a valid email address' : ''}
+              >
+                <Button size='small' type='primary' disabled={!isEmailValid} onClick={submitReferral}>Send invite</Button>
+              </Tooltip>
+            </Space>
           </Space>
-        </Space>
-      </Card>
-    </div>
-  );
+        </Card>
+      ),
+      key: 'referral-button-contents',
+    }
+  ]
 
   return (
     <Dropdown
-      visible={visible}
-      onVisibleChange={(v) => setVisible(v)}
-      overlay={overlay}
+      open={visible}
+      onOpenChange={(v) => setVisible(v)}
+      menu={{ items: menuItems }}
       placement='bottomRight'
       trigger='click'
     >

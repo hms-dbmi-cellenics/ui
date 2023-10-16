@@ -79,20 +79,16 @@ const AdvancedFilteringModal = (props) => {
     setAvailableCriteriaOptions(filteredCriteriaOptions);
   }, [availableColumns.length]);
 
-  const renderPresetFilters = (add) => (
-    <Menu
-      onClick={(e) => {
-        const selectedFilter = availablePresetFilters.find((filter) => filter.label === e.key);
-        add(selectedFilter);
-      }}
-    >
-      {availablePresetFilters.map((filter) => (
-        <Menu.Item key={filter.label}>
-          {filter.label}
-        </Menu.Item>
-      ))}
-    </Menu>
-  );
+
+  const onClickPresetFilter = (add, e) => {
+    const selectedFilter = availablePresetFilters.find((filter) => filter.label === e.key);
+    add(selectedFilter);
+  }
+
+  const presetFilterItems = availablePresetFilters.map((filter) => ({
+    label: filter.label,
+    key: filter.label,
+  }));
 
   const applyFilters = (filters) => {
     const filtersDataToRun = filters.map(({ columnName, comparison, value }) => ({
@@ -104,7 +100,7 @@ const AdvancedFilteringModal = (props) => {
 
   return (
     <Modal
-      visible
+      open
       title='Advanced filters'
       onCancel={onCancel}
       footer={null}
@@ -169,7 +165,12 @@ const AdvancedFilteringModal = (props) => {
                   <Button onClick={add} icon={<PlusOutlined />}>
                     Add custom filter
                   </Button>
-                  <Dropdown overlay={renderPresetFilters(add)}>
+                  <Dropdown
+                    menu={{
+                      items: presetFilterItems,
+                      onClick: (e) => onClickPresetFilter(add, e)
+                    }}
+                  >
                     <Button icon={<PlusOutlined />}>
                       Add preset filter
                     </Button>
@@ -188,7 +189,7 @@ const AdvancedFilteringModal = (props) => {
           )}
         </Form.List>
       </Form>
-    </Modal>
+    </Modal >
   );
 };
 
