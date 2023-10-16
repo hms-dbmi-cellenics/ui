@@ -53,13 +53,15 @@ const renderCellSetColors = (rootKey, cellSetHierarchy, cellSetProperties) => {
   return colors;
 };
 
-const colorByGeneExpression = (truncatedExpression, min, max) => {
+const colorByGeneExpression = (truncatedExpression, min, max = 4) => {
+  if (max === 0) max = 4;
+
   const scaleFunction = vega.scale('sequential')()
     .domain([min, max])
     .interpolator(colorInterpolator);
-
   return Object.fromEntries(truncatedExpression.map(
-    (expressionValue, cellId) => [cellId, cssRgbToRgb(scaleFunction(expressionValue))],
+    (expressionValue, cellId) => [cellId, cssRgbToRgb(scaleFunction(expressionValue))]
+    ,
   ));
 };
 
