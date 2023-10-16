@@ -34,7 +34,7 @@ const getTimeoutForWorkerTask = (state, taskName) => {
       return ((0.6 * nCells) / nClusters) + baseTimeout;
     }
     case 'GetNormalizedExpression': {
-      return 900;
+      return 1800;
     }
     case 'GeneExpression':
     case 'GetMitochondrialContent':
