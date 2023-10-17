@@ -188,6 +188,7 @@ const VolcanoPlotPage = (props) => {
       return (
         <PlatformError
           description='Could not load differential expression data.'
+          reason={diffExprError.message}
           onClick={() => {
             dispatch(
               loadDifferentialExpression(
