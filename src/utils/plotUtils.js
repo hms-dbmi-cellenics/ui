@@ -54,6 +54,7 @@ const renderCellSetColors = (rootKey, cellSetHierarchy, cellSetProperties) => {
 };
 
 const colorByGeneExpression = (truncatedExpression, min, max = 4) => {
+  // eslint-disable-next-line no-param-reassign
   if (max === 0) max = 4;
 
   const scaleFunction = vega.scale('sequential')()
