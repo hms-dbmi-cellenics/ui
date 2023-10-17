@@ -181,8 +181,13 @@ describe('seekFromS3 unit tests', () => {
     jest.clearAllMocks();
   });
 
-  it('Should return null when response status is not found', async () => {
-    const finalResult = await seekFromS3(taskName, notFoundSignedUrl);
+  it('Should return null when response status is not found or forbidden', async () => {
+    let finalResult = await seekFromS3(taskName, notFoundSignedUrl);
+
+    expect(finalResult).toBeNull();
+
+    // returns 403
+    finalResult = await seekFromS3(taskName, invalidSignedUrl);
 
     expect(finalResult).toBeNull();
   });
@@ -201,11 +206,5 @@ describe('seekFromS3 unit tests', () => {
     expect(mockResponsePayload).toEqual(result);
 
     expect(parseResult).toHaveBeenCalledWith('mockUnpackedResult', taskName);
-  });
-
-  it('Should throw an error if fetching returns an error', async () => {
-    await expect(async () => {
-      await seekFromS3(taskName, invalidSignedUrl);
-    }).rejects.toThrow(new Error(`Error ${s3ErrorResponse.status}: ${s3ErrorResponse.text}`, { cause: s3ErrorResponse }));
   });
 });
