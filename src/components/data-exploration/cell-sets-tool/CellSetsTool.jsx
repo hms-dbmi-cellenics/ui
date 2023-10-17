@@ -170,14 +170,12 @@ const CellSetsTool = (props) => {
       );
     }
 
-    return (
-      <Space direction='vertical'>
-        <Tabs
-          size='small'
-          activeKey={activeTab}
-          onChange={(key) => setActiveTab(key)}
-        >
-          <Tabs.TabPane tab='Cell sets' key='cellSets'>
+    const tabItems = [
+      {
+        key: 'cellSets',
+        label: 'Cell sets',
+        children: (
+          <>
             {operations}
             <HierarchicalTree
               experimentId={experimentId}
@@ -190,14 +188,29 @@ const CellSetsTool = (props) => {
               showHideButton
               checkedKeys={selectedCellSetKeys}
             />
-          </Tabs.TabPane>
-          <Tabs.TabPane tab='Annotate clusters' key='annotateClusters'>
-            <AnnotateClustersTool
-              experimentId={experimentId}
-              onRunAnnotation={() => { setActiveTab('cellSets'); }}
-            />
-          </Tabs.TabPane>
-        </Tabs>
+          </>
+        ),
+      },
+      {
+        key: 'annotateClusters',
+        label: 'Annotate clusters',
+        children: (
+          <AnnotateClustersTool
+            experimentId={experimentId}
+            onRunAnnotation={() => { setActiveTab('cellSets'); }}
+          />
+        ),
+      },
+    ];
+
+    return (
+      <Space direction='vertical'>
+        <Tabs
+          size='small'
+          activeKey={activeTab}
+          onChange={(key) => setActiveTab(key)}
+          items={tabItems}
+        />
       </Space>
     );
   };

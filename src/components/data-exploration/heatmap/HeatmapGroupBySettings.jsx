@@ -7,7 +7,7 @@ import {
 } from '@ant-design/icons';
 import 'antd/dist/antd.css';
 import {
-  Button, Space, Menu, Dropdown,
+  Button, Space, Dropdown,
 } from 'antd';
 import PropTypes from 'prop-types';
 import { ClipLoader } from 'react-spinners';
@@ -80,47 +80,41 @@ const HeatmapGroupBySettings = (props) => {
 
   // This is so that a click on + or - buttons doesn't close the menu
   const stopPropagationEvent = (e) => e.stopPropagation();
-  const menu = (
-    <Menu>
-      {
-        allCellSetsGroupBys
-          .map((cellSet, indx) => {
-            const positionInCellSetOrder = indexOfCellSet(cellSet);
+  const menuItems =
+    allCellSetsGroupBys
+      .map((cellSet, indx) => {
+        const positionInCellSetOrder = indexOfCellSet(cellSet);
 
-            return (
-              // eslint-disable-next-line react/no-array-index-key
-              <Menu.Item key={indx} size='small'>
-                <div onClick={stopPropagationEvent} onKeyDown={stopPropagationEvent}>
-                  <Button
-                    shape='square'
-                    size='small'
-                    style={{ marginRight: '5px' }}
-                    icon={positionInCellSetOrder > -1 ? <MinusOutlined /> : <PlusOutlined />}
-                    onClick={() => {
-                      const newCellSetsOrder = [...cellSetsOrder];
-                      if (positionInCellSetOrder > -1) {
-                        // If the cell is included in the cellSet, we have to remove it
-                        newCellSetsOrder.splice(positionInCellSetOrder, 1);
-                      } else {
-                        // If the cell is not included in the cellSet, we have to add it
-                        newCellSetsOrder.push(cellSet);
-                      }
-                      setCellSetsOrder(newCellSetsOrder);
-                    }}
-                  />
-                  {cellSet.name}
-                </div>
-              </Menu.Item>
-            );
-          })
-      }
-    </Menu>
-  );
+        return {
+          label: (
+            <div onClick={stopPropagationEvent} onKeyDown={stopPropagationEvent}>
+              <Button
+                shape='square'
+                size='small'
+                style={{ marginRight: '5px' }}
+                icon={positionInCellSetOrder > -1 ? <MinusOutlined /> : <PlusOutlined />}
+                onClick={() => {
+                  const newCellSetsOrder = [...cellSetsOrder];
+                  if (positionInCellSetOrder > -1) {
+                    newCellSetsOrder.splice(positionInCellSetOrder, 1);
+                  } else {
+                    newCellSetsOrder.push(cellSet);
+                  }
+                  setCellSetsOrder(newCellSetsOrder);
+                }}
+              />
+              {cellSet.name}
+            </div>
+          ),
+          key: indx.toString(),
+        };
+      });
+
 
   return (
     <div style={{ padding: '5px' }} key='dropdown'>
       <Space direction='vertical'>
-        <Dropdown overlay={menu} trigger='click hover'>
+        <Dropdown menu={{ items: menuItems }} trigger='click hover'>
           <div style={{ padding: '7px', border: '1px solid rgb(238,238,238)' }}>
             Select the parameters to group by
             <DownOutlined style={{ marginLeft: '5px' }} />

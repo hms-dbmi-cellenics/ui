@@ -115,38 +115,32 @@ const StatusIndicator = (props) => {
     },
   };
 
-  const renderOverlay = () => {
-    const renderOverlayContent = () => {
-      if (loadingBackendStatus) { return (<Text>Loading run status...</Text>); }
-      if (errorLoadingBackendStatus) {
-        return (<Text>Failed loading run status. Please refresh the page.</Text>);
-      }
-
-      return (
-        <>
-          <Paragraph>
-            <Text strong>
-              Your data processing is
-              {' '}
-              {statusIndicators[status].title}
-              .
-            </Text>
-          </Paragraph>
-          <Paragraph>
-            <Text>{`${completedSteps.length} of ${allSteps.length} steps complete`}</Text>
-          </Paragraph>
-          <Paragraph>
-            {statusIndicators[status]?.description}
-          </Paragraph>
-        </>
-      );
-    };
+  const getMenuComponent = () => {
+    if (loadingBackendStatus) {
+      return (<Text>Loading run status...</Text>);
+    }
+    if (errorLoadingBackendStatus) {
+      return (<Text>Failed loading run status. Please refresh the page.</Text>);
+    }
 
     return (
-      <Card style={{ width: 300, padding: 16 }}>
-        {renderOverlayContent()}
-      </Card>
-    );
+      <>
+        <Paragraph>
+          <Text strong>
+            Your data processing is
+            {' '}
+            {statusIndicators[status]?.title || 'loading'}
+            .
+          </Text>
+        </Paragraph>
+        <Paragraph>
+          <Text>{`${completedSteps.length} of ${allSteps.length} steps complete`}</Text>
+        </Paragraph>
+        <Paragraph>
+          {statusIndicators[status]?.description}
+        </Paragraph>
+      </>
+    );;
   };
 
   const renderIndicator = () => {
@@ -169,7 +163,18 @@ const StatusIndicator = (props) => {
   };
 
   return (
-    <Dropdown overlay={renderOverlay}>
+    <Dropdown menu={{
+      items: [
+        {
+          label: (
+            <Card style={{ width: 300, padding: 16 }}>
+              {getMenuComponent()}
+            </Card>
+          ),
+          key: 'status-indicator',
+        }
+      ]
+    }}>
       <Button
         type='text'
         style={{ paddingTop: '1px' }}
