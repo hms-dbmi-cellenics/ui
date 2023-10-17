@@ -19,25 +19,23 @@ const ProjectsListContainer = (props) => {
   const { navigateTo } = useAppRouter();
   const [filterParam, setFilterParam] = useState(new RegExp('.*', 'i'));
 
+  const menuItems = [
+    {
+      label: 'Upload Project',
+      key: 'upload_project',
+      onClick: () => onCreateNewProject(),
+    },
+    {
+      label: 'Select from Dataset Repository',
+      key: 'copy_from_repository',
+      onClick: () => { navigateTo(modules.REPOSITORY); },
+    },
+  ]
+
   return (
     <Space direction='vertical' style={{ width: '100%' }}>
       <Dropdown
-        overlay={() => (
-          <Menu>
-            <Menu.Item
-              key='upload_project'
-              onClick={() => onCreateNewProject()}
-            >
-              Upload Project
-            </Menu.Item>
-            <Menu.Item
-              key='copy_from_repository'
-              onClick={() => { navigateTo(modules.REPOSITORY); }}
-            >
-              Select from Dataset Repository
-            </Menu.Item>
-          </Menu>
-        )}
+        menu={{ items: menuItems }}
         trigger={['click']}
         placement='bottomRight'
       >
