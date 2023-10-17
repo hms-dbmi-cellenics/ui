@@ -20,7 +20,7 @@ const ComparisonType = Object.freeze({ BETWEEN: 'between', WITHIN: 'within' });
 
 const DiffExprCompute = (props) => {
   const {
-    experimentId, onCompute,
+    experimentId, onCompute, isVolcanoPlot,
   } = props;
 
   const dispatch = useDispatch();
@@ -121,6 +121,53 @@ const DiffExprCompute = (props) => {
     );
   };
 
+  const renderError = () => {
+    if (!isFormValid) return <></>;
+    if (isVolcanoPlot && canRunDiffExpr() !== canRunDiffExprResults.TRUE) {
+      return (
+        <Alert
+          message='Error'
+          type='error'
+          showIcon
+          description={(
+            <>
+              For the selected comparison, there are fewer than 3 samples with the minimum number of cells (10).
+              Volcano plot requires both p-values and logFC values, therefore the plot cannot be rendered.
+            </>
+          )}
+        />
+      );
+    } if (canRunDiffExpr() === canRunDiffExprResults.INSUFFCIENT_CELLS_ERROR) {
+      return (
+        <Alert
+          message='Error'
+          description={(
+            <>
+              One or more of the selected samples/groups does not contain enough cells in the selected cell set.
+              Therefore, the analysis can not be run. Select other cell set(s) or samples/groups to compare.
+            </>
+          )}
+          type='error'
+          showIcon
+        />
+      );
+    }
+    if (canRunDiffExpr() === canRunDiffExprResults.INSUFFICIENT_CELLS_WARNING) {
+      return (
+        <Alert
+          message='Warning'
+          description={(
+            <>
+              For the selected comparison, there are fewer than 3 samples with the minimum number of cells (10).
+              Only logFC values will be calculated and results should be used for exploratory purposes only.
+            </>
+          )}
+          type='warning'
+          showIcon
+        />
+      );
+    }
+  };
   return (
     <Form size='small' layout='vertical'>
       <Radio.Group
@@ -244,37 +291,7 @@ const DiffExprCompute = (props) => {
           </>
         )}
       <Space direction='vertical'>
-        {
-          isFormValid && canRunDiffExpr() === canRunDiffExprResults.INSUFFCIENT_CELLS_ERROR
-            ? (
-              <Alert
-                message='Error'
-                description={(
-                  <>
-                    One or more of the selected samples/groups does not contain enough cells in the selected cell set.
-                    Therefore, the analysis can not be run. Select other cell set(s) or samples/groups to compare.
-                  </>
-                )}
-                type='error'
-                showIcon
-              />
-            )
-            : isFormValid && canRunDiffExpr() === canRunDiffExprResults.INSUFFICIENT_CELLS_WARNING
-              ? (
-                <Alert
-                  message='Warning'
-                  description={(
-                    <>
-                      For the selected comparison, there are fewer than 3 samples with the minimum number of cells (10).
-                      Only logFC values will be calculated and results should be used for exploratory purposes only.
-                    </>
-                  )}
-                  type='warning'
-                  showIcon
-                />
-              )
-              : <></>
-        }
+        {renderError()}
         <Space direction='horizontal'>
           <Button
             size='small'
@@ -282,7 +299,8 @@ const DiffExprCompute = (props) => {
               || [
                 canRunDiffExprResults.FALSE,
                 canRunDiffExprResults.INSUFFCIENT_CELLS_ERROR,
-              ].includes(canRunDiffExpr())}
+              ].includes(canRunDiffExpr())
+            || (isVolcanoPlot && canRunDiffExpr() !== canRunDiffExprResults.TRUE)}
             onClick={() => onCompute()}
           >
             Compute
@@ -292,10 +310,13 @@ const DiffExprCompute = (props) => {
     </Form>
   );
 };
-
+DiffExprCompute.defaultProps = {
+  isVolcanoPlot: false,
+};
 DiffExprCompute.propTypes = {
   experimentId: PropTypes.string.isRequired,
   onCompute: PropTypes.func.isRequired,
+  isVolcanoPlot: PropTypes.bool,
 };
 
 export default DiffExprCompute;

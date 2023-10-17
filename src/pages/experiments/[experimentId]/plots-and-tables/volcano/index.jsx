@@ -220,6 +220,7 @@ const VolcanoPlotPage = (props) => {
         <DiffExprCompute
           experimentId={experimentId}
           onCompute={onComputeDiffExp}
+          isVolcanoPlot
         />
       </Panel>
     </>
