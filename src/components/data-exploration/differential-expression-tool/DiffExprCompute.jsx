@@ -122,8 +122,9 @@ const DiffExprCompute = (props) => {
   };
 
   const renderError = () => {
+    const canRun = canRunDiffExpr();
     if (!isFormValid) return <></>;
-    if (isVolcanoPlot && canRunDiffExpr() !== canRunDiffExprResults.TRUE) {
+    if (isVolcanoPlot && canRun !== canRunDiffExprResults.TRUE) {
       return (
         <Alert
           message='Error'
@@ -137,7 +138,7 @@ const DiffExprCompute = (props) => {
           )}
         />
       );
-    } if (canRunDiffExpr() === canRunDiffExprResults.INSUFFCIENT_CELLS_ERROR) {
+    } if (canRun === canRunDiffExprResults.INSUFFCIENT_CELLS_ERROR) {
       return (
         <Alert
           message='Error'
@@ -152,7 +153,7 @@ const DiffExprCompute = (props) => {
         />
       );
     }
-    if (canRunDiffExpr() === canRunDiffExprResults.INSUFFICIENT_CELLS_WARNING) {
+    if (canRun === canRunDiffExprResults.INSUFFICIENT_CELLS_WARNING) {
       return (
         <Alert
           message='Warning'
