@@ -121,52 +121,28 @@ const DiffExprCompute = (props) => {
     );
   };
 
-  const renderError = () => {
+  const renderError = (type, description) => (
+    <Alert
+      message={type.charAt(0).toUpperCase() + type.slice(1)}
+      type={type}
+      showIcon
+      description={description}
+    />
+  );
+  const checkAndRenderError = () => {
     const canRun = canRunDiffExpr();
     if (!isFormValid) return <></>;
+
     if (needPValues && canRun !== canRunDiffExprResults.TRUE) {
-      return (
-        <Alert
-          message='Error'
-          type='error'
-          showIcon
-          description={(
-            <>
-              For the selected comparison, there are fewer than 3 samples with the minimum number of cells (10).
-              Volcano plot requires both p-values and logFC values, therefore the plot cannot be rendered.
-            </>
-          )}
-        />
-      );
+      return renderError('error', ` For the selected comparison, there are fewer than 3 samples with the minimum number of cells (10).
+              Volcano plot requires both p-values and logFC values, therefore the plot cannot be rendered.`);
     } if (canRun === canRunDiffExprResults.INSUFFCIENT_CELLS_ERROR) {
-      return (
-        <Alert
-          message='Error'
-          description={(
-            <>
-              One or more of the selected samples/groups does not contain enough cells in the selected cell set.
-              Therefore, the analysis can not be run. Select other cell set(s) or samples/groups to compare.
-            </>
-          )}
-          type='error'
-          showIcon
-        />
-      );
+      return renderError('error', `One or more of the selected samples/groups does not contain enough cells in the selected cell set.
+              Therefore, the analysis can not be run. Select other cell set(s) or samples/groups to compare.`);
     }
     if (canRun === canRunDiffExprResults.INSUFFICIENT_CELLS_WARNING) {
-      return (
-        <Alert
-          message='Warning'
-          description={(
-            <>
-              For the selected comparison, there are fewer than 3 samples with the minimum number of cells (10).
-              Only logFC values will be calculated and results should be used for exploratory purposes only.
-            </>
-          )}
-          type='warning'
-          showIcon
-        />
-      );
+      return renderError('warning', `For the selected comparison, there are fewer than 3 samples with the minimum number of cells (10).
+              Only logFC values will be calculated and results should be used for exploratory purposes only.`);
     }
   };
   return (
@@ -292,7 +268,7 @@ const DiffExprCompute = (props) => {
           </>
         )}
       <Space direction='vertical'>
-        {renderError()}
+        {checkAndRenderError()}
         <Space direction='horizontal'>
           <Button
             size='small'
