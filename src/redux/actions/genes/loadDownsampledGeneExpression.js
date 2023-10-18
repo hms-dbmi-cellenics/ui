@@ -2,7 +2,6 @@ import _ from 'lodash';
 import { SparseMatrix } from 'mathjs';
 
 import {
-  GENES_EXPRESSION_ERROR,
   DOWNSAMPLED_GENES_LOADING,
   DOWNSAMPLED_GENES_LOADED,
   DOWNSAMPLED_GENES_ERROR,
@@ -49,16 +48,6 @@ const loadDownsampledGeneExpressionDebounced = _.debounce(
       return;
     }
 
-    // Dispatch loading state.
-    dispatch({
-      type: DOWNSAMPLED_GENES_LOADING,
-      payload: {
-        experimentId,
-        componentUuid,
-        genes,
-      },
-    });
-
     const body = {
       name: 'GeneExpression',
       genes,
@@ -91,6 +80,7 @@ const loadDownsampledGeneExpressionDebounced = _.debounce(
               payload: {
                 experimentId,
                 componentUuid,
+                genes,
                 ETag,
               },
             });
