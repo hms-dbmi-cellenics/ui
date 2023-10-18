@@ -1,7 +1,7 @@
 /* eslint-disable no-param-reassign */
 import React, { useState } from 'react';
 import {
-  Menu, Dropdown, Button, Tooltip,
+  Dropdown, Button, Tooltip,
 } from 'antd';
 import PropTypes from 'prop-types';
 
@@ -67,38 +67,43 @@ const AddMetadataButton = ({ samplesTableRef }) => {
   return (
     <>
       <Dropdown
-        overlay={() => (
-          <Menu>
-            <Menu.SubMenu title='Sample level' key='sample-level'>
-              <Menu.Item
-                key='add-metadata-column'
-                data-testid='create-track-option'
-                onClick={() => samplesTableRef.current.createMetadataColumn()}
-              >
-                Create track
-              </Menu.Item>
-              <Menu.Item
-                key='upload-metadata-file'
-                onClick={() => {
-                  setTrackUploadModalVisible(true);
-                }}
-              >
-                Upload file
-              </Menu.Item>
-            </Menu.SubMenu>
-            <Tooltip title='Feature coming soon!'>
-              <div>
-                <Menu.Item
-                  key='cell-level'
-                  onClick={() => setCellLevelUploadVisible(true)}
-                  disabled
-                >
+        menu={{
+          items: [
+            {
+              key: 'sample-level',
+              label: 'Sample level',
+              children: [
+                {
+                  label: 'Create track',
+                  key: 'add-metadata-column',
+                  'data-testid': 'create-track-option',
+                  onClick: () => {
+                    samplesTableRef.current.createMetadataColumn();
+                  }
+                },
+                {
+                  label: 'Upload file',
+                  key: 'upload-metadata-file',
+                  onClick: () => {
+                    setTrackUploadModalVisible(true);
+                  }
+                }
+              ]
+            },
+            {
+              key: 'cell-level',
+              label: (<Tooltip title='Feature coming soon!'>
+                <div>
                   Cell level
-                </Menu.Item>
-              </div>
-            </Tooltip>
-          </Menu>
-        )}
+                </div>
+              </Tooltip>),
+              disabled: true,
+              onClick: () => {
+                setCellLevelUploadVisible(true);
+              }
+            }
+          ]
+        }}
         trigger={['click']}
         placement='bottomRight'
         disabled={activeExperiment.sampleIds?.length === 0 || isSubsetted || selectedTech === sampleTech.SEURAT}
