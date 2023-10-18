@@ -20,7 +20,7 @@ const ComparisonType = Object.freeze({ BETWEEN: 'between', WITHIN: 'within' });
 
 const DiffExprCompute = (props) => {
   const {
-    experimentId, onCompute, isVolcanoPlot,
+    experimentId, onCompute, needPValues,
   } = props;
 
   const dispatch = useDispatch();
@@ -124,7 +124,7 @@ const DiffExprCompute = (props) => {
   const renderError = () => {
     const canRun = canRunDiffExpr();
     if (!isFormValid) return <></>;
-    if (isVolcanoPlot && canRun !== canRunDiffExprResults.TRUE) {
+    if (needPValues && canRun !== canRunDiffExprResults.TRUE) {
       return (
         <Alert
           message='Error'
@@ -301,7 +301,7 @@ const DiffExprCompute = (props) => {
                 canRunDiffExprResults.FALSE,
                 canRunDiffExprResults.INSUFFCIENT_CELLS_ERROR,
               ].includes(canRunDiffExpr())
-            || (isVolcanoPlot && canRunDiffExpr() !== canRunDiffExprResults.TRUE)}
+            || (needPValues && canRunDiffExpr() !== canRunDiffExprResults.TRUE)}
             onClick={() => onCompute()}
           >
             Compute
@@ -312,12 +312,12 @@ const DiffExprCompute = (props) => {
   );
 };
 DiffExprCompute.defaultProps = {
-  isVolcanoPlot: false,
+  needPValues: false,
 };
 DiffExprCompute.propTypes = {
   experimentId: PropTypes.string.isRequired,
   onCompute: PropTypes.func.isRequired,
-  isVolcanoPlot: PropTypes.bool,
+  needPValues: PropTypes.bool,
 };
 
 export default DiffExprCompute;
