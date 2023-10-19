@@ -1,5 +1,5 @@
 /* eslint-disable no-param-reassign */
-import produce from 'immer';
+import produce, { original } from 'immer';
 import _ from 'lodash';
 
 import initialState from 'redux/reducers/componentConfig/initialState';
@@ -10,7 +10,7 @@ const cellClassDelete = produce((draft, action) => {
   const { key: cellClassKey } = action.payload;
 
   Object.values(draft).forEach((value) => {
-    if (value.config.groupedTracks) {
+    if (original(value)?.config?.groupedTracks.includes(cellClassKey)) {
       _.pull(value.config.groupedTracks, cellClassKey);
     }
   });
