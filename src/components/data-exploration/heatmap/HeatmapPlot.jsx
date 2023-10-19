@@ -174,7 +174,8 @@ const HeatmapPlot = (props) => {
       || !heatmapSettings.groupedTracks
       || !heatmapSettings.selectedCellSet
       || !heatmapSettings.selectedPoints
-      // If there
+      // If selectedGenes isn't null, then we are not at the initial load, so don't load markers
+      // We are only supposed to load marker genes to fill up the heatmap at the beginning)
       || !_.isNil(selectedGenes)
     ) return;
 
