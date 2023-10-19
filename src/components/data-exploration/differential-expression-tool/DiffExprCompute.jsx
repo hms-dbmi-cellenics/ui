@@ -121,17 +121,18 @@ const DiffExprCompute = (props) => {
     );
   };
 
-  const renderError = (type, description) => (
-    <Alert
-      message={type.charAt(0).toUpperCase() + type.slice(1)}
-      type={type}
-      showIcon
-      description={description}
-    />
-  );
   const checkAndRenderError = () => {
     const canRun = canRunDiffExpr();
     if (!isFormValid) return <></>;
+
+    const renderError = (type, description) => (
+      <Alert
+        message={type.charAt(0).toUpperCase() + type.slice(1)}
+        type={type}
+        showIcon
+        description={description}
+      />
+    );
 
     if (needPValues && canRun !== canRunDiffExprResults.TRUE) {
       return renderError('error', ` For the selected comparison, there are fewer than 3 samples with the minimum number of cells (10).
