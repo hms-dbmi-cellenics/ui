@@ -25,7 +25,6 @@ import getContainingCellSetsProperties from 'utils/cellSets/getContainingCellSet
 import useConditionalEffect from 'utils/customHooks/useConditionalEffect';
 import generateVitessceData from 'components/plots/helpers/heatmap/vitessce/generateVitessceData';
 import { loadCellSets } from 'redux/actions/cellSets';
-import useRunOnceEffect from 'utils/customHooks/useRunOnceEffect';
 
 const COMPONENT_TYPE = 'interactiveHeatmap';
 
@@ -170,18 +169,15 @@ const HeatmapPlot = (props) => {
     cellSets.properties,
   ]);
 
-  useRunOnceEffect(() => {
+  useConditionalEffect(() => {
     if (
       !cellSets.accessible
       || !louvainClustersResolution
       || !heatmapSettings.groupedTracks
       || !heatmapSettings.selectedCellSet
       || !heatmapSettings.selectedPoints
+      || !_.isNil(selectedGenes)
     ) return false;
-
-    if (!_.isNil(selectedGenes)) {
-      return true;
-    }
 
     const { groupedTracks, selectedCellSet, selectedPoints } = heatmapSettings;
 
