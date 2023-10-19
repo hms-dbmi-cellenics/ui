@@ -240,7 +240,7 @@ const HeatmapPlot = (props) => {
     [],
   );
 
-  if (isHeatmapGenesLoading || !cellSets.accessible) {
+  if (isHeatmapGenesLoading || !cellSets.accessible || !heatmapData) {
     return (
       <center>
         <Loader experimentId={experimentId} />
@@ -248,7 +248,7 @@ const HeatmapPlot = (props) => {
     );
   }
 
-  if (markerGenesLoadingError || expressionDataError || viewError || !heatmapData) {
+  if (markerGenesLoadingError || expressionDataError || viewError) {
     return (
       <PlatformError
         error={expressionDataError}
