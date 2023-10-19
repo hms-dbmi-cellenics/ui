@@ -103,9 +103,6 @@ const loadMarkerGenes = (
       return;
     }
 
-    // TODO LOOK into this
-    throw e;
-
     const errorMessage = handleError(e, endUserMessages.ERROR_FETCH_MARKER_GENES, undefined, false);
 
     dispatch({
