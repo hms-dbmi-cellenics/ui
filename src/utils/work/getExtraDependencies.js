@@ -19,12 +19,12 @@ const getClusteringSettings = async (experimentId, body, dispatch, getState) => 
 
 // Check that the cell sets within the selected selectedCellSet didn't change
 // e.g., if cell set was deleted we can't use cache
-const getDownsampleSelectedCellSet = async (experimentId, body, dispatch, getState) => {
+const getSelectedCellSet = async (experimentId, body, dispatch, getState) => {
   if (!body.downsampleSettings) return '';
 
   await dispatch(loadCellSets(experimentId));
 
-  const children = getCellSetsHierarchyByKeys(
+  const [{ children }] = getCellSetsHierarchyByKeys(
     [body.downsampleSettings.selectedCellSet],
   )(getState());
 
@@ -41,7 +41,7 @@ const getCellSets = async (experimentId, body, dispatch, getState) => {
   return hierarchy;
 };
 
-const getDownsampleSettingsCellSets = async (experimentId, body, dispatch, getState) => {
+const getGroupedTracksCellSets = async (experimentId, body, dispatch, getState) => {
   if (!body.downsampleSettings) return '';
 
   await dispatch(loadCellSets(experimentId));
@@ -63,7 +63,7 @@ const dependencyGetters = {
   DifferentialExpression: [getClusteringSettings],
   BatchDifferentialExpression: [getClusteringSettings],
   GeneExpression: [
-    getClusteringSettings, getDownsampleSettingsCellSets, getDownsampleSelectedCellSet,
+    getClusteringSettings, getGroupedTracksCellSets, getSelectedCellSet,
   ],
   GetBackgroundExpressedGenes: [getClusteringSettings],
   DotPlot: [getClusteringSettings],
@@ -72,7 +72,7 @@ const dependencyGetters = {
   GetNGenes: [],
   GetNUmis: [],
   MarkerHeatmap: [
-    getClusteringSettings, getDownsampleSelectedCellSet, getDownsampleSettingsCellSets,
+    getClusteringSettings, getSelectedCellSet, getGroupedTracksCellSets,
   ],
   GetTrajectoryAnalysisStartingNodes: [getClusteringSettings],
   GetTrajectoryAnalysisPseudoTime: [getClusteringSettings],
