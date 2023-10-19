@@ -174,8 +174,9 @@ const HeatmapPlot = (props) => {
       || !heatmapSettings.groupedTracks
       || !heatmapSettings.selectedCellSet
       || !heatmapSettings.selectedPoints
+      // If there
       || !_.isNil(selectedGenes)
-    ) return false;
+    ) return;
 
     const { groupedTracks, selectedCellSet, selectedPoints } = heatmapSettings;
 
@@ -191,8 +192,6 @@ const HeatmapPlot = (props) => {
       COMPONENT_TYPE,
       { numGenes: nMarkerGenes, ...downsampleSettings },
     ));
-
-    return true;
   }, [
     louvainClustersResolution,
     cellSets.accessible,
