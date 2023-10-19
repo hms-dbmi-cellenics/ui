@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Collapse,
   Skeleton,
@@ -92,23 +92,36 @@ const MarkerHeatmap = ({ experimentId }) => {
     if (!hierarchy?.length) dispatch(loadCellSets(experimentId));
   }, []);
 
-  const userUpdatedPlotWithChanges = (updatedField) => {
-    if (updatedField.nMarkerGenes) {
+  const userUpdatedPlotWithChanges = (userUpdatedField) => {
+    let updatesToDispatch = userUpdatedField;
+
+    if (updatesToDispatch.selectedCellSet) {
+      // grouping and metadata tracks should change when selectedCellSet is changed
+      updatesToDispatch = {
+        ...updatesToDispatch,
+        selectedTracks: [config.selectedCellSet],
+        groupedTracks: [config.selectedCellSet],
+      };
+    }
+
+    if (updatesToDispatch.nMarkerGenes) {
       dispatch(loadMarkerGenes(
         experimentId,
         plotUuid,
         {
-          numGenes: updatedField.nMarkerGenes,
+          numGenes: updatesToDispatch.nMarkerGenes,
           groupedTracks: config.groupedTracks,
           selectedCellSet: config.selectedCellSet,
           selectedPoints: config.selectedPoints,
         },
       ));
-    } else if (updatedField.selectedGenes) {
-      dispatch(loadDownsampledGeneExpression(experimentId, updatedField.selectedGenes, plotUuid));
+    } else if (updatesToDispatch.selectedGenes) {
+      dispatch(
+        loadDownsampledGeneExpression(experimentId, updatesToDispatch.selectedGenes, plotUuid),
+      );
     }
 
-    dispatch(updatePlotConfig(plotUuid, updatedField));
+    dispatch(updatePlotConfig(plotUuid, updatesToDispatch));
   };
 
   useEffect(() => {
@@ -171,17 +184,6 @@ const MarkerHeatmap = ({ experimentId }) => {
     // So don't replace this with userUpdatedPlotWithChanges
     dispatch(updatePlotConfig(plotUuid, { selectedGenes: loadedGenes }));
   }, [loadedGenes, loadedGenesAreMarkers]);
-
-  useEffect(() => {
-    if (!config) {
-      return;
-    }
-
-    // grouping and metadata tracks should change when data is changed
-    userUpdatedPlotWithChanges(
-      { selectedTracks: [config.selectedCellSet], groupedTracks: [config.selectedCellSet] },
-    );
-  }, [config?.selectedCellSet]);
 
   useEffect(() => {
     if (
