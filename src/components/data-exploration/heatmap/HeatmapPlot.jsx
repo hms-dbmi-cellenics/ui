@@ -33,8 +33,6 @@ const Heatmap = dynamic(
   { ssr: false },
 );
 
-// import { Heatmap } from '@vitessce/heatmap';
-
 // To avoid it sticking to the right too much (the left already has some margin)
 const heatmapRightMargin = 30;
 const heatmapBottomMargin = 40;
