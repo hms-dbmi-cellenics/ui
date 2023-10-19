@@ -12,7 +12,6 @@ import endUserMessages from 'utils/endUserMessages';
 const loadMarkerGenes = (
   experimentId, plotUuid, options = {},
 ) => async (dispatch, getState) => {
-  // TODO perhaps just import the initial state and use it instead
   const {
     numGenes = 5,
     groupedTracks = ['sample', 'louvain'],
