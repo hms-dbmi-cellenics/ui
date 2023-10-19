@@ -20,7 +20,7 @@ const ComparisonType = Object.freeze({ BETWEEN: 'between', WITHIN: 'within' });
 
 const DiffExprCompute = (props) => {
   const {
-    experimentId, onCompute,
+    experimentId, onCompute, needPValues,
   } = props;
 
   const dispatch = useDispatch();
@@ -121,6 +121,31 @@ const DiffExprCompute = (props) => {
     );
   };
 
+  const checkAndRenderAlert = () => {
+    if (!isFormValid) return <></>;
+    const canRun = canRunDiffExpr();
+
+    const renderAlert = (type, description) => (
+      <Alert
+        message={type.charAt(0).toUpperCase() + type.slice(1)}
+        type={type}
+        showIcon
+        description={description}
+      />
+    );
+
+    if (needPValues && canRun !== canRunDiffExprResults.TRUE) {
+      return renderAlert('error', ` For the selected comparison, there are fewer than 3 samples with the minimum number of cells (10).
+              Volcano plot requires both p-values and logFC values, therefore the plot cannot be rendered.`);
+    } if (canRun === canRunDiffExprResults.INSUFFCIENT_CELLS_ERROR) {
+      return renderAlert('error', `One or more of the selected samples/groups does not contain enough cells in the selected cell set.
+              Therefore, the analysis can not be run. Select other cell set(s) or samples/groups to compare.`);
+    }
+    if (canRun === canRunDiffExprResults.INSUFFICIENT_CELLS_WARNING) {
+      return renderAlert('warning', `For the selected comparison, there are fewer than 3 samples with the minimum number of cells (10).
+              Only logFC values will be calculated and results should be used for exploratory purposes only.`);
+    }
+  };
   return (
     <Form size='small' layout='vertical'>
       <Radio.Group
@@ -244,37 +269,7 @@ const DiffExprCompute = (props) => {
           </>
         )}
       <Space direction='vertical'>
-        {
-          isFormValid && canRunDiffExpr() === canRunDiffExprResults.INSUFFCIENT_CELLS_ERROR
-            ? (
-              <Alert
-                message='Error'
-                description={(
-                  <>
-                    One or more of the selected samples/groups does not contain enough cells in the selected cell set.
-                    Therefore, the analysis can not be run. Select other cell set(s) or samples/groups to compare.
-                  </>
-                )}
-                type='error'
-                showIcon
-              />
-            )
-            : isFormValid && canRunDiffExpr() === canRunDiffExprResults.INSUFFICIENT_CELLS_WARNING
-              ? (
-                <Alert
-                  message='Warning'
-                  description={(
-                    <>
-                      For the selected comparison, there are fewer than 3 samples with the minimum number of cells (10).
-                      Only logFC values will be calculated and results should be used for exploratory purposes only.
-                    </>
-                  )}
-                  type='warning'
-                  showIcon
-                />
-              )
-              : <></>
-        }
+        {checkAndRenderAlert()}
         <Space direction='horizontal'>
           <Button
             size='small'
@@ -282,7 +277,8 @@ const DiffExprCompute = (props) => {
               || [
                 canRunDiffExprResults.FALSE,
                 canRunDiffExprResults.INSUFFCIENT_CELLS_ERROR,
-              ].includes(canRunDiffExpr())}
+              ].includes(canRunDiffExpr())
+            || (needPValues && canRunDiffExpr() !== canRunDiffExprResults.TRUE)}
             onClick={() => onCompute()}
           >
             Compute
@@ -292,10 +288,13 @@ const DiffExprCompute = (props) => {
     </Form>
   );
 };
-
+DiffExprCompute.defaultProps = {
+  needPValues: false,
+};
 DiffExprCompute.propTypes = {
   experimentId: PropTypes.string.isRequired,
   onCompute: PropTypes.func.isRequired,
+  needPValues: PropTypes.bool,
 };
 
 export default DiffExprCompute;
