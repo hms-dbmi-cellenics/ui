@@ -66,7 +66,6 @@ const BatchDiffExpression = (props) => {
   const [sample] = useSelector(getCellSetsHierarchyByKeys(['sample']));
 
   const isDatasetUnisample = useMemo(() => sample?.children.length === 1, [sample]);
-
   useEffect(() => {
     dispatch(loadCellSets(experimentId));
   }, []);
@@ -367,6 +366,9 @@ const BatchDiffExpression = (props) => {
               >
                 Compute and Download
               </Button>
+              {dataLoading && (
+                <Loader experimentId={experimentId} />
+              )}
             </Space>
             This might take several minutes to complete.
           </Space>
