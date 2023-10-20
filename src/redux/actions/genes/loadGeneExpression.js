@@ -7,6 +7,7 @@ import {
 
 import fetchWork from 'utils/work/fetchWork';
 import getTimeoutForWorkerTask from 'utils/getTimeoutForWorkerTask';
+import upperCaseArray from 'utils/upperCaseArray';
 
 const findLoadedGenes = (matrix, selectedGenes) => {
   // Check which of the genes we actually need to load. Only do this if
