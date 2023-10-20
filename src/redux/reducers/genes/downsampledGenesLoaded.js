@@ -1,7 +1,7 @@
 import _ from 'lodash';
 
 import { initialViewState } from 'redux/reducers/genes/getInitialState';
-import { upperCaseArray } from 'utils/genes';
+import upperCaseArray from 'utils/upperCaseArray';
 
 const downsampledGenesLoaded = (state, action) => {
   const {

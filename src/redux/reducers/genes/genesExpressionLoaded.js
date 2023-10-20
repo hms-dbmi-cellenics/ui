@@ -1,6 +1,6 @@
 import _ from 'lodash';
 
-import { upperCaseArray } from 'utils/genes';
+import upperCaseArray from 'utils/upperCaseArray';
 import { initialViewState } from './getInitialState';
 
 const genesExpressionLoaded = (state, action) => {
