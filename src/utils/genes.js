@@ -9,7 +9,7 @@ const findLoadedGenes = (matrix, selectedGenes) => {
     (gene) => !new Set(upperCaseArray(storedGenes)).has(gene.toUpperCase()),
   );
 
-  const genesAlreadyLoaded = matrix.getStoredGenes().filter(
+  const genesAlreadyLoaded = storedGenes.filter(
     (gene) => upperCaseArray(selectedGenes).includes(gene.toUpperCase()),
   );
 
