@@ -2,9 +2,9 @@ import _ from 'lodash';
 import { SparseMatrix } from 'mathjs';
 
 import {
-  DOWNSAMPLED_GENES_LOADING,
-  DOWNSAMPLED_GENES_LOADED,
-  DOWNSAMPLED_GENES_ERROR,
+  DOWNSAMPLED_GENES_EXPRESSION_LOADING,
+  DOWNSAMPLED_GENES_EXPRESSION_LOADED,
+  DOWNSAMPLED_GENES_EXPRESSION_ERROR,
 } from 'redux/actionTypes/genes';
 
 import fetchWork from 'utils/work/fetchWork';
@@ -38,7 +38,7 @@ const loadDownsampledGeneExpressionDebounced = _.debounce(
 
     if (genes.length === 0) {
       dispatch({
-        type: DOWNSAMPLED_GENES_LOADED,
+        type: DOWNSAMPLED_GENES_EXPRESSION_LOADED,
         payload: {
           componentUuid,
           genes,
@@ -76,7 +76,7 @@ const loadDownsampledGeneExpressionDebounced = _.debounce(
 
             // Dispatch loading state.
             dispatch({
-              type: DOWNSAMPLED_GENES_LOADING,
+              type: DOWNSAMPLED_GENES_EXPRESSION_LOADING,
               payload: {
                 experimentId,
                 componentUuid,
@@ -99,7 +99,7 @@ const loadDownsampledGeneExpressionDebounced = _.debounce(
       const zScore = SparseMatrix.fromJSON(zScoreJson);
 
       dispatch({
-        type: DOWNSAMPLED_GENES_LOADED,
+        type: DOWNSAMPLED_GENES_EXPRESSION_LOADED,
         payload: {
           componentUuid,
           genes,
@@ -115,7 +115,7 @@ const loadDownsampledGeneExpressionDebounced = _.debounce(
       });
     } catch (error) {
       dispatch({
-        type: DOWNSAMPLED_GENES_ERROR,
+        type: DOWNSAMPLED_GENES_EXPRESSION_ERROR,
         payload: {
           experimentId,
           componentUuid,
