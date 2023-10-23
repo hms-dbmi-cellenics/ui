@@ -13,7 +13,8 @@ const getTimeoutForWorkerTask = (state, taskName) => {
   switch (taskName) {
     case 'GetEmbedding':
     case 'ListGenes':
-    case 'MarkerHeatmap': {
+    case 'MarkerHeatmap':
+    case 'GetNormalizedExpression': {
       // all of this calls can happen at the same time and each of them can potentially have to
       // wait for the others to finish before it starts processing (due to the SQS) so the timeout
       // needs to be large enough for the slowest task to finish
@@ -32,9 +33,6 @@ const getTimeoutForWorkerTask = (state, taskName) => {
     }
     case 'TrajectoryAnalysisPseudotime': {
       return ((0.6 * nCells) / nClusters) + baseTimeout;
-    }
-    case 'GetNormalizedExpression': {
-      return 900;
     }
     case 'GeneExpression':
     case 'GetMitochondrialContent':
