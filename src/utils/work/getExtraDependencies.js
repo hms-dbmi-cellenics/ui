@@ -20,7 +20,7 @@ const getClusteringSettings = async (experimentId, body, dispatch, getState) => 
 // Check that the cell sets within the selected selectedCellSet didn't change
 // e.g., if cell set was deleted we can't use cache
 const getCellSetsThatAffectDownsampling = async (experimentId, body, dispatch, getState) => {
-  // If not downsampling, then there's no dependency on groupedTracks
+  // If not downsampling, then there's no dependency set by this getter
   if (!body.downsampleSettings) return '';
 
   const { downsampleSettings: { groupedTracks, selectedCellSet } } = body;
