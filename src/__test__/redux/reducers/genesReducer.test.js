@@ -27,7 +27,7 @@ describe('genesReducer', () => {
       },
     });
 
-    expect(newState.expression.loading).toEqual(['A', 'B', 'C']);
+    expect(newState.expression.full.loading).toEqual(['A', 'B', 'C']);
     expect(newState.expression.views.abc.fetching).toEqual(true);
     expect(newState.expression.views.abc.error).toEqual(false);
     expect(newState).toMatchSnapshot();
