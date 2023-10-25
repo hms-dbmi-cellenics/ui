@@ -4,7 +4,7 @@ import preloadAll from 'jest-next-dynamic';
 import { render, screen } from '@testing-library/react';
 import { act } from 'react-dom/test-utils';
 
-import { dispatchWorkRequest } from 'utils/work/seekWorkResponse';
+import { dispatchWorkRequest } from 'utils/work/dispatchWorkRequest';
 
 import { Provider } from 'react-redux';
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
@@ -53,7 +53,7 @@ jest.mock('utils/work/seekWorkResponse', () => ({
 
 let vitesscePropsSpy = null;
 jest.mock('next/dynamic', () => () => (props) => {
-  console.log("*** we are coming here: ", props);
+  console.log('*** we are coming here: ', props);
   vitesscePropsSpy = props;
   return 'Sup Im a heatmap';
 });
@@ -308,7 +308,6 @@ describe('HeatmapPlot', () => {
 
     // The plots shows an empty message
     expect(screen.getByText(/Unhide some cell sets to show the heatmap/i)).toBeInTheDocument();
-
   });
 
   it('Reacts to cellClass groupby being changed', async () => {

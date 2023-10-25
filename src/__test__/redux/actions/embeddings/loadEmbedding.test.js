@@ -9,7 +9,7 @@ import {
   EMBEDDINGS_LOADING,
 } from 'redux/actionTypes/embeddings';
 
-import { dispatchWorkRequest } from 'utils/work/seekWorkResponse';
+import { dispatchWorkRequest } from 'utils/work/dispatchWorkRequest';
 import { workerDataResult } from '__test__/test-utils/mockAPI';
 
 jest.mock('utils/getTimeoutForWorkerTask', () => ({

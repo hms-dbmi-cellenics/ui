@@ -1,7 +1,7 @@
 import { v4 as uuidv4 } from 'uuid';
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 import SocketMock from 'socket.io-mock';
-import { dispatchWorkRequest, seekFromS3 } from 'utils/work/seekWorkResponse';
+import { dispatchWorkRequest, seekFromS3 } from 'utils/work/dispatchWorkRequest';
 import fake from '__test__/test-utils/constants';
 import mockAPI, { generateDefaultMockAPIResponses } from '__test__/test-utils/mockAPI';
 

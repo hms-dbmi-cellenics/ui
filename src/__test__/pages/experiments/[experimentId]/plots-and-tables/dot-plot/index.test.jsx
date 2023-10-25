@@ -2,7 +2,9 @@ import React from 'react';
 import _ from 'lodash';
 
 import { act } from 'react-dom/test-utils';
-import { render, screen, fireEvent, within, waitFor } from '@testing-library/react';
+import {
+  render, screen, fireEvent, within, waitFor,
+} from '@testing-library/react';
 import { mount } from 'enzyme';
 
 import '@testing-library/jest-dom';
@@ -18,7 +20,7 @@ import mockAPI, {
   statusResponse,
 } from '__test__/test-utils/mockAPI';
 
-import { dispatchWorkRequest } from 'utils/work/seekWorkResponse';
+import { dispatchWorkRequest } from 'utils/work/dispatchWorkRequest';
 
 import createTestComponentFactory from '__test__/test-utils/testComponentFactory';
 import { makeStore } from 'redux/store';

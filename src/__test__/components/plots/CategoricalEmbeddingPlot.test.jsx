@@ -15,7 +15,7 @@ import mockAPI, {
 import createTestComponentFactory from '__test__/test-utils/testComponentFactory';
 import fake from '__test__/test-utils/constants';
 import mockEmbedding from '__test__/data/embedding.json';
-import { dispatchWorkRequest } from 'utils/work/seekWorkResponse';
+import { dispatchWorkRequest } from 'utils/work/dispatchWorkRequest';
 import { loadBackendStatus } from 'redux/actions/backendStatus';
 import WorkResponseError from 'utils/errors/http/WorkResponseError';
 

@@ -11,7 +11,7 @@ import {
   GENES_PROPERTIES_ERROR,
 } from 'redux/actionTypes/genes';
 
-import { dispatchWorkRequest } from 'utils/work/seekWorkResponse';
+import { dispatchWorkRequest } from 'utils/work/dispatchWorkRequest';
 
 import mockAPI, { generateDefaultMockAPIResponses, workerDataResult } from '__test__/test-utils/mockAPI';
 import processingConfigData from '__test__/data/processing_config.json';

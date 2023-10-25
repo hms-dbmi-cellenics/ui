@@ -3,7 +3,7 @@ import thunk from 'redux-thunk';
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 
 import runCellSetsClustering from 'redux/actions/cellSets/runCellSetsClustering';
-import { dispatchWorkRequest } from 'utils/work/seekWorkResponse';
+import { dispatchWorkRequest } from 'utils/work/dispatchWorkRequest';
 
 import initialState from 'redux/reducers/cellSets/initialState';
 

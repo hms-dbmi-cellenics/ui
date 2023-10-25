@@ -1,56 +1,89 @@
 import { Environment, isBrowser } from 'utils/deploymentInfo';
 
-import { getBackendStatus } from 'redux/selectors';
-
 import cache from 'utils/cache';
-import generateETag from 'utils/work/generateETag';
-import { dispatchWorkRequest, seekFromS3 } from 'utils/work/seekWorkResponse';
+import dispatchWorkRequest from 'utils/work/dispatchWorkRequest';
+import downloadFromS3 from 'utils/work/downloadFromS3';
+import waitForWorkRequest from './waitForWorkRequest';
 
 // Temporarily using gene expression without local cache
-const fetchGeneExpressionWorkWithoutLocalCache = async (
-  experimentId,
+// const fetchGeneExpressionWorkWithoutLocalCache = async (
+//   experimentId,
+//   timeout,
+//   body,
+//   backendStatus,
+//   environment,
+//   broadcast,
+//   extras,
+//   dispatch,
+// ) => {
+//   // If new genes are needed, construct payload, try S3 for results,
+//   // and send out to worker if there's a miss.
+//   const { pipeline: { startDate: qcPipelineStartDate } } = backendStatus;
+
+//   // const ETag = await generateETag(
+//   //   experimentId,
+//   //   body,
+//   //   extras,
+//   //   qcPipelineStartDate,
+//   //   environment,
+//   //   dispatch,
+//   //   getState,
+//   // );
+
+//   const { ETag, signedUrl, data } = await sendWorkRequest(
+//     experimentId,
+//     body,
+//     timeout,
+//     {
+//       broadcast,
+//       ...extras,
+//     },
+//     dispatch,
+//   );
+
+//   return data ?? await downloadFromS3(body.name, signedUrl);
+// };
+// retrieveData will try to get the data for the given experimentId and ETag from
+// the fastest source possible. It will try to get the data in order from:
+// 1. Browser cache
+// 2. S3 (cache) via signedURL
+// 3. Worker
+//   3.1. Via socket (small data)
+//   3.2. Via S3 (large data) via signedURL
+const retrieveData = async (experimentId,
+  ETag,
+  signedUrl,
+  request,
   timeout,
   body,
-  backendStatus,
-  environment,
-  broadcast,
-  extras,
-  dispatch,
-  getState,
-) => {
-  // If new genes are needed, construct payload, try S3 for results,
-  // and send out to worker if there's a miss.
-  const { pipeline: { startDate: qcPipelineStartDate } } = backendStatus;
-
-  const ETag = await generateETag(
-    experimentId,
-    body,
-    extras,
-    qcPipelineStartDate,
-    environment,
-    dispatch,
-    getState,
-  );
-
-  try {
-    const { signedUrl, data } = await dispatchWorkRequest(
-      experimentId,
-      body,
-      timeout,
-      ETag,
-      {
-        ETagPipelineRun: qcPipelineStartDate,
-        broadcast,
-        ...extras,
-      },
-      dispatch,
-    );
-
-    return data ?? await seekFromS3(body.name, signedUrl);
-  } catch (error) {
-    console.error('Error dispatching work request: ', error);
-    throw error;
+  dispatch) => {
+  // 1. Check if we have the ETag in the browser cache (no worker)
+  const cachedData = await cache.get(ETag);
+  if (cachedData) {
+    return cachedData;
   }
+
+  // 2. Check if data is cached in S3 so we can download from the signed URL (no worker)
+  if (signedUrl) {
+    console.log('downloading from S3', signedUrl);
+    return await downloadFromS3(body.name, signedUrl);
+  }
+
+  // 3. If we don't have signedURL, wait for the worker to send us the data via
+  // - the data via socket
+  // - the signedURL to download the data from S3
+  const { workerSignedUrl, data } = await waitForWorkRequest(ETag,
+    experimentId,
+    request,
+    timeout,
+    dispatch);
+
+  // 3.1. The worker send the data via socket because it's small enough
+  if (data) {
+    return data;
+  }
+  // 3.2. The worker send a signedUrl to download the data
+  return await downloadFromS3(body.name, workerSignedUrl);
 };
 
 const fetchWork = async (
@@ -67,77 +100,36 @@ const fetchWork = async (
     onETagGenerated = () => { },
   } = optionals;
 
-  const backendStatus = getBackendStatus(experimentId)(getState()).status;
-
-  const { environment } = getState().networkResources;
-
   if (!isBrowser) {
     throw new Error('Disabling network interaction on server');
   }
 
+  const { environment } = getState().networkResources;
   if (environment === Environment.DEVELOPMENT && !localStorage.getItem('disableCache')) {
     localStorage.setItem('disableCache', 'true');
   }
 
-  const { pipeline: { startDate: qcPipelineStartDate } } = backendStatus;
-
-  if (body.name === 'GeneExpression') {
-    return fetchGeneExpressionWorkWithoutLocalCache(
-      experimentId,
-      timeout,
-      body,
-      backendStatus,
-      environment,
-      broadcast,
-      extras,
-      dispatch,
-      getState,
-    );
-  }
-
-  const ETag = await generateETag(
+  // 1. Contact the API to get ETag and possible S3 signedURL
+  const { ETag, signedUrl, request } = await dispatchWorkRequest(
     experimentId,
     body,
-    extras,
-    qcPipelineStartDate,
-    environment,
+    timeout,
+    {
+      broadcast,
+      ...extras,
+    },
     dispatch,
-    getState,
   );
 
   onETagGenerated(ETag);
 
-  // First, let's try to fetch this information from the local cache.
-  const cachedData = await cache.get(ETag);
+  // 2. Try to get the data from the fastest source possible
+  const data = await retrieveData(experimentId, ETag, signedUrl, request, timeout, body, dispatch);
 
-  if (cachedData) {
-    return cachedData;
-  }
+  // 3. Cache the data in the browser
+  await cache.set(ETag, data);
 
-  // If there is no response in S3, dispatch workRequest via the worker
-  try {
-    const { signedUrl, data } = await dispatchWorkRequest(
-      experimentId,
-      body,
-      timeout,
-      ETag,
-      {
-        PipelineRunETag: qcPipelineStartDate,
-        broadcast,
-        ...extras,
-      },
-      dispatch,
-    );
-
-    const response = data ?? await seekFromS3(body.name, signedUrl);
-
-    await cache.set(ETag, response);
-
-    return response;
-  } catch (error) {
-    console.error('Error dispatching work request', error);
-    throw error;
-  }
+  return data;
 };
 
 export default fetchWork;

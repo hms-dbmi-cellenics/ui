@@ -1,5 +1,5 @@
 import * as socketConnectionMocks from 'utils/socketConnection';
-import * as seekWorkResponseMocks from 'utils/work/seekWorkResponse';
+import * as seekWorkResponseMocks from 'utils/work/dispatchWorkRequest';
 
 import SocketMock from 'socket.io-mock';
 

@@ -16,7 +16,7 @@ import mockEmbedding from '__test__/data/embedding.json';
 import mockStartingNodes from '__test__/data/starting_nodes.json';
 import mockProcessingConfig from '__test__/data/processing_config.json';
 
-import { dispatchWorkRequest } from 'utils/work/seekWorkResponse';
+import { dispatchWorkRequest } from 'utils/work/dispatchWorkRequest';
 import { loadBackendStatus } from 'redux/actions/backendStatus';
 import { loadPlotConfig } from 'redux/actions/componentConfig';
 import getTrajectoryPlotStartingNodes from 'redux/actions/componentConfig/getTrajectoryPlotStartingNodes';

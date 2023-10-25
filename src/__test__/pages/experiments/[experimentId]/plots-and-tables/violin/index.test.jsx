@@ -8,7 +8,7 @@ import { act } from 'react-dom/test-utils';
 import { Provider } from 'react-redux';
 import { loadBackendStatus } from 'redux/actions/backendStatus';
 import { makeStore } from 'redux/store';
-import { dispatchWorkRequest } from 'utils/work/seekWorkResponse';
+import { dispatchWorkRequest } from 'utils/work/dispatchWorkRequest';
 import markerGenes1 from '__test__/data/marker_genes_1.json';
 import paginatedGeneExpressionData from '__test__/data/paginated_gene_expression.json';
 

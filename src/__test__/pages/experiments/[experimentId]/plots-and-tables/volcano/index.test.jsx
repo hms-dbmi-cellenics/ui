@@ -25,7 +25,7 @@ import mockDiffExprResult from '__test__/data/differential_expression_0_All_WT1.
 
 import createTestComponentFactory from '__test__/test-utils/testComponentFactory';
 import fake from '__test__/test-utils/constants';
-import { dispatchWorkRequest } from 'utils/work/seekWorkResponse';
+import { dispatchWorkRequest } from 'utils/work/dispatchWorkRequest';
 import { plotNames } from 'utils/constants';
 
 enableFetchMocks();

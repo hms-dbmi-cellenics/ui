@@ -14,7 +14,7 @@ import { loadBackendStatus } from 'redux/actions/backendStatus';
 import { loadMarkerGenes } from 'redux/actions/genes';
 import loadProcessingSettings from 'redux/actions/experimentSettings/processingConfig/loadProcessingSettings';
 import { makeStore } from 'redux/store';
-import { dispatchWorkRequest } from 'utils/work/seekWorkResponse';
+import { dispatchWorkRequest } from 'utils/work/dispatchWorkRequest';
 import { loadCellSets } from 'redux/actions/cellSets';
 
 jest.mock('utils/getTimeoutForWorkerTask', () => ({
