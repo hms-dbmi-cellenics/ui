@@ -49,7 +49,7 @@ const dispatchWorkRequest = async (
 
   console.log('dispatching work request', request);
   // TODO test what happens when api throws an error here
-  const response = await fetchAPI(
+  const { data: { ETag, signedUrl } } = await fetchAPI(
     `/v2/workRequest/${experimentId}`,
     {
       method: 'POST',
@@ -58,8 +58,6 @@ const dispatchWorkRequest = async (
     },
   );
 
-  console.log('work request response', response);
-  const { data: { ETag, signedUrl } } = response;
   return { ETag, signedUrl, request };
 };
 

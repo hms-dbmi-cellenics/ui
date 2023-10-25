@@ -5,44 +5,6 @@ import dispatchWorkRequest from 'utils/work/dispatchWorkRequest';
 import downloadFromS3 from 'utils/work/downloadFromS3';
 import waitForWorkRequest from './waitForWorkRequest';
 
-// Temporarily using gene expression without local cache
-// const fetchGeneExpressionWorkWithoutLocalCache = async (
-//   experimentId,
-//   timeout,
-//   body,
-//   backendStatus,
-//   environment,
-//   broadcast,
-//   extras,
-//   dispatch,
-// ) => {
-//   // If new genes are needed, construct payload, try S3 for results,
-//   // and send out to worker if there's a miss.
-//   const { pipeline: { startDate: qcPipelineStartDate } } = backendStatus;
-
-//   // const ETag = await generateETag(
-//   //   experimentId,
-//   //   body,
-//   //   extras,
-//   //   qcPipelineStartDate,
-//   //   environment,
-//   //   dispatch,
-//   //   getState,
-//   // );
-
-//   const { ETag, signedUrl, data } = await sendWorkRequest(
-//     experimentId,
-//     body,
-//     timeout,
-//     {
-//       broadcast,
-//       ...extras,
-//     },
-//     dispatch,
-//   );
-
-//   return data ?? await downloadFromS3(body.name, signedUrl);
-// };
 // retrieveData will try to get the data for the given experimentId and ETag from
 // the fastest source possible. It will try to get the data in order from:
 // 1. Browser cache
