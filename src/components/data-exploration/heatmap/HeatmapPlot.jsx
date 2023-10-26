@@ -58,7 +58,7 @@ const HeatmapPlot = (props) => {
   const [heatmapData, setHeatmapData] = useState(null);
   const [highlightedTrackData, setHighlightedTrackData] = useState(null);
 
-  const [isHeatmapGenesLoading, setIsHeatmapGenesLoading] = useState(false);
+  const [isHeatmapGenesLoading, setIsHeatmapGenesLoading] = useState(true);
 
   const [geneHighlight, setGeneHighlight] = useState(null);
   const [cellHighlight, setCellHighlight] = useState(null);
@@ -207,6 +207,7 @@ const HeatmapPlot = (props) => {
   }
 
   if (markerGenesLoadingError || expressionDataError || viewError || !heatmapData) {
+    console.log('error', markerGenesLoadingError, expressionDataError, viewError, heatmapData);
     return (
       <PlatformError
         error={expressionDataError}
