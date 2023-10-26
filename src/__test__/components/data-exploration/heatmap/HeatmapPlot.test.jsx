@@ -99,6 +99,10 @@ describe('HeatmapPlot', () => {
     jest.useFakeTimers();
   });
 
+  afterAll(() => {
+    jest.useRealTimers();
+  });
+
   beforeEach(async () => {
     jest.runAllTimers();
     jest.clearAllMocks();
