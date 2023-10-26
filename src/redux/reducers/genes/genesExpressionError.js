@@ -18,8 +18,8 @@ const genesExpressionError = (state, action) => {
         },
       },
       full: {
-        ...state.properties.full,
-        loading: _.difference(state.properties.full.loading, genes),
+        ...state.expression.full,
+        loading: _.difference(state.expression.full.loading, genes),
         error,
       },
     },
