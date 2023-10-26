@@ -181,19 +181,6 @@ exports[`ComponentActions Dispatches loadGeneExpression action with the right li
       "Lyz2",
     ],
   },
-  "type": "genes/expressionLoading",
-}
-`;
-
-exports[`ComponentActions Dispatches loadGeneExpression action with the right list of genes when Remove is clicked 2`] = `
-{
-  "payload": {
-    "componentUuid": "asd",
-    "experimentId": "1234",
-    "genes": [
-      "Lyz2",
-    ],
-  },
   "type": "genes/expressionLoaded",
 }
 `;
