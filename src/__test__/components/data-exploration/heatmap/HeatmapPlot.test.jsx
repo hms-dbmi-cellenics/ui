@@ -1,7 +1,7 @@
 import React from 'react';
 import preloadAll from 'jest-next-dynamic';
 
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import { act } from 'react-dom/test-utils';
 
 import { dispatchWorkRequest } from 'utils/work/seekWorkResponse';
@@ -24,7 +24,7 @@ import mockAPI, {
 import HeatmapPlot from 'components/data-exploration/heatmap/HeatmapPlot';
 
 import { loadProcessingSettings } from 'redux/actions/experimentSettings';
-import { loadGeneExpression } from 'redux/actions/genes';
+import { loadDownsampledGeneExpression } from 'redux/actions/genes';
 
 import { loadBackendStatus } from 'redux/actions/backendStatus';
 
@@ -53,7 +53,7 @@ jest.mock('utils/work/seekWorkResponse', () => ({
 
 let vitesscePropsSpy = null;
 jest.mock('next/dynamic', () => () => (props) => {
-  console.log("*** we are coming here: ", props);
+  console.log('*** we are coming here: ', props);
   vitesscePropsSpy = props;
   return 'Sup Im a heatmap';
 });
@@ -167,9 +167,12 @@ describe('HeatmapPlot', () => {
   });
 
   it('Shows loader message if the marker genes are loaded but there\'s other selected genes still loading', async () => {
+    jest.useFakeTimers();
+
+    const ETag = 'Ms4a4b-Smc4-Ccr7-Ifi27l2a-Gm8369-S100a4-S100a6-Tmem176a-Tmem176b-Cxcr6-5830411N06Rik-Lmo4-Il18r1-Atp2b1-Pde5a-Ccl5-Nkg7-Klrd1-AW112010-Klrc1-Gzma-Stmn1-Hmgn2-Pclaf-Tuba1b-Lyz2-Ifitm3-Fcer1g-Tyrobp-Cst3-Cd74-Igkc-Cd79a-H2-Ab1-H2-Eb1-loading_gene_id-expression';
     const customWorkerResponses = {
       ...mockWorkerResponses,
-      'loading_gene_id-expression': () => delayedResponse({ body: 'Not found', status: 404 }, 4000),
+      [ETag]: () => new Promise(() => { }),
     };
 
     dispatchWorkRequest
@@ -185,11 +188,17 @@ describe('HeatmapPlot', () => {
 
     // A new gene is being loaded
     await act(async () => {
-      storeState.dispatch(loadGeneExpression(experimentId, [...markerGenesData5.orderedGeneNames, 'loading_gene_id'], 'interactiveHeatmap', true));
+      storeState.dispatch(loadDownsampledGeneExpression(experimentId, [...markerGenesData5.orderedGeneNames, 'loading_gene_id'], 'interactiveHeatmap'));
     });
 
+    // Based on https://stackoverflow.com/a/70259755
+    // Sometimes changes don't seem to trigger rerender when they should in rtl
+    await act(async () => { jest.runOnlyPendingTimers(); });
+
     // Loading screen shows up
-    expect(screen.getByText(/Assigning a worker to your analysis/i)).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByText(/Assigning a worker to your analysis/i)).toBeInTheDocument();
+    });
   });
 
   it('Handles marker genes loading error correctly', async () => {
@@ -237,7 +246,7 @@ describe('HeatmapPlot', () => {
 
     // A new gene is being loaded
     await act(async () => {
-      await storeState.dispatch(loadGeneExpression(experimentId, [...markerGenesData5.orderedGeneNames, 'loading_gene_id'], 'interactiveHeatmap'));
+      await storeState.dispatch(loadDownsampledGeneExpression(experimentId, [...markerGenesData5.orderedGeneNames, 'loading_gene_id'], 'interactiveHeatmap'));
     });
 
     // Error screen shows up
@@ -308,7 +317,6 @@ describe('HeatmapPlot', () => {
 
     // The plots shows an empty message
     expect(screen.getByText(/Unhide some cell sets to show the heatmap/i)).toBeInTheDocument();
-
   });
 
   it('Reacts to cellClass groupby being changed', async () => {
