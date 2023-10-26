@@ -155,19 +155,6 @@ exports[`ComponentActions Dispatches loadGeneExpression action with the right li
       "Gzma",
     ],
   },
-  "type": "genes/expressionLoading",
-}
-`;
-
-exports[`ComponentActions Dispatches loadGeneExpression action with the right list of genes when Overwrite is clicked 2`] = `
-{
-  "payload": {
-    "componentUuid": "asd",
-    "experimentId": "1234",
-    "genes": [
-      "Gzma",
-    ],
-  },
   "type": "genes/expressionLoaded",
 }
 `;

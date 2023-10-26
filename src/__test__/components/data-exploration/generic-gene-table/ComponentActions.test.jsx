@@ -186,12 +186,11 @@ describe('ComponentActions', () => {
     menuButtons.props.children[2].props.onClick();
 
     // Wait for side-effect to propagate (properties loading and loaded).
-    await waitForActions(store, [GENES_EXPRESSION_LOADING, GENES_EXPRESSION_LOADED]);
+    await waitForActions(store, [GENES_EXPRESSION_LOADED]);
 
     expect(fetchWork).toHaveBeenCalledTimes(0);
 
-    expect(store.getActions().length).toEqual(2);
+    expect(store.getActions().length).toEqual(1);
     expect(store.getActions()[0]).toMatchSnapshot();
-    expect(store.getActions()[1]).toMatchSnapshot();
   });
 });
