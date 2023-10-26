@@ -1,6 +1,5 @@
 import dayjs from 'dayjs';
 
-import getAuthJWT from 'utils/getAuthJWT';
 import fetchAPI from 'utils/http/fetchAPI';
 
 const getWorkerTimeout = (taskName, defaultTimeout) => {
@@ -23,9 +22,6 @@ const dispatchWorkRequest = async (
   timeout,
   requestProps,
 ) => {
-  const { default: connectionPromise } = await import('utils/socketConnection');
-
-  const io = await connectionPromise;
   const { name: taskName } = body;
 
   // for listGenes, markerHeatmap, & getEmbedding we set a long timeout for the worker
@@ -36,12 +32,8 @@ const dispatchWorkRequest = async (
   // this should be removed if we make each request run in a different worker
   const workerTimeoutDate = getWorkerTimeout(taskName, timeout);
 
-  const authJWT = await getAuthJWT();
-
   const request = {
-    socketId: io.id,
     experimentId,
-    ...(authJWT && { Authorization: `Bearer ${authJWT}` }),
     timeout: workerTimeoutDate,
     body,
     ...requestProps,
