@@ -11,6 +11,7 @@ import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 
 import markerGenesData2 from '__test__/data/marker_genes_2.json';
 import markerGenesData5 from '__test__/data/marker_genes_5.json';
+import noCellsGeneExpression from '__test__/data/no_cells_genes_expression.json';
 import cellSetsData from '__test__/data/cell_sets.json';
 
 import { makeStore } from 'redux/store';
@@ -273,13 +274,10 @@ describe('HeatmapPlot', () => {
   });
 
   it('Shows an empty message when all cell sets are hidden ', async () => {
-    dispatchWorkRequest.mockReset();
-
-    // Mock each of the loadMarkerGenes calls caused by hiding a cell set
-    dispatchWorkRequest.mockImplementationOnce(dispatchWorkRequestMock(mockWorkerResponses));
-
-    // Last call (all the cellSets are hidden) throw the error
-    dispatchWorkRequest.mockImplementationOnce(() => Promise.reject(new Error('No cells found')));
+    dispatchWorkRequest
+      .mockReset()
+      // Mock each of the loadMarkerGenes calls caused by hiding a cell set
+      .mockImplementation(dispatchWorkRequestMock(mockWorkerResponses));
 
     await loadAndRenderDefaultHeatmap(storeState);
 
@@ -290,6 +288,11 @@ describe('HeatmapPlot', () => {
     const louvainClusterKeys = cellSetsData
       .cellSets.find(({ key: parentKey }) => parentKey === 'louvain')
       .children.map(({ key: cellSetKey }) => cellSetKey);
+
+    dispatchWorkRequest
+      .mockReset()
+      // Last call (all the cellSets are hidden) return empty
+      .mockImplementationOnce(() => Promise.resolve({ data: noCellsGeneExpression }));
 
     const hideAllCellsPromise = louvainClusterKeys.map(async (cellSetKey) => {
       storeState.dispatch(setCellSetHiddenStatus(cellSetKey));
