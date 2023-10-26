@@ -325,6 +325,10 @@ describe('HeatmapPlot', () => {
       );
     });
 
+    await act(() => {
+      jest.runAllTimers();
+    });
+
     // It doesn't reorder the genes
     expect(vitesscePropsSpy.uint8ObsFeatureMatrix).toMatchSnapshot();
     // It reorders correctly
