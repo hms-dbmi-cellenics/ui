@@ -75,7 +75,10 @@ describe('genesReducer', () => {
       ...getInitialState(),
       expression: {
         ...getInitialState().expression,
-        loading: ['geneA', 'geneB', 'geneC', 'geneD', 'geneE'],
+        full: {
+          ...getInitialState().expression.full,
+          loading: ['geneA', 'geneB', 'geneC', 'geneD', 'geneE'],
+        },
       },
     }, {
       type: GENES_EXPRESSION_LOADED,
