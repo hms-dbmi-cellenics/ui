@@ -74,7 +74,8 @@ const getWorkerTimeout = (taskName, defaultTimeout) => {
   switch (taskName) {
     case 'GetEmbedding':
     case 'ListGenes':
-    case 'MarkerHeatmap': {
+    case 'MarkerHeatmap':
+    case 'GetNormalizedExpression': {
       return dayjs().add(1800, 's').toISOString();
     }
 
