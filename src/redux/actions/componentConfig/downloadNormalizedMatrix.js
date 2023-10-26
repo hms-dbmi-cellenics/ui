@@ -28,7 +28,7 @@ const downloadNormalizedMatrix = (
       dispatch,
     );
 
-    downloadFromUrl(writeToFileURL(data), 'NormalizedExpression.csv');
+    downloadFromUrl(writeToFileURL(data), 'NormalizedExpression.csv.gz');
 
     dispatch({
       type: PLOT_DATA_LOADED,
