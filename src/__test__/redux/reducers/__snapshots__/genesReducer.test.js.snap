@@ -3,105 +3,112 @@
 exports[`genesReducer Deselecting all genes updates to empty list 1`] = `
 {
   "expression": {
-    "downsampledCellOrder": [],
-    "downsampledMatrix": ExpressionMatrix {
-      "geneIndexes": {},
-      "rawGeneExpressions": {
-        "datatype": undefined,
-        "index": [],
-        "mathjs": "SparseMatrix",
-        "ptr": [
-          0,
-        ],
-        "size": [
-          0,
-          0,
-        ],
-        "values": [],
-      },
-      "setGeneExpression": [Function],
-      "stats": {
-        "rawMean": [],
-        "rawStdev": [],
-        "truncatedMax": [],
-        "truncatedMin": [],
-      },
-      "truncatedGeneExpressions": {
-        "datatype": undefined,
-        "index": [],
-        "mathjs": "SparseMatrix",
-        "ptr": [
-          0,
-        ],
-        "size": [
-          0,
-          0,
-        ],
-        "values": [],
-      },
-      "zScore": {
-        "datatype": undefined,
-        "index": [],
-        "mathjs": "SparseMatrix",
-        "ptr": [
-          0,
-        ],
-        "size": [
-          0,
-          0,
-        ],
-        "values": [],
+    "downsampled": {
+      "ETag": null,
+      "cellOrder": [],
+      "error": false,
+      "loading": [],
+      "matrix": ExpressionMatrix {
+        "geneIndexes": {},
+        "rawGeneExpressions": {
+          "datatype": undefined,
+          "index": [],
+          "mathjs": "SparseMatrix",
+          "ptr": [
+            0,
+          ],
+          "size": [
+            0,
+            0,
+          ],
+          "values": [],
+        },
+        "setGeneExpression": [Function],
+        "stats": {
+          "rawMean": [],
+          "rawStdev": [],
+          "truncatedMax": [],
+          "truncatedMin": [],
+        },
+        "truncatedGeneExpressions": {
+          "datatype": undefined,
+          "index": [],
+          "mathjs": "SparseMatrix",
+          "ptr": [
+            0,
+          ],
+          "size": [
+            0,
+            0,
+          ],
+          "values": [],
+        },
+        "zScore": {
+          "datatype": undefined,
+          "index": [],
+          "mathjs": "SparseMatrix",
+          "ptr": [
+            0,
+          ],
+          "size": [
+            0,
+            0,
+          ],
+          "values": [],
+        },
       },
     },
-    "error": false,
-    "loading": [],
-    "matrix": ExpressionMatrix {
-      "geneIndexes": {},
-      "rawGeneExpressions": {
-        "datatype": undefined,
-        "index": [],
-        "mathjs": "SparseMatrix",
-        "ptr": [
-          0,
-        ],
-        "size": [
-          0,
-          0,
-        ],
-        "values": [],
-      },
-      "setGeneExpression": [Function],
-      "stats": {
-        "rawMean": [],
-        "rawStdev": [],
-        "truncatedMax": [],
-        "truncatedMin": [],
-      },
-      "truncatedGeneExpressions": {
-        "datatype": undefined,
-        "index": [],
-        "mathjs": "SparseMatrix",
-        "ptr": [
-          0,
-        ],
-        "size": [
-          0,
-          0,
-        ],
-        "values": [],
-      },
-      "zScore": {
-        "datatype": undefined,
-        "index": [],
-        "mathjs": "SparseMatrix",
-        "ptr": [
-          0,
-        ],
-        "size": [
-          0,
-          0,
-        ],
-        "values": [],
+    "full": {
+      "error": false,
+      "loading": [],
+      "matrix": ExpressionMatrix {
+        "geneIndexes": {},
+        "rawGeneExpressions": {
+          "datatype": undefined,
+          "index": [],
+          "mathjs": "SparseMatrix",
+          "ptr": [
+            0,
+          ],
+          "size": [
+            0,
+            0,
+          ],
+          "values": [],
+        },
+        "setGeneExpression": [Function],
+        "stats": {
+          "rawMean": [],
+          "rawStdev": [],
+          "truncatedMax": [],
+          "truncatedMin": [],
+        },
+        "truncatedGeneExpressions": {
+          "datatype": undefined,
+          "index": [],
+          "mathjs": "SparseMatrix",
+          "ptr": [
+            0,
+          ],
+          "size": [
+            0,
+            0,
+          ],
+          "values": [],
+        },
+        "zScore": {
+          "datatype": undefined,
+          "index": [],
+          "mathjs": "SparseMatrix",
+          "ptr": [
+            0,
+          ],
+          "size": [
+            0,
+            0,
+          ],
+          "values": [],
+        },
       },
     },
     "views": {},
@@ -124,105 +131,112 @@ exports[`genesReducer Deselecting all genes updates to empty list 1`] = `
 exports[`genesReducer Deselecting non-selected genes is handled gracefully 1`] = `
 {
   "expression": {
-    "downsampledCellOrder": [],
-    "downsampledMatrix": ExpressionMatrix {
-      "geneIndexes": {},
-      "rawGeneExpressions": {
-        "datatype": undefined,
-        "index": [],
-        "mathjs": "SparseMatrix",
-        "ptr": [
-          0,
-        ],
-        "size": [
-          0,
-          0,
-        ],
-        "values": [],
-      },
-      "setGeneExpression": [Function],
-      "stats": {
-        "rawMean": [],
-        "rawStdev": [],
-        "truncatedMax": [],
-        "truncatedMin": [],
-      },
-      "truncatedGeneExpressions": {
-        "datatype": undefined,
-        "index": [],
-        "mathjs": "SparseMatrix",
-        "ptr": [
-          0,
-        ],
-        "size": [
-          0,
-          0,
-        ],
-        "values": [],
-      },
-      "zScore": {
-        "datatype": undefined,
-        "index": [],
-        "mathjs": "SparseMatrix",
-        "ptr": [
-          0,
-        ],
-        "size": [
-          0,
-          0,
-        ],
-        "values": [],
+    "downsampled": {
+      "ETag": null,
+      "cellOrder": [],
+      "error": false,
+      "loading": [],
+      "matrix": ExpressionMatrix {
+        "geneIndexes": {},
+        "rawGeneExpressions": {
+          "datatype": undefined,
+          "index": [],
+          "mathjs": "SparseMatrix",
+          "ptr": [
+            0,
+          ],
+          "size": [
+            0,
+            0,
+          ],
+          "values": [],
+        },
+        "setGeneExpression": [Function],
+        "stats": {
+          "rawMean": [],
+          "rawStdev": [],
+          "truncatedMax": [],
+          "truncatedMin": [],
+        },
+        "truncatedGeneExpressions": {
+          "datatype": undefined,
+          "index": [],
+          "mathjs": "SparseMatrix",
+          "ptr": [
+            0,
+          ],
+          "size": [
+            0,
+            0,
+          ],
+          "values": [],
+        },
+        "zScore": {
+          "datatype": undefined,
+          "index": [],
+          "mathjs": "SparseMatrix",
+          "ptr": [
+            0,
+          ],
+          "size": [
+            0,
+            0,
+          ],
+          "values": [],
+        },
       },
     },
-    "error": false,
-    "loading": [],
-    "matrix": ExpressionMatrix {
-      "geneIndexes": {},
-      "rawGeneExpressions": {
-        "datatype": undefined,
-        "index": [],
-        "mathjs": "SparseMatrix",
-        "ptr": [
-          0,
-        ],
-        "size": [
-          0,
-          0,
-        ],
-        "values": [],
-      },
-      "setGeneExpression": [Function],
-      "stats": {
-        "rawMean": [],
-        "rawStdev": [],
-        "truncatedMax": [],
-        "truncatedMin": [],
-      },
-      "truncatedGeneExpressions": {
-        "datatype": undefined,
-        "index": [],
-        "mathjs": "SparseMatrix",
-        "ptr": [
-          0,
-        ],
-        "size": [
-          0,
-          0,
-        ],
-        "values": [],
-      },
-      "zScore": {
-        "datatype": undefined,
-        "index": [],
-        "mathjs": "SparseMatrix",
-        "ptr": [
-          0,
-        ],
-        "size": [
-          0,
-          0,
-        ],
-        "values": [],
+    "full": {
+      "error": false,
+      "loading": [],
+      "matrix": ExpressionMatrix {
+        "geneIndexes": {},
+        "rawGeneExpressions": {
+          "datatype": undefined,
+          "index": [],
+          "mathjs": "SparseMatrix",
+          "ptr": [
+            0,
+          ],
+          "size": [
+            0,
+            0,
+          ],
+          "values": [],
+        },
+        "setGeneExpression": [Function],
+        "stats": {
+          "rawMean": [],
+          "rawStdev": [],
+          "truncatedMax": [],
+          "truncatedMin": [],
+        },
+        "truncatedGeneExpressions": {
+          "datatype": undefined,
+          "index": [],
+          "mathjs": "SparseMatrix",
+          "ptr": [
+            0,
+          ],
+          "size": [
+            0,
+            0,
+          ],
+          "values": [],
+        },
+        "zScore": {
+          "datatype": undefined,
+          "index": [],
+          "mathjs": "SparseMatrix",
+          "ptr": [
+            0,
+          ],
+          "size": [
+            0,
+            0,
+          ],
+          "values": [],
+        },
       },
     },
     "views": {},
@@ -249,105 +263,112 @@ exports[`genesReducer Deselecting non-selected genes is handled gracefully 1`] =
 exports[`genesReducer Deselecting part of all genes updates list as set 1`] = `
 {
   "expression": {
-    "downsampledCellOrder": [],
-    "downsampledMatrix": ExpressionMatrix {
-      "geneIndexes": {},
-      "rawGeneExpressions": {
-        "datatype": undefined,
-        "index": [],
-        "mathjs": "SparseMatrix",
-        "ptr": [
-          0,
-        ],
-        "size": [
-          0,
-          0,
-        ],
-        "values": [],
-      },
-      "setGeneExpression": [Function],
-      "stats": {
-        "rawMean": [],
-        "rawStdev": [],
-        "truncatedMax": [],
-        "truncatedMin": [],
-      },
-      "truncatedGeneExpressions": {
-        "datatype": undefined,
-        "index": [],
-        "mathjs": "SparseMatrix",
-        "ptr": [
-          0,
-        ],
-        "size": [
-          0,
-          0,
-        ],
-        "values": [],
-      },
-      "zScore": {
-        "datatype": undefined,
-        "index": [],
-        "mathjs": "SparseMatrix",
-        "ptr": [
-          0,
-        ],
-        "size": [
-          0,
-          0,
-        ],
-        "values": [],
+    "downsampled": {
+      "ETag": null,
+      "cellOrder": [],
+      "error": false,
+      "loading": [],
+      "matrix": ExpressionMatrix {
+        "geneIndexes": {},
+        "rawGeneExpressions": {
+          "datatype": undefined,
+          "index": [],
+          "mathjs": "SparseMatrix",
+          "ptr": [
+            0,
+          ],
+          "size": [
+            0,
+            0,
+          ],
+          "values": [],
+        },
+        "setGeneExpression": [Function],
+        "stats": {
+          "rawMean": [],
+          "rawStdev": [],
+          "truncatedMax": [],
+          "truncatedMin": [],
+        },
+        "truncatedGeneExpressions": {
+          "datatype": undefined,
+          "index": [],
+          "mathjs": "SparseMatrix",
+          "ptr": [
+            0,
+          ],
+          "size": [
+            0,
+            0,
+          ],
+          "values": [],
+        },
+        "zScore": {
+          "datatype": undefined,
+          "index": [],
+          "mathjs": "SparseMatrix",
+          "ptr": [
+            0,
+          ],
+          "size": [
+            0,
+            0,
+          ],
+          "values": [],
+        },
       },
     },
-    "error": false,
-    "loading": [],
-    "matrix": ExpressionMatrix {
-      "geneIndexes": {},
-      "rawGeneExpressions": {
-        "datatype": undefined,
-        "index": [],
-        "mathjs": "SparseMatrix",
-        "ptr": [
-          0,
-        ],
-        "size": [
-          0,
-          0,
-        ],
-        "values": [],
-      },
-      "setGeneExpression": [Function],
-      "stats": {
-        "rawMean": [],
-        "rawStdev": [],
-        "truncatedMax": [],
-        "truncatedMin": [],
-      },
-      "truncatedGeneExpressions": {
-        "datatype": undefined,
-        "index": [],
-        "mathjs": "SparseMatrix",
-        "ptr": [
-          0,
-        ],
-        "size": [
-          0,
-          0,
-        ],
-        "values": [],
-      },
-      "zScore": {
-        "datatype": undefined,
-        "index": [],
-        "mathjs": "SparseMatrix",
-        "ptr": [
-          0,
-        ],
-        "size": [
-          0,
-          0,
-        ],
-        "values": [],
+    "full": {
+      "error": false,
+      "loading": [],
+      "matrix": ExpressionMatrix {
+        "geneIndexes": {},
+        "rawGeneExpressions": {
+          "datatype": undefined,
+          "index": [],
+          "mathjs": "SparseMatrix",
+          "ptr": [
+            0,
+          ],
+          "size": [
+            0,
+            0,
+          ],
+          "values": [],
+        },
+        "setGeneExpression": [Function],
+        "stats": {
+          "rawMean": [],
+          "rawStdev": [],
+          "truncatedMax": [],
+          "truncatedMin": [],
+        },
+        "truncatedGeneExpressions": {
+          "datatype": undefined,
+          "index": [],
+          "mathjs": "SparseMatrix",
+          "ptr": [
+            0,
+          ],
+          "size": [
+            0,
+            0,
+          ],
+          "values": [],
+        },
+        "zScore": {
+          "datatype": undefined,
+          "index": [],
+          "mathjs": "SparseMatrix",
+          "ptr": [
+            0,
+          ],
+          "size": [
+            0,
+            0,
+          ],
+          "values": [],
+        },
       },
     },
     "views": {},
@@ -373,105 +394,112 @@ exports[`genesReducer Deselecting part of all genes updates list as set 1`] = `
 exports[`genesReducer Error state handled appropriately 1`] = `
 {
   "expression": {
-    "downsampledCellOrder": [],
-    "downsampledMatrix": ExpressionMatrix {
-      "geneIndexes": {},
-      "rawGeneExpressions": {
-        "datatype": undefined,
-        "index": [],
-        "mathjs": "SparseMatrix",
-        "ptr": [
-          0,
-        ],
-        "size": [
-          0,
-          0,
-        ],
-        "values": [],
-      },
-      "setGeneExpression": [Function],
-      "stats": {
-        "rawMean": [],
-        "rawStdev": [],
-        "truncatedMax": [],
-        "truncatedMin": [],
-      },
-      "truncatedGeneExpressions": {
-        "datatype": undefined,
-        "index": [],
-        "mathjs": "SparseMatrix",
-        "ptr": [
-          0,
-        ],
-        "size": [
-          0,
-          0,
-        ],
-        "values": [],
-      },
-      "zScore": {
-        "datatype": undefined,
-        "index": [],
-        "mathjs": "SparseMatrix",
-        "ptr": [
-          0,
-        ],
-        "size": [
-          0,
-          0,
-        ],
-        "values": [],
+    "downsampled": {
+      "ETag": null,
+      "cellOrder": [],
+      "error": false,
+      "loading": [],
+      "matrix": ExpressionMatrix {
+        "geneIndexes": {},
+        "rawGeneExpressions": {
+          "datatype": undefined,
+          "index": [],
+          "mathjs": "SparseMatrix",
+          "ptr": [
+            0,
+          ],
+          "size": [
+            0,
+            0,
+          ],
+          "values": [],
+        },
+        "setGeneExpression": [Function],
+        "stats": {
+          "rawMean": [],
+          "rawStdev": [],
+          "truncatedMax": [],
+          "truncatedMin": [],
+        },
+        "truncatedGeneExpressions": {
+          "datatype": undefined,
+          "index": [],
+          "mathjs": "SparseMatrix",
+          "ptr": [
+            0,
+          ],
+          "size": [
+            0,
+            0,
+          ],
+          "values": [],
+        },
+        "zScore": {
+          "datatype": undefined,
+          "index": [],
+          "mathjs": "SparseMatrix",
+          "ptr": [
+            0,
+          ],
+          "size": [
+            0,
+            0,
+          ],
+          "values": [],
+        },
       },
     },
-    "error": false,
-    "loading": [],
-    "matrix": ExpressionMatrix {
-      "geneIndexes": {},
-      "rawGeneExpressions": {
-        "datatype": undefined,
-        "index": [],
-        "mathjs": "SparseMatrix",
-        "ptr": [
-          0,
-        ],
-        "size": [
-          0,
-          0,
-        ],
-        "values": [],
-      },
-      "setGeneExpression": [Function],
-      "stats": {
-        "rawMean": [],
-        "rawStdev": [],
-        "truncatedMax": [],
-        "truncatedMin": [],
-      },
-      "truncatedGeneExpressions": {
-        "datatype": undefined,
-        "index": [],
-        "mathjs": "SparseMatrix",
-        "ptr": [
-          0,
-        ],
-        "size": [
-          0,
-          0,
-        ],
-        "values": [],
-      },
-      "zScore": {
-        "datatype": undefined,
-        "index": [],
-        "mathjs": "SparseMatrix",
-        "ptr": [
-          0,
-        ],
-        "size": [
-          0,
-          0,
-        ],
-        "values": [],
+    "full": {
+      "error": false,
+      "loading": [],
+      "matrix": ExpressionMatrix {
+        "geneIndexes": {},
+        "rawGeneExpressions": {
+          "datatype": undefined,
+          "index": [],
+          "mathjs": "SparseMatrix",
+          "ptr": [
+            0,
+          ],
+          "size": [
+            0,
+            0,
+          ],
+          "values": [],
+        },
+        "setGeneExpression": [Function],
+        "stats": {
+          "rawMean": [],
+          "rawStdev": [],
+          "truncatedMax": [],
+          "truncatedMin": [],
+        },
+        "truncatedGeneExpressions": {
+          "datatype": undefined,
+          "index": [],
+          "mathjs": "SparseMatrix",
+          "ptr": [
+            0,
+          ],
+          "size": [
+            0,
+            0,
+          ],
+          "values": [],
+        },
+        "zScore": {
+          "datatype": undefined,
+          "index": [],
+          "mathjs": "SparseMatrix",
+          "ptr": [
+            0,
+          ],
+          "size": [
+            0,
+            0,
+          ],
+          "values": [],
+        },
       },
     },
     "views": {},
@@ -764,105 +792,112 @@ exports[`genesReducer Expression loaded state handled appropriately when other t
 exports[`genesReducer Loaded paginated state handled appropriately 1`] = `
 {
   "expression": {
-    "downsampledCellOrder": [],
-    "downsampledMatrix": ExpressionMatrix {
-      "geneIndexes": {},
-      "rawGeneExpressions": {
-        "datatype": undefined,
-        "index": [],
-        "mathjs": "SparseMatrix",
-        "ptr": [
-          0,
-        ],
-        "size": [
-          0,
-          0,
-        ],
-        "values": [],
-      },
-      "setGeneExpression": [Function],
-      "stats": {
-        "rawMean": [],
-        "rawStdev": [],
-        "truncatedMax": [],
-        "truncatedMin": [],
-      },
-      "truncatedGeneExpressions": {
-        "datatype": undefined,
-        "index": [],
-        "mathjs": "SparseMatrix",
-        "ptr": [
-          0,
-        ],
-        "size": [
-          0,
-          0,
-        ],
-        "values": [],
-      },
-      "zScore": {
-        "datatype": undefined,
-        "index": [],
-        "mathjs": "SparseMatrix",
-        "ptr": [
-          0,
-        ],
-        "size": [
-          0,
-          0,
-        ],
-        "values": [],
+    "downsampled": {
+      "ETag": null,
+      "cellOrder": [],
+      "error": false,
+      "loading": [],
+      "matrix": ExpressionMatrix {
+        "geneIndexes": {},
+        "rawGeneExpressions": {
+          "datatype": undefined,
+          "index": [],
+          "mathjs": "SparseMatrix",
+          "ptr": [
+            0,
+          ],
+          "size": [
+            0,
+            0,
+          ],
+          "values": [],
+        },
+        "setGeneExpression": [Function],
+        "stats": {
+          "rawMean": [],
+          "rawStdev": [],
+          "truncatedMax": [],
+          "truncatedMin": [],
+        },
+        "truncatedGeneExpressions": {
+          "datatype": undefined,
+          "index": [],
+          "mathjs": "SparseMatrix",
+          "ptr": [
+            0,
+          ],
+          "size": [
+            0,
+            0,
+          ],
+          "values": [],
+        },
+        "zScore": {
+          "datatype": undefined,
+          "index": [],
+          "mathjs": "SparseMatrix",
+          "ptr": [
+            0,
+          ],
+          "size": [
+            0,
+            0,
+          ],
+          "values": [],
+        },
       },
     },
-    "error": false,
-    "loading": [],
-    "matrix": ExpressionMatrix {
-      "geneIndexes": {},
-      "rawGeneExpressions": {
-        "datatype": undefined,
-        "index": [],
-        "mathjs": "SparseMatrix",
-        "ptr": [
-          0,
-        ],
-        "size": [
-          0,
-          0,
-        ],
-        "values": [],
-      },
-      "setGeneExpression": [Function],
-      "stats": {
-        "rawMean": [],
-        "rawStdev": [],
-        "truncatedMax": [],
-        "truncatedMin": [],
-      },
-      "truncatedGeneExpressions": {
-        "datatype": undefined,
-        "index": [],
-        "mathjs": "SparseMatrix",
-        "ptr": [
-          0,
-        ],
-        "size": [
-          0,
-          0,
-        ],
-        "values": [],
-      },
-      "zScore": {
-        "datatype": undefined,
-        "index": [],
-        "mathjs": "SparseMatrix",
-        "ptr": [
-          0,
-        ],
-        "size": [
-          0,
-          0,
-        ],
-        "values": [],
+    "full": {
+      "error": false,
+      "loading": [],
+      "matrix": ExpressionMatrix {
+        "geneIndexes": {},
+        "rawGeneExpressions": {
+          "datatype": undefined,
+          "index": [],
+          "mathjs": "SparseMatrix",
+          "ptr": [
+            0,
+          ],
+          "size": [
+            0,
+            0,
+          ],
+          "values": [],
+        },
+        "setGeneExpression": [Function],
+        "stats": {
+          "rawMean": [],
+          "rawStdev": [],
+          "truncatedMax": [],
+          "truncatedMin": [],
+        },
+        "truncatedGeneExpressions": {
+          "datatype": undefined,
+          "index": [],
+          "mathjs": "SparseMatrix",
+          "ptr": [
+            0,
+          ],
+          "size": [
+            0,
+            0,
+          ],
+          "values": [],
+        },
+        "zScore": {
+          "datatype": undefined,
+          "index": [],
+          "mathjs": "SparseMatrix",
+          "ptr": [
+            0,
+          ],
+          "size": [
+            0,
+            0,
+          ],
+          "values": [],
+        },
       },
     },
     "views": {},
@@ -906,105 +941,112 @@ exports[`genesReducer Loaded paginated state handled appropriately 1`] = `
 exports[`genesReducer Loaded paginated state handled appropriately when other things are still loading 1`] = `
 {
   "expression": {
-    "downsampledCellOrder": [],
-    "downsampledMatrix": ExpressionMatrix {
-      "geneIndexes": {},
-      "rawGeneExpressions": {
-        "datatype": undefined,
-        "index": [],
-        "mathjs": "SparseMatrix",
-        "ptr": [
-          0,
-        ],
-        "size": [
-          0,
-          0,
-        ],
-        "values": [],
-      },
-      "setGeneExpression": [Function],
-      "stats": {
-        "rawMean": [],
-        "rawStdev": [],
-        "truncatedMax": [],
-        "truncatedMin": [],
-      },
-      "truncatedGeneExpressions": {
-        "datatype": undefined,
-        "index": [],
-        "mathjs": "SparseMatrix",
-        "ptr": [
-          0,
-        ],
-        "size": [
-          0,
-          0,
-        ],
-        "values": [],
-      },
-      "zScore": {
-        "datatype": undefined,
-        "index": [],
-        "mathjs": "SparseMatrix",
-        "ptr": [
-          0,
-        ],
-        "size": [
-          0,
-          0,
-        ],
-        "values": [],
+    "downsampled": {
+      "ETag": null,
+      "cellOrder": [],
+      "error": false,
+      "loading": [],
+      "matrix": ExpressionMatrix {
+        "geneIndexes": {},
+        "rawGeneExpressions": {
+          "datatype": undefined,
+          "index": [],
+          "mathjs": "SparseMatrix",
+          "ptr": [
+            0,
+          ],
+          "size": [
+            0,
+            0,
+          ],
+          "values": [],
+        },
+        "setGeneExpression": [Function],
+        "stats": {
+          "rawMean": [],
+          "rawStdev": [],
+          "truncatedMax": [],
+          "truncatedMin": [],
+        },
+        "truncatedGeneExpressions": {
+          "datatype": undefined,
+          "index": [],
+          "mathjs": "SparseMatrix",
+          "ptr": [
+            0,
+          ],
+          "size": [
+            0,
+            0,
+          ],
+          "values": [],
+        },
+        "zScore": {
+          "datatype": undefined,
+          "index": [],
+          "mathjs": "SparseMatrix",
+          "ptr": [
+            0,
+          ],
+          "size": [
+            0,
+            0,
+          ],
+          "values": [],
+        },
       },
     },
-    "error": false,
-    "loading": [],
-    "matrix": ExpressionMatrix {
-      "geneIndexes": {},
-      "rawGeneExpressions": {
-        "datatype": undefined,
-        "index": [],
-        "mathjs": "SparseMatrix",
-        "ptr": [
-          0,
-        ],
-        "size": [
-          0,
-          0,
-        ],
-        "values": [],
-      },
-      "setGeneExpression": [Function],
-      "stats": {
-        "rawMean": [],
-        "rawStdev": [],
-        "truncatedMax": [],
-        "truncatedMin": [],
-      },
-      "truncatedGeneExpressions": {
-        "datatype": undefined,
-        "index": [],
-        "mathjs": "SparseMatrix",
-        "ptr": [
-          0,
-        ],
-        "size": [
-          0,
-          0,
-        ],
-        "values": [],
-      },
-      "zScore": {
-        "datatype": undefined,
-        "index": [],
-        "mathjs": "SparseMatrix",
-        "ptr": [
-          0,
-        ],
-        "size": [
-          0,
-          0,
-        ],
-        "values": [],
+    "full": {
+      "error": false,
+      "loading": [],
+      "matrix": ExpressionMatrix {
+        "geneIndexes": {},
+        "rawGeneExpressions": {
+          "datatype": undefined,
+          "index": [],
+          "mathjs": "SparseMatrix",
+          "ptr": [
+            0,
+          ],
+          "size": [
+            0,
+            0,
+          ],
+          "values": [],
+        },
+        "setGeneExpression": [Function],
+        "stats": {
+          "rawMean": [],
+          "rawStdev": [],
+          "truncatedMax": [],
+          "truncatedMin": [],
+        },
+        "truncatedGeneExpressions": {
+          "datatype": undefined,
+          "index": [],
+          "mathjs": "SparseMatrix",
+          "ptr": [
+            0,
+          ],
+          "size": [
+            0,
+            0,
+          ],
+          "values": [],
+        },
+        "zScore": {
+          "datatype": undefined,
+          "index": [],
+          "mathjs": "SparseMatrix",
+          "ptr": [
+            0,
+          ],
+          "size": [
+            0,
+            0,
+          ],
+          "values": [],
+        },
       },
     },
     "views": {},
@@ -1051,105 +1093,112 @@ exports[`genesReducer Loaded paginated state handled appropriately when other th
 exports[`genesReducer Loading on error state causes error to reset 1`] = `
 {
   "expression": {
-    "downsampledCellOrder": [],
-    "downsampledMatrix": ExpressionMatrix {
-      "geneIndexes": {},
-      "rawGeneExpressions": {
-        "datatype": undefined,
-        "index": [],
-        "mathjs": "SparseMatrix",
-        "ptr": [
-          0,
-        ],
-        "size": [
-          0,
-          0,
-        ],
-        "values": [],
-      },
-      "setGeneExpression": [Function],
-      "stats": {
-        "rawMean": [],
-        "rawStdev": [],
-        "truncatedMax": [],
-        "truncatedMin": [],
-      },
-      "truncatedGeneExpressions": {
-        "datatype": undefined,
-        "index": [],
-        "mathjs": "SparseMatrix",
-        "ptr": [
-          0,
-        ],
-        "size": [
-          0,
-          0,
-        ],
-        "values": [],
-      },
-      "zScore": {
-        "datatype": undefined,
-        "index": [],
-        "mathjs": "SparseMatrix",
-        "ptr": [
-          0,
-        ],
-        "size": [
-          0,
-          0,
-        ],
-        "values": [],
+    "downsampled": {
+      "ETag": null,
+      "cellOrder": [],
+      "error": false,
+      "loading": [],
+      "matrix": ExpressionMatrix {
+        "geneIndexes": {},
+        "rawGeneExpressions": {
+          "datatype": undefined,
+          "index": [],
+          "mathjs": "SparseMatrix",
+          "ptr": [
+            0,
+          ],
+          "size": [
+            0,
+            0,
+          ],
+          "values": [],
+        },
+        "setGeneExpression": [Function],
+        "stats": {
+          "rawMean": [],
+          "rawStdev": [],
+          "truncatedMax": [],
+          "truncatedMin": [],
+        },
+        "truncatedGeneExpressions": {
+          "datatype": undefined,
+          "index": [],
+          "mathjs": "SparseMatrix",
+          "ptr": [
+            0,
+          ],
+          "size": [
+            0,
+            0,
+          ],
+          "values": [],
+        },
+        "zScore": {
+          "datatype": undefined,
+          "index": [],
+          "mathjs": "SparseMatrix",
+          "ptr": [
+            0,
+          ],
+          "size": [
+            0,
+            0,
+          ],
+          "values": [],
+        },
       },
     },
-    "error": false,
-    "loading": [],
-    "matrix": ExpressionMatrix {
-      "geneIndexes": {},
-      "rawGeneExpressions": {
-        "datatype": undefined,
-        "index": [],
-        "mathjs": "SparseMatrix",
-        "ptr": [
-          0,
-        ],
-        "size": [
-          0,
-          0,
-        ],
-        "values": [],
-      },
-      "setGeneExpression": [Function],
-      "stats": {
-        "rawMean": [],
-        "rawStdev": [],
-        "truncatedMax": [],
-        "truncatedMin": [],
-      },
-      "truncatedGeneExpressions": {
-        "datatype": undefined,
-        "index": [],
-        "mathjs": "SparseMatrix",
-        "ptr": [
-          0,
-        ],
-        "size": [
-          0,
-          0,
-        ],
-        "values": [],
-      },
-      "zScore": {
-        "datatype": undefined,
-        "index": [],
-        "mathjs": "SparseMatrix",
-        "ptr": [
-          0,
-        ],
-        "size": [
-          0,
-          0,
-        ],
-        "values": [],
+    "full": {
+      "error": false,
+      "loading": [],
+      "matrix": ExpressionMatrix {
+        "geneIndexes": {},
+        "rawGeneExpressions": {
+          "datatype": undefined,
+          "index": [],
+          "mathjs": "SparseMatrix",
+          "ptr": [
+            0,
+          ],
+          "size": [
+            0,
+            0,
+          ],
+          "values": [],
+        },
+        "setGeneExpression": [Function],
+        "stats": {
+          "rawMean": [],
+          "rawStdev": [],
+          "truncatedMax": [],
+          "truncatedMin": [],
+        },
+        "truncatedGeneExpressions": {
+          "datatype": undefined,
+          "index": [],
+          "mathjs": "SparseMatrix",
+          "ptr": [
+            0,
+          ],
+          "size": [
+            0,
+            0,
+          ],
+          "values": [],
+        },
+        "zScore": {
+          "datatype": undefined,
+          "index": [],
+          "mathjs": "SparseMatrix",
+          "ptr": [
+            0,
+          ],
+          "size": [
+            0,
+            0,
+          ],
+          "values": [],
+        },
       },
     },
     "views": {},
@@ -1181,109 +1230,117 @@ exports[`genesReducer Loading on error state causes error to reset 1`] = `
 exports[`genesReducer Multiple components loading some of same expression triggers appropriate action 1`] = `
 {
   "expression": {
-    "downsampledCellOrder": [],
-    "downsampledMatrix": ExpressionMatrix {
-      "geneIndexes": {},
-      "rawGeneExpressions": {
-        "datatype": undefined,
-        "index": [],
-        "mathjs": "SparseMatrix",
-        "ptr": [
-          0,
-        ],
-        "size": [
-          0,
-          0,
-        ],
-        "values": [],
-      },
-      "setGeneExpression": [Function],
-      "stats": {
-        "rawMean": [],
-        "rawStdev": [],
-        "truncatedMax": [],
-        "truncatedMin": [],
-      },
-      "truncatedGeneExpressions": {
-        "datatype": undefined,
-        "index": [],
-        "mathjs": "SparseMatrix",
-        "ptr": [
-          0,
-        ],
-        "size": [
-          0,
-          0,
-        ],
-        "values": [],
-      },
-      "zScore": {
-        "datatype": undefined,
-        "index": [],
-        "mathjs": "SparseMatrix",
-        "ptr": [
-          0,
-        ],
-        "size": [
-          0,
-          0,
-        ],
-        "values": [],
+    "downsampled": {
+      "ETag": null,
+      "cellOrder": [],
+      "error": false,
+      "loading": [],
+      "matrix": ExpressionMatrix {
+        "geneIndexes": {},
+        "rawGeneExpressions": {
+          "datatype": undefined,
+          "index": [],
+          "mathjs": "SparseMatrix",
+          "ptr": [
+            0,
+          ],
+          "size": [
+            0,
+            0,
+          ],
+          "values": [],
+        },
+        "setGeneExpression": [Function],
+        "stats": {
+          "rawMean": [],
+          "rawStdev": [],
+          "truncatedMax": [],
+          "truncatedMin": [],
+        },
+        "truncatedGeneExpressions": {
+          "datatype": undefined,
+          "index": [],
+          "mathjs": "SparseMatrix",
+          "ptr": [
+            0,
+          ],
+          "size": [
+            0,
+            0,
+          ],
+          "values": [],
+        },
+        "zScore": {
+          "datatype": undefined,
+          "index": [],
+          "mathjs": "SparseMatrix",
+          "ptr": [
+            0,
+          ],
+          "size": [
+            0,
+            0,
+          ],
+          "values": [],
+        },
       },
     },
     "error": false,
-    "loading": [
-      "a",
-      "b",
-      "c",
-    ],
-    "matrix": ExpressionMatrix {
-      "geneIndexes": {},
-      "rawGeneExpressions": {
-        "datatype": undefined,
-        "index": [],
-        "mathjs": "SparseMatrix",
-        "ptr": [
-          0,
-        ],
-        "size": [
-          0,
-          0,
-        ],
-        "values": [],
-      },
-      "setGeneExpression": [Function],
-      "stats": {
-        "rawMean": [],
-        "rawStdev": [],
-        "truncatedMax": [],
-        "truncatedMin": [],
-      },
-      "truncatedGeneExpressions": {
-        "datatype": undefined,
-        "index": [],
-        "mathjs": "SparseMatrix",
-        "ptr": [
-          0,
-        ],
-        "size": [
-          0,
-          0,
-        ],
-        "values": [],
-      },
-      "zScore": {
-        "datatype": undefined,
-        "index": [],
-        "mathjs": "SparseMatrix",
-        "ptr": [
-          0,
-        ],
-        "size": [
-          0,
-          0,
-        ],
-        "values": [],
+    "full": {
+      "error": false,
+      "loading": [
+        "a",
+        "b",
+        "c",
+      ],
+      "matrix": ExpressionMatrix {
+        "geneIndexes": {},
+        "rawGeneExpressions": {
+          "datatype": undefined,
+          "index": [],
+          "mathjs": "SparseMatrix",
+          "ptr": [
+            0,
+          ],
+          "size": [
+            0,
+            0,
+          ],
+          "values": [],
+        },
+        "setGeneExpression": [Function],
+        "stats": {
+          "rawMean": [],
+          "rawStdev": [],
+          "truncatedMax": [],
+          "truncatedMin": [],
+        },
+        "truncatedGeneExpressions": {
+          "datatype": undefined,
+          "index": [],
+          "mathjs": "SparseMatrix",
+          "ptr": [
+            0,
+          ],
+          "size": [
+            0,
+            0,
+          ],
+          "values": [],
+        },
+        "zScore": {
+          "datatype": undefined,
+          "index": [],
+          "mathjs": "SparseMatrix",
+          "ptr": [
+            0,
+          ],
+          "size": [
+            0,
+            0,
+          ],
+          "values": [],
+        },
       },
     },
     "views": {
@@ -1317,105 +1374,112 @@ exports[`genesReducer Multiple components loading some of same expression trigge
 exports[`genesReducer Multiple components loading some of same property triggers appropriate action 1`] = `
 {
   "expression": {
-    "downsampledCellOrder": [],
-    "downsampledMatrix": ExpressionMatrix {
-      "geneIndexes": {},
-      "rawGeneExpressions": {
-        "datatype": undefined,
-        "index": [],
-        "mathjs": "SparseMatrix",
-        "ptr": [
-          0,
-        ],
-        "size": [
-          0,
-          0,
-        ],
-        "values": [],
-      },
-      "setGeneExpression": [Function],
-      "stats": {
-        "rawMean": [],
-        "rawStdev": [],
-        "truncatedMax": [],
-        "truncatedMin": [],
-      },
-      "truncatedGeneExpressions": {
-        "datatype": undefined,
-        "index": [],
-        "mathjs": "SparseMatrix",
-        "ptr": [
-          0,
-        ],
-        "size": [
-          0,
-          0,
-        ],
-        "values": [],
-      },
-      "zScore": {
-        "datatype": undefined,
-        "index": [],
-        "mathjs": "SparseMatrix",
-        "ptr": [
-          0,
-        ],
-        "size": [
-          0,
-          0,
-        ],
-        "values": [],
+    "downsampled": {
+      "ETag": null,
+      "cellOrder": [],
+      "error": false,
+      "loading": [],
+      "matrix": ExpressionMatrix {
+        "geneIndexes": {},
+        "rawGeneExpressions": {
+          "datatype": undefined,
+          "index": [],
+          "mathjs": "SparseMatrix",
+          "ptr": [
+            0,
+          ],
+          "size": [
+            0,
+            0,
+          ],
+          "values": [],
+        },
+        "setGeneExpression": [Function],
+        "stats": {
+          "rawMean": [],
+          "rawStdev": [],
+          "truncatedMax": [],
+          "truncatedMin": [],
+        },
+        "truncatedGeneExpressions": {
+          "datatype": undefined,
+          "index": [],
+          "mathjs": "SparseMatrix",
+          "ptr": [
+            0,
+          ],
+          "size": [
+            0,
+            0,
+          ],
+          "values": [],
+        },
+        "zScore": {
+          "datatype": undefined,
+          "index": [],
+          "mathjs": "SparseMatrix",
+          "ptr": [
+            0,
+          ],
+          "size": [
+            0,
+            0,
+          ],
+          "values": [],
+        },
       },
     },
-    "error": false,
-    "loading": [],
-    "matrix": ExpressionMatrix {
-      "geneIndexes": {},
-      "rawGeneExpressions": {
-        "datatype": undefined,
-        "index": [],
-        "mathjs": "SparseMatrix",
-        "ptr": [
-          0,
-        ],
-        "size": [
-          0,
-          0,
-        ],
-        "values": [],
-      },
-      "setGeneExpression": [Function],
-      "stats": {
-        "rawMean": [],
-        "rawStdev": [],
-        "truncatedMax": [],
-        "truncatedMin": [],
-      },
-      "truncatedGeneExpressions": {
-        "datatype": undefined,
-        "index": [],
-        "mathjs": "SparseMatrix",
-        "ptr": [
-          0,
-        ],
-        "size": [
-          0,
-          0,
-        ],
-        "values": [],
-      },
-      "zScore": {
-        "datatype": undefined,
-        "index": [],
-        "mathjs": "SparseMatrix",
-        "ptr": [
-          0,
-        ],
-        "size": [
-          0,
-          0,
-        ],
-        "values": [],
+    "full": {
+      "error": false,
+      "loading": [],
+      "matrix": ExpressionMatrix {
+        "geneIndexes": {},
+        "rawGeneExpressions": {
+          "datatype": undefined,
+          "index": [],
+          "mathjs": "SparseMatrix",
+          "ptr": [
+            0,
+          ],
+          "size": [
+            0,
+            0,
+          ],
+          "values": [],
+        },
+        "setGeneExpression": [Function],
+        "stats": {
+          "rawMean": [],
+          "rawStdev": [],
+          "truncatedMax": [],
+          "truncatedMin": [],
+        },
+        "truncatedGeneExpressions": {
+          "datatype": undefined,
+          "index": [],
+          "mathjs": "SparseMatrix",
+          "ptr": [
+            0,
+          ],
+          "size": [
+            0,
+            0,
+          ],
+          "values": [],
+        },
+        "zScore": {
+          "datatype": undefined,
+          "index": [],
+          "mathjs": "SparseMatrix",
+          "ptr": [
+            0,
+          ],
+          "size": [
+            0,
+            0,
+          ],
+          "values": [],
+        },
       },
     },
     "views": {},
@@ -1453,105 +1517,112 @@ exports[`genesReducer Multiple components loading some of same property triggers
 exports[`genesReducer Properties loading triggers appropriate changes 1`] = `
 {
   "expression": {
-    "downsampledCellOrder": [],
-    "downsampledMatrix": ExpressionMatrix {
-      "geneIndexes": {},
-      "rawGeneExpressions": {
-        "datatype": undefined,
-        "index": [],
-        "mathjs": "SparseMatrix",
-        "ptr": [
-          0,
-        ],
-        "size": [
-          0,
-          0,
-        ],
-        "values": [],
-      },
-      "setGeneExpression": [Function],
-      "stats": {
-        "rawMean": [],
-        "rawStdev": [],
-        "truncatedMax": [],
-        "truncatedMin": [],
-      },
-      "truncatedGeneExpressions": {
-        "datatype": undefined,
-        "index": [],
-        "mathjs": "SparseMatrix",
-        "ptr": [
-          0,
-        ],
-        "size": [
-          0,
-          0,
-        ],
-        "values": [],
-      },
-      "zScore": {
-        "datatype": undefined,
-        "index": [],
-        "mathjs": "SparseMatrix",
-        "ptr": [
-          0,
-        ],
-        "size": [
-          0,
-          0,
-        ],
-        "values": [],
+    "downsampled": {
+      "ETag": null,
+      "cellOrder": [],
+      "error": false,
+      "loading": [],
+      "matrix": ExpressionMatrix {
+        "geneIndexes": {},
+        "rawGeneExpressions": {
+          "datatype": undefined,
+          "index": [],
+          "mathjs": "SparseMatrix",
+          "ptr": [
+            0,
+          ],
+          "size": [
+            0,
+            0,
+          ],
+          "values": [],
+        },
+        "setGeneExpression": [Function],
+        "stats": {
+          "rawMean": [],
+          "rawStdev": [],
+          "truncatedMax": [],
+          "truncatedMin": [],
+        },
+        "truncatedGeneExpressions": {
+          "datatype": undefined,
+          "index": [],
+          "mathjs": "SparseMatrix",
+          "ptr": [
+            0,
+          ],
+          "size": [
+            0,
+            0,
+          ],
+          "values": [],
+        },
+        "zScore": {
+          "datatype": undefined,
+          "index": [],
+          "mathjs": "SparseMatrix",
+          "ptr": [
+            0,
+          ],
+          "size": [
+            0,
+            0,
+          ],
+          "values": [],
+        },
       },
     },
-    "error": false,
-    "loading": [],
-    "matrix": ExpressionMatrix {
-      "geneIndexes": {},
-      "rawGeneExpressions": {
-        "datatype": undefined,
-        "index": [],
-        "mathjs": "SparseMatrix",
-        "ptr": [
-          0,
-        ],
-        "size": [
-          0,
-          0,
-        ],
-        "values": [],
-      },
-      "setGeneExpression": [Function],
-      "stats": {
-        "rawMean": [],
-        "rawStdev": [],
-        "truncatedMax": [],
-        "truncatedMin": [],
-      },
-      "truncatedGeneExpressions": {
-        "datatype": undefined,
-        "index": [],
-        "mathjs": "SparseMatrix",
-        "ptr": [
-          0,
-        ],
-        "size": [
-          0,
-          0,
-        ],
-        "values": [],
-      },
-      "zScore": {
-        "datatype": undefined,
-        "index": [],
-        "mathjs": "SparseMatrix",
-        "ptr": [
-          0,
-        ],
-        "size": [
-          0,
-          0,
-        ],
-        "values": [],
+    "full": {
+      "error": false,
+      "loading": [],
+      "matrix": ExpressionMatrix {
+        "geneIndexes": {},
+        "rawGeneExpressions": {
+          "datatype": undefined,
+          "index": [],
+          "mathjs": "SparseMatrix",
+          "ptr": [
+            0,
+          ],
+          "size": [
+            0,
+            0,
+          ],
+          "values": [],
+        },
+        "setGeneExpression": [Function],
+        "stats": {
+          "rawMean": [],
+          "rawStdev": [],
+          "truncatedMax": [],
+          "truncatedMin": [],
+        },
+        "truncatedGeneExpressions": {
+          "datatype": undefined,
+          "index": [],
+          "mathjs": "SparseMatrix",
+          "ptr": [
+            0,
+          ],
+          "size": [
+            0,
+            0,
+          ],
+          "values": [],
+        },
+        "zScore": {
+          "datatype": undefined,
+          "index": [],
+          "mathjs": "SparseMatrix",
+          "ptr": [
+            0,
+          ],
+          "size": [
+            0,
+            0,
+          ],
+          "values": [],
+        },
       },
     },
     "views": {},
@@ -1583,105 +1654,112 @@ exports[`genesReducer Properties loading triggers appropriate changes 1`] = `
 exports[`genesReducer Selected genes get added as a set to a non-empty list 1`] = `
 {
   "expression": {
-    "downsampledCellOrder": [],
-    "downsampledMatrix": ExpressionMatrix {
-      "geneIndexes": {},
-      "rawGeneExpressions": {
-        "datatype": undefined,
-        "index": [],
-        "mathjs": "SparseMatrix",
-        "ptr": [
-          0,
-        ],
-        "size": [
-          0,
-          0,
-        ],
-        "values": [],
-      },
-      "setGeneExpression": [Function],
-      "stats": {
-        "rawMean": [],
-        "rawStdev": [],
-        "truncatedMax": [],
-        "truncatedMin": [],
-      },
-      "truncatedGeneExpressions": {
-        "datatype": undefined,
-        "index": [],
-        "mathjs": "SparseMatrix",
-        "ptr": [
-          0,
-        ],
-        "size": [
-          0,
-          0,
-        ],
-        "values": [],
-      },
-      "zScore": {
-        "datatype": undefined,
-        "index": [],
-        "mathjs": "SparseMatrix",
-        "ptr": [
-          0,
-        ],
-        "size": [
-          0,
-          0,
-        ],
-        "values": [],
+    "downsampled": {
+      "ETag": null,
+      "cellOrder": [],
+      "error": false,
+      "loading": [],
+      "matrix": ExpressionMatrix {
+        "geneIndexes": {},
+        "rawGeneExpressions": {
+          "datatype": undefined,
+          "index": [],
+          "mathjs": "SparseMatrix",
+          "ptr": [
+            0,
+          ],
+          "size": [
+            0,
+            0,
+          ],
+          "values": [],
+        },
+        "setGeneExpression": [Function],
+        "stats": {
+          "rawMean": [],
+          "rawStdev": [],
+          "truncatedMax": [],
+          "truncatedMin": [],
+        },
+        "truncatedGeneExpressions": {
+          "datatype": undefined,
+          "index": [],
+          "mathjs": "SparseMatrix",
+          "ptr": [
+            0,
+          ],
+          "size": [
+            0,
+            0,
+          ],
+          "values": [],
+        },
+        "zScore": {
+          "datatype": undefined,
+          "index": [],
+          "mathjs": "SparseMatrix",
+          "ptr": [
+            0,
+          ],
+          "size": [
+            0,
+            0,
+          ],
+          "values": [],
+        },
       },
     },
-    "error": false,
-    "loading": [],
-    "matrix": ExpressionMatrix {
-      "geneIndexes": {},
-      "rawGeneExpressions": {
-        "datatype": undefined,
-        "index": [],
-        "mathjs": "SparseMatrix",
-        "ptr": [
-          0,
-        ],
-        "size": [
-          0,
-          0,
-        ],
-        "values": [],
-      },
-      "setGeneExpression": [Function],
-      "stats": {
-        "rawMean": [],
-        "rawStdev": [],
-        "truncatedMax": [],
-        "truncatedMin": [],
-      },
-      "truncatedGeneExpressions": {
-        "datatype": undefined,
-        "index": [],
-        "mathjs": "SparseMatrix",
-        "ptr": [
-          0,
-        ],
-        "size": [
-          0,
-          0,
-        ],
-        "values": [],
-      },
-      "zScore": {
-        "datatype": undefined,
-        "index": [],
-        "mathjs": "SparseMatrix",
-        "ptr": [
-          0,
-        ],
-        "size": [
-          0,
-          0,
-        ],
-        "values": [],
+    "full": {
+      "error": false,
+      "loading": [],
+      "matrix": ExpressionMatrix {
+        "geneIndexes": {},
+        "rawGeneExpressions": {
+          "datatype": undefined,
+          "index": [],
+          "mathjs": "SparseMatrix",
+          "ptr": [
+            0,
+          ],
+          "size": [
+            0,
+            0,
+          ],
+          "values": [],
+        },
+        "setGeneExpression": [Function],
+        "stats": {
+          "rawMean": [],
+          "rawStdev": [],
+          "truncatedMax": [],
+          "truncatedMin": [],
+        },
+        "truncatedGeneExpressions": {
+          "datatype": undefined,
+          "index": [],
+          "mathjs": "SparseMatrix",
+          "ptr": [
+            0,
+          ],
+          "size": [
+            0,
+            0,
+          ],
+          "values": [],
+        },
+        "zScore": {
+          "datatype": undefined,
+          "index": [],
+          "mathjs": "SparseMatrix",
+          "ptr": [
+            0,
+          ],
+          "size": [
+            0,
+            0,
+          ],
+          "values": [],
+        },
       },
     },
     "views": {},
@@ -1708,105 +1786,112 @@ exports[`genesReducer Selected genes get added as a set to a non-empty list 1`] 
 exports[`genesReducer Selected genes get added on empty list 1`] = `
 {
   "expression": {
-    "downsampledCellOrder": [],
-    "downsampledMatrix": ExpressionMatrix {
-      "geneIndexes": {},
-      "rawGeneExpressions": {
-        "datatype": undefined,
-        "index": [],
-        "mathjs": "SparseMatrix",
-        "ptr": [
-          0,
-        ],
-        "size": [
-          0,
-          0,
-        ],
-        "values": [],
-      },
-      "setGeneExpression": [Function],
-      "stats": {
-        "rawMean": [],
-        "rawStdev": [],
-        "truncatedMax": [],
-        "truncatedMin": [],
-      },
-      "truncatedGeneExpressions": {
-        "datatype": undefined,
-        "index": [],
-        "mathjs": "SparseMatrix",
-        "ptr": [
-          0,
-        ],
-        "size": [
-          0,
-          0,
-        ],
-        "values": [],
-      },
-      "zScore": {
-        "datatype": undefined,
-        "index": [],
-        "mathjs": "SparseMatrix",
-        "ptr": [
-          0,
-        ],
-        "size": [
-          0,
-          0,
-        ],
-        "values": [],
+    "downsampled": {
+      "ETag": null,
+      "cellOrder": [],
+      "error": false,
+      "loading": [],
+      "matrix": ExpressionMatrix {
+        "geneIndexes": {},
+        "rawGeneExpressions": {
+          "datatype": undefined,
+          "index": [],
+          "mathjs": "SparseMatrix",
+          "ptr": [
+            0,
+          ],
+          "size": [
+            0,
+            0,
+          ],
+          "values": [],
+        },
+        "setGeneExpression": [Function],
+        "stats": {
+          "rawMean": [],
+          "rawStdev": [],
+          "truncatedMax": [],
+          "truncatedMin": [],
+        },
+        "truncatedGeneExpressions": {
+          "datatype": undefined,
+          "index": [],
+          "mathjs": "SparseMatrix",
+          "ptr": [
+            0,
+          ],
+          "size": [
+            0,
+            0,
+          ],
+          "values": [],
+        },
+        "zScore": {
+          "datatype": undefined,
+          "index": [],
+          "mathjs": "SparseMatrix",
+          "ptr": [
+            0,
+          ],
+          "size": [
+            0,
+            0,
+          ],
+          "values": [],
+        },
       },
     },
-    "error": false,
-    "loading": [],
-    "matrix": ExpressionMatrix {
-      "geneIndexes": {},
-      "rawGeneExpressions": {
-        "datatype": undefined,
-        "index": [],
-        "mathjs": "SparseMatrix",
-        "ptr": [
-          0,
-        ],
-        "size": [
-          0,
-          0,
-        ],
-        "values": [],
-      },
-      "setGeneExpression": [Function],
-      "stats": {
-        "rawMean": [],
-        "rawStdev": [],
-        "truncatedMax": [],
-        "truncatedMin": [],
-      },
-      "truncatedGeneExpressions": {
-        "datatype": undefined,
-        "index": [],
-        "mathjs": "SparseMatrix",
-        "ptr": [
-          0,
-        ],
-        "size": [
-          0,
-          0,
-        ],
-        "values": [],
-      },
-      "zScore": {
-        "datatype": undefined,
-        "index": [],
-        "mathjs": "SparseMatrix",
-        "ptr": [
-          0,
-        ],
-        "size": [
-          0,
-          0,
-        ],
-        "values": [],
+    "full": {
+      "error": false,
+      "loading": [],
+      "matrix": ExpressionMatrix {
+        "geneIndexes": {},
+        "rawGeneExpressions": {
+          "datatype": undefined,
+          "index": [],
+          "mathjs": "SparseMatrix",
+          "ptr": [
+            0,
+          ],
+          "size": [
+            0,
+            0,
+          ],
+          "values": [],
+        },
+        "setGeneExpression": [Function],
+        "stats": {
+          "rawMean": [],
+          "rawStdev": [],
+          "truncatedMax": [],
+          "truncatedMin": [],
+        },
+        "truncatedGeneExpressions": {
+          "datatype": undefined,
+          "index": [],
+          "mathjs": "SparseMatrix",
+          "ptr": [
+            0,
+          ],
+          "size": [
+            0,
+            0,
+          ],
+          "values": [],
+        },
+        "zScore": {
+          "datatype": undefined,
+          "index": [],
+          "mathjs": "SparseMatrix",
+          "ptr": [
+            0,
+          ],
+          "size": [
+            0,
+            0,
+          ],
+          "values": [],
+        },
       },
     },
     "views": {},
