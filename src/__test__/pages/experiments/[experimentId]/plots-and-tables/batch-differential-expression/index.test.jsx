@@ -14,8 +14,11 @@ import { makeStore } from 'redux/store';
 import mockAPI, { generateDefaultMockAPIResponses } from '__test__/test-utils/mockAPI';
 import * as getBatchDiffExpr from 'utils/extraActionCreators/differentialExpression/getBatchDiffExpr';
 import * as checkCanRunDiffExprModule from 'utils/extraActionCreators/differentialExpression/checkCanRunDiffExpr';
+import mockLoader from 'components/Loader';
 
 jest.spyOn(checkCanRunDiffExprModule, 'default').mockImplementation(() => 'TRUE');
+jest.mock('utils/extraActionCreators/differentialExpression/getBatchDiffExpr');
+jest.mock('components/Loader', () => jest.fn(() => <div data-testid='mockLoader'>Mock Loader</div>));
 
 describe('Batch differential expression tests ', () => {
   let storeState = null;
@@ -102,6 +105,26 @@ describe('Batch differential expression tests ', () => {
           comparisonType: 'between',
         }, 'compareForCellSets',
         ['louvain-0', 'louvain-1', 'louvain-2', 'louvain-3', 'louvain-4', 'louvain-5', 'louvain-6', 'louvain-7', 'louvain-8', 'louvain-9', 'louvain-10', 'louvain-11', 'louvain-12', 'louvain-13']);
+    });
+  });
+  it('shows the Loader while fetching data', async () => {
+    getBatchDiffExpr.mockImplementation(() => new Promise((resolve) => {
+      setTimeout(() => {
+        resolve();
+      }, 1000);
+    }));
+
+    await renderPage();
+
+    const compareForCellSetsRadio = screen.getByLabelText(secondOptionText);
+    userEvent.click(compareForCellSetsRadio);
+
+    const computeButton = screen.getByText(/Compute and Download/).closest('button');
+    userEvent.click(computeButton);
+    expect(mockLoader).toHaveBeenCalled();
+
+    await waitFor(() => {
+      expect(screen.queryByTestId('mockLoader')).not.toBeInTheDocument();
     });
   });
 });
