@@ -43,6 +43,10 @@ const HeatmapPlot = (props) => {
     experimentId, width, height,
   } = props;
 
+  const debouncedLoadDownsampledGeneExpression = _.debounce((...params) => {
+    dispatch(loadDownsampledGeneExpression(...params));
+  }, 1000);
+
   const dispatch = useDispatch();
 
   const loadingGenes = useSelector((state) => state.genes.expression.downsampled.loading);
@@ -214,11 +218,11 @@ const HeatmapPlot = (props) => {
     ) return;
 
     // Load current genes
-    dispatch(loadDownsampledGeneExpression(
+    debouncedLoadDownsampledGeneExpression(
       experimentId,
       selectedGenes,
       COMPONENT_TYPE,
-    ));
+    );
   }, [
     louvainClustersResolution,
     cellSets.accessible,
@@ -261,9 +265,7 @@ const HeatmapPlot = (props) => {
           }
 
           if ((expressionDataError || viewError) && !_.isNil(selectedGenes)) {
-            dispatch(loadDownsampledGeneExpression(
-              experimentId, selectedGenes, COMPONENT_TYPE,
-            ));
+            debouncedLoadDownsampledGeneExpression(experimentId, selectedGenes, COMPONENT_TYPE);
           }
         }}
       />

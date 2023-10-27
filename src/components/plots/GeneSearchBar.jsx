@@ -38,6 +38,7 @@ const GeneSearchBar = (props) => {
     } else {
       value = newGene;
     }
+
     setSearchState({ value, options: [] });
   };
 
@@ -50,6 +51,7 @@ const GeneSearchBar = (props) => {
     } else {
       options = !input ? [] : renderOptions(input, geneList, genesToDisable);
     }
+
     setSearchState({ value: input, options });
   };
 

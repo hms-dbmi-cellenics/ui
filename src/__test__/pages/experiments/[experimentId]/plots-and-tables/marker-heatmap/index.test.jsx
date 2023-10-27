@@ -1,4 +1,6 @@
-import { render, screen, within } from '@testing-library/react';
+import {
+  render, screen, waitFor, within,
+} from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 import _ from 'lodash';
@@ -7,12 +9,12 @@ import React from 'react';
 import { act } from 'react-dom/test-utils';
 import { Provider } from 'react-redux';
 import { loadBackendStatus } from 'redux/actions/backendStatus';
-import { loadGeneExpression } from 'redux/actions/genes';
+import { loadDownsampledGeneExpression } from 'redux/actions/genes';
 import { makeStore } from 'redux/store';
 import { dispatchWorkRequest } from 'utils/work/seekWorkResponse';
-import expressionDataFAKEGENE from '__test__/data/gene_expression_FAKEGENE.json';
 import markerGenesData2 from '__test__/data/marker_genes_2.json';
 import markerGenesData5 from '__test__/data/marker_genes_5.json';
+import markerGenesData5AndFakeGene from '__test__/data/marker_genes_5_and_FAKE_gene.json';
 import geneList from '__test__/data/paginated_gene_expression.json';
 
 import preloadAll from 'jest-next-dynamic';
@@ -66,10 +68,12 @@ jest.mock('utils/work/seekWorkResponse', () => ({
   dispatchWorkRequest: jest.fn(),
 }));
 
+const fakeGenesETag = 'Ms4a4b-Smc4-Ccr7-Ifi27l2a-Gm8369-S100a4-S100a6-Tmem176a-Tmem176b-Cxcr6-5830411N06Rik-Lmo4-Il18r1-Atp2b1-Pde5a-Ccl5-Nkg7-Klrd1-AW112010-Klrc1-Gzma-Stmn1-Hmgn2-Pclaf-Tuba1b-Lyz2-Ifitm3-Fcer1g-Tyrobp-Cst3-Cd74-Igkc-Cd79a-H2-Ab1-H2-Eb1-FAKEGENE-expression';
+
 const mockWorkerResponses = {
   '5-marker-genes': markerGenesData5,
   '2-marker-genes': markerGenesData2,
-  'FAKEGENE-expression': expressionDataFAKEGENE,
+  [fakeGenesETag]: markerGenesData5AndFakeGene,
   ListGenes: geneList,
 };
 
@@ -215,7 +219,7 @@ describe('Marker heatmap plot', () => {
     const genesToLoad = [...markerGenesData5.orderedGeneNames, 'FAKEGENE'];
 
     await act(async () => {
-      await storeState.dispatch(loadGeneExpression(experimentId, genesToLoad, plotUuid, true));
+      await storeState.dispatch(loadDownsampledGeneExpression(experimentId, genesToLoad, plotUuid));
     });
 
     // Get genes displayed in the tree
@@ -227,8 +231,8 @@ describe('Marker heatmap plot', () => {
     expect(within(geneTree).getByText('FAKEGENE')).toBeInTheDocument();
 
     // Check that the genes is ordered correctly.
-    // This means that FAKEGENE should not be the last in the genes list
-    expect(_.isEqual(displayedGenesList, genesToLoad)).toEqual(false);
+    // This means that FAKEGENE should be the last in the genes list
+    expect(displayedGenesList).toEqual(genesToLoad);
   });
 
   it('Shows an information text if a selected cell set does not contain enough number of samples', async () => {
@@ -263,7 +267,7 @@ describe('Marker heatmap plot', () => {
     const genesToLoad = [...markerGenesData5.orderedGeneNames, 'FAKEGENE'];
 
     await act(async () => {
-      await storeState.dispatch(loadGeneExpression(experimentId, genesToLoad, plotUuid));
+      await storeState.dispatch(loadDownsampledGeneExpression(experimentId, genesToLoad, plotUuid));
     });
 
     // It shouldn't show the plot
@@ -323,6 +327,8 @@ describe('Marker heatmap plot', () => {
     // antd creates multiple elements for options
     // find option element by title, clicking on element with role='option' does nothing
     const option = screen.getByTitle('Tmem176a');
+
+    expect(option).toBeInTheDocument();
 
     await act(async () => {
       // the element has pointer-events set to 'none', skip check
