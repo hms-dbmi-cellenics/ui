@@ -6,10 +6,17 @@ import {
 import {
   Button, Tooltip,
 } from 'antd';
+import { updateLayout } from 'redux/actions/layout/index';
+import { useDispatch } from 'react-redux';
 
 const CloseButton = () => {
-  const remove = (mosaicWindowActions, mosaicActions) => {
-    mosaicActions.remove(mosaicWindowActions.getPath());
+  const dispatch = useDispatch();
+
+  const remove = async (mosaicWindowActions, mosaicActions) => {
+    await mosaicActions.remove(mosaicWindowActions.getPath());
+
+    const currentMosaicStructure = mosaicActions.getRoot();
+    dispatch(updateLayout(currentMosaicStructure));
   };
 
   return (
