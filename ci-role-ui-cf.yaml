@@ -1,0 +1,66 @@
+# Used during CI builds for AWS access
+# Deploy this once for every AWS account you want the build to have access to 
+AWSTemplateFormatVersion: "2010-09-09"
+Description: Set up API role using Github OIDC for workflow permissions
+
+Resources:
+  Role:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: ci-role-ui
+      MaxSessionDuration: 7200
+      AssumeRolePolicyDocument:
+        Statement:
+          - Effect: Allow
+            Action: sts:AssumeRoleWithWebIdentity
+            Principal:
+              # Make sure that the OIDC provider is set up in the AWS account.
+              # Uncomment and deploy the commented out GithubOidc Resource below if this is not the case.
+              # Replace <ACCOUNT_ID> with the ID of the AWS Account the CI workflow needs access to.
+              Federated: arn:aws:iam::242905224710:oidc-provider/token.actions.githubusercontent.com
+            Condition:
+              StringEquals:
+                token.actions.githubusercontent.com:aud: sts.amazonaws.com
+              StringLike:
+                # Change the placeholder <ORGANISATION_NAME> below when deploying the template
+                token.actions.githubusercontent.com:sub: repo:biomage-org/ui:*
+      Policies:
+        - PolicyName: "get-ecr-auth-token"
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - "ecr:GetAuthorizationToken"
+                Resource: "*"
+        - PolicyName: "manage-ecr-contents"
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - "ecr:BatchCheckLayerAvailability"
+                  - "ecr:GetDownloadUrlForLayer"
+                  - "ecr:GetRepositoryPolicy"
+                  - "ecr:DescribeRepositories"
+                  - "ecr:ListImages"
+                  - "ecr:DescribeImages"
+                  - "ecr:BatchGetImage"
+                  - "ecr:InitiateLayerUpload"
+                  - "ecr:UploadLayerPart"
+                  - "ecr:CompleteLayerUpload"
+                  - "ecr:PutImage"
+                  - "ecr:CreateRepository"
+                Resource: !Sub "arn:aws:ecr:${AWS::Region}:${AWS::AccountId}:repository/ui"
+
+# This part is only required if Github OIDC is not already set up in the AWS account
+# as an Identity Provider. Uncomment to deploy if needed.
+  # GithubOidc:
+  #   Type: AWS::IAM::OIDCProvider
+  #   Properties:
+  #     Url: https://token.actions.githubusercontent.com
+  #     ClientIdList:
+  #       - sts.amazonaws.com
+  #     ThumbprintList:
+  #       - 6938fd4d98bab03faadb97b34396831e3780aea1
+  #       - 1c58a3a8518e8759bf075b76b750d4f2df264fcd
