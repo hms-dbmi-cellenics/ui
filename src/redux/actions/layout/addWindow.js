@@ -14,7 +14,6 @@ const getMultipleWindowsConfig = (first, second) => ({
   splitPercentage: 60,
   direction: 'row',
 });
-
 const addWindow = (panel, window) => (dispatch, getState) => {
   const { layout } = getState();
   let newLayout;
@@ -38,9 +37,14 @@ const addWindow = (panel, window) => (dispatch, getState) => {
       return dispatch(updateLayout(newLayout.windows, panelExtra));
     }
 
-    newLayout.windows.first = getMultipleWindowsConfig(layout.windows.first, window || panel);
+    if (typeof newLayout.windows === 'string') {
+      // if the windows property is a string, transform it to accommodate more windows
+      newLayout.windows = getMultipleWindowsConfig(newLayout.windows, window || panel);
+    } else {
+      newLayout.windows.first = getMultipleWindowsConfig(layout.windows.first, window || panel);
+    }
   }
+
   return dispatch(updateLayout(newLayout.windows, panelExtra));
 };
-
 export default addWindow;
