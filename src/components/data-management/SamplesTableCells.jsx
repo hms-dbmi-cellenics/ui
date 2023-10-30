@@ -14,10 +14,13 @@ import {
 import integrationTestConstants from 'utils/integrationTestConstants';
 
 import UploadStatus, { messageForStatus } from 'utils/upload/UploadStatus';
+import styles from 'components/data-management/SamplesTableCells.module.css';
+import downloadSampleFile from 'utils/data-management/downloadSampleFile';
+import { createAndUploadSampleFile, fileObjectToFileRecord } from 'utils/upload/processUpload';
+import endUserMessages from 'utils/endUserMessages';
+import handleError from 'utils/http/handleError';
 import EditableField from '../EditableField';
 import UploadDetailsModal from './UploadDetailsModal';
-
-import styles from 'components/data-management/SamplesTableCells.module.css';
 
 const { Text } = Typography;
 
@@ -30,9 +33,12 @@ const UploadDivStyle = {
 
 const UploadCell = (props) => {
   const { columnId, sampleUuid } = props;
-
+  const dispatch = useDispatch();
   const file = useSelector((state) => state.samples[sampleUuid]?.files[columnId]);
+  const samples = useSelector((state) => state.samples);
+  const { activeExperimentId } = useSelector((state) => state.experiments.meta);
 
+  const selectedTech = useSelector((state) => state.samples[sampleUuid]?.type);
   const [uploadDetailsModalVisible, setUploadDetailsModalVisible] = useState(false);
   const [uploadDetailsModalData, setUploadDetailsModalData] = useState(false);
 
@@ -119,6 +125,30 @@ const UploadCell = (props) => {
       );
     }
   };
+  const onDownload = () => {
+    downloadSampleFile(activeExperimentId, sampleUuid, uploadDetailsModalData.name, selectedTech);
+  };
+
+  const onUpload = (fileObject, retryUpload = false) => {
+    if (!uploadDetailsModalData) {
+      return;
+    }
+    // if retrying an upload we dont need to revalidate the file since it was done before
+    if (retryUpload) {
+      createAndUploadSampleFile(fileObject, activeExperimentId, sampleUuid, dispatch, selectedTech);
+    } else {
+      fileObjectToFileRecord(fileObject, selectedTech).then((newFile) => {
+        if (newFile.valid) {
+          createAndUploadSampleFile(newFile, activeExperimentId, sampleUuid, dispatch, selectedTech);
+        } else {
+          handleError('error', endUserMessages.ERROR_FILE_CATEGORY);
+        }
+      });
+    }
+
+    setUploadDetailsModalVisible(false);
+  };
+
   return (
     <>
       <center>
@@ -128,6 +158,12 @@ const UploadCell = (props) => {
         file={uploadDetailsModalData}
         visible={uploadDetailsModalVisible}
         onCancel={() => setUploadDetailsModalVisible(false)}
+        onDownload={onDownload}
+        onUpload={onUpload}
+        extraFields={{
+          Sample: samples[uploadDetailsModalData?.sampleUuid]?.name,
+          Category: uploadDetailsModalData.fileCategory,
+        }}
       />
     </>
   );

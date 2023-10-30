@@ -27,7 +27,7 @@ const AddMetadataButton = ({ samplesTableRef }) => {
   const isSubsetted = activeExperiment?.isSubsetted;
   const samples = useSelector((state) => state.samples);
   const selectedTech = samples[activeExperiment?.sampleIds[0]]?.type;
-
+  const cellLevelMetadata = useSelector((state) => state.experiments[activeExperimentId]?.cellLevelMetadata) || false;
   const [trackUploadModalVisible, setTrackUploadModalVisible] = useState(false);
   const [cellLevelUploadVisible, setCellLevelUploadVisible] = useState(false);
 
@@ -79,16 +79,16 @@ const AddMetadataButton = ({ samplesTableRef }) => {
                   'data-testid': 'create-track-option',
                   onClick: () => {
                     samplesTableRef.current.createMetadataColumn();
-                  }
+                  },
                 },
                 {
                   label: 'Upload file',
                   key: 'upload-metadata-file',
                   onClick: () => {
                     setTrackUploadModalVisible(true);
-                  }
-                }
-              ]
+                  },
+                },
+              ],
             },
             {
               key: 'cell-level',
@@ -97,12 +97,12 @@ const AddMetadataButton = ({ samplesTableRef }) => {
                   Cell level
                 </div>
               </Tooltip>),
-              disabled: true,
+              // disabled: true,
               onClick: () => {
                 setCellLevelUploadVisible(true);
-              }
-            }
-          ]
+              },
+            },
+          ],
         }}
         trigger={['click']}
         placement='bottomRight'
@@ -121,6 +121,7 @@ const AddMetadataButton = ({ samplesTableRef }) => {
       {cellLevelUploadVisible && (
         <CellLevelUploadModal
           uploading={cellLevelUploading}
+          cellLevelMetadata={cellLevelMetadata}
           onUpload={onUploadCellLevelMetadata}
           onCancel={() => setCellLevelUploadVisible(false)}
         />
