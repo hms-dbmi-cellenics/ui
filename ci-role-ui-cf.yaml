@@ -17,7 +17,7 @@ Resources:
               # Make sure that the OIDC provider is set up in the AWS account.
               # Uncomment and deploy the commented out GithubOidc Resource below if this is not the case.
               # Replace <ACCOUNT_ID> with the ID of the AWS Account the CI workflow needs access to.
-              Federated: arn:aws:iam::242905224710:oidc-provider/token.actions.githubusercontent.com
+              Federated: arn:aws:iam::<ACCOUNT_ID>:oidc-provider/token.actions.githubusercontent.com
             Condition:
               StringEquals:
                 token.actions.githubusercontent.com:aud: sts.amazonaws.com
