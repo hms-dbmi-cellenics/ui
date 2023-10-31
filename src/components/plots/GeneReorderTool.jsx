@@ -1,7 +1,7 @@
 import React, {
-  useCallback, useEffect, useState,
+  useEffect, useState,
 } from 'react';
-import _ from 'lodash';
+
 import { useDispatch, useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 
@@ -25,12 +25,6 @@ const GeneReorderTool = (props) => {
   useEffect(() => {
     setSelectedGenesLocal(config?.selectedGenes);
   }, [config?.selectedGenes]);
-
-  const debouncedOnDelete = useCallback(_.debounce((newGenes) => {
-    dispatch(updatePlotConfig(plotUuid, { selectedGenes: newGenes }));
-
-    onDelete(newGenes);
-  }, 1000), []);
 
   // Tree from antd requires format [{key: , title: }],
   // made from gene names from loadedMarkerGenes and config
@@ -68,7 +62,9 @@ const GeneReorderTool = (props) => {
 
     setSelectedGenesLocal(genes);
 
-    debouncedOnDelete(genes);
+    dispatch(updatePlotConfig(plotUuid, { selectedGenes: genes }));
+
+    onDelete(genes);
   };
 
   const renderTitles = (data) => {

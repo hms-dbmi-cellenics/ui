@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
   Collapse,
   Skeleton,
@@ -272,9 +272,9 @@ const MarkerHeatmap = ({ experimentId }) => {
     },
   ];
 
-  const onGenesChange = (genes) => {
-    dispatch(loadDownsampledGeneExpression(experimentId, genes, plotUuid));
-  };
+  const onGenesChange = useCallback(_.debounce((newGenes) => {
+    dispatch(loadDownsampledGeneExpression(experimentId, newGenes, plotUuid));
+  }, 1000), []);
 
   const onGenesSelect = (genes) => {
     const allGenes = _.uniq([...config?.selectedGenes, ...genes]);

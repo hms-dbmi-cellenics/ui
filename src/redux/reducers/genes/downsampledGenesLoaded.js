@@ -1,17 +1,7 @@
-import _ from 'lodash';
-
 import { initialViewState } from 'redux/reducers/genes/getInitialState';
-import upperCaseArray from 'utils/upperCaseArray';
 
 const downsampledGenesLoaded = (state, action) => {
-  const {
-    componentUuid,
-    genes,
-    loadingStatus = _.difference(
-      upperCaseArray(state.expression.downsampled.loading), upperCaseArray(genes),
-    ),
-    newGenes = undefined,
-  } = action.payload;
+  const { componentUuid, genes, newGenes = undefined } = action.payload;
 
   let cellOrderToStore = state.expression.downsampled.cellOrder;
 
@@ -54,7 +44,7 @@ const downsampledGenesLoaded = (state, action) => {
       },
       downsampled: {
         ...state.expression.downsampled,
-        loading: loadingStatus,
+        loading: [],
         error: false,
         cellOrder: cellOrderToStore,
       },

@@ -1,5 +1,5 @@
 import {
-  render, screen, waitFor, within,
+  render, screen, within,
 } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
@@ -69,11 +69,15 @@ jest.mock('utils/work/seekWorkResponse', () => ({
 }));
 
 const fakeGenesETag = 'Ms4a4b-Smc4-Ccr7-Ifi27l2a-Gm8369-S100a4-S100a6-Tmem176a-Tmem176b-Cxcr6-5830411N06Rik-Lmo4-Il18r1-Atp2b1-Pde5a-Ccl5-Nkg7-Klrd1-AW112010-Klrc1-Gzma-Stmn1-Hmgn2-Pclaf-Tuba1b-Lyz2-Ifitm3-Fcer1g-Tyrobp-Cst3-Cd74-Igkc-Cd79a-H2-Ab1-H2-Eb1-FAKEGENE-expression';
+const fakeGenesETag1 = 'Ms4a4b-Smc4-Ccr7-Ifi27l2a-Gm8369-S100a4-S100a6-Tmem176b-Cxcr6-5830411N06Rik-Lmo4-Il18r1-Atp2b1-Pde5a-Ccl5-Nkg7-Klrd1-AW112010-Klrc1-Gzma-Stmn1-Hmgn2-Pclaf-Tuba1b-Lyz2-Ifitm3-Fcer1g-Tyrobp-Cst3-Cd74-Igkc-Cd79a-H2-Ab1-H2-Eb1-expression';
+const fakeGenesETag2 = 'Ms4a4b-Smc4-Ccr7-Ifi27l2a-Gm8369-S100a4-S100a6-Tmem176b-Cxcr6-5830411N06Rik-Lmo4-Il18r1-Atp2b1-Pde5a-Ccl5-Nkg7-Klrd1-AW112010-Klrc1-Gzma-Stmn1-Hmgn2-Pclaf-Tuba1b-Lyz2-Ifitm3-Fcer1g-Tyrobp-Cst3-Cd74-Igkc-Cd79a-H2-Ab1-H2-Eb1-Tmem176a-expression';
 
 const mockWorkerResponses = {
   '5-marker-genes': markerGenesData5,
   '2-marker-genes': markerGenesData2,
   [fakeGenesETag]: markerGenesData5AndFakeGene,
+  [fakeGenesETag1]: markerGenesData5AndFakeGene,
+  [fakeGenesETag2]: markerGenesData5AndFakeGene,
   ListGenes: geneList,
 };
 
@@ -305,32 +309,54 @@ describe('Marker heatmap plot', () => {
     expect(_.isEqual(genesListAfterRemoval, genesListBeforeRemoval)).toEqual(true);
   });
 
-  it('searches for genes and adds a valid gene', async () => {
-    await renderHeatmapPage(storeState);
+  it.only('searches for genes and adds a valid gene', async () => {
+    await act(async () => {
+      await renderHeatmapPage(storeState);
+    });
 
     // check placeholder text is loaded
     expect(screen.getByText('Search for genes...')).toBeInTheDocument();
 
     const searchBox = screen.getByRole('combobox');
 
-    // remove a gene to check if genes can be added
+    await act(() => {
+      // search for genes using lowercase
+      userEvent.type(searchBox, 'tmem');
+    });
+
+    // Gene Tmem176a that appears as option is disabled because it is already added
+    expect(screen.getByTitle('Tmem176a')).toHaveClass('ant-select-item-option-disabled');
+
+    await act(() => {
+      // search for genes using lowercase
+      userEvent.clear(searchBox);
+    });
+
+    // Remove Tmem176a to check if it can be added afterwards
     const geneTree = screen.getByRole('tree');
     const geneToRemove = within(geneTree).getByText('Tmem176a');
 
     const geneRemoveButton = geneToRemove.nextSibling.firstChild;
 
-    userEvent.click(geneRemoveButton);
+    await act(async () => {
+      userEvent.click(geneRemoveButton);
+    });
 
-    // search for genes using lowercase
-    userEvent.type(searchBox, 'tmem');
+    await act(() => {
+      // search for genes using lowercase
+      userEvent.type(searchBox, 'tmem');
+    });
 
     // antd creates multiple elements for options
     // find option element by title, clicking on element with role='option' does nothing
     const option = screen.getByTitle('Tmem176a');
 
     expect(option).toBeInTheDocument();
+    // The gene was removed, so now the option is enabled
 
-    await act(async () => {
+    expect(option).not.toHaveClass('ant-select-item-option-disabled');
+
+    act(() => {
       // the element has pointer-events set to 'none', skip check
       // based on https://stackoverflow.com/questions/61080116
       userEvent.click(option, undefined, { skipPointerEventsCheck: true });
