@@ -178,7 +178,14 @@ const UploadDetailsModal = (props) => {
               </Row>
             )
         }
-        {progress ? (<Progress style={{ marginLeft: '10%', width: '50%' }} percent={progress} size='small' />) : <div />}
+        {progress ? (
+          <Row style={{ marginTop: '5px', marginBottom: '5px' }}>
+            <Col span={5}>Progress</Col>
+            <Col span={10}>
+              <Progress style={{ width: '100%' }} percent={progress} size='small' />
+            </Col>
+          </Row>
+        ) : <div />}
       </div>
     </Modal>
   );
