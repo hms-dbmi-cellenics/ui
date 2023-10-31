@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import {
-  Modal, Button, Col, Row,
+  Modal, Button, Col, Row, Progress,
 } from 'antd';
 import { UploadOutlined } from '@ant-design/icons';
 import UploadStatus, { messageForStatus } from 'utils/upload/UploadStatus';
@@ -19,7 +19,7 @@ const UploadDetailsModal = (props) => {
   const {
     name, upload, size, lastModified, fileObject = undefined,
   } = file ?? {};
-  const status = upload?.status;
+  const { progress, status } = upload ?? false;
   const inputFileRef = useRef(null);
   const [replacementFileObject, setReplacementFileObject] = useState(null);
 
@@ -178,6 +178,7 @@ const UploadDetailsModal = (props) => {
               </Row>
             )
         }
+        {progress ? (<Progress style={{ marginLeft: '10%', width: '50%' }} percent={progress} size='small' />) : <div />}
       </div>
     </Modal>
   );

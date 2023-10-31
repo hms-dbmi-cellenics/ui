@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import _ from 'lodash';
 import {
   Modal,
   Button,
@@ -15,11 +14,12 @@ import {
 } from 'antd';
 import { CheckCircleTwoTone, DeleteOutlined } from '@ant-design/icons';
 import Dropzone from 'react-dropzone';
-
+import { useSelector } from 'react-redux';
 import handleError from 'utils/http/handleError';
 import endUserMessages from 'utils/endUserMessages';
 import readFileToString from 'utils/upload/readFileToString';
 import UploadDetailsModal from 'components/data-management/UploadDetailsModal';
+import downloadCellLevelMeta from 'utils/data-management/downloadCellLevelMeta';
 
 const { Text, Title, Paragraph } = Typography;
 
@@ -29,7 +29,7 @@ const CellLevelUploadModal = (props) => {
   } = props;
 
   const [file, setFile] = useState(false);
-
+  const { activeExperimentId } = useSelector((state) => state.experiments.meta);
   // Handle on Drop
   const onDrop = async (droppedFiles) => {
     const droppedFile = droppedFiles[0];
@@ -45,6 +45,10 @@ const CellLevelUploadModal = (props) => {
       return;
     }
     setFile(droppedFile);
+  };
+
+  const downloadData = () => {
+    downloadCellLevelMeta(activeExperimentId, cellLevelMetadata.name, cellLevelMetadata.id);
   };
 
   const fileFormatTable = {
@@ -250,7 +254,7 @@ const CellLevelUploadModal = (props) => {
       name,
       upload: {
         status: uploadStatus,
-        percent: percentProgress,
+        progress: percentProgress,
       },
       size,
       fileObject,
@@ -261,7 +265,7 @@ const CellLevelUploadModal = (props) => {
         visible
         onCancel={onCancel}
         onUpload={onUpload}
-        onDownload={() => console.log('DOWNLOADING CELL LEVEL FILE')}
+        onDownload={downloadData}
         file={fileInfoObject}
       />
     );
