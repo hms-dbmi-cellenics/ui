@@ -87,6 +87,10 @@ jobs:
 
   test:
     name: Run unit tests
+    # TODO: the permissions here are too broad and need narrowing down
+    # They are needed because so that upload-coverage can upload the coverage report
+    # and post comments.
+    permissions: write-all
     runs-on: ubuntu-20.04
     needs: is-safe-to-run
     env:
@@ -242,7 +246,7 @@ jobs:
 
       - id: setup-aws
         name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v2
+        uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/ci-role-ui
           aws-region: ${{ secrets.AWS_REGION }}
@@ -297,7 +301,7 @@ jobs:
 
       - id: setup-aws
         name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v2
+        uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/ci-role-ui
           aws-region: ${{ secrets.AWS_REGION }}
