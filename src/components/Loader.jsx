@@ -5,7 +5,6 @@ import useSWR from 'swr';
 import React from 'react';
 import { useSelector } from 'react-redux';
 import fetchAPI from 'utils/http/fetchAPI';
-import { getBackendStatus } from 'redux/selectors';
 
 const { Text } = Typography;
 

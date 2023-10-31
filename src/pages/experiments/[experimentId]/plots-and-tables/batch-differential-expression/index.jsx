@@ -66,7 +66,6 @@ const BatchDiffExpression = (props) => {
   const [sample] = useSelector(getCellSetsHierarchyByKeys(['sample']));
 
   const isDatasetUnisample = useMemo(() => sample?.children.length === 1, [sample]);
-
   useEffect(() => {
     dispatch(loadCellSets(experimentId));
   }, []);
@@ -263,7 +262,7 @@ const BatchDiffExpression = (props) => {
     }
   };
 
-  if (!cellSets.accessible) {
+  if (!cellSets.accessible || dataLoading) {
     return (
       <center>
         <Loader experimentId={experimentId} />
@@ -284,15 +283,13 @@ const BatchDiffExpression = (props) => {
             onChange={(e) => { setChosenOperation(e.target.value); }}
           >
             <Space direction='vertical'>
-              <Space direction='horizontal'>
-                <Radio value='fullList' disabled={dataLoading}>
-                  Generate a full list of marker genes for all cell sets
-                  {'   '}
-                  <Tooltip title='Each cell set will be compared to all other cells, using all samples.'>
-                    <InfoCircleOutlined />
-                  </Tooltip>
-                </Radio>
-              </Space>
+              <Radio value='fullList' disabled={dataLoading}>
+                Generate a full list of marker genes for all cell sets
+                {'   '}
+                <Tooltip title='Each cell set will be compared to all other cells, using all samples.'>
+                  <InfoCircleOutlined />
+                </Tooltip>
+              </Radio>
               <Radio value='compareForCellSets' disabled={isDatasetUnisample || dataLoading}>
                 {
                   isDatasetUnisample ? (
