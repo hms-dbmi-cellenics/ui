@@ -1,5 +1,5 @@
 import {
-  render, screen, within,
+  render, screen, waitFor, within,
 } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
@@ -309,7 +309,7 @@ describe('Marker heatmap plot', () => {
     expect(_.isEqual(genesListAfterRemoval, genesListBeforeRemoval)).toEqual(true);
   });
 
-  it.only('searches for genes and adds a valid gene', async () => {
+  it('searches for genes and adds a valid gene', async () => {
     await act(async () => {
       await renderHeatmapPage(storeState);
     });
@@ -322,6 +322,10 @@ describe('Marker heatmap plot', () => {
     await act(() => {
       // search for genes using lowercase
       userEvent.type(searchBox, 'tmem');
+    });
+
+    await act(() => {
+      jest.runAllTimers();
     });
 
     // Gene Tmem176a that appears as option is disabled because it is already added
@@ -367,10 +371,24 @@ describe('Marker heatmap plot', () => {
 
     const geneAddButton = screen.getByText('Add');
 
-    userEvent.click(geneAddButton);
+    act(() => {
+      userEvent.click(geneAddButton);
+    });
 
-    // check the selected gene was added
-    expect(within(geneTree).getByText('Tmem176a')).toBeInTheDocument();
+    // check the selected gene is being loaded
+    await waitFor(() => {
+      expect(dispatchWorkRequest).toHaveBeenCalledWith(
+        experimentId,
+        expect.objectContaining({
+          name: 'GeneExpression',
+          genes: expect.arrayContaining(['Tmem176a']),
+        }),
+        expect.anything(),
+        expect.anything(),
+        expect.anything(),
+        expect.anything(),
+      );
+    });
   });
 
   it('tries to select an already loaded gene and clears the input', async () => {
