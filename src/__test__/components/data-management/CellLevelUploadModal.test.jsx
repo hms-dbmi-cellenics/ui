@@ -95,7 +95,7 @@ describe('CellLevelUploadModal', () => {
     expect(handleError).toHaveBeenCalled();
   });
 
-  it('needs to have the barcodes column', async () => {
+  it('needs to have the barcode column', async () => {
     readFileToString.mockReturnValue('sample\tkey1\tval1');
     await renderCellLevelUploadModal();
 
@@ -104,6 +104,6 @@ describe('CellLevelUploadModal', () => {
 
     await dropFilesIntoDropzone(inputEl, [file]);
 
-    expect(handleError).toBeCalledWith('error', 'The .tsv file needs to contain the column "barcodes"');
+    expect(handleError).toBeCalledWith('error', 'The .tsv file needs to contain the column "barcode"');
   });
 });
