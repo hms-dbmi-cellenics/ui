@@ -18,7 +18,7 @@ import initialSamplesState, { sampleTemplate } from 'redux/reducers/samples/init
 import { initialExperimentBackendStatus } from 'redux/reducers/backendStatus/initialState';
 
 import UploadStatus from 'utils/upload/UploadStatus';
-import calculateGem2sRerunStatus from 'utils/data-management/calculateGem2sRerunStatus';
+import calculatePipelinesRerunStatus from 'utils/data-management/calculateGem2sRerunStatus';
 import '__test__/test-utils/setupTests';
 
 jest.mock('redux/actions/experimentSettings/updateExperimentInfo', () => jest.fn().mockReturnValue({ type: 'UPDATE_EXPERIMENT_INFO' }));
@@ -204,7 +204,7 @@ describe('LaunchAnalysisButton', () => {
   });
 
   it('Process project button is disabled if not all sample metadata are inserted', async () => {
-    calculateGem2sRerunStatus.mockReturnValue(rerunState);
+    calculatePipelinesRerunStatus.mockReturnValue(rerunState);
 
     const notAllMetadataInserted = {
       ...withDataState,
@@ -230,7 +230,7 @@ describe('LaunchAnalysisButton', () => {
   });
 
   it('Process project button is disabled if there is no data', async () => {
-    calculateGem2sRerunStatus.mockReturnValue(rerunState);
+    calculatePipelinesRerunStatus.mockReturnValue(rerunState);
 
     await act(async () => {
       render(
@@ -246,7 +246,7 @@ describe('LaunchAnalysisButton', () => {
   });
 
   it('Process project button is disabled if not all data are uploaded', async () => {
-    calculateGem2sRerunStatus.mockReturnValue(rerunState);
+    calculatePipelinesRerunStatus.mockReturnValue(rerunState);
 
     const notAllDataUploaded = {
       ...withDataState,
@@ -304,7 +304,7 @@ describe('LaunchAnalysisButton', () => {
   });
 
   it('Process project button is enabled if there is data and all metadata for all samples are uplaoded', async () => {
-    calculateGem2sRerunStatus.mockReturnValue(rerunState);
+    calculatePipelinesRerunStatus.mockReturnValue(rerunState);
 
     await act(async () => {
       render(
@@ -334,7 +334,7 @@ describe('LaunchAnalysisButton', () => {
   });
 
   it('Shows Go to Data Processing if there are no changes to the experiment (same hash)', async () => {
-    calculateGem2sRerunStatus.mockReturnValue(notRerunState);
+    calculatePipelinesRerunStatus.mockReturnValue(notRerunState);
 
     await act(async () => {
       render(
@@ -350,7 +350,7 @@ describe('LaunchAnalysisButton', () => {
   });
 
   it('Shows Go to Data Exploration if there are no changes to the Seurat experiment (same hash)', async () => {
-    calculateGem2sRerunStatus.mockReturnValue(notRerunState);
+    calculatePipelinesRerunStatus.mockReturnValue(notRerunState);
 
     await act(async () => {
       render(
@@ -366,7 +366,7 @@ describe('LaunchAnalysisButton', () => {
   });
 
   it('Shows Process project if there are changes to the experiment', async () => {
-    calculateGem2sRerunStatus.mockReturnValue(rerunState);
+    calculatePipelinesRerunStatus.mockReturnValue(rerunState);
 
     await act(async () => {
       render(
@@ -382,7 +382,7 @@ describe('LaunchAnalysisButton', () => {
   });
 
   it('Shows Process project if there are changes to the Seurat experiment (different hash)', async () => {
-    calculateGem2sRerunStatus.mockReturnValue(rerunState);
+    calculatePipelinesRerunStatus.mockReturnValue(rerunState);
 
     await act(async () => {
       render(
@@ -398,7 +398,7 @@ describe('LaunchAnalysisButton', () => {
   });
 
   it('Dispatches request for GEM2S if there are changes to the experiment', async () => {
-    calculateGem2sRerunStatus.mockReturnValue(rerunState);
+    calculatePipelinesRerunStatus.mockReturnValue(rerunState);
 
     await act(async () => {
       render(
@@ -422,7 +422,7 @@ describe('LaunchAnalysisButton', () => {
   });
 
   it('Does not dispatch request for GEM2S if there are no changes to the experiment', async () => {
-    calculateGem2sRerunStatus.mockReturnValue(notRerunState);
+    calculatePipelinesRerunStatus.mockReturnValue(notRerunState);
 
     await act(async () => {
       render(
@@ -437,7 +437,7 @@ describe('LaunchAnalysisButton', () => {
   });
 
   it('Going to Data Processing should dispatch the correct actions', async () => {
-    calculateGem2sRerunStatus.mockReturnValue(notRerunState);
+    calculatePipelinesRerunStatus.mockReturnValue(notRerunState);
 
     await act(async () => {
       render(
@@ -455,7 +455,7 @@ describe('LaunchAnalysisButton', () => {
   });
 
   it('Does dispatch a request to runSeurat for an unprocessed experiment', async () => {
-    calculateGem2sRerunStatus.mockReturnValue(rerunState);
+    calculatePipelinesRerunStatus.mockReturnValue(rerunState);
 
     const notProcessedSeuratDataState = {
       ...withSeuratDataState,

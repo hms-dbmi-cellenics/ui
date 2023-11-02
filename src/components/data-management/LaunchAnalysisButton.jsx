@@ -8,10 +8,11 @@ import { modules, sampleTech } from 'utils/constants';
 import fileUploadSpecifications from 'utils/upload/fileUploadSpecifications';
 import UploadStatus from 'utils/upload/UploadStatus';
 import integrationTestConstants from 'utils/integrationTestConstants';
-import { runGem2s, runSeurat } from 'redux/actions/pipeline';
+import { runGem2s, runQC, runSeurat } from 'redux/actions/pipeline';
 import calculateGem2sRerunStatus from 'utils/data-management/calculateGem2sRerunStatus';
 
 import { useAppRouter } from 'utils/AppRouteProvider';
+import calculateQCRerunStatus from 'utils/data-management/calculateQCRerunStatus';
 
 const LaunchButtonTemplate = (props) => {
   const {
@@ -45,19 +46,26 @@ const LaunchAnalysisButton = () => {
   const selectedTech = samples[activeExperiment?.sampleIds[0]]?.type;
   const isTechSeurat = selectedTech === sampleTech.SEURAT;
 
-  const [gem2sRerunStatus, setGem2sRerunStatus] = useState(
-    {
-      rerun: true, paramsHash: null, reasons: [], complete: false,
+  const [pipelinesRerunStatus, setPipelinesRerunStatus] = useState({
+    gem2s: {
+      rerun: true, reasons: [], complete: false,
     },
-  );
-  const isSeuratComplete = isTechSeurat && gem2sRerunStatus.complete;
+    qc: {
+      rerun: false, reasons: [], complete: false,
+    },
+  });
+
+  const isSeuratComplete = isTechSeurat && pipelinesRerunStatus.gem2s.complete;
 
   const launchAnalysis = async () => {
     const runner = isTechSeurat ? runSeurat : runGem2s;
 
     let shouldNavigate = true;
-    if (gem2sRerunStatus.rerun) {
+    if (pipelinesRerunStatus.gem2s.rerun) {
       shouldNavigate = await dispatch(runner(activeExperimentId));
+    } else if (pipelinesRerunStatus.qc.rerun) {
+      shouldNavigate = true;
+      await dispatch(runQC(activeExperimentId));
     }
 
     if (shouldNavigate) {
@@ -68,16 +76,20 @@ const LaunchAnalysisButton = () => {
 
   useEffect(() => {
     // The value of backend status is null for new experiments that have never run
-    const pipeline = isTechSeurat ? 'seurat' : 'gem2s';
-    const pipelineBackendStatus = backendStatus[activeExperimentId]?.status?.[pipeline];
+    const setupPipeline = isTechSeurat ? 'seurat' : 'gem2s';
+    const {
+      pipeline: qcBackendStatus, [setupPipeline]: setupBackendStatus,
+    } = backendStatus[activeExperimentId]?.status ?? {};
 
     if (
-      !pipelineBackendStatus
+      !setupBackendStatus
       || !experiments[activeExperimentId]?.sampleIds?.length > 0
     ) return;
 
-    const pipelineStatus = calculateGem2sRerunStatus(pipelineBackendStatus, activeExperiment);
-    setGem2sRerunStatus(pipelineStatus);
+    setPipelinesRerunStatus({
+      gem2s: calculateGem2sRerunStatus(setupBackendStatus, activeExperiment),
+      qc: calculateQCRerunStatus(qcBackendStatus, activeExperiment),
+    });
   }, [backendStatus, activeExperimentId, samples, activeExperiment]);
 
   const canLaunchAnalysis = useCallback(() => {
@@ -135,7 +147,7 @@ const LaunchAnalysisButton = () => {
   const renderLaunchButton = () => {
     let buttonText;
 
-    if (gem2sRerunStatus.rerun) {
+    if (pipelinesRerunStatus.gem2s.rerun || pipelinesRerunStatus.qc.rerun) {
       buttonText = 'Process project';
     } else if (isSeuratComplete) {
       buttonText = 'Go to Data Exploration';
@@ -161,10 +173,12 @@ const LaunchAnalysisButton = () => {
       );
     }
 
-    if (gem2sRerunStatus.rerun) {
+    if (pipelinesRerunStatus.gem2s.rerun || pipelinesRerunStatus.qc.rerun) {
+      const rerunPipelineType = pipelinesRerunStatus.gem2s.rerun ? 'gem2s' : 'qc';
+
       return (
         <Popconfirm
-          title={`This project has to be processed because ${gem2sRerunStatus.reasons.join(' and ')}. \
+          title={`This project has to be processed because ${pipelinesRerunStatus[rerunPipelineType].reasons.join(' and ')}. \
         This will take several minutes.\
         Do you want to continue?`}
           onConfirm={() => launchAnalysis()}
