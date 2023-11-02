@@ -86,9 +86,11 @@ const LaunchAnalysisButton = () => {
       || !experiments[activeExperimentId]?.sampleIds?.length > 0
     ) return;
 
+    const status = calculateGem2sRerunStatus(setupBackendStatus, activeExperiment);
+
     setPipelinesRerunStatus({
-      gem2s: calculateGem2sRerunStatus(setupBackendStatus, activeExperiment),
-      qc: calculateQCRerunStatus(qcBackendStatus, activeExperiment),
+      gem2s: status,
+      qc: calculateQCRerunStatus(qcBackendStatus, setupBackendStatus, activeExperiment),
     });
   }, [backendStatus, activeExperimentId, samples, activeExperiment]);
 
