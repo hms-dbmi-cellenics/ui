@@ -7,6 +7,9 @@ import PropTypes from 'prop-types';
 
 import { useSelector, useDispatch } from 'react-redux';
 import UploadStatus from 'utils/upload/UploadStatus';
+import {
+  EXPERIMENTS_UPDATED,
+} from 'redux/actionTypes/experiments';
 
 import uploadMetadataFile from 'redux/actions/experiments/uploadMetadataFile';
 import { sampleTech } from 'utils/constants';
@@ -38,21 +41,23 @@ const AddMetadataButton = ({ samplesTableRef }) => {
   };
 
   const onUploadCellLevelMetadata = async (file) => {
+    setCellLevelUploading(true);
     const getSignedURLsParams = {
       name: file.name,
       size: file.size,
     };
-
-    setCellLevelUploading(true);
     const onUpdateUploadStatus = (status, percentProgress = 0) => {
       dispatch(updateCellLevelMetadataFileUpload(activeExperimentId, status, percentProgress));
     };
     const uploadUrlParams = await dispatch(
       createCellLevelMetadata(activeExperimentId, getSignedURLsParams),
     );
-    file.fileObject = await loadAndCompressIfNecessary(
-      file, () => onUpdateUploadStatus(UploadStatus.COMPRESSING),
-    );
+
+    if (!file.fileObject) {
+      file.fileObject = await loadAndCompressIfNecessary(
+        file, () => onUpdateUploadStatus(UploadStatus.COMPRESSING),
+      );
+    }
 
     try {
       await prepareAndUploadFileToS3(file, uploadUrlParams, 'cellLevel', onUpdateUploadStatus);
@@ -61,7 +66,7 @@ const AddMetadataButton = ({ samplesTableRef }) => {
       console.log(e);
     }
     setCellLevelUploading(false);
-    setCellLevelUploadVisible(false);
+    return file;
   };
 
   return (

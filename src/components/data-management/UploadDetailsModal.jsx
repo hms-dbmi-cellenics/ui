@@ -13,7 +13,7 @@ dayjs.extend(utc);
 
 const UploadDetailsModal = (props) => {
   const {
-    visible, onCancel, file, extraFields, onUpload, onDownload,
+    visible, onCancel, file, extraFields, onUpload, onDownload, onRetry,
   } = props;
 
   const {
@@ -58,7 +58,7 @@ const UploadDetailsModal = (props) => {
       disabled={!fileObject}
       block
       onClick={() => {
-        onUpload(file, true);
+        onRetry();
       }}
       style={{ width: '140px', marginBottom: '10px' }}
     >
@@ -198,6 +198,7 @@ UploadDetailsModal.propTypes = {
   extraFields: PropTypes.object,
   onDownload: PropTypes.func.isRequired,
   onUpload: PropTypes.func.isRequired,
+  onRetry: PropTypes.func.isRequired,
 };
 
 UploadDetailsModal.defaultProps = {

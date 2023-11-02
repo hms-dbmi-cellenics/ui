@@ -29,8 +29,12 @@ const CellLevelUploadModal = (props) => {
   } = props;
 
   const [file, setFile] = useState(false);
+
   const { activeExperimentId } = useSelector((state) => state.experiments.meta);
-  // Handle on Drop
+  const onUploadFile = async (newFile) => {
+    const fileObject = await onUpload(newFile);
+    setFile(fileObject);
+  };
   const onDrop = async (droppedFiles) => {
     const droppedFile = droppedFiles[0];
     if (!droppedFile.name.endsWith('.tsv')) {
@@ -152,8 +156,7 @@ const CellLevelUploadModal = (props) => {
           loading={uploading}
           disabled={!file}
           onClick={() => {
-            onUpload(file);
-            setFile(false);
+            onUploadFile(file);
           }}
         >
           Upload
@@ -247,7 +250,7 @@ const CellLevelUploadModal = (props) => {
 
   if (Object.keys(cellLevelMetadata).length) {
     const {
-      name, size, fileObject = undefined, uploadStatus, percentProgress, createdAt,
+      name, size, uploadStatus, percentProgress, createdAt,
     } = cellLevelMetadata;
 
     const fileInfoObject = {
@@ -257,15 +260,16 @@ const CellLevelUploadModal = (props) => {
         progress: percentProgress,
       },
       size,
-      fileObject,
+      fileObject: file.fileObject,
       lastModified: createdAt,
     };
     return (
       <UploadDetailsModal
         visible
         onCancel={onCancel}
-        onUpload={onUpload}
+        onUpload={onUploadFile}
         onDownload={downloadData}
+        onRetry={() => onUploadFile(file)}
         file={fileInfoObject}
       />
     );

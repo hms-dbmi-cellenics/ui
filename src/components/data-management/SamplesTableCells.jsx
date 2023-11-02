@@ -160,6 +160,7 @@ const UploadCell = (props) => {
         onCancel={() => setUploadDetailsModalVisible(false)}
         onDownload={onDownload}
         onUpload={onUpload}
+        onRetry={() => onUpload(uploadDetailsModalData, true)}
         extraFields={{
           Sample: samples[uploadDetailsModalData?.sampleUuid]?.name,
           Category: uploadDetailsModalData.fileCategory,
