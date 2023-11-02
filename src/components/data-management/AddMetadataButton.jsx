@@ -79,16 +79,16 @@ const AddMetadataButton = ({ samplesTableRef }) => {
                   'data-testid': 'create-track-option',
                   onClick: () => {
                     samplesTableRef.current.createMetadataColumn();
-                  }
+                  },
                 },
                 {
                   label: 'Upload file',
                   key: 'upload-metadata-file',
                   onClick: () => {
                     setTrackUploadModalVisible(true);
-                  }
-                }
-              ]
+                  },
+                },
+              ],
             },
             {
               key: 'cell-level',
@@ -97,12 +97,12 @@ const AddMetadataButton = ({ samplesTableRef }) => {
                   Cell level
                 </div>
               </Tooltip>),
-              disabled: true,
+              // disabled: true,
               onClick: () => {
                 setCellLevelUploadVisible(true);
-              }
-            }
-          ]
+              },
+            },
+          ],
         }}
         trigger={['click']}
         placement='bottomRight'

@@ -52,6 +52,12 @@ const runQC = (experimentId) => async (dispatch, getState) => {
     return;
   }
 
+  const processingConfigDiff = {};
+  Array.from(changedQCFilters).forEach((stepKey) => {
+    const stepConfig = processing[stepKey];
+    processingConfigDiff[stepKey] = stepConfig;
+  });
+
   const changesToProcessingConfig = Array.from(changedQCFilters).map((key) => {
     const currentConfig = processing[key];
     return {
@@ -59,6 +65,12 @@ const runQC = (experimentId) => async (dispatch, getState) => {
       body: currentConfig,
     };
   });
+
+  console.log('processingConfigDiffDebug');
+  console.log(processingConfigDiff);
+
+  console.log('changesToProcessingConfigDebug');
+  console.log(changesToProcessingConfig);
 
   try {
     // We are only sending the configuration that we know changed
@@ -73,7 +85,7 @@ const runQC = (experimentId) => async (dispatch, getState) => {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          processingConfig: changesToProcessingConfig,
+          processingConfigDiff,
         }),
       },
     );
