@@ -4,7 +4,8 @@ import preloadAll from 'jest-next-dynamic';
 import { render, screen } from '@testing-library/react';
 import { act } from 'react-dom/test-utils';
 
-import { dispatchWorkRequest } from 'utils/work/dispatchWorkRequest';
+import dispatchWorkRequest from 'utils/work/dispatchWorkRequest';
+
 
 import { Provider } from 'react-redux';
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';

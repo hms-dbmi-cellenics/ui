@@ -7,7 +7,8 @@ import { act } from 'react-dom/test-utils';
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 import '__test__/test-utils/setupTests';
 import { loadBackendStatus } from 'redux/actions/backendStatus';
-import { dispatchWorkRequest } from 'utils/work/dispatchWorkRequest';
+import dispatchWorkRequest from 'utils/work/dispatchWorkRequest';
+
 import expressionDataFAKEGENE from '__test__/data/gene_expression_FAKEGENE.json';
 
 import ViolinPlot from 'components/plots/ViolinPlotMain';

@@ -80,18 +80,6 @@ const waitForWorkRequest = async (
   const timeoutPromise = new Promise((resolve, reject) => {
     setOrRefreshTimeout(request, timeout, reject, ETag);
 
-    // io.on(`WorkerInfo-${experimentId}`, (res) => {
-    //   const { response: { podInfo: { creationTimestamp, phase } } } = res;
-    //   const extraTime = getRemainingWorkerStartTime(creationTimestamp);
-
-    //   // this worker info indicates that the work request has been received but the worker
-    //   // is still spinning up so we will add extra time to account for that.
-    //   if (phase === 'Pending' && extraTime > 0) {
-    //     const newTimeout = timeout + extraTime;
-    //     setOrRefreshTimeout(request, newTimeout, reject, ETag);
-    //   }
-    // });
-
     // this experiment update is received whenever a worker finishes any work request
     // related to the current experiment. We extend the timeout because we know
     // the worker is alive and was working on another request of our experiment

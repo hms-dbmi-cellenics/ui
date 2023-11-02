@@ -27,7 +27,6 @@ const retrieveData = async (experimentId,
 
   // 2. Check if data is cached in S3 so we can download from the signed URL (no worker)
   if (signedUrl) {
-    console.log('downloading from S3', signedUrl);
     return await downloadFromS3(body.name, signedUrl);
   }
 
@@ -71,6 +70,8 @@ const fetchWork = async (
     localStorage.setItem('disableCache', 'true');
   }
 
+  console.log('fetchWork ', body);
+
   // 1. Contact the API to get ETag and possible S3 signedURL
   const { ETag, signedUrl, request } = await dispatchWorkRequest(
     experimentId,
@@ -88,6 +89,7 @@ const fetchWork = async (
   // 2. Try to get the data from the fastest source possible
   const data = await retrieveData(experimentId, ETag, signedUrl, request, timeout, body, dispatch);
 
+  // TODO check if we need to cache everything, gene expression is not needed
   // 3. Cache the data in the browser
   await cache.set(ETag, data);
 

@@ -42,7 +42,7 @@ const loadMarkerGenes = (
     name: 'MarkerHeatmap',
     nGenes: numGenes,
     cellSetKey: selectedCellSetKey,
-    cellSets,
+    cellSetsNames: cellSets, // TODO check if I need to change API
     groupByClasses: groupedTracks,
     selectedPoints,
     hiddenCellSetKeys: Array.from(hiddenCellSets),

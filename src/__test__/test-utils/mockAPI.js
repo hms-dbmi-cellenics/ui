@@ -30,7 +30,7 @@ const delayedResponse = (response, delay = 10000, options = {}) => new Promise((
   }, delay);
 });
 
-const workerDataResult = (data) => Promise.resolve(_.cloneDeep({ data }));
+const workerDataResult = (data) => Promise.resolve(_.cloneDeep(data));
 
 const dispatchWorkRequestMock = (
   mockedResults,

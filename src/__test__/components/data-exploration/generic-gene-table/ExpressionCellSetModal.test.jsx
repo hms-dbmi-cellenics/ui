@@ -9,7 +9,8 @@ import { makeStore } from 'redux/store';
 import ExpressionCellSetModal from 'components/data-exploration/generic-gene-table/ExpressionCellSetModal';
 
 import { GENES_SELECT } from 'redux/actionTypes/genes';
-import { dispatchWorkRequest } from 'utils/work/dispatchWorkRequest';
+import dispatchWorkRequest from 'utils/work/dispatchWorkRequest';
+
 import { loadBackendStatus } from 'redux/actions/backendStatus';
 import { updateExperimentInfo } from 'redux/actions/experimentSettings';
 

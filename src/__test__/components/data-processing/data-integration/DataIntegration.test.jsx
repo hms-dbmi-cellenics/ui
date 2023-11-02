@@ -15,7 +15,8 @@ import cellSetsData from '__test__/data/cell_sets.json';
 import { MAX_LEGEND_ITEMS } from 'components/plots/helpers/PlotLegendAlert';
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 import { makeStore } from 'redux/store';
-import { dispatchWorkRequest } from 'utils/work/dispatchWorkRequest';
+import dispatchWorkRequest from 'utils/work/dispatchWorkRequest';
+
 import mockEmbedding from '__test__/data/embedding.json';
 
 import { generateDataProcessingPlotUuid } from 'utils/generateCustomPlotUuid';

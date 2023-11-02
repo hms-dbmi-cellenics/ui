@@ -6,7 +6,8 @@ import { makeStore } from 'redux/store';
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 import * as PlotSpecGenerators from 'utils/plotSpecs/generateEmbeddingContinuousSpec';
 
-import { dispatchWorkRequest } from 'utils/work/dispatchWorkRequest';
+import dispatchWorkRequest from 'utils/work/dispatchWorkRequest';
+
 import { loadBackendStatus } from 'redux/actions/backendStatus';
 
 import ContinuousEmbeddingPlot from 'components/plots/ContinuousEmbeddingPlot';

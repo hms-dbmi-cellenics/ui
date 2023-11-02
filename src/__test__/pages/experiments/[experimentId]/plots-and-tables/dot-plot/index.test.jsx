@@ -20,7 +20,7 @@ import mockAPI, {
   statusResponse,
 } from '__test__/test-utils/mockAPI';
 
-import { dispatchWorkRequest } from 'utils/work/dispatchWorkRequest';
+import fetchWork from 'utils/work/fetchWork';
 
 import createTestComponentFactory from '__test__/test-utils/testComponentFactory';
 import { makeStore } from 'redux/store';
@@ -61,10 +61,10 @@ jest.mock('object-hash', () => {
   return mockWorkResultETag(objectHash, mockWorkRequestETag, mockGeneExpressionETag);
 });
 
-jest.mock('utils/work/seekWorkResponse', () => ({
-  __esModule: true,
-  dispatchWorkRequest: jest.fn(() => true),
-}));
+// jest.mock('utils/work/seekWorkResponse', () => ({
+//   __esModule: true,
+//   dispatchWorkRequest: jest.fn(() => true),
+// }));
 
 const mockWorkerResponses = {
   'paginated-gene-expression': paginatedGeneExpressionData,
@@ -135,7 +135,7 @@ describe('Dot plot page', () => {
   beforeEach(async () => {
     jest.clearAllMocks();
 
-    dispatchWorkRequest
+    fetchWork
       .mockReset()
       .mockImplementation(dispatchWorkRequestMock(mockWorkerResponses));
 
@@ -210,7 +210,7 @@ describe('Dot plot page', () => {
       'dot-plot-data': () => { throw new Error('error'); },
     };
 
-    dispatchWorkRequest
+    fetchWork
       .mockReset()
       .mockImplementationOnce(dispatchWorkRequestMock(errorResponse))
       .mockImplementationOnce(dispatchWorkRequestMock(errorResponse));
@@ -234,7 +234,7 @@ describe('Dot plot page', () => {
       },
     };
 
-    dispatchWorkRequest
+    fetchWork
       .mockReset()
       .mockImplementation(dispatchWorkRequestMock(emptyResponse));
 
@@ -245,7 +245,7 @@ describe('Dot plot page', () => {
   });
 
   it('Should show a no data error if user is using marker gene and selected filter sets are not represented in more than 1 group in the base cell set', async () => {
-    dispatchWorkRequest
+    fetchWork
       .mockReset()
       .mockImplementation(dispatchWorkRequestMock(mockWorkerResponses));
 
@@ -253,7 +253,7 @@ describe('Dot plot page', () => {
 
     // Call to list genes
     await waitFor(() => {
-      expect(dispatchWorkRequest).toHaveBeenCalledTimes(2);
+      expect(fetchWork).toHaveBeenCalledTimes(2);
     });
 
     // Use marker genes
@@ -262,7 +262,7 @@ describe('Dot plot page', () => {
     });
 
     // Call to load dot plot
-    expect(dispatchWorkRequest).toHaveBeenCalledTimes(3);
+    expect(fetchWork).toHaveBeenCalledTimes(3);
 
     // Select data
     userEvent.click(screen.getByText(/Select data/i));
@@ -297,10 +297,10 @@ describe('Dot plot page', () => {
     });
 
     // No new calls to load dot plot
-    expect(dispatchWorkRequest).toHaveBeenCalledTimes(4);
+    expect(fetchWork).toHaveBeenCalledTimes(4);
 
     // Calls are correct
-    expect(dispatchWorkRequest.mock.calls).toMatchSnapshot();
+    expect(fetchWork.mock.calls).toMatchSnapshot();
   });
 
   it('removing a gene keeps the order', async () => {
@@ -398,7 +398,7 @@ describe('Dot plot page', () => {
   });
 
   it('resets the data', async () => {
-    dispatchWorkRequest
+    fetchWork
       .mockReset()
       // 1st call to list genes
       .mockImplementationOnce(dispatchWorkRequestMock(mockWorkerResponses))
@@ -440,7 +440,7 @@ describe('Drag and drop enzyme tests', () => {
   beforeEach(async () => {
     jest.clearAllMocks();
 
-    dispatchWorkRequest
+    fetchWork
       .mockReset()
       // 1st call to list genes
       .mockImplementationOnce(dispatchWorkRequestMock(mockWorkerResponses))

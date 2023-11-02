@@ -93,6 +93,7 @@ const Embedding = (props) => {
 
   // Then, try to load the embedding with the appropriate data.
   useEffect(() => {
+    console.log('embeddingSettings effector', embeddingSettings, !data);
     if (embeddingSettings && !data) {
       dispatch(loadEmbedding(experimentId, embeddingType));
     }
@@ -316,7 +317,7 @@ const Embedding = (props) => {
         {
           data ? (
             <Scatterplot
-              cellColorEncoding="cellSetSelection"
+              cellColorEncoding='cellSetSelection'
               cellOpacity={0.8}
               cellRadius={cellRadius}
               setCellHighlight={setCellHighlight}
