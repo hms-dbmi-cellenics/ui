@@ -58,20 +58,6 @@ const runQC = (experimentId) => async (dispatch, getState) => {
     processingConfigDiff[stepKey] = stepConfig;
   });
 
-  const changesToProcessingConfig = Array.from(changedQCFilters).map((key) => {
-    const currentConfig = processing[key];
-    return {
-      name: key,
-      body: currentConfig,
-    };
-  });
-
-  console.log('processingConfigDiffDebug');
-  console.log(processingConfigDiff);
-
-  console.log('changesToProcessingConfigDebug');
-  console.log(changesToProcessingConfig);
-
   try {
     // We are only sending the configuration that we know changed
     // with respect to the one that is already persisted in dynamodb
