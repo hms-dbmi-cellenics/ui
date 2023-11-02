@@ -45,18 +45,18 @@ const LaunchAnalysisButton = () => {
   const selectedTech = samples[activeExperiment?.sampleIds[0]]?.type;
   const isTechSeurat = selectedTech === sampleTech.SEURAT;
 
-  const [pipelineRerunStatus, setPipelineRerunStatus] = useState(
+  const [gem2sRerunStatus, setGem2sRerunStatus] = useState(
     {
       rerun: true, paramsHash: null, reasons: [], complete: false,
     },
   );
-  const isSeuratComplete = isTechSeurat && pipelineRerunStatus.complete;
+  const isSeuratComplete = isTechSeurat && gem2sRerunStatus.complete;
 
   const launchAnalysis = async () => {
     const runner = isTechSeurat ? runSeurat : runGem2s;
 
     let shouldNavigate = true;
-    if (pipelineRerunStatus.rerun) {
+    if (gem2sRerunStatus.rerun) {
       shouldNavigate = await dispatch(runner(activeExperimentId));
     }
 
@@ -77,7 +77,7 @@ const LaunchAnalysisButton = () => {
     ) return;
 
     const pipelineStatus = calculateGem2sRerunStatus(pipelineBackendStatus, activeExperiment);
-    setPipelineRerunStatus(pipelineStatus);
+    setGem2sRerunStatus(pipelineStatus);
   }, [backendStatus, activeExperimentId, samples, activeExperiment]);
 
   const canLaunchAnalysis = useCallback(() => {
@@ -135,7 +135,7 @@ const LaunchAnalysisButton = () => {
   const renderLaunchButton = () => {
     let buttonText;
 
-    if (pipelineRerunStatus.rerun) {
+    if (gem2sRerunStatus.rerun) {
       buttonText = 'Process project';
     } else if (isSeuratComplete) {
       buttonText = 'Go to Data Exploration';
@@ -161,10 +161,10 @@ const LaunchAnalysisButton = () => {
       );
     }
 
-    if (pipelineRerunStatus.rerun) {
+    if (gem2sRerunStatus.rerun) {
       return (
         <Popconfirm
-          title={`This project has to be processed because ${pipelineRerunStatus.reasons.join(' and ')}. \
+          title={`This project has to be processed because ${gem2sRerunStatus.reasons.join(' and ')}. \
         This will take several minutes.\
         Do you want to continue?`}
           onConfirm={() => launchAnalysis()}
