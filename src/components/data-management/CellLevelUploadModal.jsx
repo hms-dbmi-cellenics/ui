@@ -148,7 +148,7 @@ const CellLevelUploadModal = (props) => {
       title=''
       open
       onCancel={onCancel}
-      width='50%'
+      width='40%'
       footer={(
         <Button
           type='primary'

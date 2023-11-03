@@ -102,7 +102,7 @@ const MetadataUploadModal = (props) => {
       title=''
       visible
       onCancel={onCancel}
-      width='50%'
+      width='40%'
       footer={(
         <Button
           type='primary'
@@ -152,7 +152,7 @@ const MetadataUploadModal = (props) => {
             <Text code>Female</Text>
             you would write a file as follows:
           </Paragraph>
-          <Table size='small' pagination={false} showHeader={false} dataSource={exampleFileTable.dataSource} columns={exampleFileTable.columns} />
+          <Table size='small' style={{ width: '70%' }} pagination={false} showHeader={false} dataSource={exampleFileTable.dataSource} columns={exampleFileTable.columns} />
         </Col>
       </Row>
 
