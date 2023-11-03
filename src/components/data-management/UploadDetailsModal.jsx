@@ -113,6 +113,14 @@ const UploadDetailsModal = (props) => {
     </Button>
   );
 
+  const renderFields = (fields) => (
+    Object.keys(fields).map((key) => (
+      <Row style={{ marginTop: '5px', marginBottom: '5px' }}>
+        <Col span={5}>{key}</Col>
+        <Col span={10}>{fields[key]}</Col>
+      </Row>
+    )));
+
   return (
     <Modal
       title={!isNotUploadedModal ? (isSuccessModal ? 'Upload successful' : 'Upload error') : 'File not found'}
@@ -140,52 +148,17 @@ const UploadDetailsModal = (props) => {
               {isNotUploadedModal ? 'was not uploaded' : 'has failed to upload'}
             </Row>
           )}
-        {Object.keys(extraFields).map((key) => (
-          <Row style={{ marginTop: '5px', marginBottom: '5px' }}>
-            <Col span={5}>{key}</Col>
-            <Col span={10}>{extraFields[key]}</Col>
-          </Row>
+        {renderFields(extraFields)}
 
-        ))}
-
-        {!isNotUploadedModal && (
-          <Row style={{ marginTop: '5px', marginBottom: '5px' }}>
-            <Col span={5}>Filename</Col>
-            <Col span={10}>{name}</Col>
-          </Row>
-        )}
+        {!isNotUploadedModal && renderFields({ Filename: name })}
 
         {
-          isSuccessModal ? (
-            <>
-              <Row style={{ marginTop: '5px', marginBottom: '5px' }}>
-                <Col span={5}>File size</Col>
-                <Col span={10}>
-                  {bytesToSize(size)}
-                  {' '}
-                </Col>
-              </Row>
-              <Row style={{ marginTop: '5px', marginBottom: '5px' }}>
-                <Col span={5}>Upload date</Col>
-                <Col span={10}>{fromISODateToFormatted(lastModified)}</Col>
-              </Row>
-            </>
-          )
-            : (
-              <Row style={{ marginTop: '5px', marginBottom: '5px' }}>
-                <Col span={5}>Error</Col>
-                <Col span={10}>{messageForStatus(status)}</Col>
-              </Row>
-            )
+          isSuccessModal ? renderFields({ 'File size': bytesToSize(size), 'Upload date': fromISODateToFormatted(lastModified) })
+            : renderFields({ Error: messageForStatus(status) })
         }
-        {progress ? (
-          <Row style={{ marginTop: '5px', marginBottom: '5px' }}>
-            <Col span={5}>Progress</Col>
-            <Col span={10}>
-              <Progress style={{ width: '100%' }} percent={progress} size='small' />
-            </Col>
-          </Row>
-        ) : <div />}
+
+        {progress ? renderFields({ Progress: <Progress style={{ width: '100%' }} percent={progress} size='small' /> })
+          : <div />}
       </div>
     </Modal>
   );
