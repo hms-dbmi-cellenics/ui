@@ -30,7 +30,7 @@ const CellLevelUploadModal = (props) => {
   } = props;
 
   const [file, setFile] = useState(false);
-
+  console.log('FILE ', file);
   const { activeExperimentId } = useSelector((state) => state.experiments.meta);
   const onUploadFile = async (newFile) => {
     const fileObject = await onUpload(newFile);
@@ -184,7 +184,7 @@ const CellLevelUploadModal = (props) => {
             {' '}
             is preferred for de-duplication if required.
             <br />
-            <Table size='small' style={{ width: '50%' }} pagination={false} dataSource={fileFormatTable.dataSource} columns={fileFormatTable.columns} />
+            <Table size='small' pagination={false} dataSource={fileFormatTable.dataSource} columns={fileFormatTable.columns} />
             {' '}
             <br />
             For example if you have two samples,
@@ -196,7 +196,7 @@ const CellLevelUploadModal = (props) => {
             <b>Convalescent</b>
             {' '}
             and you want to add cell-type annotation, you would write a file as follows:
-            <Table size='small' style={{ width: '50%' }} pagination={false} dataSource={exampleTable.dataSource} columns={exampleTable.columns} />
+            <Table size='small' pagination={false} dataSource={exampleTable.dataSource} columns={exampleTable.columns} />
           </Paragraph>
         </Col>
       </Row>
