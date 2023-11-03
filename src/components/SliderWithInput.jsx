@@ -34,7 +34,7 @@ const SliderWithInput = (props) => {
         min={min}
         max={max}
         onChange={setLocalValue}
-        onAfterChange={() => handleChange(localValue)}
+        onAfterChange={handleChange}
         step={stepToSet}
         disabled={disabled}
         style={{
