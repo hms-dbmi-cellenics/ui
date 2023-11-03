@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+/* eslint-disable react/jsx-props-no-spreading */
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import {
   Modal,
@@ -265,7 +266,6 @@ const CellLevelUploadModal = (props) => {
     };
     return (
       <UploadDetailsModal
-        visible
         onCancel={onCancel}
         onUpload={onUploadFile}
         onDownload={downloadData}

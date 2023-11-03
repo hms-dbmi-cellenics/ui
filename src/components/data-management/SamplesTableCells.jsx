@@ -154,18 +154,19 @@ const UploadCell = (props) => {
       <center>
         {render()}
       </center>
-      <UploadDetailsModal
-        file={uploadDetailsModalData}
-        visible={uploadDetailsModalVisible}
-        onCancel={() => setUploadDetailsModalVisible(false)}
-        onDownload={onDownload}
-        onUpload={onUpload}
-        onRetry={() => onUpload(uploadDetailsModalData, true)}
-        extraFields={{
-          Sample: samples[uploadDetailsModalData?.sampleUuid]?.name,
-          Category: uploadDetailsModalData.fileCategory,
-        }}
-      />
+      {uploadDetailsModalVisible && (
+        <UploadDetailsModal
+          file={uploadDetailsModalData}
+          onCancel={() => setUploadDetailsModalVisible(false)}
+          onDownload={onDownload}
+          onUpload={onUpload}
+          onRetry={() => onUpload(uploadDetailsModalData, true)}
+          extraFields={{
+            Sample: samples[uploadDetailsModalData?.sampleUuid]?.name,
+            Category: uploadDetailsModalData.fileCategory,
+          }}
+        />
+      )}
     </>
   );
 };
