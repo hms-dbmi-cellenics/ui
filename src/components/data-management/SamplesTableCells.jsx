@@ -34,11 +34,11 @@ const UploadDivStyle = {
 const UploadCell = (props) => {
   const { columnId, sampleUuid } = props;
   const dispatch = useDispatch();
-  const file = useSelector((state) => state.samples[sampleUuid]?.files[columnId]);
-  const samples = useSelector((state) => state.samples);
+  const sample = useSelector((state) => state.samples[sampleUuid]);
+  const file = sample.files[columnId];
+  const selectedTech = sample?.type;
   const { activeExperimentId } = useSelector((state) => state.experiments.meta);
 
-  const selectedTech = useSelector((state) => state.samples[sampleUuid]?.type);
   const [uploadDetailsModalVisible, setUploadDetailsModalVisible] = useState(false);
   const [uploadDetailsModalData, setUploadDetailsModalData] = useState(false);
 
@@ -53,6 +53,7 @@ const UploadCell = (props) => {
     setUploadDetailsModalData({
       sampleUuid,
       fileCategory: columnId,
+      lastModified: sample.lastModified,
       ...uploadDetailsModalData,
     });
     setUploadDetailsModalVisible(true);
@@ -162,7 +163,7 @@ const UploadCell = (props) => {
           onUpload={onUpload}
           onRetry={() => onUpload(uploadDetailsModalData, true)}
           extraFields={{
-            Sample: samples[uploadDetailsModalData?.sampleUuid]?.name,
+            Sample: sample?.name,
             Category: uploadDetailsModalData.fileCategory,
           }}
         />

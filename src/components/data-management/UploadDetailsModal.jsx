@@ -19,6 +19,7 @@ const UploadDetailsModal = (props) => {
   const {
     name, upload, size, lastModified, fileObject = undefined,
   } = file ?? {};
+
   const { progress, status } = upload ?? false;
   const inputFileRef = useRef(null);
   const [replacementFileObject, setReplacementFileObject] = useState(null);
