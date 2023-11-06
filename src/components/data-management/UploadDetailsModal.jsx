@@ -32,6 +32,10 @@ const UploadDetailsModal = (props) => {
 
   const isSuccessModal = status === UploadStatus.UPLOADED;
   const isNotUploadedModal = status === UploadStatus.FILE_NOT_FOUND;
+  const isUploading = status === UploadStatus.UPLOADING;
+
+  // title={!isNotUploadedModal ? (isSuccessModal ? 'Upload successful' : 'Upload error') : 'File not found'}
+  const modalTitle = messageForStatus(status);
 
   function bytesToSize(bytes) {
     const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
@@ -124,7 +128,7 @@ const UploadDetailsModal = (props) => {
 
   return (
     <Modal
-      title={!isNotUploadedModal ? (isSuccessModal ? 'Upload successful' : 'Upload error') : 'File not found'}
+      title={modalTitle}
       open={visible}
       onCancel={onCancel}
       width='40%'
@@ -141,7 +145,7 @@ const UploadDetailsModal = (props) => {
       )}
     >
       <div style={{ width: '100%', marginLeft: '15px' }}>
-        {!isSuccessModal
+        {!isSuccessModal && !isUploading
           && (
             <Row style={{ marginTop: '5px', marginBottom: '5px' }}>
               The following file
@@ -154,7 +158,7 @@ const UploadDetailsModal = (props) => {
         {!isNotUploadedModal && renderFields({ Filename: name })}
 
         {
-          isSuccessModal ? renderFields({ 'File size': bytesToSize(size), 'Upload date': fromISODateToFormatted(lastModified) })
+          isSuccessModal || isUploading ? renderFields({ 'File size': bytesToSize(size), 'Upload date': fromISODateToFormatted(lastModified) })
             : renderFields({ Error: messageForStatus(status) })
         }
 
