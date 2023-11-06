@@ -35,7 +35,7 @@ const UploadCell = (props) => {
   const { columnId, sampleUuid } = props;
   const dispatch = useDispatch();
   const sample = useSelector((state) => state.samples[sampleUuid]);
-  const file = sample.files[columnId];
+  const file = sample?.files[columnId];
   const selectedTech = sample?.type;
   const { activeExperimentId } = useSelector((state) => state.experiments.meta);
 
