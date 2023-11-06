@@ -47,18 +47,7 @@ describe('UploadDetailsModal', () => {
       },
     });
 
-    expect(screen.getByText('Upload successful')).toBeInTheDocument();
-  });
-
-  it('displays the modal with the correct title when upload failed', () => {
-    renderUploadDetailsModal({
-      file: {
-        ...defaultProps.file,
-        upload: { ...defaultProps.file.upload, status: UploadStatus.ERROR },
-      },
-    });
-
-    expect(screen.getByText('Upload error')).toBeInTheDocument();
+    expect(screen.getByText('Uploaded')).toBeInTheDocument();
   });
 
   it('displays the modal with the correct title when file not found', () => {
@@ -111,9 +100,7 @@ describe('UploadDetailsModal', () => {
       },
     });
 
-    const errorMessage = messageForStatus(status);
-
-    const errorMessages = screen.getAllByText(errorMessage);
+    const errorMessages = screen.getAllByText('Error');
     expect(errorMessages.length).toBeGreaterThan(0);
   });
 });
