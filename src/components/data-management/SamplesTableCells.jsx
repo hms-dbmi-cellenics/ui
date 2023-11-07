@@ -160,7 +160,7 @@ const UploadCell = (props) => {
           file={uploadDetailsModalData}
           onCancel={() => setUploadDetailsModalVisible(false)}
           onDownload={onDownload}
-          onUpload={onUpload}
+          onDelete={() => dispatch(deleteSamples([sampleUuid]))}
           onRetry={() => onUpload(uploadDetailsModalData, true)}
           extraFields={{
             Sample: sample?.name,

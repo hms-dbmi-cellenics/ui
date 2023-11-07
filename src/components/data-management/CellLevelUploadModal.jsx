@@ -15,16 +15,18 @@ import {
 } from 'antd';
 import { CheckCircleTwoTone, DeleteOutlined } from '@ant-design/icons';
 import Dropzone from 'react-dropzone';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import handleError from 'utils/http/handleError';
 import endUserMessages from 'utils/endUserMessages';
 import readFileToString from 'utils/upload/readFileToString';
 import UploadDetailsModal from 'components/data-management/UploadDetailsModal';
 import downloadCellLevelMeta from 'utils/data-management/downloadCellLevelMeta';
+import { deleteCellLevelMetadata } from 'redux/actions/experiments/index';
 
 const { Text, Title, Paragraph } = Typography;
 
 const CellLevelUploadModal = (props) => {
+  const dispatch = useDispatch();
   const {
     onUpload, onCancel, uploading, cellLevelMetadata,
   } = props;
@@ -269,6 +271,7 @@ const CellLevelUploadModal = (props) => {
         onCancel={onCancel}
         onUpload={onUploadFile}
         onDownload={downloadData}
+        onDelete={() => dispatch(deleteCellLevelMetadata(activeExperimentId))}
         onRetry={() => onUploadFile(file)}
         file={fileInfoObject}
       />

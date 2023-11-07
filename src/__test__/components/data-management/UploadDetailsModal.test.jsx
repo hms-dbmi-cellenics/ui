@@ -7,7 +7,7 @@ import userEvent from '@testing-library/user-event';
 import UploadDetailsModal from 'components/data-management/UploadDetailsModal';
 import UploadStatus, { messageForStatus } from 'utils/upload/UploadStatus';
 
-const mockOnUpload = jest.fn();
+const mockOnDelete = jest.fn();
 const mockOnCancel = jest.fn();
 const mockOnDownload = jest.fn();
 const mockOnRetry = jest.fn();
@@ -24,7 +24,7 @@ const defaultProps = {
     },
   },
   extraFields: {},
-  onUpload: mockOnUpload,
+  onDelete: mockOnDelete,
   onCancel: mockOnCancel,
   onDownload: mockOnDownload,
   onRetry: mockOnRetry,
@@ -102,5 +102,18 @@ describe('UploadDetailsModal', () => {
 
     const errorMessages = screen.getAllByText('Error');
     expect(errorMessages.length).toBeGreaterThan(0);
+  });
+  it('Deleting the file calls onDelete', () => {
+    const status = UploadStatus.UPLOADED;
+    renderUploadDetailsModal({
+      file: {
+        ...defaultProps.file,
+        upload: { ...defaultProps.file.upload, status },
+      },
+    });
+
+    const deleteButton = screen.getByText('Delete');
+    userEvent.click(deleteButton);
+    expect(mockOnDelete).toHaveBeenCalled();
   });
 });

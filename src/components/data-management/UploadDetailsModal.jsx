@@ -1,19 +1,18 @@
 /* eslint-disable import/no-duplicates */
-import React, { useState, useEffect, useRef } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import {
   Modal, Button, Col, Row, Progress,
 } from 'antd';
-import { UploadOutlined } from '@ant-design/icons';
 import UploadStatus, { messageForStatus } from 'utils/upload/UploadStatus';
 
 dayjs.extend(utc);
 
 const UploadDetailsModal = (props) => {
   const {
-    visible, onCancel, file, extraFields, onUpload, onDownload, onRetry,
+    visible, onCancel, file, extraFields, onDownload, onRetry, onDelete,
   } = props;
 
   const {
@@ -21,14 +20,6 @@ const UploadDetailsModal = (props) => {
   } = file ?? {};
 
   const { progress, status } = upload ?? false;
-  const inputFileRef = useRef(null);
-  const [replacementFileObject, setReplacementFileObject] = useState(null);
-
-  useEffect(() => {
-    if (replacementFileObject) {
-      onUpload(replacementFileObject);
-    }
-  }, [replacementFileObject]);
 
   const isSuccessModal = status === UploadStatus.UPLOADED;
   const isNotUploadedModal = status === UploadStatus.FILE_NOT_FOUND;
@@ -71,39 +62,6 @@ const UploadDetailsModal = (props) => {
     </Button>
   );
 
-  const replaceButton = () => (
-    <>
-      <input
-        type='file'
-        id='file'
-        ref={inputFileRef}
-        style={{ display: 'none' }}
-        onChange={
-          (event) => {
-            const newFile = event.target.files[0];
-            if (!newFile) {
-              return;
-            }
-            setReplacementFileObject(newFile);
-          }
-        }
-      />
-      <Button
-        type='primary'
-        key='replace'
-        block
-        icon={<UploadOutlined />}
-        onClick={() => {
-          inputFileRef.current.click();
-        }}
-        style={{ width: '140px', marginBottom: '10px' }}
-      >
-        {/* Button text to be "Upload" if the file was never uploaded */}
-        {!isNotUploadedModal ? 'Replace file' : 'Upload'}
-      </Button>
-    </>
-  );
-
   const downloadButton = () => (
     <Button
       type='primary'
@@ -139,7 +97,13 @@ const UploadDetailsModal = (props) => {
             {!isNotUploadedModal && (isSuccessModal ? downloadButton() : retryButton())}
           </Col>
           <Col span='2' />
-          {replaceButton()}
+          <Button
+            danger
+            onClick={() => onDelete()}
+            style={{ width: '140px', marginBottom: '10px' }}
+          >
+            Delete
+          </Button>
           <Col />
         </Row>
       )}
@@ -175,7 +139,7 @@ UploadDetailsModal.propTypes = {
   file: PropTypes.object.isRequired,
   extraFields: PropTypes.object,
   onDownload: PropTypes.func.isRequired,
-  onUpload: PropTypes.func.isRequired,
+  onDelete: PropTypes.func.isRequired,
   onRetry: PropTypes.func.isRequired,
 };
 
