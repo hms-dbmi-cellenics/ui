@@ -7,9 +7,6 @@ import PropTypes from 'prop-types';
 
 import { useSelector, useDispatch } from 'react-redux';
 import UploadStatus from 'utils/upload/UploadStatus';
-import {
-  EXPERIMENTS_UPDATED,
-} from 'redux/actionTypes/experiments';
 
 import uploadMetadataFile from 'redux/actions/experiments/uploadMetadataFile';
 import { sampleTech } from 'utils/constants';
@@ -97,7 +94,7 @@ const AddMetadataButton = ({ samplesTableRef }) => {
             },
             {
               key: 'cell-level',
-              label: (<Tooltip title='Feature coming soon!'>
+              label: (<Tooltip title='Feature coming soon!' placement='leftBottom'>
                 <div>
                   Cell level
                 </div>

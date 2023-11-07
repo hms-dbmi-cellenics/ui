@@ -87,7 +87,7 @@ const UploadDetailsModal = (props) => {
   return (
     <Modal
       title={modalTitle}
-      open={visible}
+      open
       onCancel={onCancel}
       width='40%'
       footer={(
@@ -99,7 +99,7 @@ const UploadDetailsModal = (props) => {
           <Col span='2' />
           <Button
             danger
-            onClick={() => onDelete()}
+            onClick={() => { onDelete(); onCancel(); }}
             style={{ width: '140px', marginBottom: '10px' }}
           >
             Delete
@@ -134,8 +134,7 @@ const UploadDetailsModal = (props) => {
 };
 
 UploadDetailsModal.propTypes = {
-  visible: PropTypes.bool,
-  onCancel: PropTypes.func,
+  onCancel: PropTypes.func.isRequired,
   file: PropTypes.object.isRequired,
   extraFields: PropTypes.object,
   onDownload: PropTypes.func.isRequired,
@@ -144,9 +143,7 @@ UploadDetailsModal.propTypes = {
 };
 
 UploadDetailsModal.defaultProps = {
-  visible: true,
   extraFields: {},
-  onCancel: () => { },
 };
 
 export default UploadDetailsModal;

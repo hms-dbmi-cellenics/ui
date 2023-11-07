@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import { Popover } from 'antd';
 import { metadataKeyToName, metadataNameToKey } from 'utils/data-management/metadataUtils';
 import validateInputs, { rules } from 'utils/validateInputs';
-import EditableField from '../EditableField';
+import EditableField from 'components/EditableField';
 
 const validationChecks = [
   rules.MIN_1_CHAR,

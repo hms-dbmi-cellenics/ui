@@ -8,7 +8,7 @@ import readFileToString from 'utils/upload/readFileToString';
 import React from 'react';
 import thunk from 'redux-thunk';
 import { Provider } from 'react-redux';
-import CellLevelUploadModal from 'components/data-management/CellLevelUploadModal';
+import CellLevelUploadModal from 'components/data-management/metadata/CellLevelUploadModal';
 
 jest.mock('utils/upload/readFileToString');
 jest.mock('utils/http/handleError');

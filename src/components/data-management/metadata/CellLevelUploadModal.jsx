@@ -32,7 +32,6 @@ const CellLevelUploadModal = (props) => {
   } = props;
 
   const [file, setFile] = useState(false);
-  console.log('FILE ', file);
   const { activeExperimentId } = useSelector((state) => state.experiments.meta);
   const onUploadFile = async (newFile) => {
     const fileObject = await onUpload(newFile);
