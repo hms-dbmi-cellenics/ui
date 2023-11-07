@@ -94,12 +94,13 @@ const AddMetadataButton = ({ samplesTableRef }) => {
             },
             {
               key: 'cell-level',
-              label: (<Tooltip title='Feature coming soon!' placement='leftBottom'>
-                <div>
-                  Cell level
-                </div>
-              </Tooltip>),
-              // disabled: true,
+              label: (
+                <Tooltip title='Feature coming soon!' placement='leftBottom'>
+                  <div>
+                    Cell level
+                  </div>
+                </Tooltip>),
+              disabled: true,
               onClick: () => {
                 setCellLevelUploadVisible(true);
               },
