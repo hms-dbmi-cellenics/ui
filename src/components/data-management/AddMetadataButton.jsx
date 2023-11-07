@@ -60,7 +60,7 @@ const AddMetadataButton = ({ samplesTableRef }) => {
     }
 
     try {
-      await prepareAndUploadFileToS3(file, uploadUrlParams, 'cellLevel', onUpdateUploadStatus);
+      await prepareAndUploadFileToS3(file, uploadUrlParams, 'cellLevelMeta', onUpdateUploadStatus);
     } catch (e) {
       pushNotificationMessage('error', 'Something went wrong while uploading your metadata file.');
       console.log(e);
