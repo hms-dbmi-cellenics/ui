@@ -112,7 +112,7 @@ const AddMetadataButton = ({ samplesTableRef }) => {
         disabled={activeExperiment.sampleIds?.length === 0 || isSubsetted || selectedTech === sampleTech.SEURAT}
       >
         <Button>
-          Add metadata
+          Metadata
         </Button>
       </Dropdown>
       {trackUploadModalVisible && (
