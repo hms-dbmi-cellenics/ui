@@ -48,7 +48,6 @@ const LaunchAnalysisButton = () => {
     type: 'gem2s', rerun: true, reasons: [], complete: false,
   });
 
-  // pipelinesRerunStatus.type === qc means that gem2s finished
   const launchAnalysis = async () => {
     const shouldNavigate = await dispatch(pipelinesRerunStatus.runPipeline(activeExperimentId));
 
