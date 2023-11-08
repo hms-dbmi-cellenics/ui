@@ -82,6 +82,8 @@ const runQC = (experimentId) => async (dispatch, getState) => {
     });
 
     dispatch(loadBackendStatus(experimentId));
+
+    return true;
   } catch (e) {
     const errorMessage = handleError(e, endUserMessages.ERROR_STARTING_PIPLELINE);
 
@@ -89,6 +91,8 @@ const runQC = (experimentId) => async (dispatch, getState) => {
     if (errorMessage !== endUserMessages.ERROR_NO_PERMISSIONS) {
       dispatch(loadBackendStatus(experimentId));
     }
+
+    return false;
   }
 };
 

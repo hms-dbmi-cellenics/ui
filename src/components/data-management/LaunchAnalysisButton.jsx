@@ -8,7 +8,6 @@ import { modules, sampleTech } from 'utils/constants';
 import fileUploadSpecifications from 'utils/upload/fileUploadSpecifications';
 import UploadStatus from 'utils/upload/UploadStatus';
 import integrationTestConstants from 'utils/integrationTestConstants';
-import { runGem2s, runQC, runSeurat } from 'redux/actions/pipeline';
 
 import { useAppRouter } from 'utils/AppRouteProvider';
 import calculatePipelinesRerunStatus from 'utils/data-management/calculatePipelinesRerunStatus';
@@ -51,18 +50,7 @@ const LaunchAnalysisButton = () => {
 
   // pipelinesRerunStatus.type === qc means that gem2s finished
   const launchAnalysis = async () => {
-    const runner = isTechSeurat ? runSeurat : runGem2s;
-
-    let shouldNavigate = true;
-
-    if (pipelinesRerunStatus.rerun) {
-      if (pipelinesRerunStatus.type === 'gem2s') {
-        shouldNavigate = await dispatch(runner(activeExperimentId));
-      } else if (pipelinesRerunStatus.type === 'qc') {
-        shouldNavigate = true;
-        await dispatch(runQC(activeExperimentId));
-      }
-    }
+    const shouldNavigate = await dispatch(pipelinesRerunStatus.runPipeline(activeExperimentId));
 
     if (shouldNavigate) {
       const moduleName = isTechSeurat ? modules.DATA_EXPLORATION : modules.DATA_PROCESSING;
@@ -83,7 +71,12 @@ const LaunchAnalysisButton = () => {
     ) return;
 
     setPipelinesRerunStatus(
-      calculatePipelinesRerunStatus(setupBackendStatus, qcBackendStatus, activeExperiment),
+      calculatePipelinesRerunStatus(
+        setupBackendStatus,
+        qcBackendStatus,
+        activeExperiment,
+        isTechSeurat,
+      ),
     );
   }, [backendStatus, activeExperimentId, samples, activeExperiment]);
 
