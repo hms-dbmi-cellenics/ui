@@ -53,7 +53,8 @@ const LaunchAnalysisButton = () => {
     const shouldNavigate = await dispatch(pipelinesRerunStatus.runPipeline(activeExperimentId));
 
     if (shouldNavigate) {
-      const moduleName = isTechSeurat ? modules.DATA_EXPLORATION : modules.DATA_PROCESSING;
+      const moduleName = isTechSeurat && pipelinesRerunStatus.complete
+        ? modules.DATA_EXPLORATION : modules.DATA_PROCESSING;
       navigateTo(moduleName, { experimentId: activeExperimentId });
     }
   };
@@ -137,7 +138,7 @@ const LaunchAnalysisButton = () => {
 
     if (pipelinesRerunStatus.rerun) {
       buttonText = 'Process project';
-    } else if (isTechSeurat) {
+    } else if (isTechSeurat && pipelinesRerunStatus.complete) {
       buttonText = 'Go to Data Exploration';
     } else {
       buttonText = 'Go to Data Processing';
