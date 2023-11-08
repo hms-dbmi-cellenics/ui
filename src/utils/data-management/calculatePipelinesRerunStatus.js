@@ -13,14 +13,21 @@ const calculatePipelinesRerunStatus = (
 
   if (gem2sRerunStatus.rerun) {
     return {
-      type: 'gem2s',
       runPipeline: isTechSeurat ? runSeurat : runGem2s,
       ...gem2sRerunStatus,
     };
   }
 
+  if (isTechSeurat) {
+    return {
+      runPipeline: null,
+      rerun: false,
+      complete: true,
+      reasons: [],
+    };
+  }
+
   return {
-    type: 'qc',
     runPipeline: runQC,
     ...qcRerunStatus,
   };

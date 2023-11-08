@@ -45,7 +45,7 @@ const LaunchAnalysisButton = () => {
   const isTechSeurat = selectedTech === sampleTech.SEURAT;
 
   const [pipelinesRerunStatus, setPipelinesRerunStatus] = useState({
-    type: 'gem2s', rerun: true, reasons: [], complete: false,
+    runPipeline: null, rerun: true, reasons: [], complete: false,
   });
 
   const launchAnalysis = async () => {
