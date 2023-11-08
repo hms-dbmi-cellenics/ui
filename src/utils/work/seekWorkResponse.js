@@ -6,6 +6,7 @@ import unpackResult, { decompressUint8Array } from 'utils/work/unpackResult';
 import parseResult from 'utils/work/parseResult';
 import WorkTimeoutError from 'utils/errors/http/WorkTimeoutError';
 import WorkResponseError from 'utils/errors/http/WorkResponseError';
+import httpStatusCodes from 'utils/http/httpStatusCodes';
 
 import { updateBackendStatus } from 'redux/actions/backendStatus';
 
@@ -28,6 +29,17 @@ const getRemainingWorkerStartTime = (creationTimestamp) => {
 const seekFromS3 = async (taskName, signedUrl) => {
   const response = await fetch(signedUrl);
 
+  // some WorkRequests like scType and runClustering do not upload data to S3
+  // (nor return it via socket) instead they patch the cellsets through the API.
+  // In those cases the workResults will not exist, and it's fine because data will
+  // be updated through the cellsets.
+  // the forbidden (in addition to the not found) is required because of how signed URLs work
+  //  when you try to download a file from a signedUrl that doesn't exist you get a 403 forbidden
+  // because the user is not authorized to access a file that does not exist
+  if (response.status === httpStatusCodes.NOT_FOUND
+    || response.status === httpStatusCodes.FORBIDDEN) {
+    return null;
+  }
   if (!response.ok) {
     throw new Error(`Error ${response.status}: ${response.text}`, { cause: response });
   }
@@ -62,7 +74,8 @@ const getWorkerTimeout = (taskName, defaultTimeout) => {
   switch (taskName) {
     case 'GetEmbedding':
     case 'ListGenes':
-    case 'MarkerHeatmap': {
+    case 'MarkerHeatmap':
+    case 'GetNormalizedExpression': {
       return dayjs().add(1800, 's').toISOString();
     }
 

@@ -28,6 +28,21 @@ const reusedContent = {
       </>
     ),
   },
+  ExtraLogoText: (
+    <text
+      style={{ outlineStyle: 'none' }}
+      fontWeight='400'
+      textRendering='geometricPrecision'
+      fontFamily='IBM Plex Sans'
+      fill='#F0F2F5'
+      fontSize='9.00px'
+      textAnchor='start'
+      dominantBaseline='middle'
+      y='20'
+    >
+      provided by Biomage
+    </text>
+  ),
 };
 
 const biomageContainerIds = {
@@ -68,6 +83,7 @@ const domainSpecificContent = {
       </Button>
     ),
     matomoName: 'biomage',
+    ExtraLogoText: reusedContent.ExtraLogoText,
   },
   BIOMAGE_PRIVATE: {
     containerIds: biomageContainerIds,
@@ -78,6 +94,7 @@ const domainSpecificContent = {
         {reusedContent.HelpButton.OneToOneSupport}
       </>
     ),
+    ExtraLogoText: reusedContent.ExtraLogoText,
   },
 };
 
