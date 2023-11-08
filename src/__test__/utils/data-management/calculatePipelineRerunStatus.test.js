@@ -1,4 +1,4 @@
-import calculatePipelinesRerunStatus from 'utils/data-management/calculateGem2sRerunStatus';
+import calculateGem2sRerunStatus from 'utils/data-management/calculateGem2sRerunStatus';
 
 import pipelineStatusValues from 'utils/pipelineStatusValues';
 
@@ -54,7 +54,7 @@ describe('calculateGem2sRerunStatus', () => {
 
     const {
       rerun, reasons,
-    } = calculatePipelinesRerunStatus(runningGem2sBackendStatus, experiment);
+    } = calculateGem2sRerunStatus(runningGem2sBackendStatus, experiment);
 
     expect(rerun).toEqual(false);
     expect(reasons).toEqual([]);
@@ -67,7 +67,7 @@ describe('calculateGem2sRerunStatus', () => {
       shouldRerun: false,
     };
 
-    const { rerun } = calculatePipelinesRerunStatus(
+    const { rerun } = calculateGem2sRerunStatus(
       failedGem2sBackendStatus, experiment,
     );
 
@@ -75,7 +75,7 @@ describe('calculateGem2sRerunStatus', () => {
   });
 
   it('No rerun when gem2s finished and its a normal experiment and shouldRerun is false', () => {
-    const { rerun } = calculatePipelinesRerunStatus(
+    const { rerun } = calculateGem2sRerunStatus(
       { ...successfulGem2sBackendStatus, shouldRerun: false },
       experiment,
     );
@@ -84,7 +84,7 @@ describe('calculateGem2sRerunStatus', () => {
   });
 
   it('Rerun when gem2s finished and its a normal experiment and shouldRerun is true', () => {
-    const { rerun } = calculatePipelinesRerunStatus(
+    const { rerun } = calculateGem2sRerunStatus(
       { ...successfulGem2sBackendStatus, shouldRerun: true },
       experiment,
     );
@@ -98,7 +98,7 @@ describe('calculateGem2sRerunStatus', () => {
       parentExperimentId: 'mockParentExperimentId',
     };
 
-    const { rerun } = calculatePipelinesRerunStatus(
+    const { rerun } = calculateGem2sRerunStatus(
       { ...successfulGem2sBackendStatus, shouldRerun: true },
       subsetExperiment,
     );
