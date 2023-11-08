@@ -28,7 +28,7 @@ export default {
   ERROR_FILES_FOLDER: 'Only files contained in a folder are accepted.',
   ERROR_METADATA_MULTIPLE_FILES: 'You need to upload a single file in .tsv format',
   ERROR_METADATA_WRONG_FORMAT: 'The file does not seem to be in the correct tsv key-value format.',
-  ERROR_CELL_LEVEL_COLUMN: 'The .tsv file needs to contain the column "barcodes"',
+  ERROR_CELL_LEVEL_COLUMN: 'The .tsv file needs to contain the column "barcode"',
   ERROR_SEURAT_MULTIPLE_FILES: 'Only a single rds file is accepted for Seurat uploads.',
   ERROR_SEURAT_EXISTING_FILE: 'Please remove existing seurat rds file before uploading a new one.',
   ERROR_SEURAT_MAX_FILE_SIZE: 'rds objects must be less than 15 GB.',

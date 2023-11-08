@@ -18,8 +18,8 @@ import ReactResizeDetector from 'react-resize-detector';
 import { ClipLoader } from 'react-spinners';
 
 import ExampleExperimentsSpace from 'components/data-management/ExampleExperimentsSpace';
-import MetadataPopover from 'components/data-management/MetadataPopover';
-import MetadataColumnTitle from 'components/data-management/MetadataColumn';
+import MetadataPopover from 'components/data-management/metadata/MetadataPopover';
+import MetadataColumnTitle from 'components/data-management/metadata/MetadataColumn';
 import { UploadCell, SampleNameCell, EditableFieldCell } from 'components/data-management/SamplesTableCells';
 
 import {

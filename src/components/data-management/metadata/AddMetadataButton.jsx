@@ -27,7 +27,7 @@ const AddMetadataButton = ({ samplesTableRef }) => {
   const isSubsetted = activeExperiment?.isSubsetted;
   const samples = useSelector((state) => state.samples);
   const selectedTech = samples[activeExperiment?.sampleIds[0]]?.type;
-
+  const cellLevelMetadata = useSelector((state) => state.experiments[activeExperimentId]?.cellLevelMetadata) || false;
   const [trackUploadModalVisible, setTrackUploadModalVisible] = useState(false);
   const [cellLevelUploadVisible, setCellLevelUploadVisible] = useState(false);
 
@@ -38,30 +38,32 @@ const AddMetadataButton = ({ samplesTableRef }) => {
   };
 
   const onUploadCellLevelMetadata = async (file) => {
+    setCellLevelUploading(true);
     const getSignedURLsParams = {
       name: file.name,
       size: file.size,
     };
-
-    setCellLevelUploading(true);
     const onUpdateUploadStatus = (status, percentProgress = 0) => {
       dispatch(updateCellLevelMetadataFileUpload(activeExperimentId, status, percentProgress));
     };
     const uploadUrlParams = await dispatch(
       createCellLevelMetadata(activeExperimentId, getSignedURLsParams),
     );
-    file.fileObject = await loadAndCompressIfNecessary(
-      file, () => onUpdateUploadStatus(UploadStatus.COMPRESSING),
-    );
+
+    if (!file.fileObject) {
+      file.fileObject = await loadAndCompressIfNecessary(
+        file, () => onUpdateUploadStatus(UploadStatus.COMPRESSING),
+      );
+    }
 
     try {
-      await prepareAndUploadFileToS3(file, uploadUrlParams, 'cellLevel', onUpdateUploadStatus);
+      await prepareAndUploadFileToS3(file, uploadUrlParams, 'cellLevelMeta', onUpdateUploadStatus);
     } catch (e) {
       pushNotificationMessage('error', 'Something went wrong while uploading your metadata file.');
       console.log(e);
     }
     setCellLevelUploading(false);
-    setCellLevelUploadVisible(false);
+    return file;
   };
 
   return (
@@ -92,11 +94,13 @@ const AddMetadataButton = ({ samplesTableRef }) => {
             },
             {
               key: 'cell-level',
-              label: (<Tooltip title='Feature coming soon!'>
-                <div>
-                  Cell level
-                </div>
-              </Tooltip>),
+              label: (
+                <Tooltip title='Feature coming soon!' placement='leftBottom'>
+                  <div>
+                    Cell level
+                  </div>
+                </Tooltip>
+              ),
               // disabled: true,
               onClick: () => {
                 setCellLevelUploadVisible(true);
@@ -109,7 +113,7 @@ const AddMetadataButton = ({ samplesTableRef }) => {
         disabled={activeExperiment.sampleIds?.length === 0 || isSubsetted || selectedTech === sampleTech.SEURAT}
       >
         <Button>
-          Add metadata
+          Metadata
         </Button>
       </Dropdown>
       {trackUploadModalVisible && (
@@ -121,6 +125,7 @@ const AddMetadataButton = ({ samplesTableRef }) => {
       {cellLevelUploadVisible && (
         <CellLevelUploadModal
           uploading={cellLevelUploading}
+          cellLevelMetadata={cellLevelMetadata}
           onUpload={onUploadCellLevelMetadata}
           onCancel={() => setCellLevelUploadVisible(false)}
         />
