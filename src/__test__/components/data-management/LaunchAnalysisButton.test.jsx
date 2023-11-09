@@ -207,6 +207,7 @@ describe('LaunchAnalysisButton', () => {
 
   it('Process project button is disabled if not all sample metadata are inserted', async () => {
     calculateGem2sRerunStatus.mockReturnValue(rerunState);
+    calculateQCRerunStatus.mockReturnValue(notRerunState);
 
     const notAllMetadataInserted = {
       ...withDataState,
@@ -233,6 +234,7 @@ describe('LaunchAnalysisButton', () => {
 
   it('Process project button is disabled if there is no data', async () => {
     calculateGem2sRerunStatus.mockReturnValue(rerunState);
+    calculateQCRerunStatus.mockReturnValue(notRerunState);
 
     await act(async () => {
       render(
@@ -249,6 +251,7 @@ describe('LaunchAnalysisButton', () => {
 
   it('Process project button is disabled if not all data are uploaded', async () => {
     calculateGem2sRerunStatus.mockReturnValue(rerunState);
+    calculateQCRerunStatus.mockReturnValue(notRerunState);
 
     const notAllDataUploaded = {
       ...withDataState,
@@ -307,6 +310,7 @@ describe('LaunchAnalysisButton', () => {
 
   it('Process project button is enabled if there is data and all metadata for all samples are uplaoded', async () => {
     calculateGem2sRerunStatus.mockReturnValue(rerunState);
+    calculateQCRerunStatus.mockReturnValue(notRerunState);
 
     await act(async () => {
       render(
@@ -337,6 +341,7 @@ describe('LaunchAnalysisButton', () => {
 
   it('Shows Go to Data Processing if there are no changes to the experiment (same hash)', async () => {
     calculateGem2sRerunStatus.mockReturnValue(notRerunState);
+    calculateQCRerunStatus.mockReturnValue(notRerunState);
 
     await act(async () => {
       render(
@@ -353,6 +358,7 @@ describe('LaunchAnalysisButton', () => {
 
   it('Shows Go to Data Exploration if there are no changes to the Seurat experiment (same hash)', async () => {
     calculateGem2sRerunStatus.mockReturnValue(notRerunState);
+    calculateQCRerunStatus.mockReturnValue(notRerunState);
 
     await act(async () => {
       render(
@@ -369,6 +375,7 @@ describe('LaunchAnalysisButton', () => {
 
   it('Shows Process project if there are changes to the experiment', async () => {
     calculateGem2sRerunStatus.mockReturnValue(rerunState);
+    calculateQCRerunStatus.mockReturnValue(notRerunState);
 
     await act(async () => {
       render(
@@ -383,8 +390,9 @@ describe('LaunchAnalysisButton', () => {
     });
   });
 
-  it('Shows Process project if there are changes to the Seurat experiment (different hash)', async () => {
+  it('Shows Process project if there are changes to the Seurat experiment (shouldRerun = true)', async () => {
     calculateGem2sRerunStatus.mockReturnValue(rerunState);
+    calculateQCRerunStatus.mockReturnValue(notRerunState);
 
     await act(async () => {
       render(
@@ -401,6 +409,7 @@ describe('LaunchAnalysisButton', () => {
 
   it('Dispatches request for GEM2S if there are changes to the experiment', async () => {
     calculateGem2sRerunStatus.mockReturnValue(rerunState);
+    calculateQCRerunStatus.mockReturnValue(notRerunState);
 
     await act(async () => {
       render(
@@ -425,6 +434,7 @@ describe('LaunchAnalysisButton', () => {
 
   it('Does not dispatch request for GEM2S if there are no changes to the experiment', async () => {
     calculateGem2sRerunStatus.mockReturnValue(notRerunState);
+    calculateQCRerunStatus.mockReturnValue(notRerunState);
 
     await act(async () => {
       render(
@@ -461,6 +471,7 @@ describe('LaunchAnalysisButton', () => {
 
   it('Does dispatch a request to runSeurat for an unprocessed experiment', async () => {
     calculateGem2sRerunStatus.mockReturnValue(rerunState);
+    calculateQCRerunStatus.mockReturnValue(notRerunState);
 
     const notProcessedSeuratDataState = {
       ...withSeuratDataState,
