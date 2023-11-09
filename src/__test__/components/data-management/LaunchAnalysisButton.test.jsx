@@ -19,6 +19,7 @@ import { initialExperimentBackendStatus } from 'redux/reducers/backendStatus/ini
 
 import UploadStatus from 'utils/upload/UploadStatus';
 import calculateGem2sRerunStatus from 'utils/data-management/calculateGem2sRerunStatus';
+import calculateQCRerunStatus from 'utils/data-management/calculateQCRerunStatus';
 import '__test__/test-utils/setupTests';
 
 jest.mock('redux/actions/experimentSettings/updateExperimentInfo', () => jest.fn().mockReturnValue({ type: 'UPDATE_EXPERIMENT_INFO' }));
@@ -36,6 +37,7 @@ jest.mock('utils/AppRouteProvider', () => ({
 }));
 
 jest.mock('utils/data-management/calculateGem2sRerunStatus');
+jest.mock('utils/data-management/calculateQCRerunStatus');
 
 const mockStore = configureMockStore([thunk]);
 
@@ -438,6 +440,7 @@ describe('LaunchAnalysisButton', () => {
 
   it('Going to Data Processing should dispatch the correct actions', async () => {
     calculateGem2sRerunStatus.mockReturnValue(notRerunState);
+    calculateQCRerunStatus.mockReturnValue(notRerunState);
 
     await act(async () => {
       render(
@@ -447,7 +450,9 @@ describe('LaunchAnalysisButton', () => {
       );
     });
 
-    userEvent.click(screen.getByText('Go to Data Processing'));
+    act(() => {
+      userEvent.click(screen.getByText('Go to Data Processing'));
+    });
     expect(runGem2s).not.toHaveBeenCalled();
 
     // Call on navigation to go

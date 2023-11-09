@@ -49,7 +49,10 @@ const LaunchAnalysisButton = () => {
   });
 
   const launchAnalysis = async () => {
-    const shouldNavigate = await dispatch(pipelinesRerunStatus.runPipeline(activeExperimentId));
+    let shouldNavigate = true;
+    if (pipelinesRerunStatus.rerun) {
+      shouldNavigate = await dispatch(pipelinesRerunStatus.runPipeline(activeExperimentId));
+    }
 
     if (shouldNavigate) {
       const moduleName = isTechSeurat && pipelinesRerunStatus.complete
