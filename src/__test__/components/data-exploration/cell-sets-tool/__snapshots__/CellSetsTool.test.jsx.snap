@@ -1,5 +1,32 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`AnnotateClustersTool Can dispatch work request 1`] = `
+[MockFunction] {
+  "calls": [
+    [
+      "1234",
+      {
+        "name": "ScTypeAnnotate",
+        "species": "mouse",
+        "tissue": "Liver",
+      },
+      [Function],
+      [Function],
+      {
+        "broadcast": true,
+        "timeout": 180.172,
+      },
+    ],
+  ],
+  "results": [
+    {
+      "type": "return",
+      "value": undefined,
+    },
+  ],
+}
+`;
+
 exports[`CellSetsTool cell set operations should work appropriately for complement 1`] = `
 Set {
   31,
