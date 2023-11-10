@@ -27,7 +27,9 @@ const AddMetadataButton = ({ samplesTableRef }) => {
   const isSubsetted = activeExperiment?.isSubsetted;
   const samples = useSelector((state) => state.samples);
   const selectedTech = samples[activeExperiment?.sampleIds[0]]?.type;
-  const cellLevelMetadata = useSelector((state) => state.experiments[activeExperimentId]?.cellLevelMetadata) || false;
+  const cellLevelMetadata = useSelector(
+    (state) => state.experiments[activeExperimentId]?.cellLevelMetadata,
+  ) || false;
   const [trackUploadModalVisible, setTrackUploadModalVisible] = useState(false);
   const [cellLevelUploadVisible, setCellLevelUploadVisible] = useState(false);
 
@@ -99,8 +101,9 @@ const AddMetadataButton = ({ samplesTableRef }) => {
                   <div>
                     Cell level
                   </div>
-                </Tooltip>),
-              disabled: true,
+                </Tooltip>
+              ),
+              // disabled: true,
               onClick: () => {
                 setCellLevelUploadVisible(true);
               },

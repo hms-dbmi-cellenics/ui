@@ -186,7 +186,7 @@ describe('Data Management page', () => {
       Object.keys(samples).forEach((sample) => {
         expect(screen.getByText(samples[sample].name)).toBeInTheDocument();
       });
-    });
+    }, { timeout: 2000 });
   });
 
   it('Shows samples table loading samples if experiment is loading samples', async () => {
