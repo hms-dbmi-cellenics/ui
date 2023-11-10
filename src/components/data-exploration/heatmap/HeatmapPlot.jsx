@@ -222,6 +222,7 @@ const HeatmapPlot = (props) => {
       experimentId,
       selectedGenes,
       COMPONENT_TYPE,
+      true,
     );
   }, [
     louvainClustersResolution,
@@ -265,7 +266,9 @@ const HeatmapPlot = (props) => {
           }
 
           if ((expressionDataError || viewError) && !_.isNil(selectedGenes)) {
-            debouncedLoadDownsampledGeneExpression(experimentId, selectedGenes, COMPONENT_TYPE);
+            debouncedLoadDownsampledGeneExpression(
+              experimentId, selectedGenes, COMPONENT_TYPE, true,
+            );
           }
         }}
       />

@@ -14,6 +14,7 @@ const loadDownsampledGeneExpression = (
   experimentId,
   genes,
   componentUuid,
+  withHiddenCellSets = false,
 ) => async (dispatch, getState) => {
   const state = getState();
 
@@ -23,7 +24,7 @@ const loadDownsampledGeneExpression = (
     selectedPoints,
   } = state.componentConfig[componentUuid]?.config;
 
-  const hiddenCellSets = Array.from(state.cellSets.hidden);
+  const hiddenCellSets = withHiddenCellSets ? Array.from(state.cellSets.hidden) : [];
 
   const downsampleSettings = {
     selectedCellSet,
