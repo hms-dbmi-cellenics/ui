@@ -3,6 +3,8 @@ import { useSelector, useDispatch } from 'react-redux';
 import {
   Button, Tooltip, Popconfirm,
 } from 'antd';
+import _ from 'lodash';
+
 import { modules, sampleTech } from 'utils/constants';
 
 import fileUploadSpecifications from 'utils/upload/fileUploadSpecifications';
@@ -83,6 +85,11 @@ const LaunchAnalysisButton = () => {
     );
   }, [backendStatus, activeExperimentId, samples, activeExperiment]);
 
+  const cellLevelMetadataIsReady = (
+    _.isNil(activeExperiment.cellLevelMetadata)
+    || activeExperiment.cellLevelMetadata.uploadStatus === UploadStatus.UPLOADED
+  );
+
   const canLaunchAnalysis = useCallback(() => {
     if (activeExperiment.sampleIds.length === 0) return false;
 
@@ -131,10 +138,15 @@ const LaunchAnalysisButton = () => {
 
       return allSampleFilesUploaded(checkedSample)
         && allSampleMetadataInserted(checkedSample);
-    });
+    }) && cellLevelMetadataIsReady;
 
     return canLaunch;
-  }, [samples, activeExperiment?.sampleIds, activeExperiment?.metadataKeys]);
+  }, [
+    samples,
+    activeExperiment?.sampleIds,
+    activeExperiment?.metadataKeys,
+    activeExperiment.cellLevelMetadata?.uploadStatus,
+  ]);
 
   const renderLaunchButton = () => {
     let buttonText;
