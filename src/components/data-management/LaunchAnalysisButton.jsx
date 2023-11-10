@@ -132,6 +132,7 @@ const LaunchAnalysisButton = () => {
       return allSampleFilesUploaded(checkedSample)
         && allSampleMetadataInserted(checkedSample);
     });
+
     return canLaunch;
   }, [samples, activeExperiment?.sampleIds, activeExperiment?.metadataKeys]);
 
