@@ -32,15 +32,17 @@ const delayedResponse = (response, delay = 10000, options = {}) => new Promise((
 
 const workerDataResult = (data) => Promise.resolve(_.cloneDeep(data));
 
-const dispatchWorkRequestMock = (
+const fetchWorktMock = (
   mockedResults,
-) => (_experimentId, _body, _timeout, ETag) => {
-  if (typeof mockedResults[ETag] === 'function') {
-    return mockedResults[ETag]();
+) => ((experimentId, body) => {
+// ) => (experimentId, _body, _getstate, _dispatch, _optionals) => {
+  console.log('fetchWorkMock ', experimentId, body);
+  if (typeof mockedResults[body.name] === 'function') {
+    return mockedResults[body.name]();
   }
 
-  return workerDataResult(mockedResults[ETag]);
-};
+  return workerDataResult(mockedResults[experimentId]);
+});
 
 const generateDefaultMockAPIResponses = (experimentId) => ({
   [`experiments/${experimentId}$`]: () => promiseResponse(
@@ -67,7 +69,7 @@ const generateDefaultMockAPIResponses = (experimentId) => ({
   'experiments/clone$': () => promiseResponse(
     JSON.stringify(fake.CLONED_EXPERIMENT_ID),
   ),
-  [`/v2/workRequest/${experimentId}/[^/]+$`]: () => statusResponse(200, 'OK'),
+  [`/v2/workRequest/${experimentId}`]: () => statusResponse(200, 'OK'),
 });
 
 const mockAPI = (apiMapping) => (req) => {
@@ -92,5 +94,5 @@ export {
   statusResponse,
   delayedResponse,
   workerDataResult,
-  dispatchWorkRequestMock,
+  fetchWorktMock,
 };

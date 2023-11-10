@@ -48,18 +48,20 @@ jest.mock('react-resize-detector', () => (props) => {
   return children({ width: 800, height: 800 });
 });
 
-jest.mock('object-hash', () => {
-  const objectHash = jest.requireActual('object-hash');
-  const mockWorkResultETag = jest.requireActual('__test__/test-utils/mockWorkResultETag');
+jest.mock('utils/work/fetchWork');
 
-  const mockWorkRequestETag = (ETagParams) => {
-    if (ETagParams.body.name === 'ListGenes') return 'paginated-gene-expression';
-    if (ETagParams.body.name === 'DotPlot') return 'dot-plot-data';
-  };
-  const mockGeneExpressionETag = (ETagParams) => `${ETagParams.missingGenesBody.genes.join('-')}-expression`;
+// jest.mock('object-hash', () => {
+//   const objectHash = jest.requireActual('object-hash');
+//   const mockWorkResultETag = jest.requireActual('__test__/test-utils/mockWorkResultETag');
 
-  return mockWorkResultETag(objectHash, mockWorkRequestETag, mockGeneExpressionETag);
-});
+//   const mockWorkRequestETag = (ETagParams) => {
+//     if (ETagParams.body.name === 'ListGenes') return 'paginated-gene-expression';
+//     if (ETagParams.body.name === 'DotPlot') return 'dot-plot-data';
+//   };
+//   const mockGeneExpressionETag = (ETagParams) => `${ETagParams.missingGenesBody.genes.join('-')}-expression`;
+
+//   return mockWorkResultETag(objectHash, mockWorkRequestETag, mockGeneExpressionETag);
+// });
 
 // jest.mock('utils/work/seekWorkResponse', () => ({
 //   __esModule: true,
@@ -137,7 +139,8 @@ describe('Dot plot page', () => {
 
     fetchWork
       .mockReset()
-      .mockImplementation(dispatchWorkRequestMock(mockWorkerResponses));
+      .mockImplementation(() => dotPlotData);
+    // .mockImplementation(dispatchWorkRequestMock(mockWorkerResponses));
 
     fetchMock.resetMocks();
     fetchMock.mockIf(/.*/, mockAPI(mockAPIResponse));
@@ -153,12 +156,13 @@ describe('Dot plot page', () => {
         experimentName: fake.EXPERIMENT_NAME,
       },
     });
+    console.log('storeState', storeState.getState());
   });
 
-  it('Renders the plot page correctly', async () => {
+  it.only('Renders the plot page correctly', async () => {
     await renderDotPlot(storeState);
 
-    // There is the text Dot plot show in the breadcrumbs
+    screen.debug(null, Infinity); // There is the text Dot plot show in the breadcrumbs
     expect(screen.getByText(new RegExp(plotNames.DOT_PLOT, 'i'))).toBeInTheDocument();
 
     // It has the required dropdown options

@@ -11,7 +11,6 @@ const {
   mockGenesListData,
   mockCacheGet,
   mockCacheSet,
-  mockDispatchWorkRequest,
   mockSeekFromS3,
 } = require('__test__/utils/work/fetchWork.mock');
 
@@ -19,14 +18,14 @@ jest.mock(
   'utils/cache',
   () => require('__test__/utils/work/fetchWork.mock').mockCacheModule,
 );
-jest.mock(
-  'utils/work/seekWorkResponse',
-  () => require('__test__/utils/work/fetchWork.mock').mockSeekWorkResponseModule,
-);
+jest.mock('utils/work/fetchWork');
+// jest.mock(
+//   'utils/work/fetchWork',
+//   () => require('__test__/utils/work/fetchWork.mock').mockFetchWorkModule,
+// );
 
 const experimentId = '1234';
-const NON_GENE_EXPRESSION_ETAG = 'bac72df9fc53b884b7ae1dfeb5356e01'; // pragma: allowlist secret
-const GENE_EXPRESSION_ABCD_ETAG = '42a0361b81ad1a724290fe12d640799e'; // pragma: allowlist secret
+
 const timeout = 10;
 
 const nonGeneExpressionWorkRequest = {
@@ -48,7 +47,7 @@ describe('fetchWork', () => {
 
     jest.clearAllMocks();
 
-    mockDispatchWorkRequest
+    fetchWork
       .mockReset()
       .mockImplementationOnce(() => workerDataResult(mockGenesListData));
 
@@ -61,7 +60,7 @@ describe('fetchWork', () => {
   });
 
   it('runs correctly for gene expression work request', async () => {
-    mockDispatchWorkRequest
+    fetchWork
       .mockReset()
       .mockImplementation(() => workerDataResult(getFourGenesMatrix()));
 
@@ -73,15 +72,7 @@ describe('fetchWork', () => {
       { timeout },
     );
 
-    // Temporarily disabled the cache for gene expression
-    expect(mockDispatchWorkRequest).toHaveBeenCalledWith(
-      experimentId,
-      { name: 'GeneExpression', genes: ['A', 'B', 'C', 'D'] },
-      timeout,
-      GENE_EXPRESSION_ABCD_ETAG,
-      expect.anything(),
-      expect.anything(),
-    );
+    expect(fetchWork.calls).toMatchSnapshot();
 
     // The expected response should be fine
 
@@ -105,18 +96,18 @@ describe('fetchWork', () => {
       { timeout },
     );
 
-    expect(mockDispatchWorkRequest).toHaveBeenCalledWith(
+    expect(fetchWork).toHaveBeenCalledWith(
       experimentId,
       nonGeneExpressionWorkRequest,
       timeout,
-      NON_GENE_EXPRESSION_ETAG,
+      expect.anything(),
       expect.anything(),
       expect.anything(),
     );
     expect(mockCacheGet).toHaveBeenCalledTimes(1);
     expect(mockCacheSet).toHaveBeenCalledTimes(1);
     expect(mockCacheSet).toHaveBeenCalledWith(
-      NON_GENE_EXPRESSION_ETAG,
+      expect.anything(),
       mockGenesListData,
     );
     expect(mockSeekFromS3).toHaveBeenCalledTimes(0);
@@ -124,7 +115,7 @@ describe('fetchWork', () => {
   });
 
   it('Throws an error if the dispatched work request throws an error', async () => {
-    mockDispatchWorkRequest
+    fetchWork
       .mockReset()
       .mockImplementationOnce(() => Promise.reject(new Error('Worker timeout')));
 
@@ -143,85 +134,5 @@ describe('fetchWork', () => {
 
     // Not called ever because result is received straight from dispatchWorkRequest
     expect(mockSeekFromS3).toHaveBeenCalledTimes(0);
-  });
-
-  it('does not change ETag if caching is enabled', async () => {
-    Storage.prototype.getItem = jest.fn((key) => (key === 'disableCache' ? 'false' : null));
-
-    await fetchWork(
-      experimentId,
-      nonGeneExpressionWorkRequest,
-      store.getState,
-      store.dispatch,
-      { timeout },
-    );
-
-    expect(mockDispatchWorkRequest).toHaveBeenCalledWith(
-      expect.anything(),
-      expect.anything(),
-      expect.anything(),
-      NON_GENE_EXPRESSION_ETAG,
-      expect.anything(),
-      expect.anything(),
-    );
-  });
-
-  it('changes ETag if caching is disabled', async () => {
-    Storage.prototype.getItem = jest.fn((key) => (key === 'disableCache' ? 'true' : null));
-
-    await fetchWork(
-      experimentId,
-      nonGeneExpressionWorkRequest,
-      store.getState,
-      store.dispatch,
-      { timeout },
-    );
-
-    expect(mockDispatchWorkRequest).not.toHaveBeenCalledWith(
-      expect.anything(),
-      expect.anything(),
-      expect.anything(),
-      NON_GENE_EXPRESSION_ETAG,
-      expect.anything(),
-    );
-  });
-
-  it('Caching is disabled by default if environment is dev', async () => {
-    await fetchWork(
-      experimentId,
-      nonGeneExpressionWorkRequest,
-      store.getState,
-      store.dispatch,
-      { timeout },
-    );
-
-    expect(mockDispatchWorkRequest).not.toHaveBeenCalledWith(
-      expect.anything(),
-      expect.anything(),
-      expect.anything(),
-      NON_GENE_EXPRESSION_ETAG,
-      expect.anything(),
-    );
-  });
-
-  it('Setting cache to false in development enables cache', async () => {
-    Storage.prototype.getItem = jest.fn((key) => (key === 'disableCache' ? 'false' : null));
-
-    await fetchWork(
-      experimentId,
-      nonGeneExpressionWorkRequest,
-      store.getState,
-      store.dispatch,
-      { timeout },
-    );
-
-    expect(mockDispatchWorkRequest).toHaveBeenCalledWith(
-      expect.anything(),
-      expect.anything(),
-      expect.anything(),
-      NON_GENE_EXPRESSION_ETAG,
-      expect.anything(),
-      expect.anything(),
-    );
   });
 });

@@ -92,6 +92,7 @@ const DotPlotPage = (props) => {
     error: plotDataError,
   } = useSelector((state) => state.componentConfig[plotUuid]) || {};
 
+  console.log('plot data ', plotData);
   const { data: geneData } = useSelector((state) => state.genes.properties || {});
 
   const cellSets = useSelector(getCellSets());

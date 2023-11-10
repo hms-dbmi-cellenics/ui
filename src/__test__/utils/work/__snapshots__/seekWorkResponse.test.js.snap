@@ -1,9 +1,0 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
-
-exports[`dispatchWorkRequest unit tests Sends work to the worker when called: EventNames 1`] = `
-[
-  "WorkerInfo-testae48e318dab9a1bd0bexperiment",
-  "Heartbeat-testae48e318dab9a1bd0bexperiment",
-  "WorkResponse-facefeed",
-]
-`;
