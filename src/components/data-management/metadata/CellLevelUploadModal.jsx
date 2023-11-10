@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+/* eslint-disable react/jsx-props-no-spreading */
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-import _ from 'lodash';
 import {
   Modal,
   Button,
@@ -15,45 +15,46 @@ import {
 } from 'antd';
 import { CheckCircleTwoTone, DeleteOutlined } from '@ant-design/icons';
 import Dropzone from 'react-dropzone';
-
+import { useSelector, useDispatch } from 'react-redux';
 import handleError from 'utils/http/handleError';
 import endUserMessages from 'utils/endUserMessages';
 import readFileToString from 'utils/upload/readFileToString';
+import UploadDetailsModal from 'components/data-management/UploadDetailsModal';
+import downloadCellLevelMeta from 'utils/data-management/downloadCellLevelMeta';
+import { deleteCellLevelMetadata } from 'redux/actions/experiments/index';
 
 const { Text, Title, Paragraph } = Typography;
 
 const CellLevelUploadModal = (props) => {
-  const { onUpload, onCancel, uploading } = props;
+  const dispatch = useDispatch();
+  const {
+    onUpload, onCancel, uploading, cellLevelMetadata,
+  } = props;
 
-  const [canUpload, setCanUpload] = useState(false);
-  const [filesList, setFilesList] = useState([]);
-
-  useEffect(() => {
-    setCanUpload(filesList.length === 1);
-  }, [filesList]);
-
-  // Handle on Drop
+  const [file, setFile] = useState(false);
+  const { activeExperimentId } = useSelector((state) => state.experiments.meta);
+  const onUploadFile = async (newFile) => {
+    const fileObject = await onUpload(newFile);
+    setFile(fileObject);
+  };
   const onDrop = async (droppedFiles) => {
-    if (droppedFiles.length !== 1 || !droppedFiles[0].name.endsWith('.tsv')) {
+    const droppedFile = droppedFiles[0];
+    if (!droppedFile.name.endsWith('.tsv')) {
       handleError('error', endUserMessages.ERROR_METADATA_MULTIPLE_FILES);
       return;
     }
 
-    const file = droppedFiles[0];
-    const data = await readFileToString(file);
+    const data = await readFileToString(droppedFile);
 
     if (!data.trim().split('\n')[0].trim().split('\t').includes('barcode')) {
       handleError('error', endUserMessages.ERROR_CELL_LEVEL_COLUMN);
       return;
     }
-    setFilesList([file]);
+    setFile(droppedFile);
   };
 
-  const removeFile = (fileName) => {
-    const newArray = _.cloneDeep(filesList);
-    const fileIdx = newArray.findIndex((file) => file.name === fileName);
-    newArray.splice(fileIdx, 1);
-    setFilesList(newArray);
+  const downloadData = () => {
+    downloadCellLevelMeta(activeExperimentId, cellLevelMetadata.name, cellLevelMetadata.id);
   };
 
   const fileFormatTable = {
@@ -142,22 +143,22 @@ const CellLevelUploadModal = (props) => {
       },
     ],
   };
-  return (
+
+  const newUploadModal = () => (
     <Modal
       title=''
-      visible
+      open
       onCancel={onCancel}
-      width='50%'
+      width='40%'
       footer={(
         <Button
           type='primary'
           key='create'
           block
           loading={uploading}
-          disabled={!canUpload}
+          disabled={!file}
           onClick={() => {
-            onUpload(filesList[0]);
-            setFilesList([]);
+            onUploadFile(file);
           }}
         >
           Upload
@@ -184,7 +185,7 @@ const CellLevelUploadModal = (props) => {
             {' '}
             is preferred for de-duplication if required.
             <br />
-            <Table size='small' style={{ width: '50%' }} pagination={false} dataSource={fileFormatTable.dataSource} columns={fileFormatTable.columns} />
+            <Table size='small' pagination={false} dataSource={fileFormatTable.dataSource} columns={fileFormatTable.columns} />
             {' '}
             <br />
             For example if you have two samples,
@@ -196,7 +197,7 @@ const CellLevelUploadModal = (props) => {
             <b>Convalescent</b>
             {' '}
             and you want to add cell-type annotation, you would write a file as follows:
-            <Table size='small' style={{ width: '50%' }} pagination={false} dataSource={exampleTable.dataSource} columns={exampleTable.columns} />
+            <Table size='small' pagination={false} dataSource={exampleTable.dataSource} columns={exampleTable.columns} />
           </Paragraph>
         </Col>
       </Row>
@@ -218,52 +219,73 @@ const CellLevelUploadModal = (props) => {
       </Row>
       <Row>
         <Col span={24}>
-          {/* eslint-enable react/jsx-props-no-spreading */}
-
-          {filesList.length ? (
+          {file ? (
             <>
               <Divider orientation='center'>To upload</Divider>
               <List
-                dataSource={filesList}
                 size='small'
                 itemLayout='horizontal'
                 grid='{column: 4}'
-                renderItem={(file) => (
-
-                  <List.Item
-                    key={file.name}
-                    style={{ width: '100%' }}
-                  >
-                    <Space>
-
-                      <CheckCircleTwoTone twoToneColor='#52c41a' />
-
-                      <Text
-                        ellipsis={{ tooltip: file.name }}
-                        style={{ width: '200px' }}
-                      >
-                        {file.name}
-
-                      </Text>
-                      <DeleteOutlined style={{ color: 'crimson' }} onClick={() => { removeFile(file.name); }} />
-                    </Space>
-                  </List.Item>
-
-                )}
-              />
+              >
+                <List.Item
+                  key={file.name}
+                  style={{ width: '100%' }}
+                >
+                  <Space>
+                    <CheckCircleTwoTone twoToneColor='#52c41a' />
+                    <Text
+                      ellipsis={{ tooltip: file.name }}
+                      style={{ width: '200px' }}
+                    >
+                      {file.name}
+                    </Text>
+                    <DeleteOutlined style={{ color: 'crimson' }} onClick={() => { setFile(false); }} />
+                  </Space>
+                </List.Item>
+              </List>
             </>
           ) : ''}
         </Col>
       </Row>
     </Modal>
-
   );
-};
 
+  if (Object.keys(cellLevelMetadata).length) {
+    const {
+      name, size, uploadStatus, percentProgress, createdAt,
+    } = cellLevelMetadata;
+
+    const fileInfoObject = {
+      name,
+      upload: {
+        status: uploadStatus,
+        progress: percentProgress,
+      },
+      size,
+      fileObject: file.fileObject,
+      lastModified: createdAt,
+    };
+    return (
+      <UploadDetailsModal
+        onCancel={onCancel}
+        onUpload={onUploadFile}
+        onDownload={downloadData}
+        onDelete={() => dispatch(deleteCellLevelMetadata(activeExperimentId))}
+        onRetry={() => onUploadFile(file)}
+        file={fileInfoObject}
+      />
+    );
+  }
+  return newUploadModal();
+};
+CellLevelUploadModal.defaultProps = {
+  cellLevelMetadata: false,
+};
 CellLevelUploadModal.propTypes = {
   uploading: PropTypes.bool.isRequired,
   onUpload: PropTypes.func.isRequired,
   onCancel: PropTypes.func.isRequired,
+  cellLevelMetadata: PropTypes.object,
 };
 
 export default CellLevelUploadModal;

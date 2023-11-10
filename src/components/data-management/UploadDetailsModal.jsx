@@ -1,58 +1,40 @@
 /* eslint-disable import/no-duplicates */
-import React, { useState, useEffect, useRef } from 'react';
-import { useSelector } from 'react-redux';
+import React from 'react';
 import PropTypes from 'prop-types';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import {
-  Modal, Button, Col, Row,
+  Modal, Button, Col, Row, Progress,
 } from 'antd';
-import { UploadOutlined } from '@ant-design/icons';
-import { useDispatch } from 'react-redux';
-import endUserMessages from 'utils/endUserMessages';
-import handleError from 'utils/http/handleError';
-import { createAndUploadSampleFile, fileObjectToFileRecord } from 'utils/upload/processUpload';
-
 import UploadStatus, { messageForStatus } from 'utils/upload/UploadStatus';
-import downloadSingleFile from 'utils/data-management/downloadSingleFile';
 
 dayjs.extend(utc);
 
 const UploadDetailsModal = (props) => {
-  const dispatch = useDispatch();
   const {
-    visible, onCancel, file,
+    visible, onCancel, file, extraFields, onDownload, onRetry, onDelete,
   } = props;
 
   const {
-    name, fileCategory, sampleUuid, upload, size, lastModified, fileObject = undefined,
+    name, upload, size, lastModified, fileObject = undefined,
   } = file ?? {};
 
-  const status = upload?.status;
-  const inputFileRef = useRef(null);
-  const [replacementFileObject, setReplacementFileObject] = useState(null);
-
-  const { activeExperimentId } = useSelector((state) => state.experiments.meta);
-  const samples = useSelector((state) => state.samples);
-  const selectedTech = useSelector((state) => state.samples[sampleUuid]?.type);
-  const sampleName = samples[file?.sampleUuid]?.name;
-
-  useEffect(() => {
-    if (replacementFileObject) {
-      fileObjectToFileRecord(replacementFileObject, selectedTech).then((newFile) => {
-        if (newFile.valid) {
-          uploadFile(newFile);
-        } else {
-          handleError('error', endUserMessages.ERROR_FILE_CATEGORY);
-        }
-      });
-    }
-  }, [replacementFileObject]);
+  const { progress, status } = upload ?? false;
 
   const isSuccessModal = status === UploadStatus.UPLOADED;
   const isNotUploadedModal = status === UploadStatus.FILE_NOT_FOUND;
+  const isUploading = status === UploadStatus.UPLOADING;
 
-  const toMBytes = (sizeInBytes) => (sizeInBytes / (1000 * 1000)).toFixed(2);
+  // title={!isNotUploadedModal ? (isSuccessModal ? 'Upload successful' : 'Upload error') : 'File not found'}
+  const modalTitle = messageForStatus(status);
+
+  function bytesToSize(bytes) {
+    const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
+    if (bytes === 0) return 'n/a';
+    const i = parseInt(Math.floor(Math.log(bytes) / Math.log(1024)), 10);
+    if (i === 0) return `${bytes} ${sizes[i]}`;
+    return `${(bytes / (1024 ** i)).toFixed(1)} ${sizes[i]}`;
+  }
 
   const fromISODateToFormatted = (ISOStringDate) => {
     const date = dayjs(ISOStringDate);
@@ -65,15 +47,6 @@ const UploadDetailsModal = (props) => {
     return `${weekDayName}, ${fullDate} at ${fullTime}`;
   };
 
-  const uploadFile = (newFile) => {
-    if (!file) {
-      return;
-    }
-
-    createAndUploadSampleFile(newFile, activeExperimentId, sampleUuid, dispatch, selectedTech);
-    onCancel();
-  };
-
   const retryButton = () => (
     <Button
       type='primary'
@@ -81,45 +54,12 @@ const UploadDetailsModal = (props) => {
       disabled={!fileObject}
       block
       onClick={() => {
-        uploadFile(file);
+        onRetry();
       }}
       style={{ width: '140px', marginBottom: '10px' }}
     >
       Retry upload
     </Button>
-  );
-
-  const replaceButton = () => (
-    <>
-      <input
-        type='file'
-        id='file'
-        ref={inputFileRef}
-        style={{ display: 'none' }}
-        onChange={
-          (event) => {
-            const newFile = event.target.files[0];
-            if (!newFile) {
-              return;
-            }
-            setReplacementFileObject(newFile);
-          }
-        }
-      />
-      <Button
-        type='primary'
-        key='replace'
-        block
-        icon={<UploadOutlined />}
-        onClick={() => {
-          inputFileRef.current.click();
-        }}
-        style={{ width: '140px', marginBottom: '10px' }}
-      >
-        {/* Button text to be "Upload" if the file was never uploaded */}
-        {!isNotUploadedModal ? 'Replace file' : 'Upload'}
-      </Button>
-    </>
   );
 
   const downloadButton = () => (
@@ -128,7 +68,7 @@ const UploadDetailsModal = (props) => {
       key='retry'
       block
       onClick={() => {
-        downloadSingleFile(activeExperimentId, sampleUuid, name, selectedTech);
+        onDownload();
       }}
       style={{ width: '140px', marginBottom: '10px' }}
     >
@@ -136,10 +76,18 @@ const UploadDetailsModal = (props) => {
     </Button>
   );
 
+  const renderFields = (fields) => (
+    Object.keys(fields).map((key) => (
+      <Row style={{ marginTop: '5px', marginBottom: '5px' }}>
+        <Col span={5}>{key}</Col>
+        <Col span={10}>{fields[key]}</Col>
+      </Row>
+    )));
+
   return (
     <Modal
-      title={!isNotUploadedModal ? (isSuccessModal ? 'Upload successful' : 'Upload error') : 'File not found'}
-      visible={visible}
+      title={modalTitle}
+      open
       onCancel={onCancel}
       width='40%'
       footer={(
@@ -149,13 +97,19 @@ const UploadDetailsModal = (props) => {
             {!isNotUploadedModal && (isSuccessModal ? downloadButton() : retryButton())}
           </Col>
           <Col span='2' />
-          {replaceButton()}
+          <Button
+            danger
+            onClick={() => { onDelete(); onCancel(); }}
+            style={{ width: '140px', marginBottom: '10px' }}
+          >
+            Delete
+          </Button>
           <Col />
         </Row>
       )}
     >
       <div style={{ width: '100%', marginLeft: '15px' }}>
-        {!isSuccessModal
+        {!isSuccessModal && !isUploading
           && (
             <Row style={{ marginTop: '5px', marginBottom: '5px' }}>
               The following file
@@ -163,59 +117,33 @@ const UploadDetailsModal = (props) => {
               {isNotUploadedModal ? 'was not uploaded' : 'has failed to upload'}
             </Row>
           )}
-        <Row style={{ marginTop: '5px', marginBottom: '5px' }}>
-          <Col span={5}>Sample</Col>
-          <Col span={10}>{sampleName}</Col>
-        </Row>
-        <Row style={{ marginTop: '5px', marginBottom: '5px' }}>
-          <Col span={5}>Category</Col>
-          <Col span={10}>{fileCategory}</Col>
-        </Row>
-        {!isNotUploadedModal && (
-          <Row style={{ marginTop: '5px', marginBottom: '5px' }}>
-            <Col span={5}>Filename</Col>
-            <Col span={10}>{name}</Col>
-          </Row>
-        )}
+        {renderFields(extraFields)}
+
+        {!isNotUploadedModal && renderFields({ Filename: name })}
 
         {
-          isSuccessModal ? (
-            <>
-              <Row style={{ marginTop: '5px', marginBottom: '5px' }}>
-                <Col span={5}>File size</Col>
-                <Col span={10}>
-                  {toMBytes(size)}
-                  {' '}
-                  MB
-                </Col>
-              </Row>
-              <Row style={{ marginTop: '5px', marginBottom: '5px' }}>
-                <Col span={5}>Upload date</Col>
-                <Col span={10}>{fromISODateToFormatted(lastModified)}</Col>
-              </Row>
-            </>
-          )
-            : (
-              <Row style={{ marginTop: '5px', marginBottom: '5px' }}>
-                <Col span={5}>Error</Col>
-                <Col span={10}>{messageForStatus(status)}</Col>
-              </Row>
-            )
+          isSuccessModal || isUploading ? renderFields({ 'File size': bytesToSize(size), 'Upload date': fromISODateToFormatted(lastModified) })
+            : renderFields({ Error: messageForStatus(status) })
         }
+
+        {progress ? renderFields({ Progress: <Progress style={{ width: '100%' }} percent={progress} size='small' /> })
+          : <div />}
       </div>
     </Modal>
   );
 };
 
 UploadDetailsModal.propTypes = {
-  visible: PropTypes.bool,
-  onCancel: PropTypes.func,
+  onCancel: PropTypes.func.isRequired,
   file: PropTypes.object.isRequired,
+  extraFields: PropTypes.object,
+  onDownload: PropTypes.func.isRequired,
+  onDelete: PropTypes.func.isRequired,
+  onRetry: PropTypes.func.isRequired,
 };
 
 UploadDetailsModal.defaultProps = {
-  visible: true,
-  onCancel: () => { },
+  extraFields: {},
 };
 
 export default UploadDetailsModal;

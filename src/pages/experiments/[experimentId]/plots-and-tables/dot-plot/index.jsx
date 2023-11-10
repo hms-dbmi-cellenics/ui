@@ -305,8 +305,9 @@ const DotPlotPage = (props) => {
     if (_.isEmpty(geneData) || !config || highestGenesLoadedRef.current || plotDataLoading) {
       return;
     }
-
-    setHighestDispersionGenes();
+    if (!config.selectedGenes.length) {
+      setHighestDispersionGenes();
+    }
     highestGenesLoadedRef.current = true;
   }, [geneData, config]);
 
