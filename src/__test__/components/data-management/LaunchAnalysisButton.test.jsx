@@ -249,7 +249,7 @@ describe('LaunchAnalysisButton', () => {
     expect(button).toBeDisabled();
   });
 
-  it('Process project button is disabled if not all data are uploaded', async () => {
+  it('Process project button is disabled if not all samples are uploaded', async () => {
     calculateGem2sRerunStatus.mockReturnValue(rerunState);
     calculateQCRerunStatus.mockReturnValue(notRerunState);
 
@@ -263,6 +263,34 @@ describe('LaunchAnalysisButton', () => {
             ...withDataState.samples[sample1Uuid].files,
             'features.tsv.gz': { valid: true, upload: { status: UploadStatus.UPLOADING } },
           },
+        },
+      },
+    };
+
+    await act(async () => {
+      render(
+        <Provider store={mockStore(notAllDataUploaded)}>
+          <LaunchAnalysisButton />
+        </Provider>,
+      );
+    });
+
+    const button = screen.getByText('Process project').closest('button');
+
+    expect(button).toBeDisabled();
+  });
+
+  it('Process project button is disabled if not all cell level metadata is uploaded', async () => {
+    calculateGem2sRerunStatus.mockReturnValue(rerunState);
+    calculateQCRerunStatus.mockReturnValue(notRerunState);
+
+    const notAllDataUploaded = {
+      ...withDataState,
+      experiments: {
+        ...withDataState.experiments,
+        [experiment1id]: {
+          ...withDataState.experiments[experiment1id],
+          cellLevelMetadata: { id: 'metadataBeingUploadedId', uploadStatus: UploadStatus.UPLOADING },
         },
       },
     };
