@@ -460,9 +460,7 @@ describe('LaunchAnalysisButton', () => {
       );
     });
 
-    act(() => {
-      userEvent.click(screen.getByText('Go to Data Processing'));
-    });
+    act(() => { userEvent.click(screen.getByText('Go to Data Processing')); });
     expect(runGem2s).not.toHaveBeenCalled();
 
     // Call on navigation to go
