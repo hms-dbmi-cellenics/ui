@@ -1,12 +1,12 @@
 import pipelineStatusValues from 'utils/pipelineStatusValues';
 import _ from 'lodash';
 
-const calculateGem2sRerunStatus = (pipelineBackendStatus, activeExperiment) => {
-  const { status: pipelineStatus, shouldRerun } = pipelineBackendStatus ?? {};
+const calculateGem2sRerunStatus = (gem2sBackendStatus, activeExperiment) => {
+  const { status, shouldRerun } = gem2sBackendStatus ?? {};
 
   const pipelineSuccessful = [
     pipelineStatusValues.SUCCEEDED, pipelineStatusValues.RUNNING,
-  ].includes(pipelineStatus);
+  ].includes(status);
 
   const rerunReasons = [];
   if (!pipelineSuccessful) rerunReasons.push('data has not been processed sucessfully');
@@ -15,7 +15,7 @@ const calculateGem2sRerunStatus = (pipelineBackendStatus, activeExperiment) => {
   return ({
     rerun: _.isNil(activeExperiment.parentExperimentId) && (!pipelineSuccessful || shouldRerun),
     reasons: rerunReasons,
-    complete: pipelineStatus === pipelineStatusValues.SUCCEEDED,
+    complete: status === pipelineStatusValues.SUCCEEDED,
   });
 };
 
