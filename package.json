@@ -64,7 +64,7 @@
     "babel-plugin-lodash": "^3.3.4",
     "buffer": "^6.0.3",
     "cross-env": "^7.0.3",
-    "crypto-js": "^4.1.1",
+    "crypto-js": "^4.2.0",
     "cssnano": "^4.1.10",
     "dayjs": "^1.11.7",
     "dotenv": "^8.2.0",
