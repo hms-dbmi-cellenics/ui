@@ -10,7 +10,7 @@ const updateCellLevelMetadataFileUpload = (
   // Don't send an api update whenever the progress bar is updated, only for uploadStatus changes
   // TODO: move progress to not even be a part of redux, manage it in a different way
   if (uploadStatus !== UploadStatus.UPLOADING) {
-    const url = `/v2/experiments/${experimentId}/cellLevel`;
+    const url = `/v2/experiments/${experimentId}/cellLevelMeta`;
     const body = { uploadStatus };
 
     try {

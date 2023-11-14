@@ -8,7 +8,7 @@ import { renameMetadataTrack } from 'redux/actions/experiments';
 import validateInputs, { rules } from 'utils/validateInputs';
 import { metadataNameToKey } from 'utils/data-management/metadataUtils';
 import { METADATA_DEFAULT_VALUE } from 'redux/reducers/experiments/initialState';
-import EditableField from '../EditableField';
+import EditableField from '../../EditableField';
 import MetadataEditor from './MetadataEditor';
 
 const MetadataColumnTitle = (props) => {
