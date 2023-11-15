@@ -7,9 +7,11 @@ import { useSelector, useDispatch } from 'react-redux';
 import { Empty } from 'antd';
 import _ from 'lodash';
 
-import { getCellSets, getSelectedMetadataTracks } from 'redux/selectors';
+import {
+  getCellSets, getCellSetsHierarchyByKeys, getSelectedMetadataTracks,
+} from 'redux/selectors';
 
-import { loadGeneExpression, loadMarkerGenes } from 'redux/actions/genes';
+import { loadDownsampledGeneExpression, loadMarkerGenes } from 'redux/actions/genes';
 import { loadComponentConfig } from 'redux/actions/componentConfig';
 import { updateCellInfo } from 'redux/actions/cellInfo';
 
@@ -31,8 +33,6 @@ const Heatmap = dynamic(
   { ssr: false },
 );
 
-// import { Heatmap } from '@vitessce/heatmap';
-
 // To avoid it sticking to the right too much (the left already has some margin)
 const heatmapRightMargin = 30;
 const heatmapBottomMargin = 40;
@@ -43,11 +43,15 @@ const HeatmapPlot = (props) => {
     experimentId, width, height,
   } = props;
 
+  const debouncedLoadDownsampledGeneExpression = _.debounce((...params) => {
+    dispatch(loadDownsampledGeneExpression(...params));
+  }, 1000);
+
   const dispatch = useDispatch();
 
-  const loadingGenes = useSelector((state) => state.genes.expression.loading);
+  const loadingGenes = useSelector((state) => state.genes.expression.downsampled.loading);
   const downsampledCellOrder = useSelector(
-    (state) => state.genes.expression.downsampledCellOrder,
+    (state) => state.genes.expression.downsampled.cellOrder,
   );
 
   const { data: selectedGenes, fetching: fetchingGenes } = useSelector(
@@ -65,7 +69,10 @@ const HeatmapPlot = (props) => {
 
   const cellCoordinatesRef = useRef({ x: 200, y: 300 });
 
-  const expressionData = useSelector((state) => state.genes.expression);
+  const {
+    error: expressionDataError, matrix,
+  } = useSelector((state) => state.genes.expression.downsampled);
+
   const {
     loading: markerGenesLoading, error: markerGenesLoadingError,
   } = useSelector((state) => state.genes.markers);
@@ -80,9 +87,16 @@ const HeatmapPlot = (props) => {
       .configureEmbedding?.clusteringSettings.methodSettings.louvain.resolution,
   );
 
-  const expressionMatrix = useSelector((state) => state.genes.expression.downsampledMatrix);
+  const groupedCellSets = useSelector((state) => {
+    if (!heatmapSettings.groupedTracks) return undefined;
 
-  const { error: expressionDataError, downsampledMatrix } = expressionData;
+    const groupedCellClasses = getCellSetsHierarchyByKeys(heatmapSettings.groupedTracks)(state);
+
+    return groupedCellClasses.map((cellClass) => cellClass.children).flat();
+  }, _.isEqual);
+
+  const expressionMatrix = useSelector((state) => state.genes.expression.downsampled.matrix);
+
   const viewError = useSelector((state) => state.genes.expression.views[COMPONENT_TYPE]?.error);
 
   const updateCellCoordinates = (newView) => {
@@ -128,9 +142,10 @@ const HeatmapPlot = (props) => {
   }, [selectedGenes, loadingGenes, markerGenesLoading]);
 
   useConditionalEffect(() => {
-    if (!selectedGenes?.length > 0
-      || cellSets.hierarchy.length === 0
-      || downsampledCellOrder?.length === 0
+    if (
+      !selectedGenes?.length > 0
+      || !cellSets.hierarchy.length > 0
+      || !downsampledCellOrder?.length > 0
     ) { return; }
 
     // Selected genes is not contained in heatmap settings for the
@@ -140,7 +155,7 @@ const HeatmapPlot = (props) => {
     const data = generateVitessceData(
       downsampledCellOrder,
       selectedTracks,
-      downsampledMatrix,
+      matrix,
       selectedGenes,
       cellSets,
     );
@@ -163,20 +178,24 @@ const HeatmapPlot = (props) => {
       || !heatmapSettings.groupedTracks
       || !heatmapSettings.selectedCellSet
       || !heatmapSettings.selectedPoints
+      // If selectedGenes isn't null, then we are not at the initial load, so don't load markers
+      // We are only supposed to load marker genes to fill up the heatmap at the beginning)
+      || !_.isNil(selectedGenes)
     ) return;
 
     const { groupedTracks, selectedCellSet, selectedPoints } = heatmapSettings;
 
+    const downsampleSettings = {
+      groupedTracks,
+      selectedCellSet,
+      selectedPoints,
+      hiddenCellSets: cellSets.hidden,
+    };
+
     dispatch(loadMarkerGenes(
       experimentId,
       COMPONENT_TYPE,
-      {
-        numGenes: nMarkerGenes,
-        groupedTracks,
-        selectedCellSet,
-        selectedPoints,
-        hiddenCellSets: cellSets.hidden,
-      },
+      { numGenes: nMarkerGenes, ...downsampleSettings },
     ));
   }, [
     louvainClustersResolution,
@@ -185,6 +204,34 @@ const HeatmapPlot = (props) => {
     heatmapSettings?.selectedCellSet,
     heatmapSettings?.selectedPoints,
     cellSets.hidden,
+    groupedCellSets,
+  ]);
+
+  useConditionalEffect(() => {
+    if (
+      !cellSets.accessible
+      || !louvainClustersResolution
+      || !heatmapSettings.groupedTracks
+      || !heatmapSettings.selectedCellSet
+      || !heatmapSettings.selectedPoints
+      || !selectedGenes?.length > 0
+    ) return;
+
+    // Load current genes
+    debouncedLoadDownsampledGeneExpression(
+      experimentId,
+      selectedGenes,
+      COMPONENT_TYPE,
+      true,
+    );
+  }, [
+    louvainClustersResolution,
+    cellSets.accessible,
+    heatmapSettings?.groupedTracks,
+    heatmapSettings?.selectedCellSet,
+    heatmapSettings?.selectedPoints,
+    cellSets.hidden,
+    groupedCellSets,
   ]);
 
   useEffect(() => {
@@ -198,15 +245,7 @@ const HeatmapPlot = (props) => {
     [],
   );
 
-  if (isHeatmapGenesLoading || !cellSets.accessible) {
-    return (
-      <center>
-        <Loader experimentId={experimentId} />
-      </center>
-    );
-  }
-
-  if (markerGenesLoadingError || expressionDataError || viewError || !heatmapData) {
+  if (markerGenesLoadingError || expressionDataError || viewError) {
     return (
       <PlatformError
         error={expressionDataError}
@@ -227,10 +266,20 @@ const HeatmapPlot = (props) => {
           }
 
           if ((expressionDataError || viewError) && !_.isNil(selectedGenes)) {
-            dispatch(loadGeneExpression(experimentId, selectedGenes, COMPONENT_TYPE, true));
+            debouncedLoadDownsampledGeneExpression(
+              experimentId, selectedGenes, COMPONENT_TYPE, true,
+            );
           }
         }}
       />
+    );
+  }
+
+  if (isHeatmapGenesLoading || !cellSets.accessible || !heatmapData) {
+    return (
+      <center>
+        <Loader experimentId={experimentId} />
+      </center>
     );
   }
 
@@ -238,6 +287,14 @@ const HeatmapPlot = (props) => {
     return (
       <center>
         <Empty description='Unhide some cell sets to show the heatmap' />
+      </center>
+    );
+  }
+
+  if (selectedGenes.length === 0) {
+    return (
+      <center>
+        <Empty description='No genes selected, add some to show the heatmap' />
       </center>
     );
   }

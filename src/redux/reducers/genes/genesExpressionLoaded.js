@@ -1,13 +1,14 @@
 import _ from 'lodash';
 
+import upperCaseArray from 'utils/upperCaseArray';
 import { initialViewState } from './getInitialState';
-
-const upperCaseArray = (array) => (array?.map((element) => element.toUpperCase()));
 
 const genesExpressionLoaded = (state, action) => {
   const {
     componentUuid, genes,
-    loadingStatus = _.difference(upperCaseArray(state.expression.loading), upperCaseArray(genes)),
+    loadingStatus = _.difference(
+      upperCaseArray(state.expression.full.loading), upperCaseArray(genes),
+    ),
     newGenes = undefined,
   } = action.payload;
 
@@ -21,18 +22,7 @@ const genesExpressionLoaded = (state, action) => {
       stats,
     } = newGenes;
 
-    const expressionMatrix = state.expression.matrix;
-    const downsampledExpressionMatrix = state.expression.downsampledMatrix;
-
-    expressionMatrix.pushGeneExpression(
-      orderedGeneNames,
-      rawExpression,
-      truncatedExpression,
-      zScore,
-      stats,
-    );
-
-    downsampledExpressionMatrix.pushGeneExpression(
+    state.expression.full.matrix.pushGeneExpression(
       orderedGeneNames,
       rawExpression,
       truncatedExpression,
@@ -55,7 +45,10 @@ const genesExpressionLoaded = (state, action) => {
           data: genes,
         },
       },
-      loading: loadingStatus,
+      full: {
+        ...state.expression.full,
+        loading: loadingStatus,
+      },
     },
   };
 };
