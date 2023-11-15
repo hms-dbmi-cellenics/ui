@@ -53,7 +53,7 @@ const QCRerunDisabledModal = (props) => {
   return (
     <Modal
       title='Run data processing with the changed settings'
-      visible={visible}
+      open={visible}
       onCancel={() => onFinish()}
       footer={
         [

@@ -18,6 +18,7 @@ const CellSizeDistributionConfig = (props) => {
   const {
     config, disabled, updateSettings, highestUmi,
   } = props;
+  console.log('UPDATE SETTINGS ', disabled, updateSettings);
 
   const withinRange = (cellSize) => Math.max(Math.min(cellSize, highestUmi), 0);
 

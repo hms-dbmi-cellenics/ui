@@ -81,7 +81,7 @@ const LaunchPathwayAnalysisModal = (props) => {
   return (
     <>
       <Modal
-        visible
+        open
         title='Pathway Analysis'
         width='50%'
         onCancel={onCancel}

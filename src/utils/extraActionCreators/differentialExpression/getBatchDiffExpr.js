@@ -1,7 +1,7 @@
 import fetchWork from 'utils/work/fetchWork';
 import getTimeoutForWorkerTask from 'utils/getTimeoutForWorkerTask';
 import { getCellSetKey } from 'utils/cellSets';
-import getArray from 'utils/getArray';
+import { getArray } from 'utils/arrayUtils';
 import pushNotificationMessage from 'utils/pushNotificationMessage';
 
 const getBatchDiffExpr = (experimentId,

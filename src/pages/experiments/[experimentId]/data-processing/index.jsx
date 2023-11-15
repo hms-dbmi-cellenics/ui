@@ -682,7 +682,7 @@ const DataProcessingPage = ({ experimentId, experimentData }) => {
             ) : (
               <Modal
                 title='Run data processing with the changed settings'
-                visible
+                open
                 onCancel={() => setRunQCModalVisible(false)}
                 footer={
                   [
