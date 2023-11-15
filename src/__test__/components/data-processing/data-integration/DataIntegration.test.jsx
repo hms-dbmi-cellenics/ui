@@ -34,15 +34,6 @@ const frequencyPlotTitle = 'Frequency plot coloured by sample';
 
 enableFetchMocks();
 
-jest.mock('object-hash', () => {
-  const objectHash = jest.requireActual('object-hash');
-  const mockWorkResultETag = jest.requireActual('__test__/test-utils/mockWorkResultETag');
-
-  const mockWorkRequestETag = (ETagParams) => `${ETagParams.body.name}`;
-
-  return mockWorkResultETag(objectHash, mockWorkRequestETag);
-});
-
 jest.mock('utils/work/fetchWork');
 
 const mockWorkerResponses = {
