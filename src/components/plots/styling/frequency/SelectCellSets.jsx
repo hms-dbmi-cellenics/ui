@@ -9,7 +9,8 @@ import {
 import { getCellSetsHierarchyByType } from 'redux/selectors';
 import { useSelector } from 'react-redux';
 
-const getSelectOptions = (options) => {
+const getGroupByOptions = (cellSetsHierarchyType) => {
+  const options = useSelector(getCellSetsHierarchyByType(cellSetsHierarchyType))
   const selectOptions = [];
   if (!options.length) {
     return;
@@ -40,10 +41,8 @@ const SelectCellSets = (props) => {
     onUpdate({ proportionGrouping: option.value });
   };
 
-  const metadataTypes = useSelector(getCellSetsHierarchyByType('metadataCategorical'));
-  const cellSetsTypes = useSelector(getCellSetsHierarchyByType('cellSets'));
-  const metadataGroupByOptions = getSelectOptions(metadataTypes);
-  const cellSetsGroupByOptions = getSelectOptions(cellSetsTypes);
+  const metadataGroupByOptions = getGroupByOptions('metadataCategorical');
+  const cellSetsGroupByOptions = getGroupByOptions('cellSets');
 
   let metadataToGroupByDisabled = false;
   let tooltipText;
