@@ -16,9 +16,6 @@ const DiffExprSelect = (props) => {
   const { hierarchy, properties } = cellSets;
   const tree = composeTree(hierarchy, properties, filterTypes);
 
-  console.log(filterTypes, 'treeDebug');
-  console.log(tree);
-
   const renderChildren = (rootKey, children) => {
     if (!children || children.length === 0) { return (<></>); }
 
