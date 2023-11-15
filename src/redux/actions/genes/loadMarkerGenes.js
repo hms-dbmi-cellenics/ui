@@ -14,19 +14,23 @@ const loadMarkerGenes = (
 ) => async (dispatch, getState) => {
   const {
     numGenes = 5,
-    groupedTracks = ['louvain'],
+    groupedTracks = ['sample', 'louvain'],
     selectedCellSet = 'louvain',
     selectedPoints = 'All',
     hiddenCellSets = [],
   } = options;
 
+  const downsampleSettings = {
+    selectedCellSet,
+    groupedTracks,
+    selectedPoints,
+    hiddenCellSets: Array.from(hiddenCellSets),
+  };
+
   const body = {
     name: 'MarkerHeatmap',
     nGenes: numGenes,
-    cellSetKey: selectedCellSet,
-    groupByClasses: groupedTracks,
-    selectedPoints,
-    hiddenCellSetKeys: Array.from(hiddenCellSets),
+    downsampleSettings,
   };
 
   try {
@@ -57,7 +61,7 @@ const loadMarkerGenes = (
 
     // If the ETag is different, that means that a new request was sent in between
     // So we don't need to handle this outdated result
-    if (getState().genes.markers.ETag !== requestETag) {
+    if (getState().genes.expression.downsampled.ETag !== requestETag) {
       return;
     }
 

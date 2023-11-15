@@ -7,7 +7,7 @@ import { useSelector, useDispatch } from 'react-redux';
 
 import _ from 'lodash';
 import { PlusOutlined, RedoOutlined, MinusOutlined } from '@ant-design/icons';
-import { loadGeneExpression } from 'redux/actions/genes';
+import { loadDownsampledGeneExpression, loadGeneExpression } from 'redux/actions/genes';
 
 const geneOperations = {
   ADD: 'add',
@@ -34,7 +34,11 @@ const ComponentActions = (props) => {
       newGenes = displayedGenes.filter((gene) => !selectedGenes.includes(gene));
     }
 
-    dispatch(loadGeneExpression(experimentId, newGenes, componentType, useDownsampledExpression));
+    if (useDownsampledExpression) {
+      dispatch(loadDownsampledGeneExpression(experimentId, newGenes, componentType));
+    } else {
+      dispatch(loadGeneExpression(experimentId, newGenes, componentType));
+    }
   };
 
   const menu = (

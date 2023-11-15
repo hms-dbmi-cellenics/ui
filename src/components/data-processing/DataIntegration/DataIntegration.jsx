@@ -229,9 +229,8 @@ const DataIntegration = (props) => {
     if (showAlert) updatePlotWithChanges({ legend: { showAlert, enabled: !showAlert } });
   }, [!selectedConfig, activePlotType, cellSets.accessible]);
 
-  const completedSteps = useSelector(
-    getBackendStatus(experimentId),
-  ).status?.pipeline?.completedSteps;
+  const completedSteps = useSelector(getBackendStatus(experimentId))
+    .status?.pipeline?.completedSteps;
 
   const configureEmbeddingFinished = useRef(null);
   useEffect(() => {

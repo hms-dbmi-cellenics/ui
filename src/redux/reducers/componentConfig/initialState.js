@@ -102,7 +102,9 @@ const heatmapInitialConfig = {
   colour: colourBaseState,
   marker: markerBaseState,
   labels: labelBaseState,
-  selectedGenes: [],
+  // When null, this indicates that the value is its initial one
+  // and the marker genes should be loaded
+  selectedGenes: null,
   selectedCellSet: 'louvain',
   selectedPoints: 'All',
   labelColour: 'transparent',
