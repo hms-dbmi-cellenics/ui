@@ -32,7 +32,7 @@ const delayedResponse = (response, delay = 10000, options = {}) => new Promise((
 
 const workerDataResult = (data) => Promise.resolve(_.cloneDeep(data));
 
-const fetchWorktMock = (
+const fetchWorkMock = (
   mockedResults,
 ) => ((experimentId, body) => {
 // ) => (experimentId, _body, _getstate, _dispatch, _optionals) => {
@@ -94,5 +94,5 @@ export {
   statusResponse,
   delayedResponse,
   workerDataResult,
-  fetchWorktMock,
+  fetchWorkMock,
 };

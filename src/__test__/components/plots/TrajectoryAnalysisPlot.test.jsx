@@ -8,7 +8,7 @@ import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 import TrajectoryAnalysisPlot from 'components/plots/TrajectoryAnalysisPlot';
 
 import mockAPI, {
-  fetchWorkMock, generateDefaultMockAPIResponses, promiseResponse, statusResponse,
+  generateDefaultMockAPIResponses, promiseResponse, statusResponse,
 } from '__test__/test-utils/mockAPI';
 import createTestComponentFactory from '__test__/test-utils/testComponentFactory';
 import fake from '__test__/test-utils/constants';
