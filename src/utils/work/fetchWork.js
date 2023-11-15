@@ -15,6 +15,7 @@ const fetchGeneExpressionWorkWithoutLocalCache = async (
   environment,
   broadcast,
   extras,
+  onETagGenerated,
   dispatch,
   getState,
 ) => {
@@ -31,6 +32,8 @@ const fetchGeneExpressionWorkWithoutLocalCache = async (
     dispatch,
     getState,
   );
+
+  onETagGenerated(ETag);
 
   try {
     const { signedUrl, data } = await dispatchWorkRequest(
@@ -90,6 +93,7 @@ const fetchWork = async (
       environment,
       broadcast,
       extras,
+      onETagGenerated,
       dispatch,
       getState,
     );

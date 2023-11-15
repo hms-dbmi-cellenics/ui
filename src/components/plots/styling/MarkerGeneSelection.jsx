@@ -30,7 +30,8 @@ const MarkerGeneSelection = (props) => {
             />
             <Button
               onClick={() => onUpdate({ nMarkerGenes: numGenes })}
-              disabled={numGenes === config.nMarkerGenes}
+              // TODO write in PR that this disabled was removed because
+              // It is a weird UX right now
               type='primary'
               size='small'
             >
