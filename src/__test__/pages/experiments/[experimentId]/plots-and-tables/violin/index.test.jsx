@@ -8,18 +8,16 @@ import { act } from 'react-dom/test-utils';
 import { Provider } from 'react-redux';
 import { loadBackendStatus } from 'redux/actions/backendStatus';
 import { makeStore } from 'redux/store';
-import dispatchWorkRequest from 'utils/work/dispatchWorkRequest';
+import fetchWork from 'utils/work/fetchWork';
 
 import markerGenes1 from '__test__/data/marker_genes_1.json';
 import paginatedGeneExpressionData from '__test__/data/paginated_gene_expression.json';
 
 import fake from '__test__/test-utils/constants';
 import mockAPI, {
-  dispatchWorkRequestMock,
   generateDefaultMockAPIResponses,
   promiseResponse,
   statusResponse,
-  workerDataResult,
 } from '__test__/test-utils/mockAPI';
 import createTestComponentFactory from '__test__/test-utils/testComponentFactory';
 
@@ -30,26 +28,11 @@ jest.mock('react-resize-detector', () => (props) => {
   return children({ width: 800, height: 800 });
 });
 
-// Mock hash so we can control the ETag that is produced by hash.MD5 when fetching work requests
-// EtagParams is the object that's passed to the function which generates ETag in fetchWork
-jest.mock('object-hash', () => {
-  const objectHash = jest.requireActual('object-hash');
-  const mockWorkResultETag = jest.requireActual('__test__/test-utils/mockWorkResultETag');
-
-  const mockWorkRequestETag = () => 'list-genes';
-  const mockGeneExpressionETag = () => '1-marker-genes';
-
-  return mockWorkResultETag(objectHash, mockWorkRequestETag, mockGeneExpressionETag);
-});
-
-jest.mock('utils/work/seekWorkResponse', () => ({
-  __esModule: true,
-  dispatchWorkRequest: jest.fn(),
-}));
+jest.mock('utils/work/fetchWork');
 
 const mockWorkerResponses = {
-  'list-genes': paginatedGeneExpressionData,
-  '1-marker-genes': markerGenes1,
+  ListGenes: paginatedGeneExpressionData,
+  GeneExpression: markerGenes1,
 };
 
 const experimentId = fake.EXPERIMENT_ID;
@@ -92,12 +75,9 @@ describe('ViolinIndex', () => {
   beforeEach(async () => {
     jest.clearAllMocks();
 
-    dispatchWorkRequest
+    fetchWork
       .mockReset()
-      // 1st call to list genes
-      .mockImplementationOnce(dispatchWorkRequestMock(mockWorkerResponses))
-      // 2nd call to load gene expression
-      .mockImplementationOnce(dispatchWorkRequestMock(mockWorkerResponses));
+      .mockImplementation((_experimentId, body) => mockWorkerResponses[body.name]);
 
     fetchMock.resetMocks();
     fetchMock.mockIf(/.*/, mockAPI(defaultResponses));
