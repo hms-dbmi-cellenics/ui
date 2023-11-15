@@ -12,9 +12,9 @@ const HelpButton = () => {
           {getDomainSpecificContent('HelpButton')}
         </Card>
       ),
-      key: 'help-button-contents'
-    }
-  ]
+      key: 'help-button-contents',
+    },
+  ];
 
   return (
     <Dropdown

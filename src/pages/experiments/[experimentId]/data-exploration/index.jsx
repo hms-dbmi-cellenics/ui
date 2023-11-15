@@ -99,19 +99,21 @@ const ExplorationViewPage = ({
           size='small'
           activeKey={selectedTab}
           onChange={(key) => { setSelectedTab(key); }}
-        >
-          <TabPane tab='Gene list' key='Gene list'>
-            <GeneListTool experimentId={experimentId} width={width} height={height} />
-          </TabPane>
-          <TabPane tab='Differential expression' key='Differential expression'>
-            <DiffExprManager
+          items={[{
+            label: 'Gene list',
+            key: 'Gene list',
+            children: <GeneListTool experimentId={experimentId} width={width} height={height} />,
+          }, {
+            label: 'Differential expression',
+            key: 'Differential expression',
+            children: <DiffExprManager
               experimentId={experimentId}
               view='compute'
               width={width}
               height={height}
-            />
-          </TabPane>
-        </Tabs>
+            />,
+          }]}
+        />
       ),
     },
     'Cell sets and Metadata': {
@@ -181,9 +183,9 @@ const ExplorationViewPage = ({
           <Dropdown
             trigger={['click']}
             key='search-menu-dropdown'
-            overlay={searchMenu}
+            menu={searchMenu}
             open={addMenuVisible}
-            onVisibleChange={(visible) => setAddMenuVisible(visible)}
+            onOpenChange={(visible) => setAddMenuVisible(visible)}
           >
             <Button type='primary' onClick={() => setAddMenuVisible(!addMenuVisible)}>
               Add
