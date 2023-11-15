@@ -196,7 +196,7 @@ const BatchDiffExpression = (props) => {
             <DiffExprSelect
               title='Compare sample/group:'
               option='cellSet'
-              filterType='metadataCategorical'
+              filterTypes={['metadataCategorical', 'CLMPerSample']}
               onSelectCluster={(cellSet) => changeComparison({ cellSet })}
               selectedComparison={{ cellSet: comparison.cellSet }}
               value={comparison.cellSet}
@@ -205,7 +205,7 @@ const BatchDiffExpression = (props) => {
             <DiffExprSelect
               title='To sample/group:'
               option='compareWith'
-              filterType='metadataCategorical'
+              filterTypes={['metadataCategorical', 'CLMPerSample']}
               onSelectCluster={(cellSet) => changeComparison({ compareWith: cellSet })}
               selectedComparison={{ cellSet: comparison.cellSet }}
               value={comparison.compareWith}
@@ -231,7 +231,7 @@ const BatchDiffExpression = (props) => {
             <DiffExprSelect
               title='Compare cell set:'
               option='cellSet'
-              filterType='cellSets'
+              filterTypes={['cellSets', 'CLM']}
               onSelectCluster={(cellSet) => changeComparison({ cellSet })}
               selectedComparison={{ cellSet: comparison.cellSet }}
               value={comparison.cellSet}
@@ -240,7 +240,7 @@ const BatchDiffExpression = (props) => {
             <DiffExprSelect
               title='To cell set:'
               option='compareWith'
-              filterType='cellSets'
+              filterTypes={['cellSets', 'CLM']}
               onSelectCluster={(cellSet) => changeComparison({ compareWith: cellSet })}
               selectedComparison={{ cellSet: comparison.cellSet }}
               value={comparison.compareWith}
