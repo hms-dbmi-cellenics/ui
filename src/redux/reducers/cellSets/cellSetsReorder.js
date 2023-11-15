@@ -1,7 +1,7 @@
 /* eslint-disable no-param-reassign */
 import produce from 'immer';
 
-import { arrayMoveMutable } from 'utils/array-move';
+import { arrayMoveMutable } from 'utils/arrayUtils';
 
 const cellSetsReorder = produce((draft, action) => {
   const { cellSetKey, newPosition, cellClassKey } = action.payload;

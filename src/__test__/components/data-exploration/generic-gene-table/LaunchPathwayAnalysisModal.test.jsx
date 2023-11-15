@@ -12,7 +12,7 @@ import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 
 import handleError from 'utils/http/handleError';
 import downloadFromUrl from 'utils/downloadFromUrl';
-import writeToFile from 'utils/writeToFileURL';
+import writeToFile from 'utils/upload/writeToFileURL';
 
 import launchPathwayService from 'utils/pathwayAnalysis/launchPathwayService';
 import getDiffExprGenes from 'utils/extraActionCreators/differentialExpression/getDiffExprGenes';

@@ -1,4 +1,4 @@
-import writeToFileURL from 'utils/writeToFileURL';
+import writeToFileURL from 'utils/upload/writeToFileURL';
 
 const mockCreateObjectURL = jest.fn(() => 'mockURL');
 

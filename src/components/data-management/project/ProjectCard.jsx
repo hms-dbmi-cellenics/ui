@@ -12,7 +12,7 @@ import integrationTestConstants from 'utils/integrationTestConstants';
 import EditableField from 'components/EditableField';
 import PrettyTime from 'components/PrettyTime';
 
-import ProjectDeleteModal from 'components/data-management/ProjectDeleteModal';
+import ProjectDeleteModal from 'components/data-management/project/ProjectDeleteModal';
 
 const { Item } = Descriptions;
 

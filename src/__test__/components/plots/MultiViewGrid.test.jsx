@@ -16,7 +16,7 @@ import { generateMultiViewGridPlotUuid } from 'utils/generateCustomPlotUuid';
 import { makeStore } from 'redux/store';
 import { updatePlotConfig } from 'redux/actions/componentConfig';
 import loadConditionalComponentConfig from 'redux/actions/componentConfig/loadConditionalComponentConfig';
-import { arrayMoveImmutable } from 'utils/array-move';
+import { arrayMoveImmutable } from 'utils/arrayUtils';
 
 import fake from '__test__/test-utils/constants';
 import mockAPI, {

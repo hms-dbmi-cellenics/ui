@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import mergeObjectReplacingArrays from 'utils/mergeObjectReplacingArrays';
+import { mergeObjectReplacingArrays } from 'utils/arrayUtils';
 
 const updateConfig = (state, action) => {
   const { plotUuid, configChanges = null, dataChanges = null } = action.payload;

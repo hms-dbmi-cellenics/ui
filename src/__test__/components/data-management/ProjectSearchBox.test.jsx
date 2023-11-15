@@ -1,7 +1,7 @@
 import React from 'react';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import ProjectSearchBox from 'components/data-management/ProjectSearchBox';
+import ProjectSearchBox from 'components/data-management/project/ProjectSearchBox';
 
 const onChangeSpy = jest.fn();
 

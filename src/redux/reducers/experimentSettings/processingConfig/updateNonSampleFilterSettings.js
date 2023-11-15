@@ -2,7 +2,7 @@ import _ from 'lodash';
 /* eslint-disable no-param-reassign */
 import produce, { current } from 'immer';
 
-import mergeObjectReplacingArrays from 'utils/mergeObjectReplacingArrays';
+import { mergeObjectReplacingArrays } from 'utils/arrayUtils';
 import initialState from '../initialState';
 
 const updateNonSampleFilterSettings = produce((draft, action) => {

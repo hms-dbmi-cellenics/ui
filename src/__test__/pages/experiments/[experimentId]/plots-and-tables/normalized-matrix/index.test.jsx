@@ -17,7 +17,7 @@ import { makeStore } from 'redux/store';
 import mockAPI, { generateDefaultMockAPIResponses, promiseResponse, statusResponse } from '__test__/test-utils/mockAPI';
 import cellSetsData from '__test__/data/cell_sets_with_clm.json';
 import fetchWork from 'utils/work/fetchWork';
-import writeToFileURL from 'utils/writeToFileURL';
+import writeToFileURL from 'utils/upload/writeToFileURL';
 import downloadFromUrl from 'utils/downloadFromUrl';
 
 jest.mock('utils/work/fetchWork');

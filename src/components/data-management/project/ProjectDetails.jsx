@@ -15,7 +15,7 @@ import EditableParagraph from 'components/EditableParagraph';
 import { layout } from 'utils/constants';
 
 import SamplesTable from 'components/data-management/SamplesTable';
-import ProjectMenu from 'components/data-management/ProjectMenu';
+import ProjectMenu from 'components/data-management/project/ProjectMenu';
 import AddMetadataButton from 'components/data-management/metadata/AddMetadataButton';
 
 const { Text, Title } = Typography;

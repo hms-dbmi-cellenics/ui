@@ -28,7 +28,7 @@ import fake from '__test__/test-utils/constants';
 import { loadBackendStatus } from 'redux/actions/backendStatus';
 import { loadProcessingSettings } from 'redux/actions/experimentSettings';
 import downloadFromUrl from 'utils/downloadFromUrl';
-import writeToFileURL from 'utils/writeToFileURL';
+import writeToFileURL from 'utils/upload/writeToFileURL';
 
 jest.mock('file-saver');
 
