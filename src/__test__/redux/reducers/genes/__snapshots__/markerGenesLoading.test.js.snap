@@ -2,8 +2,12 @@
 
 exports[`markerGenesLoading returns correct state 1`] = `
 {
+  "expression": {
+    "downsampled": {
+      "ETag": "new-etag",
+    },
+  },
   "markers": {
-    "ETag": "new-etag",
     "error": false,
     "loading": true,
   },

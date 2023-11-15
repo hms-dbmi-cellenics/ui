@@ -27,7 +27,7 @@ describe('genesReducer', () => {
       },
     });
 
-    expect(newState.expression.loading).toEqual(['A', 'B', 'C']);
+    expect(newState.expression.full.loading).toEqual(['A', 'B', 'C']);
     expect(newState.expression.views.abc.fetching).toEqual(true);
     expect(newState.expression.views.abc.error).toEqual(false);
     expect(newState).toMatchSnapshot();
@@ -64,7 +64,7 @@ describe('genesReducer', () => {
       },
     });
 
-    expect(newState.expression.loading).toEqual(['a', 'b', 'c']);
+    expect(newState.expression.full.loading).toEqual(['a', 'b', 'c']);
     expect(newState).toMatchSnapshot();
   });
 
@@ -75,7 +75,10 @@ describe('genesReducer', () => {
       ...getInitialState(),
       expression: {
         ...getInitialState().expression,
-        loading: ['geneA', 'geneB', 'geneC', 'geneD', 'geneE'],
+        full: {
+          ...getInitialState().expression.full,
+          loading: ['geneA', 'geneB', 'geneC', 'geneD', 'geneE'],
+        },
       },
     }, {
       type: GENES_EXPRESSION_LOADED,
@@ -86,7 +89,7 @@ describe('genesReducer', () => {
       },
     });
 
-    expect(newState.expression.loading).toEqual(['GENED', 'GENEE']);
+    expect(newState.expression.full.loading).toEqual(['GENED', 'GENEE']);
     expect(newState).toMatchSnapshot();
   });
 
@@ -99,7 +102,7 @@ describe('genesReducer', () => {
       },
     });
 
-    expect(newState.expression.error).toEqual('asd');
+    expect(newState.expression.full.error).toEqual('asd');
     expect(newState).toMatchSnapshot();
   });
 

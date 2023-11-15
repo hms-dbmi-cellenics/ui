@@ -21,7 +21,7 @@ const ViolinPlotMain = (props) => {
 
   const config = useSelector((state) => state.componentConfig[plotUuid]?.config);
 
-  const geneExpression = useSelector((state) => state.genes.expression);
+  const expression = useSelector((state) => state.genes.expression.full);
   const cellSets = useSelector(getCellSets());
 
   const selectedCellSetClassAvailable = useSelector(
@@ -32,12 +32,12 @@ const ViolinPlotMain = (props) => {
 
   useEffect(() => {
     if (config
-      && !geneExpression.error
-      && geneExpression.matrix.geneIsLoaded(config.shownGene)
+      && !expression.error
+      && expression.matrix.geneIsLoaded(config.shownGene)
       && cellSets.accessible) {
       const geneExpressionData = config.normalised === 'zScore'
-        ? geneExpression.matrix.getZScore(config.shownGene)
-        : geneExpression.matrix.getRawExpression(config.shownGene);
+        ? expression.matrix.getZScore(config.shownGene)
+        : expression.matrix.getRawExpression(config.shownGene);
 
       if (selectedCellSetClassAvailable) {
         const generatedPlotData = generateData(
@@ -49,7 +49,7 @@ const ViolinPlotMain = (props) => {
         setPlotSpec(generateSpec(config, generatedPlotData));
       }
     }
-  }, [experimentId, config, geneExpression, cellSets]);
+  }, [experimentId, config, expression, cellSets]);
 
   const render = () => {
     if (cellSets.error) {
@@ -67,7 +67,7 @@ const ViolinPlotMain = (props) => {
     if (
       !config
       || config?.shownGene === 'notSelected'
-      || geneExpression.loading.includes(config?.shownGene)
+      || expression.loading.includes(config?.shownGene)
       || !cellSets.accessible
     ) {
       return <Loader experimentId={experimentId} />;
@@ -83,11 +83,11 @@ const ViolinPlotMain = (props) => {
       );
     }
 
-    if (geneExpression.error && !geneExpression.matrix.geneIsLoaded(config.shownGene)) {
+    if (expression.error && !expression.matrix.geneIsLoaded(config.shownGene)) {
       return (
         <PlatformError
-          error={geneExpression.error}
-          reason={geneExpression.error}
+          error={expression.error}
+          reason={expression.error}
           onClick={() => {
             dispatch(loadGeneExpression(
               experimentId, [config?.shownGene], plotUuid,
