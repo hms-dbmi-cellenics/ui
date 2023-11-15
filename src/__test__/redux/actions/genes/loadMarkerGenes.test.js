@@ -48,7 +48,12 @@ describe('loadMarkerGenes action', () => {
         ...getInitialState(),
         markers: {
           ...getInitialState().markers,
-          ETag: 'new-etag',
+        },
+        expression: {
+          downsampled: {
+            ...getInitialState().expression.downsampled,
+            ETag: 'new-etag',
+          },
         },
       },
       experimentSettings,
@@ -95,21 +100,12 @@ describe('loadMarkerGenes action', () => {
     expect(_.map(actions, 'payload')).toMatchSnapshot();
   });
 
-  it('Defaults to louvain cluster if selected cell set is not provided', async () => {
+  it('Defaults to louvain if selectedCellSet is not provided', async () => {
     const store = mockStore({
       genes: getInitialState(),
       experimentSettings,
       backendStatus,
     });
-
-    const workRequestBody = {
-      name: 'MarkerHeatmap',
-      nGenes: 5,
-      cellSetKey: 'louvain',
-      groupByClasses: ['louvain'],
-      hiddenCellSetKeys: [],
-      selectedPoints: 'All',
-    };
 
     await store.dispatch(loadMarkerGenes(experimentId, 'interactiveHearmap', { numGenes: 5 }));
 
@@ -117,7 +113,16 @@ describe('loadMarkerGenes action', () => {
 
     const functionArgs = fetchWork.mock.calls[0];
 
-    expect(functionArgs[1]).toEqual(workRequestBody);
+    expect(functionArgs[1]).toEqual({
+      name: 'MarkerHeatmap',
+      nGenes: 5,
+      downsampleSettings: {
+        selectedCellSet: 'louvain',
+        groupedTracks: ['sample', 'louvain'],
+        hiddenCellSets: [],
+        selectedPoints: 'All',
+      },
+    });
   });
 
   it('Doesnt dispatch MARKER_GENES_LOADED if theres a different ETag stored', async () => {
@@ -126,7 +131,12 @@ describe('loadMarkerGenes action', () => {
         ...getInitialState(),
         markers: {
           ...getInitialState().markers,
-          ETag: 'different-etag',
+        },
+        expression: {
+          downsampled: {
+            ...getInitialState().expression.downsampled,
+            ETag: 'different-etag',
+          },
         },
       },
       experimentSettings,
