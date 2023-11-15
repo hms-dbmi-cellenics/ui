@@ -9,13 +9,12 @@ import mockAPI, {
   statusResponse,
   promiseResponse,
   generateDefaultMockAPIResponses,
-  dispatchWorkRequestMock,
 } from '__test__/test-utils/mockAPI';
 import cellSetsData from '__test__/data/cell_sets.json';
 import { MAX_LEGEND_ITEMS } from 'components/plots/helpers/PlotLegendAlert';
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 import { makeStore } from 'redux/store';
-import dispatchWorkRequest from 'utils/work/dispatchWorkRequest';
+import fetchWork from 'utils/work/fetchWork';
 
 import mockEmbedding from '__test__/data/embedding.json';
 
@@ -44,10 +43,7 @@ jest.mock('object-hash', () => {
   return mockWorkResultETag(objectHash, mockWorkRequestETag);
 });
 
-jest.mock('utils/work/seekWorkResponse', () => ({
-  __esModule: true,
-  dispatchWorkRequest: jest.fn(() => true),
-}));
+jest.mock('utils/work/fetchWork');
 
 const mockWorkerResponses = {
   GetEmbedding: mockEmbedding,
@@ -87,9 +83,9 @@ describe('DataIntegration', () => {
     fetchMock.resetMocks();
     fetchMock.doMock();
 
-    dispatchWorkRequest
+    fetchWork
       .mockReset()
-      .mockImplementationOnce(dispatchWorkRequestMock(mockWorkerResponses));
+      .mockImplementation((_experimentId, body) => mockWorkerResponses[body.name]);
 
     fetchMock.mockIf(/.*/, mockAPI(mockApiResponses));
     storeState = makeStore();
