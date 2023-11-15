@@ -18,9 +18,10 @@ const retrieveData = async (experimentId,
   request,
   timeout,
   body,
-  dispatch) => {
+  dispatch,
+  useCache) => {
   // 1. Check if we have the ETag in the browser cache (no worker)
-  const cachedData = await cache.get(ETag);
+  const cachedData = useCache ? await cache.get(ETag) : null;
   if (cachedData) {
     return cachedData;
   }
@@ -84,14 +85,20 @@ const fetchWork = async (
     dispatch,
   );
 
+  console.log('fetchWork ETag', ETag);
   onETagGenerated(ETag);
 
-  // 2. Try to get the data from the fastest source possible
-  const data = await retrieveData(experimentId, ETag, signedUrl, request, timeout, body, dispatch);
+  const useCache = body.name !== 'GeneExpression';
 
-  // TODO check if we need to cache everything, gene expression is not needed
+  // 2. Try to get the data from the fastest source possible
+  const data = await retrieveData(
+    experimentId, ETag, signedUrl, request, timeout, body, dispatch, useCache,
+  );
+
   // 3. Cache the data in the browser
-  await cache.set(ETag, data);
+  if (useCache) {
+    await cache.set(ETag, data);
+  }
 
   return data;
 };

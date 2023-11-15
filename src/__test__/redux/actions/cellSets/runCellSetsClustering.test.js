@@ -10,10 +10,7 @@ import initialState from 'redux/reducers/cellSets/initialState';
 enableFetchMocks();
 const mockStore = configureStore([thunk]);
 
-jest.mock('utils/work/seekWorkResponse', () => ({
-  __esModule: true, // this property makes it work
-  dispatchWorkRequest: jest.fn(),
-}));
+jest.mock('utils/work/dispatchWorkRequest');
 
 jest.mock('utils/getTimeoutForWorkerTask', () => ({
   __esModule: true, // this property makes it work

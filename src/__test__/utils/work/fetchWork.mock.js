@@ -83,7 +83,7 @@ const mockGenesListData = ['A', 'B', 'C', 'D'];
 //   return null;
 // });
 
-const mockCacheGet = jest.fn(() => null);
+const mockCacheGet = jest.fn();
 const mockCacheSet = jest.fn();
 const mockCacheRemove = jest.fn();
 

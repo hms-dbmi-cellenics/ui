@@ -14,9 +14,7 @@ exports[`runCellSetsClustering action Dispatches all required actions to update 
       "type": "louvain",
     },
     60,
-    "mock-hash",
     {
-      "PipelineRunETag": "2021-01-01T00:00:00",
       "broadcast": true,
     },
     [Function],
@@ -38,9 +36,7 @@ exports[`runCellSetsClustering action Dispatches error action when dispatchWorkR
       "type": "louvain",
     },
     60,
-    "mock-hash",
     {
-      "PipelineRunETag": "2021-01-01T00:00:00",
       "broadcast": true,
     },
     [Function],
