@@ -103,7 +103,7 @@ const AddMetadataButton = ({ samplesTableRef }) => {
                   </div>
                 </Tooltip>
               ),
-              disabled: true,
+              disabled: false,
               onClick: () => {
                 setCellLevelUploadVisible(true);
               },
