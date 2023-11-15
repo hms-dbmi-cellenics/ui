@@ -7,7 +7,7 @@ import { act } from 'react-dom/test-utils';
 import { Provider } from 'react-redux';
 import { loadBackendStatus } from 'redux/actions/backendStatus';
 import { makeStore } from 'redux/store';
-import dispatchWorkRequest from 'utils/work/dispatchWorkRequest';
+import fetchWork from 'utils/work/fetchWork';
 
 import mockEmbedding from '__test__/data/embedding.json';
 
@@ -15,11 +15,11 @@ import preloadAll from 'jest-next-dynamic';
 
 import fake from '__test__/test-utils/constants';
 import mockAPI, {
-  dispatchWorkRequestMock,
   generateDefaultMockAPIResponses,
   promiseResponse,
   statusResponse,
 } from '__test__/test-utils/mockAPI';
+
 import cellSetsData from '__test__/data/cell_sets.json';
 import createTestComponentFactory from '__test__/test-utils/testComponentFactory';
 import { MAX_LEGEND_ITEMS } from 'components/plots/helpers/PlotLegendAlert';
@@ -33,19 +33,16 @@ jest.mock('react-resize-detector', () => (props) => {
 
 // Mock hash so we can control the ETag that is produced by hash.MD5 when fetching work requests
 // EtagParams is the object that's passed to the function which generates ETag in fetchWork
-jest.mock('object-hash', () => {
-  const objectHash = jest.requireActual('object-hash');
-  const mockWorkResultETag = jest.requireActual('__test__/test-utils/mockWorkResultETag');
+// jest.mock('object-hash', () => {
+//   const objectHash = jest.requireActual('object-hash');
+//   const mockWorkResultETag = jest.requireActual('__test__/test-utils/mockWorkResultETag');
 
-  const mockWorkRequestETag = (ETagParams) => `${ETagParams.body.name}`;
+//   const mockWorkRequestETag = (ETagParams) => `${ETagParams.body.name}`;
 
-  return mockWorkResultETag(objectHash, mockWorkRequestETag);
-});
+//   return mockWorkResultETag(objectHash, mockWorkRequestETag);
+// });
 
-jest.mock('utils/work/seekWorkResponse', () => ({
-  __esModule: true,
-  dispatchWorkRequest: jest.fn(() => true),
-}));
+jest.mock('utils/work/fetchWork');
 
 const mockWorkerResponses = {
   GetEmbedding: mockEmbedding,
@@ -92,9 +89,9 @@ describe('Categorical embedding plot', () => {
   beforeEach(async () => {
     jest.clearAllMocks();
 
-    dispatchWorkRequest
+    fetchWork
       .mockReset()
-      .mockImplementationOnce(dispatchWorkRequestMock(mockWorkerResponses));
+      .mockImplementation((_experimentId, body) => mockWorkerResponses[body.name]);
 
     enableFetchMocks();
     fetchMock.resetMocks();
