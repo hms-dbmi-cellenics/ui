@@ -64,8 +64,10 @@ describe('Embedding', () => {
     },
     genes: {
       expression: {
-        loading: false,
-        matrix: new ExpressionMatrix(),
+        full: {
+          loading: false,
+          matrix: new ExpressionMatrix(),
+        },
       },
     },
     cellInfo: {
@@ -120,8 +122,8 @@ describe('Embedding', () => {
     expect(vitesscePropsSpy.obsEmbedding).toEqual(
       {
         data: [[-13, 6, 43, 57], [32, 7, 9, 3]],
-        shape: [2, 4]
-      }
+        shape: [2, 4],
+      },
     );
     expect(vitesscePropsSpy.obsEmbeddingIndex).toEqual(['0', '1', '2', '3']);
   });
@@ -211,9 +213,7 @@ describe('Embedding', () => {
   it('renders CrossHair and CellInfo components when user hovers over cell', () => {
     store = mockStore(initialState);
 
-    const mockProjectFromId = jest.fn((cellId) => {
-      return store.getState().embeddings.umap.data[cellId];
-    });
+    const mockProjectFromId = jest.fn((cellId) => store.getState().embeddings.umap.data[cellId]);
 
     const cellCoordinates = {
       projectFromId: mockProjectFromId,
@@ -248,9 +248,7 @@ describe('Embedding', () => {
   it('does not render CrossHair and CellInfo components when user zooms in or out of the embedding', () => {
     store = mockStore(initialState);
 
-    const mockProjectFromId = jest.fn((cellId) => {
-      return store.getState().embeddings.umap.data[cellId];
-    });
+    const mockProjectFromId = jest.fn((cellId) => store.getState().embeddings.umap.data[cellId]);
 
     const cellCoordinates = {
       projectFromId: mockProjectFromId,
@@ -284,8 +282,10 @@ describe('Embedding', () => {
       genes: {
         ...initialState.genes,
         expression: {
-          loading: [],
-          matrix: getTwoGenesExpressionMatrix(),
+          full: {
+            loading: [],
+            matrix: getTwoGenesExpressionMatrix(),
+          },
         },
       },
       cellInfo: {
