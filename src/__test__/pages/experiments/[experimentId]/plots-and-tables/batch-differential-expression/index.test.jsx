@@ -11,10 +11,13 @@ import userEvent from '@testing-library/user-event';
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 
 import { makeStore } from 'redux/store';
-import mockAPI, { generateDefaultMockAPIResponses } from '__test__/test-utils/mockAPI';
+import mockAPI, { generateDefaultMockAPIResponses, promiseResponse } from '__test__/test-utils/mockAPI';
 import * as getBatchDiffExpr from 'utils/extraActionCreators/differentialExpression/getBatchDiffExpr';
 import * as checkCanRunDiffExprModule from 'utils/extraActionCreators/differentialExpression/checkCanRunDiffExpr';
 import mockLoader from 'components/Loader';
+
+import cellSetsData from '__test__/data/cell_sets.json';
+import cellLevelCellSets from '__test__/data/cell_level_cell_sets.json';
 
 jest.spyOn(checkCanRunDiffExprModule, 'default').mockImplementation(() => 'TRUE');
 jest.mock('utils/extraActionCreators/differentialExpression/getBatchDiffExpr');
@@ -22,7 +25,16 @@ jest.mock('components/Loader', () => jest.fn(() => <div data-testid='mockLoader'
 
 describe('Batch differential expression tests ', () => {
   let storeState = null;
-  const mockApiResponses = _.merge(generateDefaultMockAPIResponses(fake.EXPERIMENT_ID));
+
+  const customCellSetsData = _.cloneDeep(cellSetsData);
+  // Add the cell level cell sets
+  customCellSetsData.cellSets.push(...cellLevelCellSets);
+
+  const mockApiResponses = {
+    ...generateDefaultMockAPIResponses(fake.EXPERIMENT_ID),
+    [`experiments/${fake.EXPERIMENT_ID}/cellSets$`]: () => promiseResponse(JSON.stringify(customCellSetsData)),
+  };
+
   let getBatchDiffExprSpy;
 
   beforeEach(async () => {
@@ -35,6 +47,7 @@ describe('Batch differential expression tests ', () => {
     storeState = makeStore();
     getBatchDiffExprSpy = jest.spyOn(getBatchDiffExpr, 'default');
   });
+
   const secondOptionText = 'Compare between two selected samples/groups in a cell set for all cell sets';
   const renderPage = async () => {
     await act(async () => render(
@@ -107,6 +120,7 @@ describe('Batch differential expression tests ', () => {
         ['louvain-0', 'louvain-1', 'louvain-2', 'louvain-3', 'louvain-4', 'louvain-5', 'louvain-6', 'louvain-7', 'louvain-8', 'louvain-9', 'louvain-10', 'louvain-11', 'louvain-12', 'louvain-13']);
     });
   });
+
   it('shows the Loader while fetching data', async () => {
     getBatchDiffExpr.mockImplementation(() => new Promise((resolve) => {
       setTimeout(() => {
