@@ -65,23 +65,75 @@ describe('Batch differential expression tests ', () => {
   it('Shows correct input fields for each comparison option', async () => {
     await renderPage();
 
-    const compareForCellSetsRadio = screen.getByLabelText(secondOptionText);
-    const compareForSamplesRadio = screen.getByLabelText(/Compare two cell sets for all samples\/groups/i);
+    const compareBetweenSamplesRadio = screen.getByLabelText(secondOptionText);
+    const compareBetweenCellSetsRadio = screen.getByLabelText(/Compare two cell sets for all samples\/groups/i);
 
     expect(screen.getByText(/Select the cell sets for which marker genes are to be computed in batch:/i)).toBeInTheDocument();
     expect(screen.getByText('Select a cell set...')).toBeInTheDocument();
 
-    // Check compareForCellSetsRadio
-    await act(() => userEvent.click(compareForCellSetsRadio));
+    await act(() => userEvent.click(screen.getByText('Select a cell set...')));
+
+    const cellBasedClasses = [
+      'Fake louvain clusters',
+      'Custom cell sets',
+      'Some Cell Level Track',
+      'Another Cell Level Track'
+    ];
+
+    const sampleBasedClasses = [
+      'Samples',
+      'Track_1',
+      'Sample Cell Level Track'
+    ];
+
+    const sampleBasedSets = [
+      'KO', 'WT1', 'WT2', 'KMeta', 'WMetaT', 'Sample cell level zero', 'Sample cell level one',
+    ];
+
+    // Shows the correct cell classes as options
+    cellBasedClasses.forEach((text) => {
+      expect(screen.getByText(text)).toBeInTheDocument();
+    })
+
+    // Doesn't show the samples or sample-based metadata cell classes as options
+    sampleBasedClasses.forEach((text) => {
+      expect(screen.queryByText(text)).not.toBeInTheDocument();
+    })
+
+    // Check compareBetweenSamplesRadio
+    await act(() => userEvent.click(compareBetweenSamplesRadio));
     expect(screen.getByText(/Select the comparison sample\/groups for which batch/i)).toBeInTheDocument();
     expect(screen.getByText(/In batch for each cell set in:/i)).toBeInTheDocument();
     expect(screen.getByText(/Select a cell set.../i)).toBeInTheDocument();
 
-    // Check compareForSamplesRadio
-    await act(() => userEvent.click(compareForSamplesRadio));
+    expect(screen.getAllByText('Select a sample/group...')).toHaveLength(2);
+    screen.getAllByText('Select a sample/group...').forEach((match) => {
+      expect(match).toBeVisible();
+    });
+
+    await act(() => userEvent.click(screen.getAllByText('Select a sample/group...')[0]));
+
+    // Shows the sample options and their classes
+    [...sampleBasedSets, ...sampleBasedClasses].forEach((text) => {
+      expect(screen.getByText(text)).toBeInTheDocument();
+    });
+
+    // Check compareBetweenCellSetsRadio
+    await act(() => userEvent.click(compareBetweenCellSetsRadio));
     expect(screen.getByText(/Select the comparison cell sets for which batch/i)).toBeInTheDocument();
     expect(screen.getByText(/In batch for each sample\/group in:/i)).toBeInTheDocument();
     expect(screen.getByText(/Select samples or metadata.../i)).toBeInTheDocument();
+
+    await act(() => userEvent.click(screen.getAllByText('Select a cell set...')[0]));
+
+
+    const someLouvainCellSets = Array.from({ length: 11 }, (x, index) => `Cluster ${index}`);
+    // Shows only some of the louvain options and not the others
+    // Because it is a virtual list which only renders the options that enter the
+    // options that fit in the display
+    [...someLouvainCellSets, 'fake louvain clusters'].forEach((text) => {
+      expect(screen.getByText(text)).toBeInTheDocument();
+    });
   });
 
   it('sending a request should work', async () => {
