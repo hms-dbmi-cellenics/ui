@@ -16,7 +16,7 @@ import { layout } from 'utils/constants';
 
 import SamplesTable from 'components/data-management/SamplesTable';
 import ProjectMenu from 'components/data-management/ProjectMenu';
-import AddMetadataButton from './AddMetadataButton';
+import AddMetadataButton from 'components/data-management/metadata/AddMetadataButton';
 
 const { Text, Title } = Typography;
 

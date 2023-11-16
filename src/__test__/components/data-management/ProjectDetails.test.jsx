@@ -212,7 +212,7 @@ describe('ProjectDetails', () => {
   });
 
   const getMenuItems = async () => {
-    const menu = await screen.getByText('Add metadata');
+    const menu = await screen.getByText('Metadata');
     expect(menu).not.toBeDisabled();
 
     await act(async () => {
@@ -258,49 +258,49 @@ describe('ProjectDetails', () => {
     );
 
     expect(screen.getByText('Add data')).toBeDefined();
-    expect(screen.getByText('Add metadata')).toBeDefined();
+    expect(screen.getByText('Metadata')).toBeDefined();
     expect(screen.getByText('Download')).toBeDefined();
     expect(screen.getByText('Process project')).toBeDefined();
     expect(screen.getByText('Copy')).toBeDefined();
   });
 
-  it('Add metadata button is disabled if there is no data', () => {
+  it('metadata button is disabled if there is no data', () => {
     render(
       <Provider store={mockStore(noDataState)}>
         {projectDetailsFactory()}
       </Provider>,
     );
 
-    const metadataButton = screen.getByText('Add metadata').closest('button');
+    const metadataButton = screen.getByText('Metadata').closest('button');
 
     expect(metadataButton).toBeDisabled();
   });
 
-  it('Add metadata button is enabled if there is data', () => {
+  it('metadata button is enabled if there is data', () => {
     render(
       <Provider store={mockStore(withDataState)}>
         {projectDetailsFactory()}
       </Provider>,
     );
 
-    const metadataButton = screen.getByText('Add metadata').closest('button');
+    const metadataButton = screen.getByText('Metadata').closest('button');
 
     expect(metadataButton).not.toBeDisabled();
   });
 
-  it('Add metadata button is disabled if it is Seurat', () => {
+  it('metadata button is disabled if it is Seurat', () => {
     render(
       <Provider store={mockStore(withSeuratDataState)}>
         {projectDetailsFactory()}
       </Provider>,
     );
 
-    const metadataButton = screen.getByText('Add metadata').closest('button');
+    const metadataButton = screen.getByText('Metadata').closest('button');
 
     expect(metadataButton).toBeDisabled();
   });
 
-  it('Add metadata button is disabled for subset experiments', () => {
+  it('metadata button is disabled for subset experiments', () => {
     const state = _.cloneDeep(withDataState);
     state.experiments[experiment1id].parentExperimentId = '736de01d-cb70-439a-9fdf-9b269a72fc67';
     state.experiments[experiment1id].isSubsetted = true;
@@ -311,7 +311,7 @@ describe('ProjectDetails', () => {
       </Provider>,
     );
 
-    const metadataButton = screen.getByText('Add metadata').closest('button');
+    const metadataButton = screen.getByText('Metadata').closest('button');
 
     expect(metadataButton).toBeDisabled();
   });
@@ -382,7 +382,7 @@ describe('ProjectDetails', () => {
 
     // Wait and ensure that the dropdown is available before clicking
     await waitFor(() => {
-      expect(screen.getByText('Add metadata')).toBeInTheDocument();
+      expect(screen.getByText('Metadata')).toBeInTheDocument();
     });
 
     // Add track column

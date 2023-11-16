@@ -20,6 +20,10 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
+permissions:
+  id-token: write
+  contents: read
+
 jobs:
   is-safe-to-run:
     name: Sensitive jobs are safe to be run
@@ -83,6 +87,10 @@ jobs:
 
   test:
     name: Run unit tests
+    # TODO: the permissions here are too broad and need narrowing down
+    # They are needed because so that upload-coverage can upload the coverage report
+    # and post comments.
+    permissions: write-all
     runs-on: ubuntu-20.04
     needs: is-safe-to-run
     env:
@@ -236,12 +244,11 @@ jobs:
           IMAGE_REPO_NAME=$(echo $GITHUB_REPOSITORY | awk -F '/' '{print $2}')
           echo "repo-name=$IMAGE_REPO_NAME" >> $GITHUB_OUTPUT
 
-      - id: set-up-creds
+      - id: setup-aws
         name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v1
+        uses: aws-actions/configure-aws-credentials@v4
         with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/ci-role-ui
           aws-region: ${{ secrets.AWS_REGION }}
 
       - id: login-ecr
@@ -272,7 +279,6 @@ jobs:
           tags: ${{ format('{0}/{1}:{2}', steps.login-ecr.outputs.registry, steps.ref.outputs.repo-name, steps.ref.outputs.image-tag) }}
           push: true
           provenance: false
-          build-args: READONLY_API_TOKEN_GITHUB=${{ secrets.READONLY_API_TOKEN_GITHUB }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
@@ -294,10 +300,9 @@ jobs:
 
       - id: setup-aws
         name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v1
+        uses: aws-actions/configure-aws-credentials@v4
         with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/ci-role-ui
           aws-region: ${{ secrets.AWS_REGION }}
 
       - id: login-ecr

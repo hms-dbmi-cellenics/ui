@@ -19,6 +19,7 @@ import { initialExperimentBackendStatus } from 'redux/reducers/backendStatus/ini
 
 import UploadStatus from 'utils/upload/UploadStatus';
 import calculateGem2sRerunStatus from 'utils/data-management/calculateGem2sRerunStatus';
+import calculateQCRerunStatus from 'utils/data-management/calculateQCRerunStatus';
 import '__test__/test-utils/setupTests';
 
 jest.mock('redux/actions/experimentSettings/updateExperimentInfo', () => jest.fn().mockReturnValue({ type: 'UPDATE_EXPERIMENT_INFO' }));
@@ -36,6 +37,7 @@ jest.mock('utils/AppRouteProvider', () => ({
 }));
 
 jest.mock('utils/data-management/calculateGem2sRerunStatus');
+jest.mock('utils/data-management/calculateQCRerunStatus');
 
 const mockStore = configureMockStore([thunk]);
 
@@ -205,6 +207,7 @@ describe('LaunchAnalysisButton', () => {
 
   it('Process project button is disabled if not all sample metadata are inserted', async () => {
     calculateGem2sRerunStatus.mockReturnValue(rerunState);
+    calculateQCRerunStatus.mockReturnValue(notRerunState);
 
     const notAllMetadataInserted = {
       ...withDataState,
@@ -231,6 +234,7 @@ describe('LaunchAnalysisButton', () => {
 
   it('Process project button is disabled if there is no data', async () => {
     calculateGem2sRerunStatus.mockReturnValue(rerunState);
+    calculateQCRerunStatus.mockReturnValue(notRerunState);
 
     await act(async () => {
       render(
@@ -245,8 +249,9 @@ describe('LaunchAnalysisButton', () => {
     expect(button).toBeDisabled();
   });
 
-  it('Process project button is disabled if not all data are uploaded', async () => {
+  it('Process project button is disabled if not all samples are uploaded', async () => {
     calculateGem2sRerunStatus.mockReturnValue(rerunState);
+    calculateQCRerunStatus.mockReturnValue(notRerunState);
 
     const notAllDataUploaded = {
       ...withDataState,
@@ -258,6 +263,34 @@ describe('LaunchAnalysisButton', () => {
             ...withDataState.samples[sample1Uuid].files,
             'features.tsv.gz': { valid: true, upload: { status: UploadStatus.UPLOADING } },
           },
+        },
+      },
+    };
+
+    await act(async () => {
+      render(
+        <Provider store={mockStore(notAllDataUploaded)}>
+          <LaunchAnalysisButton />
+        </Provider>,
+      );
+    });
+
+    const button = screen.getByText('Process project').closest('button');
+
+    expect(button).toBeDisabled();
+  });
+
+  it('Process project button is disabled if not all cell level metadata is uploaded', async () => {
+    calculateGem2sRerunStatus.mockReturnValue(rerunState);
+    calculateQCRerunStatus.mockReturnValue(notRerunState);
+
+    const notAllDataUploaded = {
+      ...withDataState,
+      experiments: {
+        ...withDataState.experiments,
+        [experiment1id]: {
+          ...withDataState.experiments[experiment1id],
+          cellLevelMetadata: { id: 'metadataBeingUploadedId', uploadStatus: UploadStatus.UPLOADING },
         },
       },
     };
@@ -305,6 +338,7 @@ describe('LaunchAnalysisButton', () => {
 
   it('Process project button is enabled if there is data and all metadata for all samples are uplaoded', async () => {
     calculateGem2sRerunStatus.mockReturnValue(rerunState);
+    calculateQCRerunStatus.mockReturnValue(notRerunState);
 
     await act(async () => {
       render(
@@ -335,6 +369,7 @@ describe('LaunchAnalysisButton', () => {
 
   it('Shows Go to Data Processing if there are no changes to the experiment (same hash)', async () => {
     calculateGem2sRerunStatus.mockReturnValue(notRerunState);
+    calculateQCRerunStatus.mockReturnValue(notRerunState);
 
     await act(async () => {
       render(
@@ -351,6 +386,7 @@ describe('LaunchAnalysisButton', () => {
 
   it('Shows Go to Data Exploration if there are no changes to the Seurat experiment (same hash)', async () => {
     calculateGem2sRerunStatus.mockReturnValue(notRerunState);
+    calculateQCRerunStatus.mockReturnValue(notRerunState);
 
     await act(async () => {
       render(
@@ -367,6 +403,7 @@ describe('LaunchAnalysisButton', () => {
 
   it('Shows Process project if there are changes to the experiment', async () => {
     calculateGem2sRerunStatus.mockReturnValue(rerunState);
+    calculateQCRerunStatus.mockReturnValue(notRerunState);
 
     await act(async () => {
       render(
@@ -381,8 +418,9 @@ describe('LaunchAnalysisButton', () => {
     });
   });
 
-  it('Shows Process project if there are changes to the Seurat experiment (different hash)', async () => {
+  it('Shows Process project if there are changes to the Seurat experiment (shouldRerun = true)', async () => {
     calculateGem2sRerunStatus.mockReturnValue(rerunState);
+    calculateQCRerunStatus.mockReturnValue(notRerunState);
 
     await act(async () => {
       render(
@@ -399,6 +437,7 @@ describe('LaunchAnalysisButton', () => {
 
   it('Dispatches request for GEM2S if there are changes to the experiment', async () => {
     calculateGem2sRerunStatus.mockReturnValue(rerunState);
+    calculateQCRerunStatus.mockReturnValue(notRerunState);
 
     await act(async () => {
       render(
@@ -423,6 +462,7 @@ describe('LaunchAnalysisButton', () => {
 
   it('Does not dispatch request for GEM2S if there are no changes to the experiment', async () => {
     calculateGem2sRerunStatus.mockReturnValue(notRerunState);
+    calculateQCRerunStatus.mockReturnValue(notRerunState);
 
     await act(async () => {
       render(
@@ -438,6 +478,7 @@ describe('LaunchAnalysisButton', () => {
 
   it('Going to Data Processing should dispatch the correct actions', async () => {
     calculateGem2sRerunStatus.mockReturnValue(notRerunState);
+    calculateQCRerunStatus.mockReturnValue(notRerunState);
 
     await act(async () => {
       render(
@@ -447,7 +488,7 @@ describe('LaunchAnalysisButton', () => {
       );
     });
 
-    userEvent.click(screen.getByText('Go to Data Processing'));
+    act(() => { userEvent.click(screen.getByText('Go to Data Processing')); });
     expect(runGem2s).not.toHaveBeenCalled();
 
     // Call on navigation to go
@@ -456,6 +497,7 @@ describe('LaunchAnalysisButton', () => {
 
   it('Does dispatch a request to runSeurat for an unprocessed experiment', async () => {
     calculateGem2sRerunStatus.mockReturnValue(rerunState);
+    calculateQCRerunStatus.mockReturnValue(notRerunState);
 
     const notProcessedSeuratDataState = {
       ...withSeuratDataState,

@@ -4,6 +4,9 @@ describe('markerGenesLoading', () => {
   it('returns correct state', () => {
     const initialState = {
       markers: {},
+      expression: {
+        downsampled: {},
+      },
     };
 
     const newState = markerGenesLoadingReducer(initialState, { payload: { ETag: 'new-etag' } });

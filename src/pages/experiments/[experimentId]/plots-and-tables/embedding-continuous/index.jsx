@@ -41,7 +41,7 @@ const ContinuousEmbeddingPage = ({ experimentId }) => {
   const loadedGene = useSelector((state) => state.genes.expression.views[plotUuid]?.data);
   const cellSets = useSelector(getCellSets());
 
-  const geneExpression = useSelector((state) => state.genes.expression);
+  const geneExpression = useSelector((state) => state.genes.expression.full);
   const fetching = useSelector((state) => state.genes.properties.views[plotUuid]?.fetching);
   const highestDispersionGene = useSelector(
     (state) => state.genes.properties.views[plotUuid]?.data[0],

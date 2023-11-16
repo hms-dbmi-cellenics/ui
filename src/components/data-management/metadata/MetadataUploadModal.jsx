@@ -102,7 +102,7 @@ const MetadataUploadModal = (props) => {
       title=''
       visible
       onCancel={onCancel}
-      width='50%'
+      width='40%'
       footer={(
         <Button
           type='primary'
@@ -128,7 +128,7 @@ const MetadataUploadModal = (props) => {
             Upload a single file containing the metadata in key-value tab-separated format (.tsv)
             as follows:
           </Paragraph>
-          <Table size='small' style={{ width: '50%' }} showHeader={false} pagination={false} dataSource={formatExampleTable.dataSource} columns={formatExampleTable.columns} />
+          <Table size='small' showHeader={false} pagination={false} dataSource={formatExampleTable.dataSource} columns={formatExampleTable.columns} />
         </Col>
       </Row>
       <Row style={{ margin: '1rem 0' }}>
@@ -152,7 +152,7 @@ const MetadataUploadModal = (props) => {
             <Text code>Female</Text>
             you would write a file as follows:
           </Paragraph>
-          <Table size='small' style={{ width: '40%' }} pagination={false} showHeader={false} dataSource={exampleFileTable.dataSource} columns={exampleFileTable.columns} />
+          <Table size='small' style={{ width: '70%' }} pagination={false} showHeader={false} dataSource={exampleFileTable.dataSource} columns={exampleFileTable.columns} />
         </Col>
       </Row>
 

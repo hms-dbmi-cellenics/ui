@@ -52,12 +52,10 @@ const runQC = (experimentId) => async (dispatch, getState) => {
     return;
   }
 
-  const changesToProcessingConfig = Array.from(changedQCFilters).map((key) => {
-    const currentConfig = processing[key];
-    return {
-      name: key,
-      body: currentConfig,
-    };
+  const processingConfigDiff = {};
+  Array.from(changedQCFilters).forEach((stepKey) => {
+    const stepConfig = processing[stepKey];
+    processingConfigDiff[stepKey] = stepConfig;
   });
 
   try {
@@ -73,7 +71,7 @@ const runQC = (experimentId) => async (dispatch, getState) => {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          processingConfig: changesToProcessingConfig,
+          processingConfigDiff,
         }),
       },
     );
@@ -84,6 +82,8 @@ const runQC = (experimentId) => async (dispatch, getState) => {
     });
 
     dispatch(loadBackendStatus(experimentId));
+
+    return true;
   } catch (e) {
     const errorMessage = handleError(e, endUserMessages.ERROR_STARTING_PIPLELINE);
 
@@ -91,6 +91,8 @@ const runQC = (experimentId) => async (dispatch, getState) => {
     if (errorMessage !== endUserMessages.ERROR_NO_PERMISSIONS) {
       dispatch(loadBackendStatus(experimentId));
     }
+
+    return false;
   }
 };
 

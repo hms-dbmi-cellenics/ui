@@ -15,7 +15,7 @@ import endUserMessages from 'utils/endUserMessages';
 
 import { makeStore } from 'redux/store';
 import mockAPI, { generateDefaultMockAPIResponses, promiseResponse, statusResponse } from '__test__/test-utils/mockAPI';
-
+import cellSetsData from '__test__/data/cell_sets_with_clm.json';
 import fetchWork from 'utils/work/fetchWork';
 import writeToFileURL from 'utils/writeToFileURL';
 import downloadFromUrl from 'utils/downloadFromUrl';
@@ -38,6 +38,9 @@ describe('Normalized matrix index page', () => {
   // simulating intial load of plot
   const customAPIResponses = {
     [`/plots/${plotUuid}$`]: mockResponse,
+    [`experiments/${fake.EXPERIMENT_ID}/cellSets$`]: () => promiseResponse(
+      JSON.stringify(cellSetsData),
+    ),
   };
   const mockApiResponses = _.merge(
     generateDefaultMockAPIResponses(fake.EXPERIMENT_ID), customAPIResponses,
@@ -78,6 +81,7 @@ describe('Normalized matrix index page', () => {
     expect(screen.getByText(/Subset by metadata group/i)).toBeInTheDocument();
     expect(screen.getByText(/Subset by clusters/i)).toBeInTheDocument();
     expect(screen.getByText(/Subset by custom cell sets/i)).toBeInTheDocument();
+    expect(screen.getByText(/Subset by cell-level metadata/i)).toBeInTheDocument();
   });
 
   it('Dispatches download with no subset', async () => {
@@ -141,6 +145,10 @@ describe('Normalized matrix index page', () => {
     userEvent.click(louvainSelect);
     userEvent.click(screen.getByText('Cluster 5'));
 
+    const clmSelect = screen.getAllByRole('combobox')[4];
+    userEvent.click(clmSelect);
+    userEvent.click(screen.getByText('Patient 0'));
+
     await act(async () => {
       userEvent.click(screen.getByRole('button', { name: 'Download' }));
     });
@@ -150,7 +158,7 @@ describe('Normalized matrix index page', () => {
       expect.objectContaining({
         name: 'GetNormalizedExpression',
         subsetBy: {
-          louvain: ['louvain-1', 'louvain-5'], metadata: [], sample: ['ab568662-27fa-462c-9435-625594341314'], scratchpad: [],
+          louvain: ['louvain-1', 'louvain-5'], metadata: [], sample: ['ab568662-27fa-462c-9435-625594341314'], scratchpad: [], clm: ['clm-0'],
         },
       }),
       storeState.getState,

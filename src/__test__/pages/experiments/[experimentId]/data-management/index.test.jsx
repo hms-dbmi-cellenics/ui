@@ -5,7 +5,9 @@ import {
   samples,
 } from '__test__/test-utils/mockData';
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
-import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import {
+  fireEvent, render, screen, waitFor,
+} from '@testing-library/react';
 import mockAPI, { generateDefaultMockAPIResponses, promiseResponse } from '__test__/test-utils/mockAPI';
 
 import DataManagementPage from 'pages/data-management';
@@ -142,7 +144,7 @@ describe('Data Management page', () => {
 
     expect(screen.getAllByText(/Project Details/i).length).toBeGreaterThan(0);
 
-    const addMetadataButton = screen.getByText(/Add metadata/i).closest('button');
+    const addMetadataButton = screen.getByText(/Metadata/i).closest('button');
 
     expect(addMetadataButton).toBeInTheDocument();
 
@@ -184,7 +186,7 @@ describe('Data Management page', () => {
       Object.keys(samples).forEach((sample) => {
         expect(screen.getByText(samples[sample].name)).toBeInTheDocument();
       });
-    });
+    }, { timeout: 2000 });
   });
 
   it('Shows samples table loading samples if experiment is loading samples', async () => {

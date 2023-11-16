@@ -3,26 +3,29 @@ import {
 } from '@testing-library/react';
 import { act } from 'react-dom/test-utils';
 import handleError from 'utils/http/handleError';
+import configureMockStore from 'redux-mock-store';
 import readFileToString from 'utils/upload/readFileToString';
-
-import componentFactory from '__test__/test-utils/testComponentFactory';
-import CellLevelUploadModal from 'components/data-management/CellLevelUploadModal';
+import React from 'react';
+import thunk from 'redux-thunk';
+import { Provider } from 'react-redux';
+import CellLevelUploadModal from 'components/data-management/metadata/CellLevelUploadModal';
 
 jest.mock('utils/upload/readFileToString');
 jest.mock('utils/http/handleError');
-
-const defaultProps = {
-  onUpload: jest.fn(),
-  onCancel: jest.fn(),
-};
-
-const CellLevelModalFactory = componentFactory(CellLevelUploadModal, defaultProps);
+const mockStore = configureMockStore([thunk]);
 
 // dropFilesIntoDropzone takes an input element and simulates droping files into it
 // inputElement: this needs to be the actual input element not the dropzone itself, e.g.:
 // * <input data-testid='drop-input'/> => screen.getByTestId('drop-input');
 // files should be a list of files, e.g.:
 // * new File(['content'], 'file.txt', { type: 'text/plain' });
+const store = mockStore({
+  experiments: {
+    meta: {
+      activeExperimentId: 'some-id-uuid',
+    },
+  },
+});
 const dropFilesIntoDropzone = async (inputElement, files) => {
   await act(async () => {
     fireEvent.drop(inputElement, {
@@ -31,9 +34,32 @@ const dropFilesIntoDropzone = async (inputElement, files) => {
   });
 };
 
-const renderCellLevelUploadModal = async (customProps = {}) => {
+const cellLevelMock = {
+  id: '5a7b24a9-4b38-4f92-a2d9-d49a15d13f67',
+  name: 'asdasdcell_level.tsv',
+  createdAt: '2023-10-31 12:33:40.747552+00',
+  size: '253',
+  experimentId: '606fb0ae-faef-448c-8679-1c223b268a0c',
+  percentProgress: 100,
+};
+const successfulUpload = {
+  ...cellLevelMock,
+  uploadStatus: 'uploaded',
+};
+
+const renderCellLevelUploadModal = async (cellLevelMeta = false) => {
   act(() => {
-    render(CellLevelModalFactory(customProps));
+    render(
+      <Provider store={store}>
+
+        <CellLevelUploadModal
+          onUpload={jest.fn()}
+          onCancel={jest.fn()}
+          cellLevelMetadata={cellLevelMeta}
+          uploading={false}
+        />
+      </Provider>,
+    );
   });
 };
 
@@ -69,16 +95,15 @@ describe('CellLevelUploadModal', () => {
     expect(handleError).toHaveBeenCalled();
   });
 
-  it('needs to have the barcodes column', async () => {
-    const onUpload = jest.fn();
+  it('needs to have the barcode column', async () => {
     readFileToString.mockReturnValue('sample\tkey1\tval1');
-    await renderCellLevelUploadModal({ onUpload });
+    await renderCellLevelUploadModal();
 
     const inputEl = await screen.getByTestId('drop-input');
     const file = new File(['content'], 'file.tsv', { type: 'text/plain' });
 
     await dropFilesIntoDropzone(inputEl, [file]);
 
-    expect(handleError).toBeCalledWith('error', 'The .tsv file needs to contain the column "barcodes"');
+    expect(handleError).toBeCalledWith('error', 'The .tsv file needs to contain the column "barcode"');
   });
 });

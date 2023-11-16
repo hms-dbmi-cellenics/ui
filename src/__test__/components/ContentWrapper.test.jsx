@@ -19,17 +19,19 @@ import { loadExperiments, setActiveExperiment } from 'redux/actions/experiments'
 
 import { updateExperimentInfo } from 'redux/actions/experimentSettings';
 
-import calculateGem2sRerunStatus from 'utils/data-management/calculateGem2sRerunStatus';
-
 import mockAPI, {
   generateDefaultMockAPIResponses,
 } from '__test__/test-utils/mockAPI';
 
 import { experiments } from '__test__/test-utils/mockData';
 
+import calculateGem2sRerunStatus from 'utils/data-management/calculateGem2sRerunStatus';
+import calculateQCRerunStatus from 'utils/data-management/calculateQCRerunStatus';
+
 jest.mock('redux/selectors');
 jest.mock('utils/socketConnection');
 jest.mock('utils/data-management/calculateGem2sRerunStatus');
+jest.mock('utils/data-management/calculateQCRerunStatus');
 
 jest.mock('next/router', () => ({
   __esModule: true,
@@ -165,8 +167,47 @@ describe('ContentWrapper', () => {
     expect(screen.getByText('Plots and Tables').closest('li')).toHaveAttribute('aria-disabled', 'true');
   });
 
-  it('Links are enabled if the selected project is processed', async () => {
-    calculateGem2sRerunStatus.mockImplementationOnce(() => ({ rerun: false, reasons: [], complete: true }));
+  it('links are disabled if gem2s needs to rerun', async () => {
+    calculateGem2sRerunStatus.mockReturnValue({ rerun: true, reasons: [], complete: true });
+    calculateQCRerunStatus.mockReturnValue({ rerun: false, reasons: [], complete: true });
+
+    await renderContentWrapper();
+
+    // Data Management is not disabled
+    expect(screen.getByText('Data Management').closest('li')).toHaveAttribute('aria-disabled', 'false');
+
+    // Data Processing link is disabled
+    expect(screen.getByText('Data Processing').closest('li')).toHaveAttribute('aria-disabled', 'true');
+
+    // Data Exploration link is disabled
+    expect(screen.getByText('Data Exploration').closest('li')).toHaveAttribute('aria-disabled', 'true');
+
+    // Plots and Tables link is disabled
+    expect(screen.getByText('Plots and Tables').closest('li')).toHaveAttribute('aria-disabled', 'true');
+  });
+
+  it('links are disabled if qc needs to rerun', async () => {
+    calculateGem2sRerunStatus.mockReturnValue({ rerun: false, reasons: [], complete: true });
+    calculateQCRerunStatus.mockReturnValue({ rerun: true, reasons: [], complete: true });
+
+    await renderContentWrapper();
+
+    // Data Management is not disabled
+    expect(screen.getByText('Data Management').closest('li')).toHaveAttribute('aria-disabled', 'false');
+
+    // Data Processing link is disabled
+    expect(screen.getByText('Data Processing').closest('li')).toHaveAttribute('aria-disabled', 'true');
+
+    // Data Exploration link is disabled
+    expect(screen.getByText('Data Exploration').closest('li')).toHaveAttribute('aria-disabled', 'true');
+
+    // Plots and Tables link is disabled
+    expect(screen.getByText('Plots and Tables').closest('li')).toHaveAttribute('aria-disabled', 'true');
+  });
+
+  it('Links are enabled if the selected project is fully processed', async () => {
+    calculateGem2sRerunStatus.mockReturnValue({ rerun: false, reasons: [], complete: true });
+    calculateQCRerunStatus.mockReturnValue({ rerun: false, reasons: [], complete: true });
 
     const mockBackendStatus = {
       loading: false,

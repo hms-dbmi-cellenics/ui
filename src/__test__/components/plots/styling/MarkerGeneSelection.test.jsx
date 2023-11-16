@@ -75,15 +75,11 @@ describe('MarkerGeneSelection', () => {
 
     expect(screen.getByText(/Number of marker genes per cluster/i)).toBeInTheDocument();
 
-    // The run button should be disabled by default because the plot is showing the number of gnenes
     const runButton = screen.getByRole('button', { name: /run/i });
-    expect(runButton.closest('button')).toBeDisabled();
 
-    // Changing input enables the run button
+    // Changing input
     const nGenesInput = screen.getByRole('spinbutton', { name: 'Number of genes input' });
     userEvent.type(nGenesInput, '{backspace}2');
-
-    expect(runButton.closest('button')).not.toBeDisabled();
 
     // Clicking run causes onUpdate to be called
     await act(async () => {

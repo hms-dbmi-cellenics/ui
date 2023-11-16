@@ -13,7 +13,7 @@ exports[`runQC action Dispatches events properly 2`] = `
 [
   "http://localhost:3000/v2/experiments/experiment-id/qc",
   {
-    "body": "{"processingConfig":[{"name":"cellSizeDistribution","body":{"sample1, sample2":{"auto":true,"enabled":true,"filterSettings":{"minCellSize":10800,"binStep":200}}}}]}",
+    "body": "{"processingConfigDiff":{"cellSizeDistribution":{"sample1, sample2":{"auto":true,"enabled":true,"filterSettings":{"minCellSize":10800,"binStep":200}}}}}",
     "headers": {
       "Content-Type": "application/json",
     },

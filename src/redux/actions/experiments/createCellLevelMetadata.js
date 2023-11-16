@@ -5,7 +5,7 @@ import loadExperiments from 'redux/actions/experiments/loadExperiments';
 const createCellLevelMetadata = (experimentId, body) => async (dispatch) => {
   try {
     const signedUploadUrlParams = await fetchAPI(
-      `/v2/experiments/${experimentId}/cellLevel`,
+      `/v2/experiments/${experimentId}/cellLevelMeta`,
       {
         method: 'POST',
         headers: {

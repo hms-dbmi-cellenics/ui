@@ -3,15 +3,16 @@ import { useSelector, useDispatch } from 'react-redux';
 import {
   Button, Tooltip, Popconfirm,
 } from 'antd';
+import _ from 'lodash';
+
 import { modules, sampleTech } from 'utils/constants';
 
 import fileUploadSpecifications from 'utils/upload/fileUploadSpecifications';
 import UploadStatus from 'utils/upload/UploadStatus';
 import integrationTestConstants from 'utils/integrationTestConstants';
-import { runGem2s, runSeurat } from 'redux/actions/pipeline';
-import calculateGem2sRerunStatus from 'utils/data-management/calculateGem2sRerunStatus';
 
 import { useAppRouter } from 'utils/AppRouteProvider';
+import calculatePipelinesRerunStatus from 'utils/data-management/calculatePipelinesRerunStatus';
 
 const LaunchButtonTemplate = (props) => {
   const {
@@ -45,40 +46,49 @@ const LaunchAnalysisButton = () => {
   const selectedTech = samples[activeExperiment?.sampleIds[0]]?.type;
   const isTechSeurat = selectedTech === sampleTech.SEURAT;
 
-  const [pipelineRerunStatus, setPipelineRerunStatus] = useState(
-    {
-      rerun: true, paramsHash: null, reasons: [], complete: false,
-    },
-  );
-  const isSeuratComplete = isTechSeurat && pipelineRerunStatus.complete;
+  const [pipelinesRerunStatus, setPipelinesRerunStatus] = useState({
+    runPipeline: null, rerun: true, reasons: [], complete: false,
+  });
 
   const launchAnalysis = async () => {
-    const runner = isTechSeurat ? runSeurat : runGem2s;
-
     let shouldNavigate = true;
-    if (pipelineRerunStatus.rerun) {
-      shouldNavigate = await dispatch(runner(activeExperimentId));
+    if (pipelinesRerunStatus.rerun) {
+      shouldNavigate = await dispatch(pipelinesRerunStatus.runPipeline(activeExperimentId));
     }
 
     if (shouldNavigate) {
-      const moduleName = isSeuratComplete ? modules.DATA_EXPLORATION : modules.DATA_PROCESSING;
+      const moduleName = isTechSeurat && pipelinesRerunStatus.complete
+        ? modules.DATA_EXPLORATION : modules.DATA_PROCESSING;
       navigateTo(moduleName, { experimentId: activeExperimentId });
     }
   };
 
   useEffect(() => {
     // The value of backend status is null for new experiments that have never run
-    const pipeline = isTechSeurat ? 'seurat' : 'gem2s';
-    const pipelineBackendStatus = backendStatus[activeExperimentId]?.status?.[pipeline];
+    const setupPipeline = isTechSeurat ? 'seurat' : 'gem2s';
+    const {
+      pipeline: qcBackendStatus, [setupPipeline]: setupBackendStatus,
+    } = backendStatus[activeExperimentId]?.status ?? {};
 
     if (
-      !pipelineBackendStatus
+      !setupBackendStatus
       || !experiments[activeExperimentId]?.sampleIds?.length > 0
     ) return;
 
-    const pipelineStatus = calculateGem2sRerunStatus(pipelineBackendStatus, activeExperiment);
-    setPipelineRerunStatus(pipelineStatus);
+    setPipelinesRerunStatus(
+      calculatePipelinesRerunStatus(
+        setupBackendStatus,
+        qcBackendStatus,
+        activeExperiment,
+        isTechSeurat,
+      ),
+    );
   }, [backendStatus, activeExperimentId, samples, activeExperiment]);
+
+  const cellLevelMetadataIsReady = (
+    _.isNil(activeExperiment.cellLevelMetadata)
+    || activeExperiment.cellLevelMetadata.uploadStatus === UploadStatus.UPLOADED
+  );
 
   const canLaunchAnalysis = useCallback(() => {
     if (activeExperiment.sampleIds.length === 0) return false;
@@ -128,16 +138,22 @@ const LaunchAnalysisButton = () => {
 
       return allSampleFilesUploaded(checkedSample)
         && allSampleMetadataInserted(checkedSample);
-    });
+    }) && cellLevelMetadataIsReady;
+
     return canLaunch;
-  }, [samples, activeExperiment?.sampleIds, activeExperiment?.metadataKeys]);
+  }, [
+    samples,
+    activeExperiment?.sampleIds,
+    activeExperiment?.metadataKeys,
+    activeExperiment.cellLevelMetadata?.uploadStatus,
+  ]);
 
   const renderLaunchButton = () => {
     let buttonText;
 
-    if (pipelineRerunStatus.rerun) {
+    if (pipelinesRerunStatus.rerun) {
       buttonText = 'Process project';
-    } else if (isSeuratComplete) {
+    } else if (isTechSeurat && pipelinesRerunStatus.complete) {
       buttonText = 'Go to Data Exploration';
     } else {
       buttonText = 'Go to Data Processing';
@@ -161,10 +177,10 @@ const LaunchAnalysisButton = () => {
       );
     }
 
-    if (pipelineRerunStatus.rerun) {
+    if (pipelinesRerunStatus.rerun) {
       return (
         <Popconfirm
-          title={`This project has to be processed because ${pipelineRerunStatus.reasons.join(' and ')}. \
+          title={`This project has to be processed because ${pipelinesRerunStatus.reasons.join(' and ')}. \
         This will take several minutes.\
         Do you want to continue?`}
           onConfirm={() => launchAnalysis()}

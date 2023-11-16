@@ -73,8 +73,11 @@ const NormalizedMatrixPage = (props) => {
   const cellSets = useSelector(getCellSets());
   const [sample, louvain, scratchpad] = useSelector(getCellSetsHierarchyByKeys(['sample', 'louvain', 'scratchpad']));
   const metadataTracks = useSelector(getCellSetsHierarchyByType('metadataCategorical', ['sample']));
+  const CLMTracks = useSelector(getCellSetsHierarchyByType('CLM'));
+  const CLMPerSampleTracks = useSelector(getCellSetsHierarchyByType('CLMPerSample'));
 
   const [metadataCellSets, setMetadataCellSets] = useState(null);
+  const [cellLevelMetadataCellSets, setCellLevelMetadataCellSets] = useState(null);
 
   const onSelectedItemsChanged = (type) => (newItems) => {
     const newConfig = {
@@ -90,6 +93,14 @@ const NormalizedMatrixPage = (props) => {
 
     setMetadataCellSets(metadataTracks.map((track) => track.children).flat());
   }, [metadataTracks, cellSets.accessible]);
+
+  // TODO, is this needed?
+  useConditionalEffect(() => {
+    if (!cellSets.accessible) return;
+    const cellLevelMetadataTracks = CLMTracks.concat(CLMPerSampleTracks);
+
+    setCellLevelMetadataCellSets(cellLevelMetadataTracks.map((track) => track.children).flat());
+  }, [CLMTracks, CLMPerSampleTracks, cellSets.accessible]);
 
   useEffect(() => {
     if (!config) { dispatch(loadPlotConfig(experimentId, plotUuid, plotType)); }
@@ -166,6 +177,16 @@ const NormalizedMatrixPage = (props) => {
               options={scratchpad.children.map(({ key, name }) => ({ key, name }))}
               onChange={onSelectedItemsChanged('scratchpad')}
               selectedKeys={config.scratchpad}
+              placeholder='All'
+              style={{ width: '200px' }}
+            />
+          </Space>
+          <Space direction='vertical'>
+            Subset by cell-level metadata:
+            <MultiSelect
+              options={cellLevelMetadataCellSets.map(({ key, name }) => ({ key, name }))}
+              onChange={onSelectedItemsChanged('clm')}
+              selectedKeys={config.clm}
               placeholder='All'
               style={{ width: '200px' }}
             />

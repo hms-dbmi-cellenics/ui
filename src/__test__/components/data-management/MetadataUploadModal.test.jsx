@@ -7,7 +7,7 @@ import handleError from 'utils/http/handleError';
 import readFileToString from 'utils/upload/readFileToString';
 
 import componentFactory from '__test__/test-utils/testComponentFactory';
-import MetadataUploadModal from 'components/data-management/MetadataUploadModal';
+import MetadataUploadModal from 'components/data-management/metadata/MetadataUploadModal';
 import userEvent from '@testing-library/user-event';
 
 jest.mock('utils/upload/readFileToString');

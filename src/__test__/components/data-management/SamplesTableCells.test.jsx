@@ -100,7 +100,7 @@ describe('UploadCell', () => {
       userEvent.click(screen.getByText(uploadMessage));
     });
 
-    expect(screen.getByText(/Upload successful/i)).toBeInTheDocument();
+    expect(screen.getAllByText(/Uploaded/i).length).toBeGreaterThan(0);
   });
 });
 

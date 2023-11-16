@@ -1,6 +1,6 @@
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 
-import downloadSingleFile from 'utils/data-management/downloadSingleFile';
+import downloadSingleFile from 'utils/data-management/downloadSampleFile';
 import downloadFromUrl from 'utils/downloadFromUrl';
 
 import { sampleTech } from 'utils/constants';

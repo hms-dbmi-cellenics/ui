@@ -224,7 +224,7 @@ exports[`experimentsReducer Error state inserts error correctly 1`] = `
 exports[`experimentsReducer Inserts a new experiment correctly 1`] = `
 {
   "experiment-1": {
-    "cellLevelMetadata": {},
+    "cellLevelMetadata": null,
     "createdAt": "2021-01-01",
     "description": "this is a test description",
     "id": "experiment-1",
