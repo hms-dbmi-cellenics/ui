@@ -55,10 +55,16 @@ const ClassifierConfig = (props) => {
   );
 };
 
+ClassifierConfig.defaultProps = {
+  updateSettings: () => {},
+  config: {},
+  disabled: false,
+};
+
 ClassifierConfig.propTypes = {
-  updateSettings: PropTypes.func.isRequired,
-  config: PropTypes.object.isRequired,
-  disabled: PropTypes.bool.isRequired,
+  updateSettings: PropTypes.func,
+  config: PropTypes.object,
+  disabled: PropTypes.bool,
 };
 
 export default ClassifierConfig;

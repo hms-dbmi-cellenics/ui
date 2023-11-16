@@ -141,13 +141,20 @@ const GenesVsUMIsConfig = (props) => {
     </>
   );
 };
+GenesVsUMIsConfig.defaultProps = {
+  updateSettings: () => {},
+  config: {},
+  disabled: false,
+  rerunRequired: false,
+  onQCRunClick: () => {},
+};
 
 GenesVsUMIsConfig.propTypes = {
-  updateSettings: PropTypes.func.isRequired,
-  config: PropTypes.object.isRequired,
-  disabled: PropTypes.bool.isRequired,
-  rerunRequired: PropTypes.bool.isRequired,
-  onQCRunClick: PropTypes.func.isRequired,
+  updateSettings: PropTypes.func,
+  config: PropTypes.object,
+  disabled: PropTypes.bool,
+  rerunRequired: PropTypes.bool,
+  onQCRunClick: PropTypes.func,
 };
 
 export default GenesVsUMIsConfig;
