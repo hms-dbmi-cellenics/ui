@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
   Collapse,
   Skeleton,
@@ -23,7 +23,7 @@ import { updatePlotConfig, loadPlotConfig } from 'redux/actions/componentConfig'
 import Header from 'components/Header';
 import PlotContainer from 'components/plots/PlotContainer';
 import { generateSpec } from 'utils/plotSpecs/generateHeatmapSpec';
-import { loadGeneExpression, loadMarkerGenes } from 'redux/actions/genes';
+import { loadDownsampledGeneExpression, loadMarkerGenes } from 'redux/actions/genes';
 import loadGeneList from 'redux/actions/genes/loadGeneList';
 import { loadCellSets } from 'redux/actions/cellSets';
 import PlatformError from 'components/PlatformError';
@@ -50,13 +50,12 @@ const MarkerHeatmap = ({ experimentId }) => {
   const config = useSelector((state) => state.componentConfig[plotUuid]?.config);
   const configIsLoaded = useSelector((state) => !_.isNil(state.componentConfig[plotUuid]));
 
-  const { expression: expressionData } = useSelector((state) => state.genes);
   const {
-    error, loading, downsampledMatrix, downsampledCellOrder,
-  } = expressionData;
+    error, loading, matrix, cellOrder,
+  } = useSelector((state) => state.genes.expression.downsampled);
 
   const cellSets = useSelector(getCellSets());
-  const { hierarchy, properties } = cellSets;
+  const { hierarchy } = cellSets;
 
   const selectedCellSetClassAvailable = useSelector(
     getCellSetsHierarchyByKeys([config?.selectedCellSet]),
@@ -66,9 +65,9 @@ const MarkerHeatmap = ({ experimentId }) => {
     getCellSetsHierarchyByKeys([config?.selectedCellSet]),
   )[0]?.children?.length;
 
-  const loadedMarkerGenes = useSelector(
-    (state) => state.genes.expression.views[plotUuid]?.data,
-  ) || [];
+  const { data: loadedGenes = [], markers: loadedGenesAreMarkers = false } = useSelector(
+    (state) => state.genes.expression.views[plotUuid],
+  ) || {};
 
   const {
     loading: markerGenesLoading,
@@ -80,14 +79,49 @@ const MarkerHeatmap = ({ experimentId }) => {
       .configureEmbedding?.clusteringSettings.methodSettings.louvain.resolution,
   ) || false;
 
+  const groupedCellSets = useSelector((state) => {
+    if (!config?.groupedTracks) return undefined;
+
+    const groupedCellClasses = getCellSetsHierarchyByKeys(config.groupedTracks)(state);
+    return groupedCellClasses.map((cellClass) => cellClass.children).flat();
+  }, _.isEqual);
+
   useEffect(() => {
     if (!louvainClustersResolution) dispatch(loadProcessingSettings(experimentId));
     if (!config) dispatch(loadPlotConfig(experimentId, plotUuid, plotType));
     if (!hierarchy?.length) dispatch(loadCellSets(experimentId));
   }, []);
 
-  const updatePlotWithChanges = (updatedField) => {
-    dispatch(updatePlotConfig(plotUuid, updatedField));
+  const userUpdatedPlotWithChanges = (userUpdatedField) => {
+    let updatesToDispatch = userUpdatedField;
+
+    if (updatesToDispatch.selectedCellSet) {
+      // grouping and metadata tracks should change when selectedCellSet is changed
+      updatesToDispatch = {
+        ...updatesToDispatch,
+        selectedTracks: [config.selectedCellSet],
+        groupedTracks: [config.selectedCellSet],
+      };
+    }
+
+    if (updatesToDispatch.nMarkerGenes) {
+      dispatch(loadMarkerGenes(
+        experimentId,
+        plotUuid,
+        {
+          numGenes: updatesToDispatch.nMarkerGenes,
+          groupedTracks: config.groupedTracks,
+          selectedCellSet: config.selectedCellSet,
+          selectedPoints: config.selectedPoints,
+        },
+      ));
+    } else if (updatesToDispatch.selectedGenes) {
+      dispatch(
+        loadDownsampledGeneExpression(experimentId, updatesToDispatch.selectedGenes, plotUuid),
+      );
+    }
+
+    dispatch(updatePlotConfig(plotUuid, updatesToDispatch));
   };
 
   useEffect(() => {
@@ -97,148 +131,74 @@ const MarkerHeatmap = ({ experimentId }) => {
 
     const showAlert = numLegendItems > MAX_LEGEND_ITEMS;
 
-    if (showAlert) updatePlotWithChanges({ legend: { showAlert, enabled: !showAlert } });
+    if (showAlert) userUpdatedPlotWithChanges({ legend: { showAlert, enabled: !showAlert } });
   }, [configIsLoaded, cellSets.accessible]);
 
-  useConditionalEffect(() => {
-    if (
-      !(
-        louvainClustersResolution
-        && config?.nMarkerGenes
-        && config?.groupedTracks
-        && config?.selectedCellSet
-        && config?.selectedPoints
-        && hierarchy?.length
-        && selectedCellSetClassAvailable
-      )
-    ) return;
+  // If the plot has never been loaded (so has no selectedGenes), then load the marker genes
+  useEffect(() => {
+    if (config?.selectedGenes === null) {
+      dispatch(loadMarkerGenes(
+        experimentId,
+        plotUuid,
+        {
+          numGenes: config.nMarkerGenes,
+          groupedTracks: config.groupedTracks,
+          selectedCellSet: config.selectedCellSet,
+          selectedPoints: config.selectedPoints,
+        },
+      ));
+    }
+  }, [config]);
 
-    dispatch(loadMarkerGenes(
-      experimentId,
-      plotUuid,
-      {
-        numGenes: config.nMarkerGenes,
-        groupedTracks: config.groupedTracks,
-        selectedCellSet: config.selectedCellSet,
-        selectedPoints: config.selectedPoints,
-      },
-    ));
+  useConditionalEffect(() => {
+    const expectedConditions = (
+      louvainClustersResolution
+      && config?.groupedTracks
+      && config?.selectedCellSet
+      && config?.selectedPoints
+      && hierarchy?.length
+      && selectedCellSetClassAvailable
+      && config?.selectedGenes?.length > 0
+      && !markerGenesLoading
+    );
+    if (!expectedConditions) return;
+
+    dispatch(loadDownsampledGeneExpression(experimentId, config?.selectedGenes, plotUuid));
   }, [
-    config?.nMarkerGenes,
     config?.groupedTracks,
     config?.selectedCellSet,
     config?.selectedPoints,
     hierarchy,
     cellSets.accessible,
     louvainClustersResolution,
+    groupedCellSets,
   ]);
 
-  useEffect(() => {
-    if (!config) {
+  // When marker genes have been loaded, update the config with those
+  useConditionalEffect(() => {
+    if (!config || _.isEqual(loadedGenes, config.selectedGenes)) {
       return;
     }
 
-    // grouping and metadata tracks should change when data is changed
-    updatePlotWithChanges(
-      { selectedTracks: [config.selectedCellSet], groupedTracks: [config.selectedCellSet] },
-    );
-  }, [config?.selectedCellSet]);
-
-  const sortGenes = (newGenes) => {
-    const clusters = hierarchy.find((cluster) => cluster.key === config.selectedCellSet).children;
-
-    const getCellIdsForCluster = (clusterId) => properties[clusterId].cellIds;
-
-    const getAverageExpressionForGene = (gene, currentCellIds) => {
-      const expressionValues = downsampledMatrix.getRawExpression(gene);
-      let totalValue = 0;
-      currentCellIds.forEach((cellId) => {
-        totalValue += expressionValues[cellId];
-      });
-      return totalValue / currentCellIds.size;
-    };
-
-    const getClusterForGene = (gene) => {
-      const maxAverageExpression = { expression: 0, clusterId: -1 };
-
-      clusters.forEach((cluster, clusterIndx) => {
-        const currentCellIds = getCellIdsForCluster(cluster.key);
-        const currentAverageExpression = getAverageExpressionForGene(gene, currentCellIds);
-        if (currentAverageExpression > maxAverageExpression.expression) {
-          maxAverageExpression.expression = currentAverageExpression;
-          maxAverageExpression.clusterId = clusterIndx;
-        }
-      });
-
-      return maxAverageExpression.clusterId;
-    };
-
-    const newOrder = _.cloneDeep(config.selectedGenes);
-
-    newGenes.forEach((gene) => {
-      const clusterIndx = getClusterForGene(gene);
-      newOrder.forEach((oldGene) => {
-        if (!_.includes(newOrder, gene)) {
-          const currentClusterIndx = getClusterForGene(oldGene);
-          if (currentClusterIndx === clusterIndx) {
-            const geneIndex = newOrder.indexOf(oldGene);
-            newOrder.splice(geneIndex, 0, gene);
-          }
-        }
-      });
-    });
-
-    return newOrder;
-  };
-
-  const reSortGenes = () => {
-    const newGenes = _.difference(loadedMarkerGenes, config.selectedGenes);
-    let newOrder;
-
-    if (!newGenes.length) {
-      // gene was removed instead of added - no need to sort
-      const removedGenes = _.difference(config.selectedGenes, loadedMarkerGenes);
-      newOrder = _.cloneDeep(config.selectedGenes);
-      newOrder = newOrder.filter((gene) => !removedGenes.includes(gene));
-    } else if (newGenes.length === 1) {
-      // single gene difference - added manually by user
-      newOrder = sortGenes(newGenes);
-    } else {
-      // selected data was changed
-      newOrder = loadedMarkerGenes;
-    }
-
-    return newOrder;
-  };
+    // IMPORTANT This update is NOT performed by a user action, but by loadMarkerGenes work result
+    // So don't replace this with userUpdatedPlotWithChanges
+    dispatch(updatePlotConfig(plotUuid, { selectedGenes: loadedGenes }));
+  }, [loadedGenes, loadedGenesAreMarkers]);
 
   useEffect(() => {
-    if (!config || _.isEmpty(expressionData)) {
-      return;
-    }
-    if (loadedMarkerGenes.length && !config.selectedGenes.length) {
-      updatePlotWithChanges({ selectedGenes: loadedMarkerGenes });
-      return;
-    }
-
-    if (loadedMarkerGenes.length !== config.selectedGenes.length) {
-      const newOrder = reSortGenes();
-      updatePlotWithChanges({ selectedGenes: newOrder });
-    }
-  }, [loadedMarkerGenes, config?.selectedGenes]);
-
-  useEffect(() => {
-    if (!cellSets.accessible
-      || _.isEmpty(expressionData)
-      || _.isEmpty(loadedMarkerGenes)
+    if (
+      !cellSets.accessible
+      || _.isEmpty(loadedGenes)
       || !loading
       || !hierarchy?.length
       || markerGenesLoadingError
       || markerGenesLoading
+      || config?.selectedGenes === null
     ) {
       return;
     }
 
-    const data = generateVegaData(downsampledCellOrder, downsampledMatrix, config, cellSets);
+    const data = generateVegaData(cellOrder, matrix, config, cellSets);
     const spec = generateSpec(config, 'Cluster ID', data, config.showGeneLabels);
 
     spec.description = 'Marker heatmap';
@@ -262,7 +222,7 @@ const MarkerHeatmap = ({ experimentId }) => {
     spec.marks.push(extraMarks);
 
     setVegaSpec(spec);
-  }, [config, downsampledCellOrder]);
+  }, [config, cellOrder]);
 
   useEffect(() => {
     dispatch(loadGeneList(experimentId));
@@ -312,20 +272,19 @@ const MarkerHeatmap = ({ experimentId }) => {
     },
   ];
 
-  const onGenesChange = (genes) => {
-    dispatch(loadGeneExpression(experimentId, genes, plotUuid, true));
-  };
+  const onGenesChange = useCallback(_.debounce((newGenes) => {
+    dispatch(loadDownsampledGeneExpression(experimentId, newGenes, plotUuid));
+  }, 1000), []);
 
   const onGenesSelect = (genes) => {
     const allGenes = _.uniq([...config?.selectedGenes, ...genes]);
 
     if (_.isEqual(allGenes, config?.selectedGenes)) return;
 
-    dispatch(loadGeneExpression(experimentId, allGenes, plotUuid, true));
+    dispatch(loadDownsampledGeneExpression(experimentId, allGenes, plotUuid));
   };
 
   const onReset = () => {
-    onGenesChange([]);
     dispatch(loadMarkerGenes(
       experimentId,
       plotUuid,
@@ -349,17 +308,17 @@ const MarkerHeatmap = ({ experimentId }) => {
           config={config}
           plotUuid={plotUuid}
           genesToDisable={config.selectedGenes}
-          onUpdate={updatePlotWithChanges}
+          onUpdate={userUpdatedPlotWithChanges}
           onReset={onReset}
           onGenesChange={onGenesChange}
           onGenesSelect={onGenesSelect}
-          showGeneTable={config.selectedGenes.length > 0}
+          showGeneTable={config.selectedGenes?.length > 0}
         />
         <div style={{ paddingTop: '10px' }}>
           <p>Gene labels:</p>
           <Radio.Group
             onChange={
-              (e) => updatePlotWithChanges({ showGeneLabels: e.target.value })
+              (e) => userUpdatedPlotWithChanges({ showGeneLabels: e.target.value })
             }
             value={config.showGeneLabels}
           >
@@ -371,7 +330,7 @@ const MarkerHeatmap = ({ experimentId }) => {
       <Panel header='Select data' key='select-data'>
         <SelectData
           config={config}
-          onUpdate={updatePlotWithChanges}
+          onUpdate={userUpdatedPlotWithChanges}
           cellSets={cellSets}
           firstSelectionText='Select the cell sets or metadata to show markers for'
           secondSelectionText='Select the cell set, sample or metadata group to be shown'
@@ -380,7 +339,7 @@ const MarkerHeatmap = ({ experimentId }) => {
       <Panel header='Cluster guardlines' key='cluster-guardlines'>
         <Radio.Group
           value={config.guardLines}
-          onChange={(e) => updatePlotWithChanges({ guardLines: e.target.value })}
+          onChange={(e) => userUpdatedPlotWithChanges({ guardLines: e.target.value })}
         >
           <Radio value>Show</Radio>
           <Radio value={false}>Hide</Radio>
@@ -424,9 +383,11 @@ const MarkerHeatmap = ({ experimentId }) => {
         <PlatformError
           description='Could not load gene expression data.'
           error={error}
-          onClick={
-            () => dispatch(loadGeneExpression(experimentId, config.selectedGenes, plotUuid, true))
-          }
+          onClick={() => {
+            dispatch(
+              loadDownsampledGeneExpression(experimentId, config.selectedGenes, plotUuid),
+            );
+          }}
         />
       );
     }
@@ -454,20 +415,22 @@ const MarkerHeatmap = ({ experimentId }) => {
       );
     }
 
-    if (!config
+    if (
+      !config
       || loading.length > 0
       || !cellSets.accessible
-      || markerGenesLoading) {
+      || markerGenesLoading
+    ) {
       return (<Loader experimentId={experimentId} />);
     }
 
-    if (downsampledCellOrder.length === 0) {
+    if (cellOrder.length === 0) {
       return (
         <Empty description='No matching cells found, try changing your settings in Select Data.' />
       );
     }
 
-    if (loadedMarkerGenes.length === 0) {
+    if (loadedGenes.length === 0) {
       return (
         <Empty description='Add some genes to this heatmap to get started.' />
       );

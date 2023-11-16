@@ -55,7 +55,7 @@ const ViolinIndex = ({ experimentId }) => {
 
   const geneNames = Object.keys(geneList.data);
 
-  const geneExpression = useSelector((state) => state.genes.expression);
+  const expression = useSelector((state) => state.genes.expression.full);
 
   const [highestDispersionGene, setHighestDispersionGene] = useState();
 
@@ -146,16 +146,16 @@ const ViolinIndex = ({ experimentId }) => {
   useEffect(() => {
     if (!multiViewConfig
       || !multiViewPlotUuids.every((uuid) => plotConfigs[uuid])
-      || geneExpression.loading.length > 0) return;
+      || expression.loading.length > 0) return;
 
     const genesToLoad = shownGenes.filter((gene) => (
-      !geneExpression.matrix.geneIsLoaded(gene) && gene !== 'notSelected'
+      !expression.matrix.geneIsLoaded(gene) && gene !== 'notSelected'
     ));
 
     if (genesToLoad.length > 0) {
       dispatch(loadGeneExpression(experimentId, genesToLoad, plotUuid));
     }
-  }, [plotConfigs, geneExpression]);
+  }, [plotConfigs, expression]);
 
   useEffect(() => {
     if (!multiViewConfig || !multiViewPlotUuids.every((uuid) => plotConfigs[uuid])) return;
