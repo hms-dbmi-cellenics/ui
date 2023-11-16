@@ -279,7 +279,6 @@ jobs:
           tags: ${{ format('{0}/{1}:{2}', steps.login-ecr.outputs.registry, steps.ref.outputs.repo-name, steps.ref.outputs.image-tag) }}
           push: true
           provenance: false
-          build-args: READONLY_API_TOKEN_GITHUB=${{ secrets.READONLY_API_TOKEN_GITHUB }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
 

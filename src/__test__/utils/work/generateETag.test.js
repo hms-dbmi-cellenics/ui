@@ -5,10 +5,9 @@ import { Environment } from 'utils/deploymentInfo';
 import generateETag from 'utils/work/generateETag';
 import { makeStore } from 'redux/store';
 import { mockQcPipelineStartDate } from '__test__/utils/work/fetchWork.mock';
-import processingConfigData from '__test__/data/processing_config.json';
 
 const NON_GENE_EXPRESSION_ETAG = '8203e3ba0d492753400d09168c0f0b03'; // pragma: allowlist secret
-const GENE_EXPRESSION_D_ETAG = 'ee5abd900fc2b8d1ec5eca1419be090d'; // pragma: allowlist secret
+const GENE_EXPRESSION_D_ETAG = '8993e43f446701ebe837fdec97429fce'; // pragma: allowlist secret
 
 const experimentId = '1234';
 const mockExtras = undefined;
@@ -16,8 +15,6 @@ const mockExtras = undefined;
 const nonGeneExpressionWorkRequest = {
   name: 'ListGenes',
 };
-
-const { clusteringSettings } = processingConfigData.processingConfig.configureEmbedding;
 
 enableFetchMocks();
 
@@ -42,7 +39,6 @@ describe('generateEtag', () => {
       mockExtras,
       mockQcPipelineStartDate,
       Environment.PRODUCTION,
-      clusteringSettings,
       store.dispatch,
       store.getState,
     );
@@ -57,7 +53,6 @@ describe('generateEtag', () => {
       mockExtras,
       mockQcPipelineStartDate,
       Environment.PRODUCTION,
-      clusteringSettings,
       store.dispatch,
       store.getState,
     );
@@ -74,7 +69,6 @@ describe('generateEtag', () => {
       mockExtras,
       mockQcPipelineStartDate,
       Environment.DEVELOPMENT,
-      clusteringSettings,
       store.dispatch,
       store.getState,
     );
@@ -91,7 +85,6 @@ describe('generateEtag', () => {
       mockExtras,
       mockQcPipelineStartDate,
       Environment.DEVELOPMENT,
-      clusteringSettings,
       store.dispatch,
       store.getState,
     );
