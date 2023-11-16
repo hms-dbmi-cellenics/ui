@@ -136,8 +136,11 @@ const DiffExprCompute = (props) => {
 
     if (needPValues && canRun !== canRunDiffExprResults.TRUE) {
       return renderAlert('error', ` For the selected comparison, there are fewer than 3 samples with the minimum number of cells (10).
-              Volcano plot requires both p-values and logFC values, therefore the plot cannot be rendered.`);
-    } if (canRun === canRunDiffExprResults.INSUFFCIENT_CELLS_ERROR) {
+              Volcano plot requires both p-values and logFC values, therefore the plot cannot be rendered.
+              You can still run the comparison if your intent is to export the results as CSV.
+              `);
+    }
+    if (canRun === canRunDiffExprResults.INSUFFCIENT_CELLS_ERROR) {
       return renderAlert('error', `One or more of the selected samples/groups does not contain enough cells in the selected cell set.
               Therefore, the analysis can not be run. Select other cell set(s) or samples/groups to compare.`);
     }
@@ -277,8 +280,7 @@ const DiffExprCompute = (props) => {
               || [
                 canRunDiffExprResults.FALSE,
                 canRunDiffExprResults.INSUFFCIENT_CELLS_ERROR,
-              ].includes(canRunDiffExpr())
-            || (needPValues && canRunDiffExpr() !== canRunDiffExprResults.TRUE)}
+              ].includes(canRunDiffExpr())}
             onClick={() => onCompute()}
           >
             Compute
