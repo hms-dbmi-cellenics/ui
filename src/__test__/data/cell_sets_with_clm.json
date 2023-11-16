@@ -1,0 +1,227 @@
+{
+    "cellSets": [
+        {
+            "key": "louvain",
+            "name": "fake louvain clusters",
+            "rootNode": true,
+            "type": "cellSets",
+            "children": [
+                {
+                    "key": "louvain-0",
+                    "name": "Cluster 0",
+                    "rootNode": false,
+                    "type": "cellSets",
+                    "color": "#e377c2",
+                    "cellIds": [
+                        1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
+                        11, 12, 16, 17, 18, 19, 20,
+                        21, 22, 23, 24, 25, 26, 27, 28, 29, 30
+                    ]
+                },
+                {
+                    "key": "louvain-1",
+                    "name": "Cluster 1",
+                    "rootNode": false,
+                    "type": "cellSets",
+                    "color": "#8c564b",
+                    "cellIds": [
+                        31, 32, 33, 34, 35, 36, 37, 38, 39, 40,
+                        41, 42, 43, 47, 48, 49, 50, 51, 52, 53, 54, 55
+                    ]
+                },
+                {
+                    "key": "louvain-2",
+                    "name": "Cluster 2",
+                    "rootNode": false,
+                    "type": "cellSets",
+                    "color": "#d62728",
+                    "cellIds": [
+                        57, 58, 59, 60
+                    ]
+                },
+                {
+                    "key": "louvain-3",
+                    "name": "Cluster 3",
+                    "rootNode": false,
+                    "type": "cellSets",
+                    "color": "#2ca02c",
+                    "cellIds": [61, 62, 64, 65]
+                },
+                {
+                    "key": "louvain-4",
+                    "name": "Cluster 4",
+                    "rootNode": false,
+                    "type": "cellSets",
+                    "color": "#ff7f0e",
+                    "cellIds": [66, 68, 69, 70]
+                },
+                {
+                    "key": "louvain-5",
+                    "name": "Cluster 5",
+                    "rootNode": false,
+                    "type": "cellSets",
+                    "color": "#1f77b4",
+                    "cellIds": [71, 72, 73, 75]
+                },
+                {
+                    "key": "louvain-6",
+                    "name": "Cluster 6",
+                    "rootNode": false,
+                    "type": "cellSets",
+                    "color": "#f8e71c",
+                    "cellIds": [76, 77, 79, 80]
+                },
+                {
+                    "key": "louvain-7",
+                    "name": "Cluster 7",
+                    "rootNode": false,
+                    "type": "cellSets",
+                    "color": "#3957ff",
+                    "cellIds": [81, 82, 84, 85]
+                },
+                {
+                    "key": "louvain-8",
+                    "name": "Cluster 8",
+                    "rootNode": false,
+                    "type": "cellSets",
+                    "color": "#d3fe14",
+                    "cellIds": [88, 89, 90]
+                },
+                {
+                    "key": "louvain-9",
+                    "name": "Cluster 9",
+                    "rootNode": false,
+                    "type": "cellSets",
+                    "color": "#c9080a",
+                    "cellIds": [91, 92, 93]
+                },
+                {
+                    "key": "louvain-10",
+                    "name": "Cluster 10",
+                    "rootNode": false,
+                    "type": "cellSets",
+                    "color": "#fec7f8",
+                    "cellIds": [94, 95]
+                },
+                {
+                    "key": "louvain-11",
+                    "name": "Cluster 11",
+                    "rootNode": false,
+                    "type": "cellSets",
+                    "color": "#0b7b3e",
+                    "cellIds": [96, 97]
+                },
+                {
+                    "key": "louvain-12",
+                    "name": "Cluster 12",
+                    "rootNode": false,
+                    "type": "cellSets",
+                    "color": "#0bf0e9",
+                    "cellIds": [98, 99]
+                },
+                {
+                    "key": "louvain-13",
+                    "name": "Cluster 13",
+                    "rootNode": false,
+                    "type": "cellSets",
+                    "color": "#c203c8",
+                    "cellIds": [100]
+                }
+            ]
+        },
+        {
+            "key": "scratchpad",
+            "name": "Custom cell sets",
+            "rootNode": true,
+            "children": [],
+            "type": "cellSets"
+        },
+        {
+            "key": "CLM",
+            "name": "Cell-level metadata",
+            "rootNode": true,
+            "type": "CLM",
+            "children": [
+                {
+                    "key": "clm-0",
+                    "name": "Patient 0",
+                    "rootNode": false,
+                    "cellIds": []
+                }
+            ]
+        },
+        {
+            "key": "sample",
+            "name": "Samples",
+            "rootNode": true,
+            "children": [
+                {
+                    "key": "b62028a1-ffa0-4f10-823d-93c9ddb88898",
+                    "name": "KO",
+                    "color": "#8c564b",
+                    "cellIds": [
+                        1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
+                        11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
+                        21, 22, 23, 24, 25, 26, 27, 28, 29 , 30,
+                        31, 32, 33, 34, 35, 36, 37, 38, 39, 40
+                    ]
+                },
+                {
+                    "key": "ab568662-27fa-462c-9435-625594341314",
+                    "name": "WT1",
+                    "color": "#d62728",
+                    "cellIds": [
+                        41, 42, 43, 44, 45, 46, 47, 48, 49, 50,
+                        51, 52, 53, 54, 55, 56, 57, 58, 59, 60,
+                        61, 62, 63, 64, 65, 66, 67, 68, 69, 70,
+                        71, 72, 73, 74, 75
+                    ]
+                },
+                {
+                    "key": "98c7a0ed-d086-4df8-bf94-a9ee6edb793f",
+                    "name": "WT2",
+                    "color": "#e377c2",
+                    "cellIds": [
+                        76, 77, 78, 79, 80, 81, 82, 83, 84, 85,
+                        86, 87, 88, 89, 90, 91, 92, 93, 94, 95,
+                        96, 97, 98, 99, 100
+                    ]
+                }
+            ],
+            "type": "metadataCategorical"
+        },
+        {
+            "key": "Track_1",
+            "name": "Track_1",
+            "rootNode": true,
+            "children": [
+                {
+                    "key": "Track_1-KMeta",
+                    "name": "KMeta",
+                    "color": "#8c564b",
+                    "cellIds": [
+                        1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
+                        11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
+                        21, 22, 23, 24, 25, 26, 27, 28, 29 , 30,
+                        31, 32, 33, 34, 35, 36, 37, 38, 39, 40
+                    ]
+                },
+                {
+                    "key": "Track_1-WMetaT",
+                    "name": "WMetaT",
+                    "color": "#d62728",
+                    "cellIds": [
+                        41, 42, 43, 44, 45, 46, 47, 48, 49, 50,
+                        51, 52, 53, 54, 55, 56, 57, 58, 59, 60,
+                        61, 62, 63, 64, 65, 66, 67, 68, 69, 70,
+                        71, 72, 73, 74, 75,
+                        76, 77, 78, 79, 80, 81, 82, 83, 84, 85,
+                        86, 87, 88, 89, 90, 91, 92, 93, 94, 95,
+                        96, 97, 98, 99, 100
+                    ]
+                }
+            ],
+            "type": "metadataCategorical"
+        }
+    ]
+}

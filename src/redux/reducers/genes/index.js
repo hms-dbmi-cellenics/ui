@@ -1,26 +1,34 @@
-import getInitialState from './getInitialState';
+import getInitialState from 'redux/reducers/genes/getInitialState';
 import {
   GENES_PROPERTIES_LOADING, GENES_PROPERTIES_LOADED_PAGINATED, GENES_PROPERTIES_ERROR,
   GENES_SELECT, GENES_DESELECT,
   GENES_EXPRESSION_LOADING, GENES_EXPRESSION_LOADED, GENES_EXPRESSION_ERROR,
   MARKER_GENES_LOADING, MARKER_GENES_LOADED, MARKER_GENES_ERROR,
-} from '../../actionTypes/genes';
+  DOWNSAMPLED_GENES_EXPRESSION_LOADING,
+  DOWNSAMPLED_GENES_EXPRESSION_LOADED,
+  DOWNSAMPLED_GENES_EXPRESSION_ERROR,
+} from 'redux/actionTypes/genes';
 
-import { EXPERIMENT_SETTINGS_QC_START } from '../../actionTypes/experimentSettings';
+import { EXPERIMENT_SETTINGS_QC_START } from 'redux/actionTypes/experimentSettings';
 
-import genesPropertiesLoading from './genesPropertiesLoading';
-import genesPropertiesLoadedPaginated from './genesPropertiesLoadedPaginated';
-import genesPropertiesError from './genesPropertiesError';
-import genesExpressionLoading from './genesExpressionLoading';
-import genesExpressionLoaded from './genesExpressionLoaded';
-import genesExpressionError from './genesExpressionError';
+import genesPropertiesLoading from 'redux/reducers/genes/genesPropertiesLoading';
+import genesPropertiesLoadedPaginated from 'redux/reducers/genes/genesPropertiesLoadedPaginated';
+import genesPropertiesError from 'redux/reducers/genes/genesPropertiesError';
 
-import markerGenesLoading from './markerGenesLoading';
-import markerGenesError from './markerGenesError';
-import markerGenesLoaded from './markerGenesLoaded';
+import genesExpressionLoading from 'redux/reducers/genes/genesExpressionLoading';
+import genesExpressionLoaded from 'redux/reducers/genes/genesExpressionLoaded';
+import genesExpressionError from 'redux/reducers/genes/genesExpressionError';
 
-import genesSelect from './genesSelect';
-import genesDeselect from './genesDeselect';
+import downsampledGenesLoading from 'redux/reducers/genes/downsampledGenesLoading';
+import downsampledGenesLoaded from 'redux/reducers/genes/downsampledGenesLoaded';
+
+import markerGenesLoading from 'redux/reducers/genes/markerGenesLoading';
+import markerGenesError from 'redux/reducers/genes/markerGenesError';
+import markerGenesLoaded from 'redux/reducers/genes/markerGenesLoaded';
+
+import genesSelect from 'redux/reducers/genes/genesSelect';
+import genesDeselect from 'redux/reducers/genes/genesDeselect';
+import downsampledGenesError from './downsampledGenesError';
 
 const genesReducer = (state = getInitialState(), action) => {
   switch (action.type) {
@@ -53,6 +61,15 @@ const genesReducer = (state = getInitialState(), action) => {
     }
     case MARKER_GENES_LOADING: {
       return markerGenesLoading(state, action);
+    }
+    case DOWNSAMPLED_GENES_EXPRESSION_LOADING: {
+      return downsampledGenesLoading(state, action);
+    }
+    case DOWNSAMPLED_GENES_EXPRESSION_LOADED: {
+      return downsampledGenesLoaded(state, action);
+    }
+    case DOWNSAMPLED_GENES_EXPRESSION_ERROR: {
+      return downsampledGenesError(state, action);
     }
     case MARKER_GENES_LOADED: {
       return markerGenesLoaded(state, action);
