@@ -9,7 +9,7 @@ import { Vega } from 'react-vega';
 
 import { loadBackendStatus } from 'redux/actions/backendStatus';
 import { makeStore } from 'redux/store';
-import dispatchWorkRequest from 'utils/work/dispatchWorkRequest';
+import fetchWork from 'utils/work/fetchWork';
 
 import mockEmbedding from '__test__/data/embedding.json';
 import mockStartingNodes from '__test__/data/starting_nodes.json';
@@ -26,7 +26,6 @@ import mockAPI, {
   promiseResponse,
   statusResponse,
   delayedResponse,
-  dispatchWorkRequestMock,
 } from '__test__/test-utils/mockAPI';
 import createTestComponentFactory from '__test__/test-utils/testComponentFactory';
 import userEvent from '@testing-library/user-event';
