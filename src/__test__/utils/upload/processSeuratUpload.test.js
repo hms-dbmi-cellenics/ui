@@ -14,7 +14,6 @@ import UploadStatus from 'utils/upload/UploadStatus';
 
 import processUpload from 'utils/upload/processUpload';
 
-import validate from 'utils/upload/validateSeurat';
 import pushNotificationMessage from 'utils/pushNotificationMessage';
 import mockFile from '__test__/test-utils/mockFile';
 
@@ -76,7 +75,6 @@ jest.mock('axios', () => ({
 }));
 
 jest.mock('utils/pushNotificationMessage');
-jest.mock('utils/upload/validateSeurat');
 
 let store = null;
 
