@@ -55,7 +55,7 @@ const loadDownsampledGeneExpression = (
   const timeout = getTimeoutForWorkerTask(getState(), 'GeneExpression');
 
   try {
-    let requestETag;
+    let requestETag = null;
 
     const {
       orderedGeneNames,
