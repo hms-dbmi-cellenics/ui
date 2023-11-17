@@ -114,7 +114,7 @@ describe('HeatmapPlot', () => {
 
     fetchWork
       .mockReset()
-      .mockImplementation((_experimentId, body) => mockWorkerResponses[body.name]);
+      .mockImplementation((_experimentId, body) => { console.log("***** call mock fetchWork"); return mockWorkerResponses[body.name] });
 
     // fetchWork
     //   .mockReset()
@@ -169,26 +169,11 @@ describe('HeatmapPlot', () => {
     expect(screen.getByText(/Assigning a worker to your analysis/i)).toBeInTheDocument();
   });
 
-  fit('Shows loader message if the marker genes are loaded but there\'s other selected genes still loading', async () => {
-    const customWorkerResponses = {
-      ...mockWorkerResponses,
-      GeneExpression: () => delayedResponse({ body: 'Not found', status: 404 }, 4000),
-    };
-
+  it('Shows loader message if the marker genes are loaded but there\'s other selected genes still loading', async () => {
     fetchWork
       .mockReset()
-      .mockImplementation((_experimentId, body) => { console.log("****** custom IVA ", body.name, customWorkerResponses[body.name]); return customWorkerResponses[body.name] });
-
-
-    // fetchWork
-    //   .mockReset()
-    //   .mockImplementation((_experimentId, body) => {
-    //     console.log('******* fetchWork.body.112: ', body);
-    //     let reqType = body.name;
-    //     if (body.nGenes) reqType += `-${body.nGenes}`;
-    //     console.log('reqType: ', reqType);
-    //     return customWorkerResponses[reqType];
-    //   });
+      .mockImplementationOnce(() => markerGenesData5)
+      .mockImplementationOnce(() => delayedResponse({ body: 'Not found', status: 404 }, 4000));
 
     await loadAndRenderDefaultHeatmap(storeState);
 
@@ -213,20 +198,9 @@ describe('HeatmapPlot', () => {
   });
 
   it('Handles marker genes loading error correctly', async () => {
-    // const customWorkerResponses = {
-    //   ...mockWorkerResponses,
-    //   '5-marker-genes': errorResponse,
-    // };
-
     fetchWork
       .mockReset()
-      .mockImplementationOnce(() => Promise.resolve(null))
-      .mockImplementation((_experimentId, body) => {
-        console.log('fetchWork.body.12: ', body);
-        let reqType = body.name;
-        if (body.nGenes) reqType += `-${body.nGenes}`;
-        return mockWorkerResponses[reqType];
-      });
+      .mockImplementationOnce(() => Promise.resolve(null));
 
     await loadAndRenderDefaultHeatmap(storeState);
 
@@ -235,19 +209,11 @@ describe('HeatmapPlot', () => {
   });
 
   it('Handles expression data loading error correctly', async () => {
-    const customWorkerResponses = {
-      ...mockWorkerResponses,
-      [newGeneLoadETag]: errorResponse,
-    };
-
     fetchWork
       .mockReset()
-      .mockImplementation((_experimentId, body) => {
-        console.log('fetchWork.body.22: ', body);
-        let reqType = body.name;
-        if (body.nGenes) reqType += `-${body.nGenes}`;
-        return customWorkerResponses[reqType];
-      });
+      .mockImplementationOnce(() => markerGenesData5)
+      .mockImplementationOnce(() => Promise.reject(new Error('Some error idk')));
+
 
     await act(async () => {
       await loadAndRenderDefaultHeatmap(storeState);
@@ -303,12 +269,9 @@ describe('HeatmapPlot', () => {
   });
 
   it('Shows an empty message when all cell sets are hidden ', async () => {
-    // fetchWork
-    //   .mockReset()
-    //   // Mock each of the loadMarkerGenes calls caused by hiding a cell set
-    //   .mockImplementation(dispatchWorkRequestMock(mockWorkerResponses));
-
-    await loadAndRenderDefaultHeatmap(storeState);
+    await act(async () => {
+      await loadAndRenderDefaultHeatmap(storeState);
+    });
 
     // Renders correctly
     expect(screen.getByText(/Sup Im a heatmap/i)).toBeInTheDocument();
@@ -321,13 +284,12 @@ describe('HeatmapPlot', () => {
     fetchWork
       .mockReset()
       // Last call (all the cellSets are hidden) return empty
-      .mockImplementationOnce(() => Promise.resolve({ data: noCellsGeneExpression }));
-
-    const hideAllCellsPromise = louvainClusterKeys.map(async (cellSetKey) => {
-      storeState.dispatch(setCellSetHiddenStatus(cellSetKey));
-    });
+      .mockImplementationOnce(() => { console.log("**** call mock fetchWork X"); return noCellsGeneExpression });
 
     await act(async () => {
+      const hideAllCellsPromise = louvainClusterKeys.map(async (cellSetKey) => {
+        storeState.dispatch(setCellSetHiddenStatus(cellSetKey));
+      });
       await Promise.all(hideAllCellsPromise);
     });
 
