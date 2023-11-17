@@ -17,7 +17,6 @@ import mockPseudoTime from '__test__/data/pseudotime.json';
 import cellSetsData from '__test__/data/cell_sets.json';
 import { MAX_LEGEND_ITEMS } from 'components/plots/helpers/PlotLegendAlert';
 import WorkResponseError from 'utils/errors/http/WorkResponseError';
-import fetchWork from 'utils/work/fetchWork';
 
 import preloadAll from 'jest-next-dynamic';
 

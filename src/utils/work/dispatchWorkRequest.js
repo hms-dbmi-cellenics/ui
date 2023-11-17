@@ -39,7 +39,6 @@ const dispatchWorkRequest = async (
     ...requestProps,
   };
 
-  console.log('dispatching work request', request);
   // TODO test what happens when api throws an error here
   const { data: { ETag, signedUrl } } = await fetchAPI(
     `/v2/workRequest/${experimentId}`,
