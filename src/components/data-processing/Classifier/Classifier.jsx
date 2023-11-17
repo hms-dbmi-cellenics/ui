@@ -15,6 +15,7 @@ const Classifier = ({
   experimentId, sampleId, sampleIds, onConfigChange, stepDisabled, stepHadErrors,
 }) => {
   const [selectedPlot, setSelectedPlot] = useState('kneePlot');
+  const filterTableUuid = generateDataProcessingPlotUuid(sampleId, filterName, 2);
 
   const plots = {
     kneePlot: {
@@ -77,6 +78,7 @@ const Classifier = ({
       selectedPlot={selectedPlot}
       setSelectedPlot={setSelectedPlot}
       filterName={filterName}
+      filterTableUuid={filterTableUuid}
       sampleId={sampleId}
       sampleIds={sampleIds}
       onConfigChange={onConfigChange}

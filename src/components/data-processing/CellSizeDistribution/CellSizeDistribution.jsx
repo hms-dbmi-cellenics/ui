@@ -18,6 +18,7 @@ const CellSizeDistribution = ({
 }) => {
   const [selectedPlot, setSelectedPlot] = useState('kneePlot');
   const highestUmiRef = useRef(null);
+  const filterTableUuid = generateDataProcessingPlotUuid(sampleId, filterName, 3);
 
   const histogramPlotData = useSelector(
     (state) => state.componentConfig[
@@ -90,6 +91,7 @@ const CellSizeDistribution = ({
       selectedPlot={selectedPlot}
       setSelectedPlot={setSelectedPlot}
       filterName={filterName}
+      filterTableUuid={filterTableUuid}
       sampleId={sampleId}
       sampleIds={sampleIds}
       onConfigChange={onConfigChange}

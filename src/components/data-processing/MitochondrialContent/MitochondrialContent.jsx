@@ -15,6 +15,7 @@ const MitochondrialContent = (props) => {
   const {
     experimentId, sampleId, sampleIds, onConfigChange, stepDisabled, stepHadErrors,
   } = props;
+  const filterTableUuid = generateDataProcessingPlotUuid(sampleId, filterName, 2);
 
   const [selectedPlot, setSelectedPlot] = useState('histogram');
 
@@ -79,6 +80,7 @@ const MitochondrialContent = (props) => {
       setSelectedPlot={setSelectedPlot}
       selectedPlot={selectedPlot}
       filterName={filterName}
+      filterTableUuid={filterTableUuid}
       sampleId={sampleId}
       sampleIds={sampleIds}
       onConfigChange={onConfigChange}

@@ -14,7 +14,6 @@ import {
   loadPlotConfig,
   savePlotConfig,
 } from 'redux/actions/componentConfig';
-import { generateDataProcessingPlotUuid } from 'utils/generateCustomPlotUuid';
 
 const { Panel } = Collapse;
 
@@ -24,6 +23,7 @@ const PlotLayout = ({
   selectedPlot,
   setSelectedPlot,
   filterName,
+  filterTableUuid,
   sampleId,
   sampleIds,
   onConfigChange,
@@ -44,7 +44,6 @@ const PlotLayout = ({
   const selectedPlotConfig = useSelector(
     (state) => state.componentConfig[plots[selectedPlot].plotUuid]?.config,
   );
-  const filterTableUuid = generateDataProcessingPlotUuid(sampleId, filterName, 3);
   const filterTableData = useSelector((state) => state.componentConfig[filterTableUuid]?.plotData);
 
   const expConfig = useSelector(
@@ -188,7 +187,7 @@ PlotLayout.propTypes = {
   renderCalculationConfig: PropTypes.func.isRequired,
   selectedPlot: PropTypes.string.isRequired,
   stepHadErrors: PropTypes.bool.isRequired,
-
+  filterTableUuid: PropTypes.string.isRequired,
 };
 
 PlotLayout.defaultProps = {
