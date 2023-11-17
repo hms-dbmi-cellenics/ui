@@ -62,9 +62,13 @@ jest.mock('lodash/sampleSize', () => ({
 
 enableFetchMocks();
 
+// const mockWorkerResponses = {
+//   'MarkerHeatmap-5': markerGenesData5,
+//   'MarkerHeatmap-2': markerGenesData2,
+// };
+
 const mockWorkerResponses = {
-  'MarkerHeatmap-5': markerGenesData5,
-  'MarkerHeatmap-2': markerGenesData2,
+  MarkerHeatmap: markerGenesData5,
 };
 
 const newGeneLoadETag = 'Ms4a4b-Smc4-Ccr7-Ifi27l2a-Gm8369-S100a4-S100a6-Tmem176a-Tmem176b-Cxcr6-5830411N06Rik-Lmo4-Il18r1-Atp2b1-Pde5a-Ccl5-Nkg7-Klrd1-AW112010-Klrc1-Gzma-Stmn1-Hmgn2-Pclaf-Tuba1b-Lyz2-Ifitm3-Fcer1g-Tyrobp-Cst3-Cd74-Igkc-Cd79a-H2-Ab1-H2-Eb1-loading_gene_id-expression';
@@ -110,12 +114,16 @@ describe('HeatmapPlot', () => {
 
     fetchWork
       .mockReset()
-      .mockImplementation((_experimentId, body) => {
-        console.log('fetchWork.body: ', body);
-        let reqType = body.name;
-        if (body.nGenes) reqType += `-${body.nGenes}`;
-        return mockWorkerResponses[reqType];
-      });
+      .mockImplementation((_experimentId, body) => mockWorkerResponses[body.name]);
+
+    // fetchWork
+    //   .mockReset()
+    //   .mockImplementation((_experimentId, body) => {
+    //     console.log('*************** fetchWork.body: ', body);
+    //     let reqType = body.name;
+    //     if (body.nGenes) reqType += `-${body.nGenes}`;
+    //     return mockWorkerResponses[reqType];
+    //   });
 
     vitesscePropsSpy = null;
 
@@ -126,11 +134,6 @@ describe('HeatmapPlot', () => {
   });
 
   it('Renders the heatmap component by default if everything loads', async () => {
-    // fetchMock.mockIf(/.*/, mockAPI({
-    //   [`/v2/workRequest/${experimentId}`]: () => Promise.resolve(JSON.stringify(true)),
-    //   ...mockAPIResponses,
-    // }));
-
     await loadAndRenderDefaultHeatmap(storeState);
 
     expect(screen.getByText(/Sup Im a heatmap/i)).toBeInTheDocument();
@@ -166,16 +169,21 @@ describe('HeatmapPlot', () => {
     expect(screen.getByText(/Assigning a worker to your analysis/i)).toBeInTheDocument();
   });
 
-  it.only('Shows loader message if the marker genes are loaded but there\'s other selected genes still loading', async () => {
-    // const customWorkerResponses = {
-    //   ...mockWorkerResponses,
-    //   GeneExpression: () => delayedResponse({ body: 'Not found', status: 404 }, 4000),
-    // };
+  fit('Shows loader message if the marker genes are loaded but there\'s other selected genes still loading', async () => {
+    const customWorkerResponses = {
+      ...mockWorkerResponses,
+      GeneExpression: () => delayedResponse({ body: 'Not found', status: 404 }, 4000),
+    };
+
+    fetchWork
+      .mockReset()
+      .mockImplementation((_experimentId, body) => { console.log("****** custom IVA ", body.name, customWorkerResponses[body.name]); return customWorkerResponses[body.name] });
+
 
     // fetchWork
     //   .mockReset()
     //   .mockImplementation((_experimentId, body) => {
-    //     console.log('fetchWork.body.112: ', body);
+    //     console.log('******* fetchWork.body.112: ', body);
     //     let reqType = body.name;
     //     if (body.nGenes) reqType += `-${body.nGenes}`;
     //     console.log('reqType: ', reqType);
@@ -187,14 +195,19 @@ describe('HeatmapPlot', () => {
     // Renders correctly
     expect(screen.getByText(/Sup Im a heatmap/i)).toBeInTheDocument();
 
+    console.log("BEFORE NEW GENE IS ADDED");
+
     // A new gene is being loaded
     await act(async () => {
       storeState.dispatch(loadDownsampledGeneExpression(experimentId, [...markerGenesData5.orderedGeneNames, 'loading_gene_id'], 'interactiveHeatmap'));
       jest.runAllTimers();
     });
 
+    console.log("AFTER NEW GENE IS ADDED");
+
     // Loading screen shows up
     await waitFor(() => {
+      console.log("INSIDE WAITFOR");
       expect(screen.getByText(/Assigning a worker to your analysis/i)).toBeInTheDocument();
     });
   });
