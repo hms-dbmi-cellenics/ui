@@ -13,7 +13,6 @@ import { loadDownsampledGeneExpression } from 'redux/actions/genes';
 import { makeStore } from 'redux/store';
 import fetchWork from 'utils/work/fetchWork';
 
-import expressionDataFAKEGENE from '__test__/data/gene_expression_FAKEGENE.json';
 import markerGenesData2 from '__test__/data/marker_genes_2.json';
 import markerGenesData5 from '__test__/data/marker_genes_5.json';
 import markerGenesData5AndFakeGene from '__test__/data/marker_genes_5_and_FAKE_gene.json';
@@ -39,22 +38,6 @@ jest.mock('react-resize-detector', () => (props) => {
   return children({ width: 800, height: 800 });
 });
 
-// Mock hash so we can control the ETag that is produced by hash.MD5 when fetching work requests
-// EtagParams is the object that's passed to the function which generates ETag in fetchWork
-// jest.mock('object-hash', () => {
-//   const objectHash = jest.requireActual('object-hash');
-//   const mockWorkResultETag = jest.requireActual('__test__/test-utils/mockWorkResultETag');
-
-//   const mockWorkRequestETag = (ETagParams) => {
-//     if (ETagParams.body.name === 'ListGenes') return 'ListGenes';
-//     return `${ETagParams.body.nGenes}-marker-genes`;
-//   };
-
-//   const mockGeneExpressionETag = (ETagParams) => `${ETagParams.missingGenesBody.genes.join('-')}-expression`;
-
-//   return mockWorkResultETag(objectHash, mockWorkRequestETag, mockGeneExpressionETag);
-// });
-
 // Disable local cache
 jest.mock('localforage', () => ({
   getItem: () => Promise.resolve(undefined),
@@ -66,16 +49,9 @@ jest.mock('localforage', () => ({
 
 jest.mock('utils/work/fetchWork');
 
-const fakeGenesETag = 'Ms4a4b-Smc4-Ccr7-Ifi27l2a-Gm8369-S100a4-S100a6-Tmem176a-Tmem176b-Cxcr6-5830411N06Rik-Lmo4-Il18r1-Atp2b1-Pde5a-Ccl5-Nkg7-Klrd1-AW112010-Klrc1-Gzma-Stmn1-Hmgn2-Pclaf-Tuba1b-Lyz2-Ifitm3-Fcer1g-Tyrobp-Cst3-Cd74-Igkc-Cd79a-H2-Ab1-H2-Eb1-FAKEGENE-expression';
-const fakeGenesETag1 = 'Ms4a4b-Smc4-Ccr7-Ifi27l2a-Gm8369-S100a4-S100a6-Tmem176b-Cxcr6-5830411N06Rik-Lmo4-Il18r1-Atp2b1-Pde5a-Ccl5-Nkg7-Klrd1-AW112010-Klrc1-Gzma-Stmn1-Hmgn2-Pclaf-Tuba1b-Lyz2-Ifitm3-Fcer1g-Tyrobp-Cst3-Cd74-Igkc-Cd79a-H2-Ab1-H2-Eb1-expression';
-const fakeGenesETag2 = 'Ms4a4b-Smc4-Ccr7-Ifi27l2a-Gm8369-S100a4-S100a6-Tmem176b-Cxcr6-5830411N06Rik-Lmo4-Il18r1-Atp2b1-Pde5a-Ccl5-Nkg7-Klrd1-AW112010-Klrc1-Gzma-Stmn1-Hmgn2-Pclaf-Tuba1b-Lyz2-Ifitm3-Fcer1g-Tyrobp-Cst3-Cd74-Igkc-Cd79a-H2-Ab1-H2-Eb1-Tmem176a-expression';
-
 const mockWorkerResponses = {
   'MarkerHeatmap-5': markerGenesData5,
-  '2-marker-genes': markerGenesData2,
-  [fakeGenesETag]: markerGenesData5AndFakeGene,
-  [fakeGenesETag1]: markerGenesData5AndFakeGene,
-  [fakeGenesETag2]: markerGenesData5AndFakeGene,
+  GeneExpression: markerGenesData5AndFakeGene,
   ListGenes: geneList,
 };
 
@@ -125,7 +101,10 @@ describe('Marker heatmap plot', () => {
 
     fetchWork
       .mockReset()
-      .mockImplementation((_experimentId, body) => mockWorkerResponses[body.name]);
+      .mockImplementation((_experimentId, body) => {
+        const reqType = body.nGenes ? `${body.name}-${body.nGenes}` : body.name;
+        return mockWorkerResponses[reqType];
+      });
 
     fetchMock.resetMocks();
     fetchMock.doMock();
@@ -158,13 +137,14 @@ describe('Marker heatmap plot', () => {
   });
 
   it('Shows an error message if marker genes failed to load', async () => {
-    dispatchWorkRequest
+    fetchWork
       .mockReset()
       .mockImplementation(
-        (_experimentId, _body, _timeout, ETag) => {
-          if (ETag === '5-marker-genes') return Promise.reject(new Error('Not found'));
+        (_experimentId, body) => {
+          const reqType = body.nGenes ? `${body.name}-${body.nGenes}` : body.name;
+          if (reqType === 'MarkerHeatmap-5') return Promise.reject(new Error('Not found'));
 
-          return workerDataResult(mockWorkerResponses[ETag]);
+          return workerDataResult(mockWorkerResponses[reqType]);
         },
       );
 
@@ -211,12 +191,7 @@ describe('Marker heatmap plot', () => {
   });
 
   it('adds genes correctly into the plot', async () => {
-    dispatchWorkRequest
-      .mockReset()
-      .mockImplementation(dispatchWorkRequestMock(mockWorkerResponses));
-
     await renderHeatmapPage(storeState);
-
     // Add in a new gene
     const genesToLoad = [...markerGenesData5.orderedGeneNames, 'FAKEGENE'];
 
@@ -256,13 +231,15 @@ describe('Marker heatmap plot', () => {
   });
 
   it('Shows an error message if gene expression fails to load', async () => {
-    dispatchWorkRequest
+    fetchWork
       .mockReset()
-      .mockImplementation((_experimentId, _body, _timeout, ETag) => {
-        if (ETag === '5-marker-genes' || ETag === 'ListGenes') return workerDataResult(mockWorkerResponses[ETag]);
-
-        if (ETag === 'FAKEGENE-expression') { return Promise.reject(new Error('Not found')); }
-      });
+      .mockImplementation(
+        (_experimentId, body) => {
+          const reqType = body.nGenes ? `${body.name}-${body.nGenes}` : body.name;
+          if (reqType === 'GeneExpression') return Promise.reject(new Error('Not found'));
+          return mockWorkerResponses[reqType];
+        },
+      );
 
     await renderHeatmapPage(storeState);
 
@@ -375,17 +352,7 @@ describe('Marker heatmap plot', () => {
 
     // check the selected gene is being loaded
     await waitFor(() => {
-      expect(dispatchWorkRequest).toHaveBeenCalledWith(
-        experimentId,
-        expect.objectContaining({
-          name: 'GeneExpression',
-          genes: expect.arrayContaining(['Tmem176a']),
-        }),
-        expect.anything(),
-        expect.anything(),
-        expect.anything(),
-        expect.anything(),
-      );
+      expect(fetchWork.mock.calls).toMatchSnapshot();
     });
   });
 
