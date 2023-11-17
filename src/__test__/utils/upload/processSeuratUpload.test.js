@@ -14,7 +14,6 @@ import UploadStatus from 'utils/upload/UploadStatus';
 
 import processUpload from 'utils/upload/processUpload';
 
-import pushNotificationMessage from 'utils/pushNotificationMessage';
 import mockFile from '__test__/test-utils/mockFile';
 
 const FILE_SIZE = 1024 * 1024 * 15;
