@@ -72,7 +72,7 @@ const CellSetsTool = (props) => {
     setTreeData(composeTree(hierarchy, properties));
   }, [hierarchy, properties]);
 
-  const [numSelectedCellSetKeys, setNumSelectedCellSetKeys] = useState(0);
+  const [numSelectedCellSetKeys, setNumSelectedCellSetKeys] = useState(null);
 
   useEffect(() => {
     const louvainClusters = hierarchy.find(({ key }) => key === 'louvain')?.children;
@@ -89,6 +89,11 @@ const CellSetsTool = (props) => {
   }, [hierarchy]);
 
   useEffect(() => {
+    if (selectedCellSetKeys.length === 0) {
+      setNumSelectedCellSetKeys(null);
+      return;
+    }
+
     const selectedCells = union(selectedCellSetKeys, properties);
 
     const numSelectedFiltered = new Set([...selectedCells]
@@ -124,7 +129,7 @@ const CellSetsTool = (props) => {
   const renderContent = () => {
     let operations = null;
 
-    if (numSelectedCellSetKeys > 0) {
+    if (numSelectedCellSetKeys !== null) {
       operations = (
         <Space style={{ marginBottom: '10px' }}>
           <SubsetCellSetsOperation
