@@ -1,29 +1,14 @@
 import { SparseMatrix } from 'mathjs';
-import loadCellSets from 'redux/actions/cellSets/loadCellSets';
-import { getCellSetsHierarchyByKeys } from 'redux/selectors';
+
 import {
   MARKER_GENES_ERROR, MARKER_GENES_LOADING, MARKER_GENES_LOADED,
 } from 'redux/actionTypes/genes';
 
 import fetchWork from 'utils/work/fetchWork';
+import getCellSetsThatAffectDownsampling from 'utils/work/getCellSetsThatAffectDownsampling';
 import getTimeoutForWorkerTask from 'utils/getTimeoutForWorkerTask';
 import handleError from 'utils/http/handleError';
 import endUserMessages from 'utils/endUserMessages';
-
-// Check that the cell sets within the selected cellSetKey didn't change
-// e.g., if cell set was deleted we can't use cache
-const getSelectedCellSet = async (experimentId, cellSetKey, dispatch, getState) => {
-  await dispatch(loadCellSets(experimentId));
-
-  const hierarchy = getCellSetsHierarchyByKeys([cellSetKey])(getState());
-  console.log('children', hierarchy);
-  // TODO ask martin if returning the keys is enough or we actually need
-  // to invalidate results depending on the name of the cell set
-  const cellSetsKeys = hierarchy[0].children.map((cellSet) => cellSet.key);
-  console.log('cellSetsKeys', cellSetsKeys);
-
-  return cellSetsKeys;
-};
 
 const loadMarkerGenes = (
   experimentId, plotUuid, options = {},
@@ -36,12 +21,14 @@ const loadMarkerGenes = (
     hiddenCellSets = [],
   } = options;
 
-  const cellSets = await getSelectedCellSet(experimentId, selectedCellSetKey, dispatch, getState);
+  const cellSets = await getCellSetsThatAffectDownsampling(
+    experimentId, selectedCellSetKey, groupedTracks, dispatch, getState,
+  );
 
   const downsampleSettings = {
     selectedCellSet: selectedCellSetKey,
-    cellSets,
     groupedTracks,
+    cellSets,
     selectedPoints,
     hiddenCellSets: Array.from(hiddenCellSets),
   };
@@ -51,7 +38,6 @@ const loadMarkerGenes = (
     nGenes: numGenes,
     downsampleSettings,
   };
-  console.log('marker-heatmp/body', body);
 
   try {
     const timeout = getTimeoutForWorkerTask(getState(), 'MarkerHeatmap');
