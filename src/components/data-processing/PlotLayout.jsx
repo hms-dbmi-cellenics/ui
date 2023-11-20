@@ -17,6 +17,10 @@ import {
 
 const { Panel } = Collapse;
 
+/*
+This component is used to render the main plot and the mini plots for the
+classifier, cell size distribution and mitochondrial content filters.
+*/
 const PlotLayout = ({
   experimentId,
   plots,
