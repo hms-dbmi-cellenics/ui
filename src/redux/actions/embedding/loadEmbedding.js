@@ -34,24 +34,19 @@ const loadEmbedding = (
     },
   });
 
-  console.log('loadEmbedding', experimentId, embeddingType, useSaved);
   const body = {
     name: 'GetEmbedding',
     type: embeddingType,
     useSaved,
     config: methodSettings[embeddingType],
   };
-  console.log('loadEmbedding', body);
 
   const timeout = getTimeoutForWorkerTask(getState(), 'GetEmbedding');
 
-  console.log('loadEmbedding', timeout);
   try {
-    console.log('fetchWork', experimentId, body, getState, dispatch, { timeout });
     const data = await fetchWork(
       experimentId, body, getState, dispatch, { timeout },
     );
-    console.log('loadEmbedding fetchWork', data);
     return dispatch({
       type: EMBEDDINGS_LOADED,
       payload: {
@@ -61,7 +56,6 @@ const loadEmbedding = (
       },
     });
   } catch (error) {
-    console.log('loadEmbedding error ', error);
     return dispatch({
       type: EMBEDDINGS_ERROR,
       payload: {

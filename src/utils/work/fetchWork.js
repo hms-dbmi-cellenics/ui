@@ -26,10 +26,8 @@ const retrieveData = async (experimentId,
     return cachedData;
   }
 
-  console.log('retrieveData', signedUrl, request, timeout, body, dispatch, useCache);
   // 2. Check if data is cached in S3 so we can download from the signed URL (no worker)
   if (signedUrl) {
-    console.log('retrieveData downloadFromS3', body.name, signedUrl);
     return await downloadFromS3(body.name, signedUrl);
   }
 
@@ -42,14 +40,11 @@ const retrieveData = async (experimentId,
     timeout,
     dispatch);
 
-  console.log('retrieveData.worker', data, workerSignedUrl);
   // 3.1. The worker send the data via socket because it's small enough
   if (data) {
-    console.log('retrieveData.worker.data', body.name, data);
     return data;
   }
   // 3.2. The worker send a signedUrl to download the data
-  console.log('receivedData.worker.signedUrl', workerSignedUrl);
   return await downloadFromS3(body.name, workerSignedUrl);
 };
 
@@ -76,8 +71,6 @@ const fetchWork = async (
     localStorage.setItem('disableCache', 'true');
   }
 
-  console.log('fetchWork ', body);
-
   // 1. Contact the API to get ETag and possible S3 signedURL
   const { ETag, signedUrl, request } = await dispatchWorkRequest(
     experimentId,
@@ -90,7 +83,6 @@ const fetchWork = async (
     dispatch,
   );
 
-  console.log('fetchWork ETag', ETag);
   onETagGenerated(ETag);
 
   const useCache = body.name !== 'GeneExpression';

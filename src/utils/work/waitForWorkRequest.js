@@ -9,20 +9,6 @@ import { updateBackendStatus } from 'redux/actions/backendStatus';
 
 const timeoutIds = {};
 
-// getRemainingWorkerStartTime returns how many more seconds the worker is expected to
-// need to be running with an extra 1 minute for a bit of leeway
-// const getRemainingWorkerStartTime = (creationTimestamp) => {
-//   const now = new Date();
-//   const creationTime = new Date(creationTimestamp);
-//   const elapsed = parseInt((now - creationTime) / (1000), 10); // gives second difference
-
-//   // we assume a worker takes up to 5 minutes to start
-//   const totalStartup = 5 * 60;
-//   const remainingTime = totalStartup - elapsed;
-//   // add an extra minute just in case
-//   return remainingTime + 60;
-// };
-
 // getTimeoutDate returns the date resulting of adding 'timeout' seconds to
 // current time.
 const getTimeoutDate = (timeout) => dayjs().add(timeout, 's').toISOString();
@@ -84,7 +70,6 @@ const waitForWorkRequest = async (
     // related to the current experiment. We extend the timeout because we know
     // the worker is alive and was working on another request of our experiment
     io.on(`Heartbeat-${experimentId}`, (message) => {
-      console.log('received heartbeat:', message);
       const newTimeoutDate = getTimeoutDate(timeout);
       if (newTimeoutDate < workerTimeoutDate) {
         const status = {
@@ -102,16 +87,13 @@ const waitForWorkRequest = async (
 
   const responsePromise = new Promise((resolve, reject) => {
     io.on(`WorkResponse-${ETag}`, async (res) => {
-      console.log('received.work.res:', typeof res, res);
       // If type is object, then we received a notification with a signedUrl
       // now we need to fetch the actual result from s3
       if (typeof res === 'object') {
         const { response } = res;
-        console.log('received.work.response:', response);
 
         if (response.error) {
           const { errorCode, userMessage } = response;
-          console.error(errorCode, userMessage);
 
           return reject(
             new WorkResponseError(errorCode, userMessage, request),
@@ -120,12 +102,10 @@ const waitForWorkRequest = async (
 
         return resolve({ signedUrl: response.signedUrl });
       }
-      console.log('received.work.response decompress result:');
       // If type isn't object, then we have the actual work result,
       // no further downloads are necessary, we just need to decompress and return it
       const decompressedData = await decompressUint8Array(Uint8Array.from(Buffer.from(res, 'base64')));
 
-      console.log('received.work.response decompressed result:', decompressedData);
       return resolve({ data: parseResult(decompressedData) });
     });
   });

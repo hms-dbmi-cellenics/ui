@@ -78,7 +78,6 @@ const getDotPlot = (
     const data = await fetchWork(
       experimentId, body, getState, dispatch, { timeout },
     );
-    console.log('getDotPlot.js:data', data);
 
     const plotData = transformToPlotData(data);
     orderCellSets(plotData, getState().cellSets, config);

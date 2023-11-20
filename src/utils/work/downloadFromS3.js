@@ -3,7 +3,6 @@ import httpStatusCodes from 'utils/http/httpStatusCodes';
 import parseResult from 'utils/work/parseResult';
 
 const downloadFromS3 = async (taskName, signedUrl) => {
-  console.log('downloadFromS3', taskName, signedUrl);
   const response = await fetch(signedUrl);
 
   // some WorkRequests like scType and runClustering do not upload data to S3

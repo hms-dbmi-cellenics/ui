@@ -175,7 +175,6 @@ const HeatmapPlot = (props) => {
   useConditionalEffect(() => {
     // TODO: we could avoid having to reload the marker heatmap all the time same way
     // we do for embeddings & Gene Expression
-    console.log('loadMarkerGenes ', !heatmapData);
     if (
       !cellSets.accessible
       || !louvainClustersResolution
