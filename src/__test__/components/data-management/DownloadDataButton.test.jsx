@@ -35,7 +35,7 @@ jest.mock('file-saver');
 jest.mock('utils/work/fetchWork');
 jest.mock('utils/pushNotificationMessage');
 jest.mock('utils/downloadFromUrl');
-jest.mock('utils/writeToFileURL');
+jest.mock('utils/upload/writeToFileURL');
 
 const experimentId = `${fake.EXPERIMENT_ID}-0`;
 

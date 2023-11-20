@@ -21,7 +21,7 @@ import writeToFileURL from 'utils/upload/writeToFileURL';
 import downloadFromUrl from 'utils/downloadFromUrl';
 
 jest.mock('utils/work/fetchWork');
-jest.mock('utils/writeToFileURL');
+jest.mock('utils/upload/writeToFileURL');
 jest.mock('utils/downloadFromUrl');
 jest.mock('utils/pushNotificationMessage');
 

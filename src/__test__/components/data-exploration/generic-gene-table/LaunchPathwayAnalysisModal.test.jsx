@@ -27,7 +27,7 @@ jest.mock('utils/extraActionCreators/differentialExpression/getBackgroundExpress
 
 jest.mock('utils/http/handleError');
 jest.mock('utils/downloadFromUrl');
-jest.mock('utils/writeToFileURL');
+jest.mock('utils/upload/writeToFileURL');
 
 const onCancel = jest.fn();
 const onOpenAdvancedFilters = jest.fn();
