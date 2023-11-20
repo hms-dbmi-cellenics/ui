@@ -12,7 +12,7 @@ import { updateFilterSettings, copyFilterSettingsToAllSamples, setSampleFilterSe
 
 const CalculationConfigContainer = (props) => {
   const {
-    filterUuid, sampleId, plotType, sampleIds, onConfigChange, children, stepDisabled,
+    filterUuid, sampleId, sampleIds, onConfigChange, children, stepDisabled,
   } = props;
   const { auto, filterSettings: config } = useSelector(
     (state) => (state.experimentSettings.processing[filterUuid][sampleId]),
@@ -68,7 +68,6 @@ const CalculationConfigContainer = (props) => {
 
       {React.cloneElement(children, {
         config,
-        plotType,
         updateSettings: (diff) => {
           dispatch(updateFilterSettings(filterUuid, diff, sampleId));
           onFilterSettingsChange();
@@ -89,7 +88,6 @@ CalculationConfigContainer.propTypes = {
   children: PropTypes.any.isRequired,
   filterUuid: PropTypes.string.isRequired,
   sampleId: PropTypes.string.isRequired,
-  plotType: PropTypes.string.isRequired,
   sampleIds: PropTypes.array.isRequired,
   onConfigChange: PropTypes.func.isRequired,
   stepDisabled: PropTypes.bool,

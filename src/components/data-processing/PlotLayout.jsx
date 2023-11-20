@@ -156,7 +156,6 @@ const PlotLayout = ({
                 sampleId={sampleId}
                 sampleIds={sampleIds}
                 onConfigChange={onConfigChange}
-                plotType='unused'
                 stepDisabled={stepDisabled}
               >
                 {renderCalculationConfig()}
