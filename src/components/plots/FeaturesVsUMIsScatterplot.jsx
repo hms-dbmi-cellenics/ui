@@ -18,13 +18,7 @@ const FeaturesVsUMIsScatterplot = (props) => {
     ? transformOldFeaturesVsUMIsPlotData(plotData)
     : plotData;
 
-  const [plotSpec, setPlotSpec] = useState(config);
-  const { predictionInterval } = expConfig;
-  useEffect(() => {
-    if (config && newPlotData?.pointsData?.length) {
-      setPlotSpec(generateSpec(config, newPlotData, expConfig));
-    }
-  }, [config, plotData, predictionInterval]);
+  const plotSpec = generateSpec(config, newPlotData, expConfig);
 
   if (!newPlotData?.pointsData?.length) {
     return (

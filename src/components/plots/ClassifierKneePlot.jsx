@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import { Vega } from 'react-vega';
 
@@ -10,13 +10,7 @@ const ClassifierKneePlot = (props) => {
     config, expConfig, plotData, actions,
   } = props;
 
-  const [plotSpec, setPlotSpec] = useState(config);
-
-  useEffect(() => {
-    if (config && plotData) {
-      setPlotSpec(generateSpec(config, expConfig, plotData));
-    }
-  }, [config, expConfig, plotData]);
+  const plotSpec = generateSpec(config, expConfig, plotData);
 
   if (!plotData.length) {
     return (

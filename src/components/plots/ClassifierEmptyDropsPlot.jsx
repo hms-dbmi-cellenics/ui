@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import { Vega } from 'react-vega';
 
@@ -10,30 +10,18 @@ const ClassifierEmptyDropsPlot = (props) => {
     config, expConfig, plotData, actions,
   } = props;
 
-  const [plotSpec, setPlotSpec] = useState(config);
+  const plotSpec = generateSpec(config, expConfig, plotData);
 
-  useEffect(() => {
-    setPlotSpec(generateSpec(config, expConfig, plotData));
-  }, [config, expConfig, plotData]);
-
-  const render = () => {
-    if (!plotData.length) {
-      return (
-        <EmptyPlot mini={config.miniPlot} />
-      );
-    }
-
+  if (!plotData.length) {
     return (
-      <center>
-        <Vega spec={plotSpec} renderer='canvas' actions={actions} />
-      </center>
+      <EmptyPlot mini={config.miniPlot} />
     );
-  };
+  }
 
   return (
-    <>
-      { render()}
-    </>
+    <center>
+      <Vega spec={plotSpec} renderer='canvas' actions={actions} />
+    </center>
   );
 };
 

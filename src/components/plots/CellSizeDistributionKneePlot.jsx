@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import { Vega } from 'react-vega';
 
@@ -9,14 +9,7 @@ const CellSizeDistributionKneePlot = (props) => {
   const {
     config, plotData, actions,
   } = props;
-
-  const [plotSpec, setPlotSpec] = useState(config);
-
-  useEffect(() => {
-    if (config && plotData) {
-      setPlotSpec(generateSpec(config, plotData));
-    }
-  }, [config, plotData]);
+  const plotSpec = generateSpec(config, plotData);
 
   const render = () => {
     if (!plotData.length) {

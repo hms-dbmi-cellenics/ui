@@ -1,8 +1,7 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { useSelector } from 'react-redux';
 import _ from 'lodash';
-
 import { generateDataProcessingPlotUuid } from 'utils/generateCustomPlotUuid';
 
 import PlotLayout from 'components/data-processing/PlotLayout';
@@ -17,7 +16,7 @@ const CellSizeDistribution = ({
   experimentId, sampleId, sampleIds, onConfigChange, stepDisabled, stepHadErrors,
 }) => {
   const [selectedPlot, setSelectedPlot] = useState('kneePlot');
-  const highestUmiRef = useRef(null);
+  const [highestUmi, setHighestUmi] = useState(null);
   const filterTableUuid = generateDataProcessingPlotUuid(sampleId, filterName, 3);
 
   const histogramPlotData = useSelector(
@@ -26,8 +25,8 @@ const CellSizeDistribution = ({
   );
 
   useEffect(() => {
-    highestUmiRef.current = _.maxBy(histogramPlotData,
-      (datum) => datum.u)?.u ?? HIGHEST_UMI_DEFAULT;
+    setHighestUmi(_.maxBy(histogramPlotData,
+      (datum) => datum.u)?.u ?? HIGHEST_UMI_DEFAULT);
   }, [histogramPlotData]);
 
   const plots = {
@@ -54,7 +53,7 @@ const CellSizeDistribution = ({
           config={config}
           plotData={plotData}
           actions={actions}
-          highestUmi={highestUmiRef.current}
+          highestUmi={highestUmi}
         />
       ),
     },
@@ -82,8 +81,7 @@ const CellSizeDistribution = ({
       controls: ['font'],
     }];
 
-  const renderCalculationConfig = () => <CalculationConfig highestUmi={highestUmiRef.current} />;
-
+  const renderCalculationConfig = () => <CalculationConfig highestUmi={highestUmi} />;
   return (
     <PlotLayout
       experimentId={experimentId}
