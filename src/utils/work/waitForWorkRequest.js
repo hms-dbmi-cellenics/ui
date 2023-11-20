@@ -102,11 +102,12 @@ const waitForWorkRequest = async (
 
   const responsePromise = new Promise((resolve, reject) => {
     io.on(`WorkResponse-${ETag}`, async (res) => {
-      console.log('received work response:', res);
+      console.log('received.work.res:', typeof res, res);
       // If type is object, then we received a notification with a signedUrl
       // now we need to fetch the actual result from s3
       if (typeof res === 'object') {
         const { response } = res;
+        console.log('received.work.response:', response);
 
         if (response.error) {
           const { errorCode, userMessage } = response;
@@ -119,11 +120,12 @@ const waitForWorkRequest = async (
 
         return resolve({ signedUrl: response.signedUrl });
       }
-
+      console.log('received.work.response decompress result:');
       // If type isn't object, then we have the actual work result,
       // no further downloads are necessary, we just need to decompress and return it
       const decompressedData = await decompressUint8Array(Uint8Array.from(Buffer.from(res, 'base64')));
 
+      console.log('received.work.response decompressed result:', decompressedData);
       return resolve({ data: parseResult(decompressedData) });
     });
   });

@@ -295,7 +295,7 @@ const HeatmapPlot = (props) => {
     );
   }
 
-  if (selectedGenes.length === 0) {
+  if (selectedGenes?.length === 0) {
     return (
       <center>
         <Empty description='No genes selected, add some to show the heatmap' />
