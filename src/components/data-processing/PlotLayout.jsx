@@ -80,7 +80,11 @@ const PlotLayout = ({
   useEffect(() => {
     if (selectedConfig && selectedPlotData && expConfig) {
       const newConfig = _.clone(selectedConfig);
-      _.merge(newConfig, expConfig);
+      // some filters have settings stored under filterSettings.methodSettings[method]
+      // like the mitochondrial content one
+      // so we need to check if the current filter is one of them
+      const expConfigSettings = expConfig.method ? expConfig.methodSettings[expConfig.method] : expConfig;
+      _.merge(newConfig, expConfigSettings);
       setPlot(plots[selectedPlot].plot(newConfig, selectedPlotData, allowedPlotActions));
     }
   }, [expConfig, selectedConfig, selectedPlotData]);
@@ -157,6 +161,7 @@ const PlotLayout = ({
                 sampleIds={sampleIds}
                 onConfigChange={onConfigChange}
                 stepDisabled={stepDisabled}
+                plotType={selectedPlot}
               >
                 {renderCalculationConfig()}
               </CalculationConfigContainer>
