@@ -1,4 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React, {
+  useEffect, useState,
+} from 'react';
+
 import { useDispatch, useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 
@@ -17,7 +20,14 @@ const GeneReorderTool = (props) => {
 
   const config = useSelector((state) => state.componentConfig[plotUuid]?.config);
 
-  // Tree from antd requires format [{key: , title: }], made from gene names from loadedMarkerGenes and config
+  const [selectedGenesLocal, setSelectedGenesLocal] = useState([]);
+
+  useEffect(() => {
+    setSelectedGenesLocal(config?.selectedGenes);
+  }, [config?.selectedGenes]);
+
+  // Tree from antd requires format [{key: , title: }],
+  // made from gene names from loadedMarkerGenes and config
   const composeGeneTree = (treeGenes) => {
     if (!treeGenes.length) {
       return [];
@@ -33,8 +43,8 @@ const GeneReorderTool = (props) => {
   const [geneTreeData, setGeneTreeData] = useState([]);
 
   useEffect(() => {
-    setGeneTreeData(composeGeneTree(config?.selectedGenes));
-  }, [config?.selectedGenes]);
+    setGeneTreeData(composeGeneTree(selectedGenesLocal));
+  }, [selectedGenesLocal]);
 
   // geneKey is equivalent to it's index, moves a gene from pos geneKey to newPosition
   // dispatches an action to update selectedGenes in config
@@ -47,8 +57,12 @@ const GeneReorderTool = (props) => {
   };
 
   const onNodeDelete = (geneKey) => {
-    const genes = geneTreeData.map((treeNode) => treeNode.title);
+    const genes = [...geneTreeData.map((treeNode) => treeNode.title)];
     genes.splice(geneKey, 1);
+
+    setSelectedGenesLocal(genes);
+
+    dispatch(updatePlotConfig(plotUuid, { selectedGenes: genes }));
 
     onDelete(genes);
   };

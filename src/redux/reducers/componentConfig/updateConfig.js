@@ -3,6 +3,7 @@ import { mergeObjectReplacingArrays } from 'utils/arrayUtils';
 
 const updateConfig = (state, action) => {
   const { plotUuid, configChanges = null, dataChanges = null } = action.payload;
+
   let newConfig = _.cloneDeep(state[plotUuid]?.config);
 
   if (configChanges) {
@@ -10,6 +11,7 @@ const updateConfig = (state, action) => {
   }
 
   const newData = dataChanges ?? state[plotUuid]?.plotData;
+
   return {
     ...state,
     [plotUuid]: {

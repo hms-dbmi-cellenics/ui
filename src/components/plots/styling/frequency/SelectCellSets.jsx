@@ -9,7 +9,8 @@ import {
 import { getCellSetsHierarchyByType } from 'redux/selectors';
 import { useSelector } from 'react-redux';
 
-const getSelectOptions = (options) => {
+const getGroupByOptions = (cellSetsHierarchyType) => {
+  const options = useSelector(getCellSetsHierarchyByType(cellSetsHierarchyType))
   const selectOptions = [];
   if (!options.length) {
     return;
@@ -29,31 +30,25 @@ const SelectCellSets = (props) => {
     onUpdate, config,
   } = props;
 
-  const optionsMetadata = useSelector(getCellSetsHierarchyByType('metadataCategorical'));
-  const optionsCellSets = useSelector(getCellSetsHierarchyByType('cellSets'));
-
-  let disabled = false;
-  let toolTipText;
-
   const changeXAxisGrouping = (option) => {
-    onUpdate({ xAxisGrouping: option.value });
+    onUpdate({
+      xAxisGrouping: option.value,
+      axes: { ...config.axes, xAxisText: option.label },
+    });
   };
 
   const changeProportionGrouping = (option) => {
     onUpdate({ proportionGrouping: option.value });
   };
 
-  const metadataMenu = getSelectOptions(optionsMetadata);
-  const cellSetMenu = getSelectOptions(optionsCellSets);
+  const metadataGroupByOptions = getGroupByOptions('metadataCategorical');
+  const cellSetsGroupByOptions = getGroupByOptions('cellSets');
 
-  let menuValue;
-
-  if (!metadataMenu) {
-    menuValue = 'sample';
-    disabled = true;
-    toolTipText = 'The x-axis cannot be changed as this dataset has only a single sample.';
-  } else {
-    menuValue = config.xAxisGrouping;
+  let metadataToGroupByDisabled = false;
+  let tooltipText;
+  if (!metadataGroupByOptions || metadataGroupByOptions.length === 1) {
+    metadataToGroupByDisabled = true;
+    tooltipText = 'The x-axis cannot be changed as this dataset has only a single sample.';
   }
 
   return (
@@ -63,18 +58,16 @@ const SelectCellSets = (props) => {
         (Determines the x-axis):
       </div>
       <Form.Item>
-        <Tooltip title={toolTipText}>
+        <Tooltip title={tooltipText}>
           <Select
             aria-label='metadata'
             value={{
-              value: menuValue,
+              value: config.xAxisGrouping,
             }}
             onChange={changeXAxisGrouping}
             labelInValue
-            disabled={disabled}
-            style={{ width: '100%' }}
-            placeholder='Select cell set...'
-            options={metadataMenu}
+            disabled={metadataToGroupByDisabled}
+            options={metadataGroupByOptions}
           />
         </Tooltip>
       </Form.Item>
@@ -89,9 +82,7 @@ const SelectCellSets = (props) => {
           }}
           onChange={changeProportionGrouping}
           labelInValue
-          style={{ width: '100%' }}
-          placeholder='Select cell set...'
-          options={cellSetMenu}
+          options={cellSetsGroupByOptions}
         />
       </Form.Item>
     </>

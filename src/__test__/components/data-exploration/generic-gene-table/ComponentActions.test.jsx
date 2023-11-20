@@ -39,9 +39,10 @@ const backendStatus = {
 const initialState = {
   genes: {
     expression: {
-      loading: [],
-      matrix: getTwoGenesExpressionMatrix(),
-
+      full: {
+        loading: [],
+        matrix: getTwoGenesExpressionMatrix(),
+      },
       views: {
         [componentType]: {
           data: ['Gzma', 'Lyz2'],
@@ -70,7 +71,7 @@ describe('ComponentActions', () => {
 
     component = mount(
       <Provider store={store}>
-        <ComponentActions name='fakeName' experimentId={experimentId} componentType={componentType} />
+        <ComponentActions name='fakeName' experimentId={experimentId} componentType={componentType} useDownsampledExpression={false} />
       </Provider>,
     );
 
@@ -91,7 +92,7 @@ describe('ComponentActions', () => {
 
     component = mount(
       <Provider store={store}>
-        <ComponentActions name='fakeName' experimentId={experimentId} componentType={componentType} />
+        <ComponentActions name='fakeName' experimentId={experimentId} componentType={componentType} useDownsampledExpression={false} />
       </Provider>,
     );
 
@@ -109,7 +110,7 @@ describe('ComponentActions', () => {
 
     component = mount(
       <Provider store={store}>
-        <ComponentActions name='fakeName' experimentId={experimentId} componentType={componentType} />
+        <ComponentActions name='fakeName' experimentId={experimentId} componentType={componentType} useDownsampledExpression={false} />
       </Provider>,
     );
 
@@ -122,6 +123,7 @@ describe('ComponentActions', () => {
     expect(fetchWork).toHaveBeenCalledWith(
       experimentId,
       {
+        downsampled: false,
         name: 'GeneExpression',
         genes: ['GeneA', 'GeneB', 'GeneC'],
       },
@@ -148,23 +150,21 @@ describe('ComponentActions', () => {
 
     component = mount(
       <Provider store={store}>
-        <ComponentActions name='fakeName' experimentId={experimentId} componentType={componentType} />
+        <ComponentActions name='fakeName' experimentId={experimentId} componentType={componentType} useDownsampledExpression={false} />
       </Provider>,
     );
 
     const menuButtons = component.find(Dropdown).props().overlay;
     menuButtons.props.children[1].props.onClick();
 
-    // Wait for side-effect to propagate (properties loading and loaded).
-    await waitForActions(store, [GENES_EXPRESSION_LOADING, GENES_EXPRESSION_LOADED]);
+    // Wait for side-effect to propagate (genes loaded).
+    await waitForActions(store, [GENES_EXPRESSION_LOADED]);
 
     expect(fetchWork).toHaveBeenCalledTimes(0);
 
-    expect(store.getActions().length).toEqual(2);
+    expect(store.getActions().length).toEqual(1);
 
     expect(store.getActions()[0]).toMatchSnapshot();
-
-    expect(store.getActions()[1]).toMatchSnapshot();
   });
 
   it('Dispatches loadGeneExpression action with the right list of genes when Overwrite is clicked', async () => {
@@ -178,7 +178,7 @@ describe('ComponentActions', () => {
 
     component = mount(
       <Provider store={store}>
-        <ComponentActions name='fakeName' experimentId={experimentId} componentType={componentType} />
+        <ComponentActions name='fakeName' experimentId={experimentId} componentType={componentType} useDownsampledExpression={false} />
       </Provider>,
     );
 
@@ -186,12 +186,11 @@ describe('ComponentActions', () => {
     menuButtons.props.children[2].props.onClick();
 
     // Wait for side-effect to propagate (properties loading and loaded).
-    await waitForActions(store, [GENES_EXPRESSION_LOADING, GENES_EXPRESSION_LOADED]);
+    await waitForActions(store, [GENES_EXPRESSION_LOADED]);
 
     expect(fetchWork).toHaveBeenCalledTimes(0);
 
-    expect(store.getActions().length).toEqual(2);
+    expect(store.getActions().length).toEqual(1);
     expect(store.getActions()[0]).toMatchSnapshot();
-    expect(store.getActions()[1]).toMatchSnapshot();
   });
 });
