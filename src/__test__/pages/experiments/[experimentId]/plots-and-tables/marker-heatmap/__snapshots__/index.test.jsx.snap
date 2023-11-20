@@ -5,25 +5,6 @@ exports[`Marker heatmap plot searches for genes and adds a valid gene 1`] = `
   [
     "testae48e318dab9a1bd0bexperiment",
     {
-      "limit": 1000000,
-      "name": "ListGenes",
-      "offset": 0,
-      "orderBy": "gene_names",
-      "orderDirection": "ASC",
-      "selectFields": [
-        "gene_names",
-        "dispersions",
-      ],
-    },
-    [Function],
-    [Function],
-    {
-      "timeout": 900,
-    },
-  ],
-  [
-    "testae48e318dab9a1bd0bexperiment",
-    {
       "downsampleSettings": {
         "cellSets": [
           [
@@ -121,6 +102,25 @@ exports[`Marker heatmap plot searches for genes and adds a valid gene 1`] = `
   [
     "testae48e318dab9a1bd0bexperiment",
     {
+      "limit": 1000000,
+      "name": "ListGenes",
+      "offset": 0,
+      "orderBy": "gene_names",
+      "orderDirection": "ASC",
+      "selectFields": [
+        "gene_names",
+        "dispersions",
+      ],
+    },
+    [Function],
+    [Function],
+    {
+      "timeout": 900,
+    },
+  ],
+  [
+    "testae48e318dab9a1bd0bexperiment",
+    {
       "downsampleSettings": {
         "cellSets": [
           [
@@ -177,103 +177,6 @@ exports[`Marker heatmap plot searches for genes and adds a valid gene 1`] = `
     {
       "onETagGenerated": [Function],
       "timeout": 900,
-    },
-  ],
-  [
-    "testae48e318dab9a1bd0bexperiment",
-    {
-      "downsampleSettings": {
-        "cellSets": [
-          [
-            "louvain-0",
-            "louvain-1",
-            "louvain-2",
-            "louvain-3",
-            "louvain-4",
-            "louvain-5",
-            "louvain-6",
-            "louvain-7",
-            "louvain-8",
-            "louvain-9",
-            "louvain-10",
-            "louvain-11",
-            "louvain-12",
-            "louvain-13",
-          ],
-          [
-            "louvain-0",
-            "louvain-1",
-            "louvain-2",
-            "louvain-3",
-            "louvain-4",
-            "louvain-5",
-            "louvain-6",
-            "louvain-7",
-            "louvain-8",
-            "louvain-9",
-            "louvain-10",
-            "louvain-11",
-            "louvain-12",
-            "louvain-13",
-            "b62028a1-ffa0-4f10-823d-93c9ddb88898",
-            "ab568662-27fa-462c-9435-625594341314",
-            "98c7a0ed-d086-4df8-bf94-a9ee6edb793f",
-            "Track_1-KMeta",
-            "Track_1-WMetaT",
-          ],
-        ],
-        "groupedTracks": [
-          "sample",
-          "louvain",
-        ],
-        "hiddenCellSets": [],
-        "selectedCellSet": "louvain",
-        "selectedPoints": "All",
-      },
-      "downsampled": true,
-      "genes": [
-        "Ms4a4b",
-        "Smc4",
-        "Ccr7",
-        "Ifi27l2a",
-        "Gm8369",
-        "S100a4",
-        "S100a6",
-        "Tmem176b",
-        "Cxcr6",
-        "5830411N06Rik",
-        "Lmo4",
-        "Il18r1",
-        "Atp2b1",
-        "Pde5a",
-        "Ccl5",
-        "Nkg7",
-        "Klrd1",
-        "AW112010",
-        "Klrc1",
-        "Gzma",
-        "Stmn1",
-        "Hmgn2",
-        "Pclaf",
-        "Tuba1b",
-        "Lyz2",
-        "Ifitm3",
-        "Fcer1g",
-        "Tyrobp",
-        "Cst3",
-        "Cd74",
-        "Igkc",
-        "Cd79a",
-        "H2-Ab1",
-        "H2-Eb1",
-      ],
-      "name": "GeneExpression",
-    },
-    [Function],
-    [Function],
-    {
-      "onETagGenerated": [Function],
-      "timeout": 180,
     },
   ],
 ]

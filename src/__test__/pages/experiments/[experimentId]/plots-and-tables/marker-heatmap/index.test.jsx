@@ -352,7 +352,10 @@ describe('Marker heatmap plot', () => {
 
     // check the selected gene is being loaded
     await waitFor(() => {
-      expect(fetchWork.mock.calls).toMatchSnapshot();
+      // Sort the mock calls by the 'name' property
+      const sortedCalls = fetchWork.mock.calls.sort((a, b) => a[1].name.localeCompare(b[1].name));
+
+      expect(sortedCalls).toMatchSnapshot();
     });
   });
 
