@@ -35,13 +35,8 @@ const PlotLayout = ({
   plotStylingControlsConfig,
   renderCalculationConfig,
   stepHadErrors,
+  allowedPlotActions,
 }) => {
-  const allowedPlotActions = {
-    export: true,
-    compiled: false,
-    source: false,
-    editor: false,
-  };
   const dispatch = useDispatch();
   const [plot, setPlot] = useState(null);
 
@@ -103,7 +98,37 @@ const PlotLayout = ({
       return plot;
     }
   };
-
+  const renderMiniPlots = () => {
+    if (Object.keys(plots).length > 1) {
+      return (
+        <Space direction='vertical'>
+          {Object.entries(plots).map(([key, plotObj]) => (
+            <button
+              type='button'
+              key={key}
+              onClick={() => setSelectedPlot(key)}
+              style={{
+                margin: 0,
+                backgroundColor: 'transparent',
+                align: 'center',
+                padding: '8px',
+                border: '1px solid #000',
+                cursor: 'pointer',
+              }}
+            >
+              <MiniPlot
+                experimentId={experimentId}
+                plotUuid={plotObj.plotUuid}
+                plotFn={plotObj.plot}
+                actions={false}
+              />
+            </button>
+          ))}
+        </Space>
+      );
+    }
+    return null;
+  };
   return (
     <>
       <Row gutter={16}>
@@ -112,32 +137,8 @@ const PlotLayout = ({
             <Col flex='auto'>
               {renderPlot()}
             </Col>
-
             <Col flex='1 0px'>
-              <Space direction='vertical'>
-                {Object.entries(plots).map(([key, plotObj]) => (
-                  <button
-                    type='button'
-                    key={key}
-                    onClick={() => setSelectedPlot(key)}
-                    style={{
-                      margin: 0,
-                      backgroundColor: 'transparent',
-                      align: 'center',
-                      padding: '8px',
-                      border: '1px solid #000',
-                      cursor: 'pointer',
-                    }}
-                  >
-                    <MiniPlot
-                      experimentId={experimentId}
-                      plotUuid={plotObj.plotUuid}
-                      plotFn={plotObj.plot}
-                      actions={false}
-                    />
-                  </button>
-                ))}
-              </Space>
+              {renderMiniPlots()}
             </Col>
           </Row>
           <Divider />
@@ -178,7 +179,7 @@ const PlotLayout = ({
 PlotLayout.propTypes = {
   experimentId: PropTypes.string.isRequired,
   plots: PropTypes.object.isRequired,
-  setSelectedPlot: PropTypes.func.isRequired,
+  setSelectedPlot: PropTypes.func,
   filterName: PropTypes.string.isRequired,
   sampleId: PropTypes.string.isRequired,
   sampleIds: PropTypes.arrayOf(PropTypes.string).isRequired,
@@ -192,9 +193,17 @@ PlotLayout.propTypes = {
   selectedPlot: PropTypes.string.isRequired,
   stepHadErrors: PropTypes.bool.isRequired,
   filterTableUuid: PropTypes.string.isRequired,
+  allowedPlotActions: PropTypes.object,
 };
 
 PlotLayout.defaultProps = {
   stepDisabled: false,
+  setSelectedPlot: () => {},
+  allowedPlotActions: {
+    export: true,
+    compiled: false,
+    source: false,
+    editor: false,
+  },
 };
 export default PlotLayout;
