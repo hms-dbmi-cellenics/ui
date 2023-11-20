@@ -77,7 +77,7 @@
     "localforage": "^1.7.4",
     "lodash": "^4.17.13",
     "lru-memoize": "^1.1.0",
-    "mathjs": "^11.0.1",
+    "mathjs": "^12.1.0",
     "next": "^12.3.4",
     "next-images": "^1.4.0",
     "next-plugin-antd-less": "^1.8.0",
