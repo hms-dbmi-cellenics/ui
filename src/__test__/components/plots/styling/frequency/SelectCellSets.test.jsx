@@ -88,4 +88,30 @@ describe('Select cell sets tests ', () => {
 
     expect(mockOnUpdate).toHaveBeenCalled();
   });
+
+  it('Changing the metadata group by updates the title of the x axis', async () => {
+    await act(async () => {
+      render(
+        <Provider store={storeState}>
+          {selectCellSetsFactory()}
+        </Provider>,
+      );
+    });
+
+    const metadataDropdown = screen.getByRole('combobox', { name: 'metadata' });
+    expect(metadataDropdown).toBeInTheDocument();
+
+    await act(async () => {
+      fireEvent.change(metadataDropdown, { target: { value: 'Track_1' } });
+    });
+
+    const option1 = screen.getByTitle('Track_1', { name: 'Track_1' });
+
+    await act(async () => {
+      fireEvent.click(option1);
+    });
+
+    expect(mockOnUpdate).toHaveBeenCalled();
+
+  });
 });

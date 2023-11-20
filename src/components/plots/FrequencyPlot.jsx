@@ -42,8 +42,8 @@ const FrequencyPlot = (props) => {
     setPlotSpec(generateSpec(config, plotData, xNamesToDisplay, yNamesToDisplay));
   }, [hierarchy, properties, config]);
 
-  // If the plotSpec is empty then don't render it, this avoids a bug where
-  //  vega doesn't remove the initial plot if it was created with an empty plotSpec
+  // If the plotSpec is empty then don't render it. This avoids a bug where
+  // vega doesn't remove the initial plot if it was created with an empty plotSpec
   if (Object.keys(plotSpec).length === 0) {
     return <Loader experimentId={experimentId} />;
   }
