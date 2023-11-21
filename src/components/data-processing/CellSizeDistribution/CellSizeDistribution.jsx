@@ -5,8 +5,9 @@ import _ from 'lodash';
 import { generateDataProcessingPlotUuid } from 'utils/generateCustomPlotUuid';
 
 import PlotLayout from 'components/data-processing/PlotLayout';
-import CellSizeDistributionHistogram from '../../plots/CellSizeDistributionHistogram';
-import CellSizeDistributionKneePlot from '../../plots/CellSizeDistributionKneePlot';
+import BasicFilterPlot from 'components/plots/BasicFilterPlot';
+import generateKneePlotSpec from 'utils/plotSpecs/generateCellSizeDistributionKneePlot';
+import generateHistogramSpec from 'utils/plotSpecs/generateCellSizeDistributionHistogram';
 import CalculationConfig from './CalculationConfig';
 
 const HIGHEST_UMI_DEFAULT = 17000;
@@ -34,11 +35,10 @@ const CellSizeDistribution = ({
       plotUuid: generateDataProcessingPlotUuid(sampleId, filterName, 0),
       plotType: 'cellSizeDistributionKneePlot',
       plot: (config, plotData, actions) => (
-        <CellSizeDistributionKneePlot
-          experimentId={experimentId}
-          config={config}
-          plotData={plotData}
+        <BasicFilterPlot
+          spec={generateKneePlotSpec(config, plotData)}
           actions={actions}
+          miniPlot={config.miniPlot}
         />
       ),
     },
@@ -47,12 +47,10 @@ const CellSizeDistribution = ({
       plotUuid: generateDataProcessingPlotUuid(sampleId, filterName, 1),
       plotType: 'cellSizeDistributionHistogram',
       plot: (config, plotData, actions) => (
-        <CellSizeDistributionHistogram
-          experimentId={experimentId}
-          config={config}
-          plotData={plotData}
+        <BasicFilterPlot
+          spec={generateHistogramSpec(config, plotData, highestUmi)}
           actions={actions}
-          highestUmi={highestUmi}
+          miniPlot={config.miniPlot}
         />
       ),
     },

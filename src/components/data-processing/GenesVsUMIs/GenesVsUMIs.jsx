@@ -4,7 +4,9 @@ import { generateDataProcessingPlotUuid } from 'utils/generateCustomPlotUuid';
 import { useSelector } from 'react-redux';
 
 import PlotLayout from 'components/data-processing/PlotLayout';
-import FeaturesVsUMIsScatterplot from 'components/plots/FeaturesVsUMIsScatterplot'; // Adjust the import path as necessary
+import BasicFilterPlot from 'components/plots/BasicFilterPlot';
+import generateSpec from 'utils/plotSpecs/generateFeaturesVsUMIsScatterplot';
+import transformOldFeaturesVsUMIsPlotData from 'components/plots/helpers/transformOldFeaturesVsUMIsPlotData';
 import CalculationConfig from './CalculationConfig';
 
 const GenesVsUMIs = ({
@@ -26,18 +28,24 @@ const GenesVsUMIs = ({
   const plotData = useSelector(
     (state) => state.componentConfig[plotUuid]?.plotData,
   );
+
   const plots = {
     featuresVsUMIsScatterplot: {
       plotUuid,
-      plot: (config, data, actions) => (
-        <FeaturesVsUMIsScatterplot
-          config={config}
-          plotData={data}
-          actions={actions}
-          expConfig={expConfig}
+      plot: (config, data, actions) => {
+        // we can remove this if we migrate old plotData to the new schema
+        const needTransformPlotData = Array.isArray(data) && data.length;
+        const newPlotData = needTransformPlotData
+          ? transformOldFeaturesVsUMIsPlotData(data)
+          : data;
 
-        />
-      ),
+        return (
+          <BasicFilterPlot
+            spec={generateSpec(config, newPlotData, expConfig)}
+            actions={actions}
+          />
+        );
+      },
       plotType,
     },
   };

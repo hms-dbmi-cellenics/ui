@@ -3,7 +3,9 @@ import PropTypes from 'prop-types';
 import { generateDataProcessingPlotUuid } from 'utils/generateCustomPlotUuid';
 
 import PlotLayout from 'components/data-processing/PlotLayout';
-import DoubletScoreHistogram from 'components/plots/DoubletScoreHistogram'; // Adjust the import path as necessary
+import generateSpec from 'utils/plotSpecs/generateDoubletScoreHistogram';
+import BasicFilterPlot
+from 'components/plots/BasicFilterPlot';
 import CalculationConfig from './CalculationConfig';
 
 const DoubletScores = ({
@@ -18,10 +20,8 @@ const DoubletScores = ({
     doubletScoreHistogram: {
       plotUuid,
       plot: (config, plotData, actions) => (
-        <DoubletScoreHistogram
-          experimentId={experimentId}
-          config={config}
-          plotData={plotData}
+        <BasicFilterPlot
+          spec={generateSpec(config, plotData)}
           actions={actions}
         />
       ),

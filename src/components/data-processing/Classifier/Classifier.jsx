@@ -3,9 +3,10 @@ import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 
 import { generateDataProcessingPlotUuid } from 'utils/generateCustomPlotUuid';
+import generateKneePlotSpec from 'utils/plotSpecs/generateClassifierKneePlot';
+import generateEmptyDropsSpec from 'utils/plotSpecs/generateClassifierEmptyDropsPlot';
+import BasicFilterPlot from 'components/plots/BasicFilterPlot';
 import PlotLayout from 'components/data-processing/PlotLayout';
-import ClassifierEmptyDropsPlot from '../../plots/ClassifierEmptyDropsPlot';
-import ClassifierKneePlot from '../../plots/ClassifierKneePlot';
 import CalculationConfig from './CalculationConfig';
 
 const filterName = 'classifier';
@@ -15,17 +16,19 @@ const Classifier = ({
 }) => {
   const filterTableUuid = generateDataProcessingPlotUuid(sampleId, filterName, 2);
 
+  const expConfig = useSelector(
+    (state) => state.experimentSettings.processing[filterName][sampleId].filterSettings,
+  );
   const plots = {
     kneePlot: {
       title: 'Knee Plot',
       plotUuid: generateDataProcessingPlotUuid(sampleId, filterName, 1),
       plotType: 'classifierKneePlot',
       plot: (config, plotData, actions) => (
-        <ClassifierKneePlot
-          config={config}
-          expConfig={expConfig}
-          plotData={plotData}
+        <BasicFilterPlot
+          spec={generateKneePlotSpec(config, expConfig, plotData)}
           actions={actions}
+          miniPlot={config.miniPlot}
         />
       ),
     },
@@ -34,19 +37,14 @@ const Classifier = ({
       plotUuid: generateDataProcessingPlotUuid(sampleId, filterName, 0),
       plotType: 'classifierEmptyDropsPlot',
       plot: (config, plotData, actions) => (
-        <ClassifierEmptyDropsPlot
-          config={config}
-          expConfig={expConfig}
-          plotData={plotData}
+        <BasicFilterPlot
+          spec={generateEmptyDropsSpec(config, expConfig, plotData)}
           actions={actions}
+          miniPlot={config.miniPlot}
         />
       ),
     },
   };
-
-  const expConfig = useSelector(
-    (state) => state.experimentSettings.processing[filterName][sampleId].filterSettings,
-  );
 
   const plotStylingControlsConfig = [
     {
