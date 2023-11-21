@@ -14,6 +14,8 @@ import UploadStatus from 'utils/upload/UploadStatus';
 
 import processUpload from 'utils/upload/processUpload';
 
+import validate from 'utils/upload/validateSeurat';
+import pushNotificationMessage from 'utils/pushNotificationMessage';
 import mockFile from '__test__/test-utils/mockFile';
 
 const FILE_SIZE = 1024 * 1024 * 15;
@@ -74,6 +76,7 @@ jest.mock('axios', () => ({
 }));
 
 jest.mock('utils/pushNotificationMessage');
+jest.mock('utils/upload/validateSeurat');
 
 let store = null;
 
@@ -228,6 +231,36 @@ describe('processUpload', () => {
     // We do not expect uploads to happen
     await waitFor(() => {
       expect(axios.request).not.toHaveBeenCalled();
+    });
+  });
+
+  it('Should not validate .rds files', async () => {
+    const mockAxiosCalls = [];
+    const uploadSuccess = (params) => {
+      mockAxiosCalls.push(params);
+      return Promise.resolve({ headers: { etag: 'etag-blah' } });
+    };
+
+    axios.request.mockImplementation(uploadSuccess);
+
+    validate.mockImplementationOnce(
+      () => (['Some file error']),
+    );
+
+    await processUpload(
+      getValidFiles(),
+      sampleType,
+      store.getState().samples,
+      mockExperimentId,
+      store.dispatch,
+    );
+
+    // We expect uploads to happen
+    await waitFor(() => {
+      expect();
+      expect(pushNotificationMessage).toHaveBeenCalledTimes(0);
+      expect(axios.request).toHaveBeenCalledTimes(2);
+      expect(validate).toHaveBeenCalledTimes(1);
     });
   });
 });
