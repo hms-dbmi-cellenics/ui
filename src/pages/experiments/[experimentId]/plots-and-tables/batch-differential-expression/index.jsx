@@ -53,8 +53,12 @@ const BatchDiffExpression = (props) => {
   const cellSets = useSelector(getCellSets());
   const { properties, hierarchy } = cellSets;
   const experimentName = useSelector((state) => state.experimentSettings.info.experimentName);
+
   const cellSetNodes = useSelector(getCellSetsHierarchyByType('cellSets'));
+  const clmNodes = useSelector(getCellSetsHierarchyByType('CLM'));
+
   const metadataCellSetNodes = useSelector(getCellSetsHierarchyByType('metadataCategorical'));
+  const clmPerSampleNodes = useSelector(getCellSetsHierarchyByType('CLMPerSample'));
 
   const [dataLoading, setDataLoading] = useState();
 
@@ -64,6 +68,16 @@ const BatchDiffExpression = (props) => {
   const batchCellSetNames = batchCellSetKeys?.map((key) => cellSetNameFromKey(properties, key));
 
   const [sample] = useSelector(getCellSetsHierarchyByKeys(['sample']));
+
+  const cellDefinedNodes = useMemo(
+    () => [...cellSetNodes, ...clmNodes],
+    [cellSetNodes, clmNodes],
+  );
+
+  const sampleDefinedNodes = useMemo(
+    () => [...metadataCellSetNodes, ...clmPerSampleNodes],
+    [metadataCellSetNodes, clmPerSampleNodes],
+  );
 
   const isDatasetUnisample = useMemo(() => sample?.children.length === 1, [sample]);
   useEffect(() => {
@@ -182,7 +196,7 @@ const BatchDiffExpression = (props) => {
               onChange={(value) => changeComparison({ basis: value })}
               value={comparison.basis}
               style={{ width: '40%' }}
-              options={getSelectOptions(cellSetNodes)}
+              options={getSelectOptions(cellDefinedNodes)}
             />
             <br />
           </>
@@ -196,7 +210,7 @@ const BatchDiffExpression = (props) => {
             <DiffExprSelect
               title='Compare sample/group:'
               option='cellSet'
-              filterType='metadataCategorical'
+              filterTypes={['metadataCategorical', 'CLMPerSample']}
               onSelectCluster={(cellSet) => changeComparison({ cellSet })}
               selectedComparison={{ cellSet: comparison.cellSet }}
               value={comparison.cellSet}
@@ -205,7 +219,7 @@ const BatchDiffExpression = (props) => {
             <DiffExprSelect
               title='To sample/group:'
               option='compareWith'
-              filterType='metadataCategorical'
+              filterTypes={['metadataCategorical', 'CLMPerSample']}
               onSelectCluster={(cellSet) => changeComparison({ compareWith: cellSet })}
               selectedComparison={{ cellSet: comparison.cellSet }}
               value={comparison.compareWith}
@@ -218,7 +232,7 @@ const BatchDiffExpression = (props) => {
               onChange={(value) => changeComparison({ basis: value })}
               value={comparison.basis}
               style={{ width: '33.5%' }}
-              options={getSelectOptions(cellSetNodes)}
+              options={getSelectOptions(cellDefinedNodes)}
             />
           </>
         );
@@ -231,7 +245,7 @@ const BatchDiffExpression = (props) => {
             <DiffExprSelect
               title='Compare cell set:'
               option='cellSet'
-              filterType='cellSets'
+              filterTypes={['cellSets', 'CLM']}
               onSelectCluster={(cellSet) => changeComparison({ cellSet })}
               selectedComparison={{ cellSet: comparison.cellSet }}
               value={comparison.cellSet}
@@ -240,7 +254,7 @@ const BatchDiffExpression = (props) => {
             <DiffExprSelect
               title='To cell set:'
               option='compareWith'
-              filterType='cellSets'
+              filterTypes={['cellSets', 'CLM']}
               onSelectCluster={(cellSet) => changeComparison({ compareWith: cellSet })}
               selectedComparison={{ cellSet: comparison.cellSet }}
               value={comparison.compareWith}
@@ -253,7 +267,7 @@ const BatchDiffExpression = (props) => {
               onChange={(value) => changeComparison({ basis: value })}
               value={comparison.basis}
               style={{ width: '34%' }}
-              options={getSelectOptions(metadataCellSetNodes)}
+              options={getSelectOptions(sampleDefinedNodes)}
             />
           </>
         );
