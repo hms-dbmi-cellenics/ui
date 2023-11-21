@@ -47,12 +47,13 @@ const loadEmbedding = (
     const data = await fetchWork(
       experimentId, body, getState, dispatch, { timeout },
     );
+    const modifiedData = data.slice(1);
     return dispatch({
       type: EMBEDDINGS_LOADED,
       payload: {
         experimentId,
         embeddingType,
-        data,
+        data: modifiedData,
       },
     });
   } catch (error) {
