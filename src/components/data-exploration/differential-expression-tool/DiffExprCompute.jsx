@@ -100,7 +100,7 @@ const DiffExprCompute = (props) => {
    * Constructs a form item, a `Select` field with selectable clusters.
    */
   const renderClusterSelectorItem = ({
-    title, option, filterType,
+    title, option, filterTypes,
   }) => {
     if (!cellSets.accessible) {
       return (
@@ -113,7 +113,7 @@ const DiffExprCompute = (props) => {
       <DiffExprSelect
         title={title}
         option={option}
-        filterType={filterType}
+        filterTypes={filterTypes}
         onSelectCluster={onSelectCluster}
         selectedComparison={comparisonGroup[selectedComparison]}
         cellSets={cellSets}
@@ -234,20 +234,20 @@ const DiffExprCompute = (props) => {
               renderClusterSelectorItem({
                 title: 'Compare cell set:',
                 option: 'cellSet',
-                filterType: 'cellSets',
+                filterTypes: ['cellSets', 'CLM'],
               })
             }
 
             {renderClusterSelectorItem({
               title: 'and cell set:',
               option: 'compareWith',
-              filterType: 'cellSets',
+              filterTypes: ['cellSets', 'CLM'],
             })}
 
             {renderClusterSelectorItem({
               title: 'within sample/group:',
               option: 'basis',
-              filterType: 'metadataCategorical',
+              filterTypes: ['metadataCategorical', 'CLMPerSample'],
             })}
           </>
         ) : (
@@ -255,19 +255,19 @@ const DiffExprCompute = (props) => {
             {renderClusterSelectorItem({
               title: 'Compare cell set:',
               option: 'basis',
-              filterType: 'cellSets',
+              filterTypes: ['cellSets', 'CLM'],
             })}
 
             {renderClusterSelectorItem({
               title: 'between sample/group:',
               option: 'cellSet',
-              filterType: 'metadataCategorical',
+              filterTypes: ['metadataCategorical', 'CLMPerSample'],
             })}
 
             {renderClusterSelectorItem({
               title: 'and sample/group:',
               option: 'compareWith',
-              filterType: 'metadataCategorical',
+              filterTypes: ['metadataCategorical', 'CLMPerSample'],
             })}
           </>
         )}
