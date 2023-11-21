@@ -9,12 +9,12 @@ const { Option, OptGroup } = Select;
 
 const DiffExprSelect = (props) => {
   const {
-    title, option, filterType, onSelectCluster, selectedComparison, cellSets, value
+    title, option, filterTypes, onSelectCluster, selectedComparison, cellSets, value
   } = props;
   // Depending on the cell set type specified, set the default name
-  const placeholder = filterType === 'metadataCategorical' ? 'sample/group' : 'cell set';
+  const placeholder = filterTypes.includes('metadataCategorical') ? 'sample/group' : 'cell set';
   const { hierarchy, properties } = cellSets;
-  const tree = composeTree(hierarchy, properties, filterType);
+  const tree = composeTree(hierarchy, properties, filterTypes);
 
   const renderChildren = (rootKey, children) => {
     if (!children || children.length === 0) { return (<></>); }
@@ -96,7 +96,7 @@ DiffExprSelect.propTypes = {
   selectedComparison: PropTypes.object.isRequired,
   cellSets: PropTypes.object.isRequired,
   option: PropTypes.string.isRequired,
-  filterType: PropTypes.string.isRequired,
+  filterTypes: PropTypes.array.isRequired,
   onSelectCluster: PropTypes.func.isRequired,
 };
 export default DiffExprSelect;
