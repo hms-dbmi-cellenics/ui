@@ -17,8 +17,6 @@ const MitochondrialContent = (props) => {
   } = props;
   const filterTableUuid = generateDataProcessingPlotUuid(sampleId, filterName, 2);
 
-  const [selectedPlot, setSelectedPlot] = useState('histogram');
-
   const plots = {
     histogram: {
       title: 'Mitochondrial Fraction',
@@ -77,8 +75,6 @@ const MitochondrialContent = (props) => {
     <PlotLayout
       experimentId={experimentId}
       plots={plots}
-      setSelectedPlot={setSelectedPlot}
-      selectedPlot={selectedPlot}
       filterName={filterName}
       filterTableUuid={filterTableUuid}
       sampleId={sampleId}

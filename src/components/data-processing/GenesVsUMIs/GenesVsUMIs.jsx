@@ -73,7 +73,6 @@ const GenesVsUMIs = ({
     <PlotLayout
       experimentId={experimentId}
       plots={plots}
-      selectedPlot='featuresVsUMIsScatterplot'
       filterName={filterName}
       filterTableUuid={filterTableUuid}
       sampleId={sampleId}

@@ -53,7 +53,6 @@ const DoubletScores = ({
     <PlotLayout
       experimentId={experimentId}
       plots={plots}
-      selectedPlot='doubletScoreHistogram'
       filterName={filterName}
       filterTableUuid={filterTableUuid}
       sampleId={sampleId}

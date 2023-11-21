@@ -24,8 +24,6 @@ classifier, cell size distribution and mitochondrial content filters.
 const PlotLayout = ({
   experimentId,
   plots,
-  selectedPlot,
-  setSelectedPlot,
   filterName,
   filterTableUuid,
   sampleId,
@@ -39,6 +37,7 @@ const PlotLayout = ({
 }) => {
   const dispatch = useDispatch();
   const [plot, setPlot] = useState(null);
+  const [selectedPlot, setSelectedPlot] = useState(Object.keys(plots)[0]);
 
   const selectedPlotConfig = useSelector(
     (state) => state.componentConfig[plots[selectedPlot].plotUuid]?.config,
@@ -183,7 +182,6 @@ const PlotLayout = ({
 PlotLayout.propTypes = {
   experimentId: PropTypes.string.isRequired,
   plots: PropTypes.object.isRequired,
-  setSelectedPlot: PropTypes.func,
   filterName: PropTypes.string.isRequired,
   sampleId: PropTypes.string.isRequired,
   sampleIds: PropTypes.arrayOf(PropTypes.string).isRequired,
@@ -194,7 +192,6 @@ PlotLayout.propTypes = {
     controls: PropTypes.arrayOf(PropTypes.string),
   })).isRequired,
   renderCalculationConfig: PropTypes.func.isRequired,
-  selectedPlot: PropTypes.string.isRequired,
   stepHadErrors: PropTypes.bool.isRequired,
   filterTableUuid: PropTypes.string.isRequired,
   allowedPlotActions: PropTypes.object,
@@ -202,7 +199,6 @@ PlotLayout.propTypes = {
 
 PlotLayout.defaultProps = {
   stepDisabled: false,
-  setSelectedPlot: () => {},
   allowedPlotActions: {
     export: true,
     compiled: false,

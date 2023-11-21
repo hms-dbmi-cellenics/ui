@@ -1,9 +1,8 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 
 import { generateDataProcessingPlotUuid } from 'utils/generateCustomPlotUuid';
-
 import PlotLayout from 'components/data-processing/PlotLayout';
 import ClassifierEmptyDropsPlot from '../../plots/ClassifierEmptyDropsPlot';
 import ClassifierKneePlot from '../../plots/ClassifierKneePlot';
@@ -14,7 +13,6 @@ const filterName = 'classifier';
 const Classifier = ({
   experimentId, sampleId, sampleIds, onConfigChange, stepDisabled, stepHadErrors,
 }) => {
-  const [selectedPlot, setSelectedPlot] = useState('kneePlot');
   const filterTableUuid = generateDataProcessingPlotUuid(sampleId, filterName, 2);
 
   const plots = {
@@ -75,8 +73,6 @@ const Classifier = ({
     <PlotLayout
       experimentId={experimentId}
       plots={plots}
-      selectedPlot={selectedPlot}
-      setSelectedPlot={setSelectedPlot}
       filterName={filterName}
       filterTableUuid={filterTableUuid}
       sampleId={sampleId}

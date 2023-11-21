@@ -15,7 +15,6 @@ const filterName = 'cellSizeDistribution';
 const CellSizeDistribution = ({
   experimentId, sampleId, sampleIds, onConfigChange, stepDisabled, stepHadErrors,
 }) => {
-  const [selectedPlot, setSelectedPlot] = useState('kneePlot');
   const [highestUmi, setHighestUmi] = useState(null);
   const filterTableUuid = generateDataProcessingPlotUuid(sampleId, filterName, 3);
 
@@ -86,8 +85,6 @@ const CellSizeDistribution = ({
     <PlotLayout
       experimentId={experimentId}
       plots={plots}
-      selectedPlot={selectedPlot}
-      setSelectedPlot={setSelectedPlot}
       filterName={filterName}
       filterTableUuid={filterTableUuid}
       sampleId={sampleId}
