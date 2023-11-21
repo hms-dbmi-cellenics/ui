@@ -11,10 +11,13 @@ import userEvent from '@testing-library/user-event';
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 
 import { makeStore } from 'redux/store';
-import mockAPI, { generateDefaultMockAPIResponses } from '__test__/test-utils/mockAPI';
+import mockAPI, { generateDefaultMockAPIResponses, promiseResponse } from '__test__/test-utils/mockAPI';
 import * as getBatchDiffExpr from 'utils/extraActionCreators/differentialExpression/getBatchDiffExpr';
 import * as checkCanRunDiffExprModule from 'utils/extraActionCreators/differentialExpression/checkCanRunDiffExpr';
 import mockLoader from 'components/Loader';
+
+import cellSetsData from '__test__/data/cell_sets.json';
+import cellLevelCellSets from '__test__/data/cell_level_cell_sets.json';
 
 jest.spyOn(checkCanRunDiffExprModule, 'default').mockImplementation(() => 'TRUE');
 jest.mock('utils/extraActionCreators/differentialExpression/getBatchDiffExpr');
@@ -22,7 +25,16 @@ jest.mock('components/Loader', () => jest.fn(() => <div data-testid='mockLoader'
 
 describe('Batch differential expression tests ', () => {
   let storeState = null;
-  const mockApiResponses = _.merge(generateDefaultMockAPIResponses(fake.EXPERIMENT_ID));
+
+  const customCellSetsData = _.cloneDeep(cellSetsData);
+  // Add the cell level cell sets
+  customCellSetsData.cellSets.push(...cellLevelCellSets);
+
+  const mockApiResponses = {
+    ...generateDefaultMockAPIResponses(fake.EXPERIMENT_ID),
+    [`experiments/${fake.EXPERIMENT_ID}/cellSets$`]: () => promiseResponse(JSON.stringify(customCellSetsData)),
+  };
+
   let getBatchDiffExprSpy;
 
   beforeEach(async () => {
@@ -35,6 +47,7 @@ describe('Batch differential expression tests ', () => {
     storeState = makeStore();
     getBatchDiffExprSpy = jest.spyOn(getBatchDiffExpr, 'default');
   });
+
   const secondOptionText = 'Compare between two selected samples/groups in a cell set for all cell sets';
   const renderPage = async () => {
     await act(async () => render(
@@ -52,23 +65,75 @@ describe('Batch differential expression tests ', () => {
   it('Shows correct input fields for each comparison option', async () => {
     await renderPage();
 
-    const compareForCellSetsRadio = screen.getByLabelText(secondOptionText);
-    const compareForSamplesRadio = screen.getByLabelText(/Compare two cell sets for all samples\/groups/i);
+    const compareBetweenSamplesRadio = screen.getByLabelText(secondOptionText);
+    const compareBetweenCellSetsRadio = screen.getByLabelText(/Compare two cell sets for all samples\/groups/i);
 
     expect(screen.getByText(/Select the cell sets for which marker genes are to be computed in batch:/i)).toBeInTheDocument();
     expect(screen.getByText('Select a cell set...')).toBeInTheDocument();
 
-    // Check compareForCellSetsRadio
-    await act(() => userEvent.click(compareForCellSetsRadio));
+    await act(() => userEvent.click(screen.getByText('Select a cell set...')));
+
+    const cellBasedClasses = [
+      'Fake louvain clusters',
+      'Custom cell sets',
+      'Some Cell Level Track',
+      'Another Cell Level Track'
+    ];
+
+    const sampleBasedClasses = [
+      'Samples',
+      'Track_1',
+      'Sample Cell Level Track'
+    ];
+
+    const sampleBasedSets = [
+      'KO', 'WT1', 'WT2', 'KMeta', 'WMetaT', 'Sample cell level zero', 'Sample cell level one',
+    ];
+
+    // Shows the correct cell classes as options
+    cellBasedClasses.forEach((text) => {
+      expect(screen.getByText(text)).toBeInTheDocument();
+    })
+
+    // Doesn't show the samples or sample-based metadata cell classes as options
+    sampleBasedClasses.forEach((text) => {
+      expect(screen.queryByText(text)).not.toBeInTheDocument();
+    })
+
+    // Check compareBetweenSamplesRadio
+    await act(() => userEvent.click(compareBetweenSamplesRadio));
     expect(screen.getByText(/Select the comparison sample\/groups for which batch/i)).toBeInTheDocument();
     expect(screen.getByText(/In batch for each cell set in:/i)).toBeInTheDocument();
     expect(screen.getByText(/Select a cell set.../i)).toBeInTheDocument();
 
-    // Check compareForSamplesRadio
-    await act(() => userEvent.click(compareForSamplesRadio));
+    expect(screen.getAllByText('Select a sample/group...')).toHaveLength(2);
+    screen.getAllByText('Select a sample/group...').forEach((match) => {
+      expect(match).toBeVisible();
+    });
+
+    await act(() => userEvent.click(screen.getAllByText('Select a sample/group...')[0]));
+
+    // Shows the sample options and their classes
+    [...sampleBasedSets, ...sampleBasedClasses].forEach((text) => {
+      expect(screen.getByText(text)).toBeInTheDocument();
+    });
+
+    // Check compareBetweenCellSetsRadio
+    await act(() => userEvent.click(compareBetweenCellSetsRadio));
     expect(screen.getByText(/Select the comparison cell sets for which batch/i)).toBeInTheDocument();
     expect(screen.getByText(/In batch for each sample\/group in:/i)).toBeInTheDocument();
     expect(screen.getByText(/Select samples or metadata.../i)).toBeInTheDocument();
+
+    await act(() => userEvent.click(screen.getAllByText('Select a cell set...')[0]));
+
+
+    const someLouvainCellSets = Array.from({ length: 11 }, (x, index) => `Cluster ${index}`);
+    // Shows only some of the louvain options and not the others
+    // Because it is a virtual list which only renders the options that enter the
+    // options that fit in the display
+    [...someLouvainCellSets, 'fake louvain clusters'].forEach((text) => {
+      expect(screen.getByText(text)).toBeInTheDocument();
+    });
   });
 
   it('sending a request should work', async () => {
@@ -107,6 +172,7 @@ describe('Batch differential expression tests ', () => {
         ['louvain-0', 'louvain-1', 'louvain-2', 'louvain-3', 'louvain-4', 'louvain-5', 'louvain-6', 'louvain-7', 'louvain-8', 'louvain-9', 'louvain-10', 'louvain-11', 'louvain-12', 'louvain-13']);
     });
   });
+
   it('shows the Loader while fetching data', async () => {
     getBatchDiffExpr.mockImplementation(() => new Promise((resolve) => {
       setTimeout(() => {
