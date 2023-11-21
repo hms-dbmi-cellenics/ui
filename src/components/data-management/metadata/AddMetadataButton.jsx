@@ -1,7 +1,7 @@
 /* eslint-disable no-param-reassign */
 import React, { useState } from 'react';
 import {
-  Dropdown, Button, Tooltip,
+  Dropdown, Button,
 } from 'antd';
 import PropTypes from 'prop-types';
 
