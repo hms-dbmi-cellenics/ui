@@ -6,13 +6,13 @@
  * all cell sets, including metadata.
  *
  */
-const composeTree = (hierarchy, properties, filterType = null) => {
-  const composeTreeRecursive = (data, type) => {
+const composeTree = (hierarchy, properties, filterTypes = null) => {
+  const composeTreeRecursive = (data, types) => {
     if (!data) {
       return;
     }
     return data.filter(
-      (root) => (!type || properties[root.key].type === type),
+      (root) => (!types || types.includes(properties[root.key].type)),
     ).map(
       (node) => {
         // eslint-disable-next-line no-unused-vars
@@ -27,7 +27,7 @@ const composeTree = (hierarchy, properties, filterType = null) => {
       },
     );
   };
-  return composeTreeRecursive(hierarchy, filterType);
+  return composeTreeRecursive(hierarchy, filterTypes);
 };
 
 export default composeTree;
