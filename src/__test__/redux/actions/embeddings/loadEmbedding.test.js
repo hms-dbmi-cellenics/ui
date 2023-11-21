@@ -116,7 +116,6 @@ describe('loadEmbedding action', () => {
 
     await store.dispatch(loadEmbedding(experimentId, embeddingType));
 
-    console.log(store.getActions());
     // We should have been dispatched two events.
     expect(store.getActions().length).toEqual(2);
 

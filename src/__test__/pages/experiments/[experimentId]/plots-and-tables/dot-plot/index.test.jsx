@@ -137,7 +137,6 @@ describe('Dot plot page', () => {
         experimentName: fake.EXPERIMENT_NAME,
       },
     });
-    console.log('storeState', storeState.getState());
   });
 
   it('Renders the plot page correctly', async () => {

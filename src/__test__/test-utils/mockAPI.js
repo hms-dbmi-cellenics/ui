@@ -35,8 +35,6 @@ const workerDataResult = (data) => Promise.resolve(_.cloneDeep(data));
 const fetchWorkMock = (
   mockedResults,
 ) => ((experimentId, body) => {
-// ) => (experimentId, _body, _getstate, _dispatch, _optionals) => {
-  console.log('fetchWorkMock ', experimentId, body);
   if (typeof mockedResults[body.name] === 'function') {
     return mockedResults[body.name]();
   }

@@ -69,8 +69,6 @@ const loadAndRenderDefaultHeatmap = async (storeState) => {
 
 const mockAPIResponses = generateDefaultMockAPIResponses(experimentId);
 
-const errorResponse = () => Promise.reject(new Error('Some error idk'));
-
 let storeState = null;
 
 describe('HeatmapPlot', () => {
@@ -94,16 +92,7 @@ describe('HeatmapPlot', () => {
 
     fetchWork
       .mockReset()
-      .mockImplementation((_experimentId, body) => { console.log('***** call mock fetchWork'); return mockWorkerResponses[body.name]; });
-
-    // fetchWork
-    //   .mockReset()
-    //   .mockImplementation((_experimentId, body) => {
-    //     console.log('*************** fetchWork.body: ', body);
-    //     let reqType = body.name;
-    //     if (body.nGenes) reqType += `-${body.nGenes}`;
-    //     return mockWorkerResponses[reqType];
-    //   });
+      .mockImplementation((_experimentId, body) => mockWorkerResponses[body.name]);
 
     vitesscePropsSpy = null;
 
