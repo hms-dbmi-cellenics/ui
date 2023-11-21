@@ -38,10 +38,9 @@ const GenesVsUMIs = ({
         const newPlotData = needTransformPlotData
           ? transformOldFeaturesVsUMIsPlotData(data)
           : data;
-
         return (
           <BasicFilterPlot
-            spec={generateSpec(config, newPlotData, expConfig)}
+            spec={newPlotData?.pointsData ? generateSpec(config, newPlotData, expConfig) : null}
             actions={actions}
           />
         );

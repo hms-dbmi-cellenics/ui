@@ -8,14 +8,14 @@ const BasicFilterPlot = (props) => {
     spec, actions, miniPlot,
   } = props;
 
-  const dataAvailable = spec.data[0].values.length;
+  const dataAvailable = spec?.data[0].values.length;
   if (!dataAvailable) {
     return (
       <EmptyPlot mini={miniPlot} />
     );
   }
   return (
-    <center>
+    <center data-testid='vega-container'>
       <Vega spec={spec} renderer='canvas' actions={actions} />
     </center>
   );
