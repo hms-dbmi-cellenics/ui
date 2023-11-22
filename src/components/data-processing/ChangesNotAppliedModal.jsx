@@ -78,7 +78,7 @@ const ChangesNotAppliedModal = (props) => {
       <Modal
         title='Changes not applied'
         onCancel={() => onCloseModal()}
-        visible={!QCDisabledModalVisible}
+        open={!QCDisabledModalVisible}
         footer={(
           <Space size='large' style={{ display: 'flex', justifyContent: 'center' }}>
             <Button

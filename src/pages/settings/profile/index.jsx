@@ -54,7 +54,7 @@ const ProfileSettings = () => {
     if (name || email || changedUserAttributes[agreedEmailsKey]) {
       setEmailError(false);
       await Auth.updateUserAttributes(user, changedUserAttributes)
-        .then((a) => { console.log('A', a); return pushNotificationMessage('success', endUserMessages.ACCOUNT_DETAILS_UPDATED, 3); })
+        .then((a) => pushNotificationMessage('success', endUserMessages.ACCOUNT_DETAILS_UPDATED, 3))
         .catch(() => {
           setEmailError(true);
         });
