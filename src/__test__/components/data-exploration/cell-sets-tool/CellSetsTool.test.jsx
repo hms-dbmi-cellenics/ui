@@ -73,7 +73,6 @@ cellSetsWithAnnotatedCellClass.cellSets.push(
 );
 
 const louvainClusters = cellSetsData.cellSets.find(({ key }) => key === 'louvain').children;
-const sampleList = cellSetsData.cellSets.find(({ key }) => key === 'sample').children;
 
 const experimentId = '1234';
 

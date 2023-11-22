@@ -4,11 +4,13 @@ import userEvent from '@testing-library/user-event';
 import preloadAll from 'jest-next-dynamic';
 import { Provider } from 'react-redux';
 import thunk from 'redux-thunk';
+import { createStore, applyMiddleware } from 'redux';
 import { Button } from 'antd';
+import _ from 'lodash';
+import rootReducer from 'redux/reducers/index';
 import '__test__/test-utils/setupTests';
 
 import CalculationConfigContainer from 'components/data-processing/CalculationConfigContainer';
-import configureStore from 'redux-mock-store';
 import generateExperimentSettingsMock from '../../test-utils/experimentSettings.mock';
 
 const koSampleId = 'sample-WT1';
@@ -16,7 +18,6 @@ const sampleIds = ['sample-WT', 'sample-WT1', 'sample-KO'];
 const filterName = 'mitochondrialContent';
 
 const initialExperimentState = generateExperimentSettingsMock(sampleIds);
-const mockStore = configureStore([thunk]);
 
 const noData = {
   cellSets: {
@@ -56,7 +57,7 @@ describe('CalculationConfigContainer', () => {
 
   beforeEach(() => {
     jest.resetAllMocks();
-    store = mockStore(noData);
+    store = createStore(rootReducer, _.cloneDeep(noData), applyMiddleware(thunk));
     render(
       <Provider store={store}>
         <CalculationConfigContainer
