@@ -17,10 +17,6 @@ jest.mock('utils/getTimeoutForWorkerTask', () => ({
   default: () => 60,
 }));
 
-jest.mock('object-hash', () => ({
-  MD5: () => 'mock-hash',
-}));
-
 const startDate = '2021-01-01T00:00:00';
 
 describe('runCellSetsClustering action', () => {

@@ -34,11 +34,13 @@ const retrieveData = async (experimentId,
   // 3. If we don't have signedURL, wait for the worker to send us the data via
   // - the data via socket
   // - the signedURL to download the data from S3
-  const { signedUrl: workerSignedUrl, data } = await waitForWorkRequest(ETag,
+  const { signedUrl: workerSignedUrl, data } = await waitForWorkRequest(
+    ETag,
     experimentId,
     request,
     timeout,
-    dispatch);
+    dispatch,
+  );
 
   // 3.1. The worker send the data via socket because it's small enough
   if (data) {

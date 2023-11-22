@@ -159,7 +159,7 @@ const HeatmapPlot = (props) => {
       selectedGenes,
       cellSets,
     );
-    // TODO I think we can save this into the store to avoid having to recompute this again
+
     setHeatmapData(data);
   }, [
     selectedGenes,
@@ -173,8 +173,6 @@ const HeatmapPlot = (props) => {
   ]);
 
   useConditionalEffect(() => {
-    // TODO: we could avoid having to reload the marker heatmap all the time same way
-    // we do for embeddings & Gene Expression
     if (
       !cellSets.accessible
       || !louvainClustersResolution

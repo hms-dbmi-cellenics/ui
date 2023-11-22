@@ -3,7 +3,7 @@ import React from 'react';
 import { act } from 'react-dom/test-utils';
 import '@testing-library/jest-dom';
 import userEvent from '@testing-library/user-event';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 import _ from 'lodash';
 
@@ -40,15 +40,6 @@ jest.mock('react-resize-detector', () => (props) => {
   const { children } = props;
   return children({ width: 800, height: 800 });
 });
-
-// jest.mock('object-hash', () => {
-//   const objectHash = jest.requireActual('object-hash');
-//   const mockWorkResultETag = jest.requireActual('__test__/test-utils/mockWorkResultETag');
-
-//   const mockWorkRequestETag = () => 'differential-expression';
-
-//   return mockWorkResultETag(objectHash, mockWorkRequestETag);
-// });
 
 jest.mock('utils/work/fetchWork');
 

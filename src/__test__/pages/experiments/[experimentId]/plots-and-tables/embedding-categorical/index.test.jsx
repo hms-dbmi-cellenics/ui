@@ -31,17 +31,6 @@ jest.mock('react-resize-detector', () => (props) => {
   return children({ width: 800, height: 800 });
 });
 
-// Mock hash so we can control the ETag that is produced by hash.MD5 when fetching work requests
-// EtagParams is the object that's passed to the function which generates ETag in fetchWork
-// jest.mock('object-hash', () => {
-//   const objectHash = jest.requireActual('object-hash');
-//   const mockWorkResultETag = jest.requireActual('__test__/test-utils/mockWorkResultETag');
-
-//   const mockWorkRequestETag = (ETagParams) => `${ETagParams.body.name}`;
-
-//   return mockWorkResultETag(objectHash, mockWorkRequestETag);
-// });
-
 jest.mock('utils/work/fetchWork');
 
 const mockWorkerResponses = {
