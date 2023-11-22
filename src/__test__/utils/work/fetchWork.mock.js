@@ -83,11 +83,11 @@ const mockGenesListData = ['A', 'B', 'C', 'D'];
 //   return null;
 // });
 
-const mockCacheGet = jest.fn(() => null);
+const mockCacheGet = jest.fn();
 const mockCacheSet = jest.fn();
 const mockCacheRemove = jest.fn();
 
-const mockDispatchWorkRequest = jest.fn(() => true);
+const mockFetchWorkRequest = jest.fn(() => true);
 
 const mockSeekFromS3 = jest.fn();
 
@@ -97,16 +97,15 @@ const mockCacheModule = {
   _remove: jest.fn((key) => mockCacheRemove(key)),
 };
 
-const mockSeekWorkResponseModule = {
+const mockFetchWorkModule = {
   __esModule: true,
-  seekFromS3: mockSeekFromS3,
-  dispatchWorkRequest: mockDispatchWorkRequest,
+  fetchWork: mockFetchWorkRequest,
 };
 
 const mockQcPipelineStartDate = '2021-01-01T01:01:01.000Z';
 
 export {
   mockGenesListData, mockCacheGet, mockCacheSet,
-  mockDispatchWorkRequest, mockSeekFromS3,
-  mockQcPipelineStartDate, mockCacheModule, mockSeekWorkResponseModule,
+  mockFetchWorkRequest, mockSeekFromS3,
+  mockQcPipelineStartDate, mockCacheModule, mockFetchWorkModule,
 };

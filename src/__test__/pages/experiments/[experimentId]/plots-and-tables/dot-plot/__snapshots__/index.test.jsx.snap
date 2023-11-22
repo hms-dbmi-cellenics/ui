@@ -476,13 +476,11 @@ exports[`Dot plot page Should show a no data error if user is using marker gene 
         "dispersions",
       ],
     },
-    900,
-    "paginated-gene-expression",
-    {
-      "PipelineRunETag": "2021-10-20T12:51:44.755Z",
-      "broadcast": false,
-    },
     [Function],
+    [Function],
+    {
+      "timeout": 900,
+    },
   ],
   [
     "testae48e318dab9a1bd0bexperiment",
@@ -513,13 +511,11 @@ exports[`Dot plot page Should show a no data error if user is using marker gene 
       "numberOfMarkers": 3,
       "useMarkerGenes": false,
     },
-    180,
-    "dot-plot-data",
-    {
-      "PipelineRunETag": "2021-10-20T12:51:44.755Z",
-      "broadcast": false,
-    },
     [Function],
+    [Function],
+    {
+      "timeout": 180,
+    },
   ],
   [
     "testae48e318dab9a1bd0bexperiment",
@@ -550,13 +546,11 @@ exports[`Dot plot page Should show a no data error if user is using marker gene 
       "numberOfMarkers": 3,
       "useMarkerGenes": true,
     },
-    180,
-    "dot-plot-data",
-    {
-      "PipelineRunETag": "2021-10-20T12:51:44.755Z",
-      "broadcast": false,
-    },
     [Function],
+    [Function],
+    {
+      "timeout": 180,
+    },
   ],
   [
     "testae48e318dab9a1bd0bexperiment",
@@ -587,13 +581,11 @@ exports[`Dot plot page Should show a no data error if user is using marker gene 
       "numberOfMarkers": 3,
       "useMarkerGenes": true,
     },
-    180,
-    "dot-plot-data",
-    {
-      "PipelineRunETag": "2021-10-20T12:51:44.755Z",
-      "broadcast": false,
-    },
     [Function],
+    [Function],
+    {
+      "timeout": 180,
+    },
   ],
 ]
 `;

@@ -3,25 +3,18 @@ import thunk from 'redux-thunk';
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 
 import runCellSetsClustering from 'redux/actions/cellSets/runCellSetsClustering';
-import { dispatchWorkRequest } from 'utils/work/seekWorkResponse';
+import dispatchWorkRequest from 'utils/work/dispatchWorkRequest';
 
 import initialState from 'redux/reducers/cellSets/initialState';
 
 enableFetchMocks();
 const mockStore = configureStore([thunk]);
 
-jest.mock('utils/work/seekWorkResponse', () => ({
-  __esModule: true, // this property makes it work
-  dispatchWorkRequest: jest.fn(),
-}));
+jest.mock('utils/work/dispatchWorkRequest');
 
 jest.mock('utils/getTimeoutForWorkerTask', () => ({
   __esModule: true, // this property makes it work
   default: () => 60,
-}));
-
-jest.mock('object-hash', () => ({
-  MD5: () => 'mock-hash',
 }));
 
 const startDate = '2021-01-01T00:00:00';

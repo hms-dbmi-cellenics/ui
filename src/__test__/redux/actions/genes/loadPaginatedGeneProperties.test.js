@@ -11,15 +11,12 @@ import {
   GENES_PROPERTIES_ERROR,
 } from 'redux/actionTypes/genes';
 
-import { dispatchWorkRequest } from 'utils/work/seekWorkResponse';
+import fetchWork from 'utils/work/fetchWork';
 
 import mockAPI, { generateDefaultMockAPIResponses, workerDataResult } from '__test__/test-utils/mockAPI';
 import processingConfigData from '__test__/data/processing_config.json';
 
-jest.mock('utils/work/seekWorkResponse', () => ({
-  __esModule: true, // this property makes it work
-  dispatchWorkRequest: jest.fn(),
-}));
+jest.mock('utils/work/fetchWork');
 
 jest.mock('utils/getTimeoutForWorkerTask', () => ({
   __esModule: true, // this property makes it work
@@ -47,7 +44,7 @@ describe('loadPaginatedGeneProperties action', () => {
   beforeEach(async () => {
     jest.clearAllMocks();
 
-    dispatchWorkRequest
+    fetchWork
       .mockReset()
       .mockImplementation(() => null);
 
@@ -90,7 +87,7 @@ describe('loadPaginatedGeneProperties action', () => {
       },
     });
 
-    dispatchWorkRequest
+    fetchWork
       .mockReset()
       .mockImplementation(() => workerDataResult({
         total: 2,
@@ -123,7 +120,7 @@ describe('loadPaginatedGeneProperties action', () => {
     expect(loadedAction).toMatchSnapshot();
     expect(loadedAction.type).toEqual(GENES_PROPERTIES_LOADED_PAGINATED);
 
-    const dispatchParams = dispatchWorkRequest.mock.calls[0];
+    const dispatchParams = fetchWork.mock.calls[0];
     expect(dispatchParams).toMatchSnapshot();
   });
 
@@ -140,7 +137,7 @@ describe('loadPaginatedGeneProperties action', () => {
       },
     });
 
-    dispatchWorkRequest
+    fetchWork
       .mockReset()
       .mockImplementation(() => Promise.reject(new Error('random error!')));
 
