@@ -10,7 +10,7 @@ import fetchAPI from 'utils/http/fetchAPI';
 import GEM2SLoadingScreen from 'components/GEM2SLoadingScreen';
 import '__test__/test-utils/setupTests';
 
-const { Title, Text } = Typography;
+const { Title } = Typography;
 
 const mockStore = configureMockStore([thunk]);
 

@@ -72,7 +72,7 @@ const CellSetsTool = (props) => {
     setTreeData(composeTree(hierarchy, properties));
   }, [hierarchy, properties]);
 
-  const [numSelectedCellSetKeys, setNumSelectedCellSetKeys] = useState(0);
+  const [selectedCellsCount, setSelectedCellsCount] = useState(0);
 
   useEffect(() => {
     const louvainClusters = hierarchy.find(({ key }) => key === 'louvain')?.children;
@@ -94,7 +94,7 @@ const CellSetsTool = (props) => {
     const numSelectedFiltered = new Set([...selectedCells]
       .filter((cellIndex) => filteredCellIds.current.has(cellIndex)));
 
-    setNumSelectedCellSetKeys(numSelectedFiltered.size);
+    setSelectedCellsCount(numSelectedFiltered.size);
   }, [selectedCellSetKeys, properties]);
 
   const onNodeUpdate = useCallback((key, data) => {
@@ -124,7 +124,7 @@ const CellSetsTool = (props) => {
   const renderContent = () => {
     let operations = null;
 
-    if (numSelectedCellSetKeys > 0) {
+    if (selectedCellSetKeys.length > 0) {
       operations = (
         <Space style={{ marginBottom: '10px' }}>
           <SubsetCellSetsOperation
@@ -164,7 +164,7 @@ const CellSetsTool = (props) => {
             helpTitle='Create new cell set from the complement of the selected sets in the current tab.'
           />
           <Text type='primary' id='selectedCellSets'>
-            {`${numSelectedCellSetKeys} cell${numSelectedCellSetKeys === 1 ? '' : 's'} selected`}
+            {`${selectedCellsCount} cell${selectedCellsCount === 1 ? '' : 's'} selected`}
           </Text>
         </Space>
       );
