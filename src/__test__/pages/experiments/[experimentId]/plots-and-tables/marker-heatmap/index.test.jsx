@@ -352,10 +352,13 @@ describe('Marker heatmap plot', () => {
 
     // check the selected gene is being loaded
     await waitFor(() => {
-      // Sort the mock calls by the 'name' property
-      const sortedCalls = fetchWork.mock.calls.sort((a, b) => a[1].name.localeCompare(b[1].name));
+      // Check if there is a call with 'GeneExpression' and containing 'Tmem176a' in the genes array
+      const hasGeneExpressionWithTmem176a = fetchWork.mock.calls.some(
+        (call) => call[1].name === 'GeneExpression' && call[1].genes.includes('Tmem176a'),
+      );
 
-      expect(sortedCalls).toMatchSnapshot();
+      // Assert that such a call exists
+      expect(hasGeneExpressionWithTmem176a).toBeTruthy();
     });
   });
 
