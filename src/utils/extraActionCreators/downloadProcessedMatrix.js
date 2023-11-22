@@ -20,6 +20,8 @@ const downloadProcessedMatrix = (experimentId) => async (dispatch, getState) => 
 
     const taskName = 'DownloadAnnotSeuratObject';
 
+    // the request needs the embeddingETag to merge that data with the rds
+    // the embeddingETag is added by the API to this body
     const body = {
       name: taskName,
     };

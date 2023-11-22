@@ -22,6 +22,8 @@ const getTrajectoryPlotPseudoTime = (
     embeddingSettings,
   } = getState().experimentSettings.processing.configureEmbedding;
 
+  // the request needs the embeddingETag to merge that data with the rds
+  // the embeddingETag is added by the API to this body
   const body = {
     name: 'GetTrajectoryAnalysisPseudoTime',
     embedding: {

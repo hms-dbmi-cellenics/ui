@@ -3,7 +3,7 @@ import { Environment, isBrowser } from 'utils/deploymentInfo';
 import cache from 'utils/cache';
 import dispatchWorkRequest from 'utils/work/dispatchWorkRequest';
 import downloadFromS3 from 'utils/work/downloadFromS3';
-import waitForWorkRequest from 'waitForWorkRequest';
+import waitForWorkRequest from 'utils/work/waitForWorkRequest';
 
 // retrieveData will try to get the data for the given experimentId and ETag from
 // the fastest source possible. It will try to get the data in order from:
