@@ -9,7 +9,8 @@ import { Vega } from 'react-vega';
 
 import { loadBackendStatus } from 'redux/actions/backendStatus';
 import { makeStore } from 'redux/store';
-import { dispatchWorkRequest } from 'utils/work/seekWorkResponse';
+import fetchWork from 'utils/work/fetchWork';
+
 import mockEmbedding from '__test__/data/embedding.json';
 import mockStartingNodes from '__test__/data/starting_nodes.json';
 import mockPseudoTime from '__test__/data/pseudotime.json';
@@ -25,7 +26,6 @@ import mockAPI, {
   promiseResponse,
   statusResponse,
   delayedResponse,
-  dispatchWorkRequestMock,
 } from '__test__/test-utils/mockAPI';
 import createTestComponentFactory from '__test__/test-utils/testComponentFactory';
 import userEvent from '@testing-library/user-event';
@@ -38,21 +38,7 @@ jest.mock('react-resize-detector', () => (props) => {
   return children({ width: 800, height: 800 });
 });
 
-// Mock hash so we can control the ETag that is produced by hash.MD5 when fetching work requests
-// EtagParams is the object that's passed to the function which generates ETag in fetchWork
-jest.mock('object-hash', () => {
-  const objectHash = jest.requireActual('object-hash');
-  const mockWorkResultETag = jest.requireActual('__test__/test-utils/mockWorkResultETag');
-
-  const mockWorkRequestETag = (ETagParams) => `${ETagParams.body.name}`;
-
-  return mockWorkResultETag(objectHash, mockWorkRequestETag);
-});
-
-jest.mock('utils/work/seekWorkResponse', () => ({
-  __esModule: true,
-  dispatchWorkRequest: jest.fn(),
-}));
+jest.mock('utils/work/fetchWork');
 
 jest.mock('react-vega', () => {
   const originalModule = jest.requireActual('react-vega');
@@ -145,11 +131,9 @@ describe('Trajectory analysis plot', () => {
 
   beforeEach(async () => {
     jest.clearAllMocks();
-
-    dispatchWorkRequest
+    fetchWork
       .mockReset()
-      .mockImplementation(dispatchWorkRequestMock(mockWorkerResponses));
-
+      .mockImplementation((_experimentId, body) => mockWorkerResponses[body.name]);
     enableFetchMocks();
     fetchMock.resetMocks();
     fetchMock.doMock();
@@ -337,7 +321,7 @@ describe('Trajectory analysis plot', () => {
   });
 
   it('Shows a loader if embedding data is loading', async () => {
-    dispatchWorkRequest
+    fetchWork
       .mockReset()
       .mockImplementationOnce(() => delayedResponse({ body: 'Not found', status: 404 }, 4000));
 
@@ -350,7 +334,7 @@ describe('Trajectory analysis plot', () => {
   });
 
   it('Shows an error if there is an error fetching embedding', async () => {
-    dispatchWorkRequest
+    fetchWork
       .mockReset()
       .mockImplementationOnce(() => Promise.reject(new WorkResponseError('some random error')));
 

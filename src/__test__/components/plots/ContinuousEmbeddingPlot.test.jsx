@@ -6,7 +6,8 @@ import { makeStore } from 'redux/store';
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 import * as PlotSpecGenerators from 'utils/plotSpecs/generateEmbeddingContinuousSpec';
 
-import { dispatchWorkRequest } from 'utils/work/seekWorkResponse';
+import fetchWork from 'utils/work/fetchWork';
+
 import { loadBackendStatus } from 'redux/actions/backendStatus';
 
 import ContinuousEmbeddingPlot from 'components/plots/ContinuousEmbeddingPlot';
@@ -14,7 +15,7 @@ import ContinuousEmbeddingPlot from 'components/plots/ContinuousEmbeddingPlot';
 import { initialPlotConfigStates } from 'redux/reducers/componentConfig/initialState';
 
 import mockAPI, {
-  generateDefaultMockAPIResponses, statusResponse, delayedResponse, dispatchWorkRequestMock,
+  generateDefaultMockAPIResponses, statusResponse, delayedResponse,
 } from '__test__/test-utils/mockAPI';
 import createTestComponentFactory from '__test__/test-utils/testComponentFactory';
 import fake from '__test__/test-utils/constants';
@@ -28,21 +29,7 @@ enableFetchMocks();
 
 const experimentId = fake.EXPERIMENT_ID;
 
-// Mock hash so we can control the ETag that is produced by hash.MD5 when fetching work requests
-// EtagParams is the object that's passed to the function which generates ETag in fetchWork
-jest.mock('object-hash', () => {
-  const objectHash = jest.requireActual('object-hash');
-  const mockWorkResultETag = jest.requireActual('__test__/test-utils/mockWorkResultETag');
-
-  const mockWorkRequestETag = () => 'embedding';
-
-  return mockWorkResultETag(objectHash, mockWorkRequestETag);
-});
-
-jest.mock('utils/work/seekWorkResponse', () => ({
-  __esModule: true,
-  dispatchWorkRequest: jest.fn(),
-}));
+jest.mock('utils/work/fetchWork');
 
 const mockWorkerResponses = {
   embedding: mockEmbedding,
@@ -88,9 +75,9 @@ describe('Continuous embedding plot', () => {
     fetchMock.resetMocks();
     fetchMock.mockIf(/.*/, mockAPI(defaultAPIResponse));
 
-    dispatchWorkRequest
+    fetchWork
       .mockReset()
-      .mockImplementationOnce(dispatchWorkRequestMock(mockWorkerResponses));
+      .mockImplementationOnce(() => mockWorkerResponses.embedding);
 
     storeState = makeStore();
     await storeState.dispatch(loadBackendStatus(experimentId));
@@ -185,7 +172,7 @@ describe('Continuous embedding plot', () => {
   });
 
   it('Shows a loader if embedding data is loading', async () => {
-    dispatchWorkRequest
+    fetchWork
       .mockReset()
       .mockImplementationOnce(() => delayedResponse({ body: 'Not found', status: 404 }, 4000));
 
@@ -196,7 +183,7 @@ describe('Continuous embedding plot', () => {
   });
 
   it('Shows an error if there is an error fetching embedding', async () => {
-    dispatchWorkRequest
+    fetchWork
       .mockReset()
       .mockImplementationOnce(() => Promise.reject(new WorkResponseError('some random error')));
 
