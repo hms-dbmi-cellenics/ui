@@ -84,12 +84,10 @@ exports[`loadPaginatedGeneProperties action Dispatches appropriately on success 
       "c",
     ],
   },
-  60,
-  "1529f02c2d88b6e0592c21c9c3840397",
-  {
-    "PipelineRunETag": "2021-01-01T01:01:01.000Z",
-    "broadcast": false,
-  },
   [Function],
+  [Function],
+  {
+    "timeout": 60,
+  },
 ]
 `;

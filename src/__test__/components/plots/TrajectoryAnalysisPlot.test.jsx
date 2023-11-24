@@ -8,7 +8,7 @@ import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 import TrajectoryAnalysisPlot from 'components/plots/TrajectoryAnalysisPlot';
 
 import mockAPI, {
-  dispatchWorkRequestMock, generateDefaultMockAPIResponses, promiseResponse, statusResponse,
+  generateDefaultMockAPIResponses, promiseResponse, statusResponse,
 } from '__test__/test-utils/mockAPI';
 import createTestComponentFactory from '__test__/test-utils/testComponentFactory';
 import fake from '__test__/test-utils/constants';
@@ -16,7 +16,8 @@ import mockEmbedding from '__test__/data/embedding.json';
 import mockStartingNodes from '__test__/data/starting_nodes.json';
 import mockProcessingConfig from '__test__/data/processing_config.json';
 
-import { dispatchWorkRequest } from 'utils/work/seekWorkResponse';
+import fetchWork from 'utils/work/fetchWork';
+
 import { loadBackendStatus } from 'redux/actions/backendStatus';
 import { loadPlotConfig } from 'redux/actions/componentConfig';
 import getTrajectoryPlotStartingNodes from 'redux/actions/componentConfig/getTrajectoryPlotStartingNodes';
@@ -31,21 +32,7 @@ enableFetchMocks();
 
 const experimentId = fake.EXPERIMENT_ID;
 
-// Mock hash so we can control the ETag that is produced by hash.MD5 when fetching work requests
-// EtagParams is the object that's passed to the function which generates ETag in fetchWork
-jest.mock('object-hash', () => {
-  const objectHash = jest.requireActual('object-hash');
-  const mockWorkResultETag = jest.requireActual('__test__/test-utils/mockWorkResultETag');
-
-  const mockWorkRequestETag = (ETagParams) => `${ETagParams.body.name}`;
-
-  return mockWorkResultETag(objectHash, mockWorkRequestETag);
-});
-
-jest.mock('utils/work/seekWorkResponse', () => ({
-  __esModule: true,
-  dispatchWorkRequest: jest.fn(),
-}));
+jest.mock('utils/work/fetchWork');
 
 const mockWorkerResponses = {
   GetTrajectoryAnalysisStartingNodes: mockStartingNodes,
@@ -116,9 +103,9 @@ describe('Trajectory analysis plot', () => {
     fetchMock.resetMocks();
     fetchMock.mockIf(/.*/, mockAPI(defaultAPIResponse));
 
-    dispatchWorkRequest
+    fetchWork
       .mockReset()
-      .mockImplementation(dispatchWorkRequestMock(mockWorkerResponses));
+      .mockImplementation((_experimentId, body) => mockWorkerResponses[body.name]);
 
     storeState = makeStore();
     await storeState.dispatch(loadBackendStatus(experimentId));
