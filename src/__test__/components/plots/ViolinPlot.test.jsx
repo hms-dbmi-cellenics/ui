@@ -7,7 +7,8 @@ import { act } from 'react-dom/test-utils';
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 import '__test__/test-utils/setupTests';
 import { loadBackendStatus } from 'redux/actions/backendStatus';
-import { dispatchWorkRequest } from 'utils/work/seekWorkResponse';
+import fetchWork from 'utils/work/fetchWork';
+
 import expressionDataFAKEGENE from '__test__/data/gene_expression_FAKEGENE.json';
 
 import ViolinPlot from 'components/plots/ViolinPlotMain';
@@ -22,7 +23,6 @@ import endUserMessages from 'utils/endUserMessages';
 
 import _ from 'lodash';
 import mockAPI, {
-  dispatchWorkRequestMock,
   generateDefaultMockAPIResponses,
   statusResponse,
 } from '__test__/test-utils/mockAPI';
@@ -30,26 +30,11 @@ import mockAPI, {
 import fake from '__test__/test-utils/constants';
 import { plotTypes } from 'utils/constants';
 
-// Mock hash so we can control the ETag that is produced by hash.MD5 when fetching work requests
-// EtagParams is the object that's passed to the function which generates ETag in fetchWork
-jest.mock('object-hash', () => {
-  const objectHash = jest.requireActual('object-hash');
-  const mockWorkResultETag = jest.requireActual('__test__/test-utils/mockWorkResultETag');
-
-  const mockWorkRequestETag = () => 'list-genes';
-  const mockGeneExpressionETag = () => 'gene-expression';
-
-  return mockWorkResultETag(objectHash, mockWorkRequestETag, mockGeneExpressionETag);
-});
-
-jest.mock('utils/work/seekWorkResponse', () => ({
-  __esModule: true,
-  dispatchWorkRequest: jest.fn(() => true),
-}));
+jest.mock('utils/work/fetchWork');
 
 const mockWorkerResponses = {
-  'list-genes': null,
-  'gene-expression': expressionDataFAKEGENE,
+  ListGenes: null,
+  GeneExpression: expressionDataFAKEGENE,
 };
 
 const plotType = plotTypes.VIOLIN_PLOT;
@@ -88,9 +73,9 @@ describe('ViolinPlot', () => {
   beforeEach(async () => {
     jest.clearAllMocks();
 
-    dispatchWorkRequest
+    fetchWork
       .mockReset()
-      .mockImplementationOnce(dispatchWorkRequestMock(mockWorkerResponses));
+      .mockImplementation((_experimentId, body) => mockWorkerResponses[body.name]);
 
     enableFetchMocks();
     fetchMock.resetMocks();
