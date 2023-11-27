@@ -60,11 +60,17 @@ const CellSizeDistributionConfig = (props) => {
     </>
   );
 };
+CellSizeDistributionConfig.defaultProps = {
+  updateSettings: () => {},
+  config: {},
+  disabled: false,
+  highestUmi: null,
+};
 CellSizeDistributionConfig.propTypes = {
-  updateSettings: PropTypes.func.isRequired,
-  config: PropTypes.object.isRequired,
-  disabled: PropTypes.bool.isRequired,
-  highestUmi: PropTypes.number.isRequired,
+  updateSettings: PropTypes.func,
+  config: PropTypes.object,
+  disabled: PropTypes.bool,
+  highestUmi: PropTypes.number,
 };
 
 export default CellSizeDistributionConfig;

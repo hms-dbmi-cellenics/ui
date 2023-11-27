@@ -18,7 +18,7 @@ import { experiments } from '__test__/test-utils/mockData';
 import createTestComponentFactory from '__test__/test-utils/testComponentFactory';
 import mockAPI, { generateDefaultMockAPIResponses } from '__test__/test-utils/mockAPI';
 
-import ProjectMenu from 'components/data-management/ProjectMenu';
+import ProjectMenu from 'components/data-management/project/ProjectMenu';
 import { loadExperiments, setActiveExperiment } from 'redux/actions/experiments';
 
 const mockNavigateTo = jest.fn();

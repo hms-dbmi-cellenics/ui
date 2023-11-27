@@ -4,7 +4,6 @@ import {
 } from '@testing-library/react';
 import StatusIndicator from 'components/data-processing/StatusIndicator';
 import { Provider } from 'react-redux';
-import { act } from 'react-dom/test-utils';
 import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import fake from '__test__/test-utils/constants';

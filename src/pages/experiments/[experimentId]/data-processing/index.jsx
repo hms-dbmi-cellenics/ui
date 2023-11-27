@@ -23,7 +23,6 @@ import {
 import React, {
   useCallback,
   useEffect,
-  useMemo,
   useState,
 } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
@@ -682,7 +681,7 @@ const DataProcessingPage = ({ experimentId, experimentData }) => {
             ) : (
               <Modal
                 title='Run data processing with the changed settings'
-                visible
+                open
                 onCancel={() => setRunQCModalVisible(false)}
                 footer={
                   [

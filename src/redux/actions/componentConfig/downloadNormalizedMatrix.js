@@ -3,7 +3,7 @@ import { PLOT_DATA_LOADED, PLOT_DATA_LOADING, PLOT_DATA_ERROR } from 'redux/acti
 import downloadFromUrl from 'utils/downloadFromUrl';
 import handleError from 'utils/http/handleError';
 import fetchWork from 'utils/work/fetchWork';
-import writeToFileURL from 'utils/writeToFileURL';
+import writeToFileURL from 'utils/upload/writeToFileURL';
 
 const downloadNormalizedMatrix = (
   plotUuid,
