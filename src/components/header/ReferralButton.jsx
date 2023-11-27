@@ -156,8 +156,8 @@ const ReferralButton = () => {
         </Card>
       ),
       key: 'referral-button-contents',
-    }
-  ]
+    },
+  ];
 
   return (
     <Dropdown

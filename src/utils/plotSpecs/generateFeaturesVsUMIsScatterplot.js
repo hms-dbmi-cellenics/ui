@@ -5,7 +5,7 @@ const generateSpec = (config, plotData, expConfig) => {
   const { pointsData, linesData } = plotData;
   const { predictionInterval } = expConfig;
 
-  const sd = stdev(pointsData.map((p) => p.log_genes));
+  const sd = stdev(pointsData?.map((p) => p.log_genes));
   let predictionIntervalIndex;
 
   // if the prediction interval is not set yet

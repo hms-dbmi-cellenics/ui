@@ -7,7 +7,7 @@ import PropTypes from 'prop-types';
 
 import { updatePlotConfig } from 'redux/actions/componentConfig';
 
-import { arrayMoveImmutable } from 'utils/array-move';
+import { arrayMoveImmutable } from 'utils/arrayUtils';
 import HierarchicalTreeGenes from 'components/plots/hierarchical-tree-genes/HierarchicalTreeGenes';
 
 import { Space, Button } from 'antd';

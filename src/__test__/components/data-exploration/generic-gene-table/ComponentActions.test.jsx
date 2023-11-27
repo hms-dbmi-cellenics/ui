@@ -77,8 +77,8 @@ describe('ComponentActions', () => {
 
     const dropdown = component.find(Dropdown);
     expect(dropdown.length).toEqual(1);
-    expect(dropdown.props().overlay.type.name).toEqual('Menu');
-    expect(dropdown.props().overlay.props.children.length).toEqual(3);
+    expect(dropdown.props().menu.type.name).toEqual('Menu');
+    expect(dropdown.props().menu.props.children.length).toEqual(3);
   });
 
   it('Renders correctly when there are no selected genes', () => {
@@ -114,7 +114,7 @@ describe('ComponentActions', () => {
       </Provider>,
     );
 
-    const menuButtons = component.find(Dropdown).props().overlay;
+    const menuButtons = component.find(Dropdown).props().menu;
     menuButtons.props.children[0].props.onClick();
 
     // Wait for side-effect to propagate (properties loading and loaded).
@@ -154,7 +154,7 @@ describe('ComponentActions', () => {
       </Provider>,
     );
 
-    const menuButtons = component.find(Dropdown).props().overlay;
+    const menuButtons = component.find(Dropdown).props().menu;
     menuButtons.props.children[1].props.onClick();
 
     // Wait for side-effect to propagate (genes loaded).
@@ -182,7 +182,7 @@ describe('ComponentActions', () => {
       </Provider>,
     );
 
-    const menuButtons = component.find(Dropdown).props().overlay;
+    const menuButtons = component.find(Dropdown).props().menu;
     menuButtons.props.children[2].props.onClick();
 
     // Wait for side-effect to propagate (properties loading and loaded).

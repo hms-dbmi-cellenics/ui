@@ -12,7 +12,7 @@ import { Provider } from 'react-redux';
 import thunk from 'redux-thunk';
 
 import initialState, { experimentTemplate } from 'redux/reducers/experiments/initialState';
-import ProjectCard from 'components/data-management/ProjectCard';
+import ProjectCard from 'components/data-management/project/ProjectCard';
 
 const experimentId = 'experimentId1';
 const experimentName = 'Test Experiment';

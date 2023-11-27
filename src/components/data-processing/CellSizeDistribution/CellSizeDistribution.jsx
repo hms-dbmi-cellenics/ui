@@ -1,68 +1,33 @@
-import React, {
-  useState, useEffect, useCallback, useRef,
-} from 'react';
-import { useSelector, useDispatch } from 'react-redux';
-import _ from 'lodash';
+import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import {
-  Collapse,
-  Row,
-  Col,
-  Space,
-  Skeleton,
-  Divider,
-} from 'antd';
-
+import { useSelector } from 'react-redux';
+import _ from 'lodash';
 import { generateDataProcessingPlotUuid } from 'utils/generateCustomPlotUuid';
-import {
-  updatePlotConfig,
-  loadPlotConfig,
-  savePlotConfig,
-} from 'redux/actions/componentConfig';
 
-import CellSizeDistributionHistogram from '../../plots/CellSizeDistributionHistogram';
-import CellSizeDistributionKneePlot from '../../plots/CellSizeDistributionKneePlot';
-
-import PlotStyling from '../../plots/styling/PlotStyling';
-import MiniPlot from '../../plots/MiniPlot';
-import CalculationConfigContainer from '../CalculationConfigContainer';
+import PlotLayout from 'components/data-processing/PlotLayout';
+import BasicFilterPlot from 'components/plots/BasicFilterPlot';
+import generateKneePlotSpec from 'utils/plotSpecs/generateCellSizeDistributionKneePlot';
+import generateHistogramSpec from 'utils/plotSpecs/generateCellSizeDistributionHistogram';
 import CalculationConfig from './CalculationConfig';
-import FilterResultTable from '../FilterResultTable';
-
-const { Panel } = Collapse;
 
 const HIGHEST_UMI_DEFAULT = 17000;
-
 const filterName = 'cellSizeDistribution';
 
-const allowedPlotActions = {
-  export: true,
-  compiled: false,
-  source: false,
-  editor: false,
-};
-
-const CellSizeDistribution = (props) => {
-  const {
-    experimentId, sampleId, sampleIds, onConfigChange, stepDisabled, stepHadErrors,
-  } = props;
-
-  const dispatch = useDispatch();
-
-  const [selectedPlot, setSelectedPlot] = useState('kneePlot');
-  const [plot, setPlot] = useState(null);
-  const highestUmiRef = useRef(null);
+const CellSizeDistribution = ({
+  experimentId, sampleId, sampleIds, onConfigChange, stepDisabled, stepHadErrors,
+}) => {
+  const [highestUmi, setHighestUmi] = useState(null);
   const filterTableUuid = generateDataProcessingPlotUuid(sampleId, filterName, 3);
-  const filterTableData = useSelector((state) => state.componentConfig[filterTableUuid]?.plotData);
 
-  const debounceSave = useCallback(
-    _.debounce((plotUuid) => dispatch(savePlotConfig(experimentId, plotUuid)), 2000), [],
+  const histogramPlotData = useSelector(
+    (state) => state.componentConfig[
+      generateDataProcessingPlotUuid(sampleId, filterName, 1)]?.plotData,
   );
 
-  const updatePlotWithChanges = (obj) => {
-    dispatch(updatePlotConfig(plots[selectedPlot].plotUuid, obj));
-    debounceSave(plots[selectedPlot].plotUuid);
-  };
+  useEffect(() => {
+    setHighestUmi(_.maxBy(histogramPlotData,
+      (datum) => datum.u)?.u ?? HIGHEST_UMI_DEFAULT);
+  }, [histogramPlotData]);
 
   const plots = {
     kneePlot: {
@@ -70,11 +35,10 @@ const CellSizeDistribution = (props) => {
       plotUuid: generateDataProcessingPlotUuid(sampleId, filterName, 0),
       plotType: 'cellSizeDistributionKneePlot',
       plot: (config, plotData, actions) => (
-        <CellSizeDistributionKneePlot
-          experimentId={experimentId}
-          config={config}
-          plotData={plotData}
+        <BasicFilterPlot
+          spec={generateKneePlotSpec(config, plotData)}
           actions={actions}
+          miniPlot={config.miniPlot}
         />
       ),
     },
@@ -83,57 +47,14 @@ const CellSizeDistribution = (props) => {
       plotUuid: generateDataProcessingPlotUuid(sampleId, filterName, 1),
       plotType: 'cellSizeDistributionHistogram',
       plot: (config, plotData, actions) => (
-        <CellSizeDistributionHistogram
-          experimentId={experimentId}
-          config={config}
-          plotData={plotData}
+        <BasicFilterPlot
+          spec={generateHistogramSpec(config, plotData, highestUmi)}
           actions={actions}
-          highestUmi={highestUmiRef.current}
+          miniPlot={config.miniPlot}
         />
       ),
     },
   };
-
-  const selectedConfig = useSelector(
-    (state) => state.componentConfig[plots[selectedPlot].plotUuid]?.config,
-  );
-  const expConfig = useSelector(
-    (state) => state.experimentSettings.processing[filterName][sampleId].filterSettings,
-  );
-  const selectedPlotData = useSelector(
-    (state) => state.componentConfig[plots[selectedPlot].plotUuid]?.plotData,
-  );
-
-  const histogramPlotData = useSelector(
-    (state) => state.componentConfig[plots.histogram.plotUuid]?.plotData,
-  );
-
-  useEffect(() => {
-    highestUmiRef.current = _.maxBy(
-      histogramPlotData,
-      (datum) => datum.u,
-    )?.u ?? HIGHEST_UMI_DEFAULT;
-  }, [histogramPlotData]);
-
-  useEffect(() => {
-    Object.values(plots).forEach((obj) => {
-      if (!selectedConfig) {
-        dispatch(loadPlotConfig(experimentId, obj.plotUuid, obj.plotType));
-      }
-    });
-  }, []);
-
-  useEffect(() => {
-    if (!filterTableData) dispatch(loadPlotConfig(experimentId, filterTableUuid, 'filterTable'));
-  }, []);
-
-  useEffect(() => {
-    if (selectedConfig && selectedPlotData && expConfig) {
-      const newConfig = _.clone(selectedConfig);
-      _.merge(newConfig, expConfig);
-      setPlot(plots[selectedPlot].plot(newConfig, selectedPlotData, allowedPlotActions));
-    }
-  }, [expConfig, selectedConfig, selectedPlotData]);
 
   const plotStylingControlsConfig = [
     {
@@ -155,104 +76,30 @@ const CellSizeDistribution = (props) => {
     {
       panelTitle: 'Font',
       controls: ['font'],
-    },
-  ];
+    }];
 
-  const renderPlot = () => {
-    // Spinner for main window
-    if (!selectedConfig || !selectedPlotData || stepHadErrors) {
-      return (
-        <center>
-          <Skeleton.Image style={{ width: 400, height: 400 }} />
-        </center>
-      );
-    }
-
-    if (plot) {
-      return plot;
-    }
-  };
-
+  const renderCalculationConfig = () => <CalculationConfig highestUmi={highestUmi} />;
   return (
-    <>
-      <Row gutter={16}>
-        <Col span={18}>
-          <Row>
-            <Col flex='auto'>
-              {renderPlot()}
-            </Col>
-            <Col flex='1 0px'>
-              <Space direction='vertical'>
-                {Object.entries(plots).map(([key, plotObj]) => (
-                  <button
-                    type='button'
-                    key={key}
-                    onClick={() => setSelectedPlot(key)}
-                    style={{
-                      margin: 0,
-                      backgroundColor: 'transparent',
-                      align: 'center',
-                      padding: '8px',
-                      border: '1px solid #000',
-                      cursor: 'pointer',
-                    }}
-                  >
-
-                    <MiniPlot
-                      experimentId={experimentId}
-                      plotUuid={plotObj.plotUuid}
-                      plotFn={plotObj.plot}
-                      actions={false}
-                    />
-
-                  </button>
-
-                ))}
-              </Space>
-            </Col>
-          </Row>
-          <Divider />
-          <Row style={{ marginBottom: '1em' }}>
-            <Col>
-              {filterTableData
-                ? <FilterResultTable tableData={filterTableData} />
-                : <Skeleton />}
-            </Col>
-          </Row>
-        </Col>
-        <Col flex='1 0px'>
-          <Collapse defaultActiveKey='settings'>
-            <Panel header='Filtering Settings' key='settings'>
-              <CalculationConfigContainer
-                filterUuid={filterName}
-                sampleId={sampleId}
-                sampleIds={sampleIds}
-                onConfigChange={onConfigChange}
-                plotType='bin step'
-                stepDisabled={stepDisabled}
-              >
-                <CalculationConfig highestUmi={highestUmiRef.current} />
-              </CalculationConfigContainer>
-            </Panel>
-            <Panel header='Plot styling' key='styling'>
-              <div style={{ height: 8 }} />
-              <PlotStyling
-                formConfig={plotStylingControlsConfig}
-                config={selectedConfig}
-                onUpdate={updatePlotWithChanges}
-              />
-            </Panel>
-          </Collapse>
-        </Col>
-      </Row>
-    </>
+    <PlotLayout
+      experimentId={experimentId}
+      plots={plots}
+      filterName={filterName}
+      filterTableUuid={filterTableUuid}
+      sampleId={sampleId}
+      sampleIds={sampleIds}
+      onConfigChange={onConfigChange}
+      stepDisabled={stepDisabled}
+      plotStylingControlsConfig={plotStylingControlsConfig}
+      renderCalculationConfig={renderCalculationConfig}
+      stepHadErrors={stepHadErrors}
+    />
   );
 };
 
 CellSizeDistribution.propTypes = {
   experimentId: PropTypes.string.isRequired,
   sampleId: PropTypes.string.isRequired,
-  sampleIds: PropTypes.array.isRequired,
+  sampleIds: PropTypes.arrayOf(PropTypes.string).isRequired,
   onConfigChange: PropTypes.func.isRequired,
   stepDisabled: PropTypes.bool,
   stepHadErrors: PropTypes.bool.isRequired,
