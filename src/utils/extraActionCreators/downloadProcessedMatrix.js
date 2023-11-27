@@ -24,6 +24,7 @@ const downloadProcessedMatrix = (experimentId) => async (dispatch, getState) => 
     // the embeddingETag is added by the API to this body
     const body = {
       name: taskName,
+      embeddingMethod: embeddingMethod,
     };
 
     const timeout = getTimeoutForWorkerTask(getState(), taskName);
