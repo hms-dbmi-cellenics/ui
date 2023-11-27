@@ -18,12 +18,10 @@ exports[`ExpressionCellSetModal Sends the correct genes list with params 1`] = `
     ],
     "name": "GetExpressionCellSets",
   },
-  180,
-  "0db78a1886bd55d2346875d2c695b84e",
+  [Function],
+  [Function],
   {
-    "PipelineRunETag": "2021-10-20T12:51:44.755Z",
     "broadcast": true,
   },
-  [Function],
 ]
 `;

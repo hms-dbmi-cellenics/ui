@@ -10,7 +10,7 @@ import '__test__/test-utils/setupTests';
 import { getOneGeneMatrix } from '__test__/utils/ExpressionMatrix/testMatrixes';
 
 jest.mock('utils/work/fetchWork');
-
+jest.mock('utils/work/getCellSetsThatAffectDownsampling');
 jest.mock('utils/getTimeoutForWorkerTask', () => ({
   __esModule: true, // this property makes it work
   default: () => 60,

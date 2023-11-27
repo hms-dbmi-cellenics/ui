@@ -3,7 +3,7 @@ import React from 'react';
 import { act } from 'react-dom/test-utils';
 import '@testing-library/jest-dom';
 import userEvent from '@testing-library/user-event';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 import _ from 'lodash';
 
@@ -12,7 +12,6 @@ import mockAPI, {
   promiseResponse,
   statusResponse,
   delayedResponse,
-  dispatchWorkRequestMock,
 } from '__test__/test-utils/mockAPI';
 
 import volcanoPlotPage from 'pages/experiments/[experimentId]/plots-and-tables/volcano';
@@ -25,7 +24,8 @@ import mockDiffExprResult from '__test__/data/differential_expression_0_All_WT1.
 
 import createTestComponentFactory from '__test__/test-utils/testComponentFactory';
 import fake from '__test__/test-utils/constants';
-import { dispatchWorkRequest } from 'utils/work/seekWorkResponse';
+import fetchWork from 'utils/work/fetchWork';
+
 import { plotNames } from 'utils/constants';
 
 enableFetchMocks();
@@ -41,24 +41,12 @@ jest.mock('react-resize-detector', () => (props) => {
   return children({ width: 800, height: 800 });
 });
 
-jest.mock('object-hash', () => {
-  const objectHash = jest.requireActual('object-hash');
-  const mockWorkResultETag = jest.requireActual('__test__/test-utils/mockWorkResultETag');
-
-  const mockWorkRequestETag = () => 'differential-expression';
-
-  return mockWorkResultETag(objectHash, mockWorkRequestETag);
-});
-
-jest.mock('utils/work/seekWorkResponse', () => ({
-  __esModule: true,
-  dispatchWorkRequest: jest.fn(() => true),
-}));
+jest.mock('utils/work/fetchWork');
 
 jest.mock('@aws-amplify/auth', () => ({}));
 
 const mockWorkerResponses = {
-  'differential-expression': mockDiffExprResult,
+  DifferentialExpression: mockDiffExprResult,
 };
 
 const customAPIResponses = {
@@ -110,14 +98,14 @@ const runComparison = async () => {
 
 describe('Volcano plot page', () => {
   beforeEach(async () => {
-    dispatchWorkRequest.mockClear();
+    fetchWork.mockClear();
 
     fetchMock.resetMocks();
     fetchMock.mockIf(/.*/, mockAPI(defaultResponses));
 
-    dispatchWorkRequest
+    fetchWork
       .mockReset()
-      .mockImplementationOnce(dispatchWorkRequestMock(mockWorkerResponses));
+      .mockImplementation((_experimentId, body) => mockWorkerResponses[body.name]);
 
     storeState = makeStore();
     await storeState.dispatch(loadBackendStatus(experimentId));
@@ -160,7 +148,7 @@ describe('Volcano plot page', () => {
   });
 
   it('Shows loader if diff expression is still loading', async () => {
-    dispatchWorkRequest
+    fetchWork
       .mockReset()
       .mockImplementationOnce(() => delayedResponse({ body: 'Not found', status: 404 }));
 
@@ -177,7 +165,7 @@ describe('Volcano plot page', () => {
   });
 
   it('Shows platform error if loading diff expression result failed ', async () => {
-    dispatchWorkRequest
+    fetchWork
       .mockReset()
       // TODO this is weird, take a look later
       .mockImplementationOnce(() => promiseResponse('Not Found', 404));
