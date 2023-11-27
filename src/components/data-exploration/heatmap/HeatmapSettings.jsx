@@ -3,7 +3,7 @@ import {
   SettingOutlined,
 } from '@ant-design/icons';
 import {
-  Button, Dropdown, Tooltip
+  Button, Dropdown, Tooltip,
 } from 'antd';
 
 import PropTypes from 'prop-types';
@@ -15,20 +15,24 @@ const HeatmapSettings = (props) => {
 
   const menuItems = [
     {
-      label: 'Metadata tracks', key: 'metadataTracks', children: [
+      label: 'Metadata tracks',
+      key: 'metadataTracks',
+      children: [
         {
           label: (<HeatmapMetadataTrackSettings componentType={componentType} />),
-          key: "metadataTracksChild",
-        }
-      ]
+          key: 'metadataTracksChild',
+        },
+      ],
     },
     {
-      label: 'Group by', key: 'groupBy', children: [
+      label: 'Group by',
+      key: 'groupBy',
+      children: [
         {
           label: (<HeatmapGroupBySettings componentType={componentType} />),
-          key: "groupByChild",
-        }
-      ]
+          key: 'groupByChild',
+        },
+      ],
     },
   ];
 

@@ -50,7 +50,7 @@ const MiniPlot = (props) => {
     if (!config) {
       return (
         <center>
-          <Skeleton.Image />
+          <Skeleton.Image style={{ width: 92, height: 92 }} />
         </center>
       );
     }

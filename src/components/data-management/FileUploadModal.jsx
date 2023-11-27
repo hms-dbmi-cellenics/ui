@@ -172,7 +172,7 @@ const FileUploadModal = (props) => {
   return (
     <Modal
       title=''
-      visible
+      open
       onCancel={onCancel}
       width='50%'
       footer={(
