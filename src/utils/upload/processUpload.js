@@ -18,7 +18,7 @@ import endUserMessages from 'utils/endUserMessages';
 import pushNotificationMessage from 'utils/pushNotificationMessage';
 
 const prepareAndUploadFileToS3 = async (
-  file, uploadUrlParams, type, onStatusUpdate = () => { }, abortController,
+  file, uploadUrlParams, type, onStatusUpdate = () => { }, abortController = null,
 ) => {
   let parts = null;
   const { signedUrls, uploadId, fileId } = uploadUrlParams;

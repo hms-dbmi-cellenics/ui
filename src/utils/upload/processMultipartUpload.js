@@ -27,7 +27,7 @@ const putPartInS3 = async (
 };
 
 const processMultipartUpload = async (
-  file, signedUrls, createOnUploadProgressForPart, abortController = null,
+  file, signedUrls, createOnUploadProgressForPart, abortController,
 ) => {
   const promises = [];
 
