@@ -140,7 +140,13 @@ const mockProcessUploadCalls = () => {
       result = { status: 200, body: JSON.stringify({ WT13: sampleId }) };
     }
 
+    // Create sample file
     if (new RegExp(`/v2/experiments/${mockExperimentId}/samples/.*/sampleFiles/.*`).test(url)) {
+      result = { status: 200, body: JSON.stringify({}) };
+    }
+
+    // Update sample file status
+    if (new RegExp(`/v2/experiments/${mockExperimentId}/sampleFiles/.*`).test(url)) {
       result = { status: 200, body: JSON.stringify({}) };
     }
 
