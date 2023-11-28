@@ -16,10 +16,12 @@ const createSampleFile = (
 ) => async (dispatch) => {
   const updatedAt = dayjs().toISOString();
 
+  const sampleFileId = uuidv4();
+
   try {
     const url = `/v2/experiments/${experimentId}/samples/${sampleId}/sampleFiles/${type}`;
     const body = {
-      sampleFileId: uuidv4(),
+      sampleFileId,
       size: fileForApiV1.size,
     };
 
@@ -49,7 +51,9 @@ const createSampleFile = (
 
     return body.sampleFileId;
   } catch (e) {
-    dispatch(updateSampleFileUpload(experimentId, sampleId, type, UploadStatus.UPLOAD_ERROR));
+    dispatch(updateSampleFileUpload(
+      experimentId, sampleId, sampleFileId, type, UploadStatus.UPLOAD_ERROR,
+    ));
 
     throw e;
   }
