@@ -14,6 +14,9 @@ import { defaultSampleOptions, sampleTemplate } from 'redux/reducers/samples/ini
 import { sampleTech } from 'utils/constants';
 import UploadStatus from 'utils/upload/UploadStatus';
 
+import fileNameForApiV1 from 'utils/upload/fileNameForApiV1';
+import getFileTypeV2 from 'utils/getFileTypeV2';
+
 // If the sample name of new samples coincides with already existing
 // ones we should not create new samples,
 // just reuse their sampleIds and upload the new files
@@ -115,9 +118,13 @@ const createSamples = (
         options,
         metadata: experiment?.metadataKeys
           .reduce((acc, curr) => ({ ...acc, [curr]: METADATA_DEFAULT_VALUE }), {}) || {},
-        files: Object.values(files).reduce(((acc, curr) => (
-          { ...acc, [curr.name]: { upload: { status: UploadStatus.UPLOADING } } }
-        )), {}),
+        files: Object.values(files).reduce(((acc, curr) => {
+          const fileType = fileNameForApiV1[getFileTypeV2(curr.name, sampleTechnology)];
+
+          return (
+            { ...acc, [fileType]: { upload: { status: UploadStatus.UPLOADING } } }
+          );
+        }), {}),
       }));
 
     dispatch({
