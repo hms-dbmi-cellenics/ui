@@ -5,7 +5,7 @@ const samplesFileUpdate = (state, action) => {
     sampleUuid, fileName, fileDiff, lastModified,
   } = action.payload;
 
-  // There's a possible racing condition where a file update can reach this place
+  // There's a possible race condition where a file update can reach this place
   // after a sample is deleted and there's a crash. This check is in place to avoid that error.
   if (_.isNil(state[sampleUuid])) {
     return state;
