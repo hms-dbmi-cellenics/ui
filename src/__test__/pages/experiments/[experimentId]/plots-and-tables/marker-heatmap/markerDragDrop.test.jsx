@@ -23,7 +23,7 @@ import mockAPI, {
 } from '__test__/test-utils/mockAPI';
 import createTestComponentFactory from '__test__/test-utils/testComponentFactory';
 import waitForComponentToPaint from '__test__/test-utils/waitForComponentToPaint';
-import { arrayMoveImmutable } from 'utils/array-move';
+import { arrayMoveImmutable } from 'utils/arrayUtils';
 
 jest.mock('components/header/UserButton', () => () => <></>);
 jest.mock('react-resize-detector', () => (props) => {

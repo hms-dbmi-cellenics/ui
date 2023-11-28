@@ -10,7 +10,6 @@ import { InfoCircleOutlined } from '@ant-design/icons';
 
 const ClassifierConfig = (props) => {
   const {
-    // eslint-disable-next-line no-unused-vars
     config, disabled, updateSettings,
   } = props;
 
@@ -56,10 +55,16 @@ const ClassifierConfig = (props) => {
   );
 };
 
+ClassifierConfig.defaultProps = {
+  updateSettings: () => {},
+  config: {},
+  disabled: false,
+};
+
 ClassifierConfig.propTypes = {
-  updateSettings: PropTypes.func.isRequired,
-  config: PropTypes.object.isRequired,
-  disabled: PropTypes.bool.isRequired,
+  updateSettings: PropTypes.func,
+  config: PropTypes.object,
+  disabled: PropTypes.bool,
 };
 
 export default ClassifierConfig;

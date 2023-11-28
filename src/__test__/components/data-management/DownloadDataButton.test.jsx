@@ -28,14 +28,14 @@ import fake from '__test__/test-utils/constants';
 import { loadBackendStatus } from 'redux/actions/backendStatus';
 import { loadProcessingSettings } from 'redux/actions/experimentSettings';
 import downloadFromUrl from 'utils/downloadFromUrl';
-import writeToFileURL from 'utils/writeToFileURL';
+import writeToFileURL from 'utils/upload/writeToFileURL';
 
 jest.mock('file-saver');
 
 jest.mock('utils/work/fetchWork');
 jest.mock('utils/pushNotificationMessage');
 jest.mock('utils/downloadFromUrl');
-jest.mock('utils/writeToFileURL');
+jest.mock('utils/upload/writeToFileURL');
 
 const experimentId = `${fake.EXPERIMENT_ID}-0`;
 

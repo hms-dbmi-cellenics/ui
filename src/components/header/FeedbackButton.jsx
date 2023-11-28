@@ -130,9 +130,9 @@ const FeedbackButton = () => {
           </Space>
         </Card>
       ),
-      key: 'feedback-button-contents'
-    }
-  ]
+      key: 'feedback-button-contents',
+    },
+  ];
 
   return (
     <Dropdown

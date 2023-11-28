@@ -100,7 +100,7 @@ const MetadataUploadModal = (props) => {
   return (
     <Modal
       title=''
-      visible
+      open
       onCancel={onCancel}
       width='40%'
       footer={(

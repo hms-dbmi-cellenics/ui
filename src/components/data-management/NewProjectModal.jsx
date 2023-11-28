@@ -65,7 +65,7 @@ const NewProjectModal = (props) => {
     <Modal
       className={integrationTestConstants.classes.NEW_PROJECT_MODAL}
       title='Create a new project'
-      visible
+      open
       footer={(
         <Button
           data-test-id={integrationTestConstants.ids.CONFIRM_CREATE_NEW_PROJECT}
