@@ -18,7 +18,7 @@ import endUserMessages from 'utils/endUserMessages';
 import pushNotificationMessage from 'utils/pushNotificationMessage';
 
 const prepareAndUploadFileToS3 = async (
-  file, uploadUrlParams, type, onStatusUpdate = () => { },
+  file, uploadUrlParams, type, onStatusUpdate = () => { }, abortController = null,
 ) => {
   let parts = null;
   const { signedUrls, uploadId, fileId } = uploadUrlParams;
@@ -34,7 +34,9 @@ const prepareAndUploadFileToS3 = async (
     onStatusUpdate(UploadStatus.UPLOADING, percentProgress);
   };
   try {
-    parts = await processMultipartUpload(file, signedUrls, createOnUploadProgressForPart);
+    parts = await processMultipartUpload(
+      file, signedUrls, createOnUploadProgressForPart, abortController,
+    );
   } catch (e) {
     onStatusUpdate(UploadStatus.UPLOAD_ERROR);
     return;
@@ -64,6 +66,8 @@ const prepareAndUploadFileToS3 = async (
 const createAndUploadSampleFile = async (file, experimentId, sampleId, dispatch, selectedTech) => {
   const fileType = getFileTypeV2(file.name, selectedTech);
 
+  const abortController = new AbortController();
+
   let sampleFileId;
 
   try {
@@ -73,6 +77,7 @@ const createAndUploadSampleFile = async (file, experimentId, sampleId, dispatch,
         sampleId,
         fileType,
         file,
+        abortController,
       ),
     );
   } catch (e) {
@@ -116,8 +121,7 @@ const createAndUploadSampleFile = async (file, experimentId, sampleId, dispatch,
     );
 
     const uploadUrlParams = { signedUrls, uploadId, fileId: sampleFileId };
-
-    await prepareAndUploadFileToS3(file, uploadUrlParams, 'sample', updateSampleFileUploadProgress);
+    await prepareAndUploadFileToS3(file, uploadUrlParams, 'sample', updateSampleFileUploadProgress, abortController);
   } catch (e) {
     dispatch(updateSampleFileUpload(
       experimentId, sampleId, sampleFileId, fileType, UploadStatus.UPLOAD_ERROR,

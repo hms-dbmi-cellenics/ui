@@ -38,7 +38,7 @@ import { plotNames } from 'utils/constants';
 import ExportAsCSV from 'components/plots/ExportAsCSV';
 
 import waitForComponentToPaint from '__test__/test-utils/waitForComponentToPaint';
-import { arrayMoveImmutable } from 'utils/array-move';
+import { arrayMoveImmutable } from 'utils/arrayUtils';
 
 jest.mock('components/plots/ExportAsCSV', () => jest.fn(() => (<></>)));
 jest.mock('components/header/UserButton', () => () => <></>);

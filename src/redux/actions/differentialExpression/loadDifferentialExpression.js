@@ -6,7 +6,7 @@ import fetchWork from 'utils/work/fetchWork';
 import getTimeoutForWorkerTask from 'utils/getTimeoutForWorkerTask';
 
 import generateDiffExprBody from 'utils/work/generateDiffExprBody';
-import getArray from 'utils/getArray';
+import { getArray } from 'utils/arrayUtils';
 
 const loadDifferentialExpression = (
   experimentId, comparisonGroup, comparisonType, tableState, newAdvancedFilters = null,

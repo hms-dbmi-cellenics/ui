@@ -15,7 +15,7 @@ const SubsetCellSetsModal = (props) => {
       data-testid='subsetCellSetsModal'
       title='Subset cell sets'
       okText='Create'
-      visible
+      open
       onOk={() => { onOk(subsetExperimentName.current); }}
       cancelText='Cancel'
       onCancel={onCancel}

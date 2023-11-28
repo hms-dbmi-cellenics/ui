@@ -13,6 +13,7 @@ const createSampleFile = (
   sampleId,
   type,
   fileForApiV1,
+  abortController,
 ) => async (dispatch) => {
   const updatedAt = dayjs().toISOString();
 
@@ -32,8 +33,10 @@ const createSampleFile = (
         lastModified: updatedAt,
         fileName: fileNameForApiV1[type],
         fileDiff: {
-          upload: { status: UploadStatus.UPLOADING },
           ...fileForApiV1,
+          upload: {
+            status: UploadStatus.UPLOADING, progress: 0, abortController,
+          },
         },
       },
     });
