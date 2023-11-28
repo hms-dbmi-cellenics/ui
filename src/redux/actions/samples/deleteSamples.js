@@ -11,15 +11,11 @@ import endUserMessages from 'utils/endUserMessages';
 import fetchAPI from 'utils/http/fetchAPI';
 import handleError from 'utils/http/handleError';
 
-const cancelUploads = async (files) => {
-  const promises = Object.values(files).map(({ upload }) => {
-    if (upload?.amplifyPromise) {
-      // return Storage.cancel(upload.amplifyPromise);
-    }
-    return Promise.resolve();
+const cancelUploads = (files) => {
+  Object.values(files).forEach((file) => {
+    // eslint-disable-next-line no-unused-expressions
+    file.upload?.abortController?.abort();
   });
-
-  return Promise.all(promises);
 };
 
 const deleteSamples = (
@@ -34,7 +30,7 @@ const deleteSamples = (
       acc[samples[sampleUuid].experimentId] = [];
     }
 
-    await cancelUploads(files);
+    cancelUploads(files);
 
     return {
       ...acc,
