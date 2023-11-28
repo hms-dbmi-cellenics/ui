@@ -8,29 +8,35 @@ import Link from 'next/link';
 import { plotNames, layout } from 'utils/constants';
 
 const CARD_STYLE = { marginBottom: '1em' };
-const CardItem = (({ onClick, item, href }) => (
-  <Card.Grid
-    href={href}
-    onClick={onClick}
-    hoverable={false}
-    style={{ textAlign: 'center', width: '100%', padding: '0' }}
-  >
-    <img
-      alt={item.name}
-      src={item.image}
-      style={{
-        height: '200px', width: '250px', align: 'center', padding: '10px',
-      }}
-    />
-  </Card.Grid>
+const CardItem = (({
+  item, experimentId,
+}) => (
+  // eslint-disable-next-line jsx-a11y/click-events-have-key-events
+  <div style={{ cursor: 'pointer' }}>
+    <Card.Grid
+      hoverable={false}
+      style={{ textAlign: 'center', width: '100%', padding: '0' }}
+    >
+      <Link
+        as={`/experiments/${experimentId}/plots-and-tables/${item.link}`}
+        href={`/experiments/[experimentId]/plots-and-tables/${item.link}`}
+        passHref
+      >
+        <img
+          alt={item.name}
+          src={item.image}
+          style={{
+            height: '200px', width: '250px', align: 'center', padding: '10px',
+          }}
+        />
+      </Link>
+    </Card.Grid>
+  </div>
 ));
-
-CardItem.defaultProps = {};
 
 CardItem.propTypes = {
   item: PropTypes.object.isRequired,
-  href: PropTypes.string.isRequired,
-  onClick: PropTypes.func.isRequired,
+  experimentId: PropTypes.string.isRequired,
 };
 
 const plots = [
@@ -124,7 +130,7 @@ const PlotsTablesContainer = (props) => {
     >
       <Space style={{ padding: '0 1em' }} direction='vertical'>
         {plots.map((section) => (
-          <Row gutter='16'>
+          <Row gutter='16' key={section.title}>
             <Col span={24}>
               <Divider
                 orientation='left'
@@ -134,7 +140,7 @@ const PlotsTablesContainer = (props) => {
               </Divider>
             </Col>
             {section.plots.map((item) => (
-              <Col className='plot-card'>
+              <Col className='plot-card' key={item.key}>
                 <Card
                   size='small'
                   hoverable
@@ -142,13 +148,7 @@ const PlotsTablesContainer = (props) => {
                   bodyStyle={{ padding: '0' }}
                   style={CARD_STYLE}
                 >
-                  <Link
-                    as={`/experiments/${experimentId}/plots-and-tables/${item.link}`}
-                    href={`/experiments/[experimentId]/plots-and-tables/${item.link}`}
-                    passHref
-                  >
-                    <CardItem item={item} />
-                  </Link>
+                  <CardItem item={item} experimentId={experimentId} />
                 </Card>
               </Col>
             ))}

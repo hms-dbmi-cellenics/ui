@@ -43,12 +43,12 @@ const UserButton = () => {
     {
       type: 'group',
       label: `Signed in as ${user?.attributes.name}`,
-      key: 'singed-in-username'
+      key: 'singed-in-username',
     },
     {
       disabled: true,
       label: 'Your profile',
-      key: 'user-profile'
+      key: 'user-profile',
     },
     {
       label: (
@@ -56,7 +56,7 @@ const UserButton = () => {
           Settings
         </Link>
       ),
-      key: 'user-settings'
+      key: 'user-settings',
     },
     {
       type: 'divider',
@@ -64,12 +64,12 @@ const UserButton = () => {
     {
       label: 'Sign out',
       key: 'user-signout',
-      onClick: async () => { Auth.signOut() },
-    }
-  ]
+      onClick: async () => { Auth.signOut(); },
+    },
+  ];
 
   return user ? (
-    <Dropdown menu={{ items: menuItems }} trigger={['click']} >
+    <Dropdown menu={{ items: menuItems }} trigger={['click']}>
       <Button
         aria-label='User settings'
         type='text'
@@ -89,7 +89,7 @@ const UserButton = () => {
           </Avatar>
         )}
       />
-    </Dropdown >
+    </Dropdown>
   ) : (
     <Button
       type='dashed'
