@@ -25,7 +25,7 @@ import SelectCellSets from 'components/plots/styling/frequency/SelectCellSets';
 import { updatePlotConfig, loadPlotConfig } from 'redux/actions/componentConfig';
 import loadCellSets from 'redux/actions/cellSets/loadCellSets';
 
-import plotCsvFilename from 'utils/fileNames';
+import plotCsvFilename from 'utils/plotCsvFilename';
 import { plotNames } from 'utils/constants';
 import PlotContainer from 'components/plots/PlotContainer';
 
@@ -192,7 +192,7 @@ const FrequencyPlotPage = ({ experimentId }) => {
 
     return (
       <Space direction='vertical'>
-        { config?.legend?.showAlert && <PlotLegendAlert />}
+        {config?.legend?.showAlert && <PlotLegendAlert />}
         <center>
           <FrequencyPlot
             experimentId={experimentId}
