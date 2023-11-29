@@ -12,12 +12,12 @@ dayjs.extend(utc);
 
 const UploadDetailsModal = (props) => {
   const {
-    onCancel, file, extraFields, onDownload, onRetry, onDelete,
+    onCancel, data, extraFields, onDownload, onRetry, onDelete,
   } = props;
 
   const {
     name, upload, size, lastModified, fileObject = undefined,
-  } = file ?? {};
+  } = data ?? {};
 
   const { progress, status } = upload ?? false;
 
@@ -135,7 +135,7 @@ const UploadDetailsModal = (props) => {
 
 UploadDetailsModal.propTypes = {
   onCancel: PropTypes.func.isRequired,
-  file: PropTypes.object.isRequired,
+  data: PropTypes.object.isRequired,
   extraFields: PropTypes.object,
   onDownload: PropTypes.func.isRequired,
   onDelete: PropTypes.func.isRequired,

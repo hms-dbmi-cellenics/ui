@@ -157,7 +157,7 @@ const UploadCell = (props) => {
       </center>
       {uploadDetailsModalVisible && (
         <UploadDetailsModal
-          file={uploadDetailsModalData}
+          data={uploadDetailsModalData}
           onCancel={() => setUploadDetailsModalVisible(false)}
           onDownload={onDownload}
           onDelete={() => dispatch(deleteSamples([sampleUuid]))}

@@ -272,7 +272,7 @@ const CellLevelUploadModal = (props) => {
         onDownload={downloadData}
         onDelete={() => dispatch(deleteCellLevelMetadata(activeExperimentId))}
         onRetry={() => onUploadFile(file)}
-        file={fileInfoObject}
+        data={fileInfoObject}
       />
     );
   }

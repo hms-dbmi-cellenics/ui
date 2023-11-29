@@ -14,7 +14,7 @@ const mockOnRetry = jest.fn();
 
 const defaultProps = {
   visible: true,
-  file: {
+  data: {
     name: 'example.txt',
     size: 1024,
     lastModified: new Date().toISOString(),
