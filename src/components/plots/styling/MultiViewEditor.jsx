@@ -12,7 +12,7 @@ import {
   Radio,
 } from 'antd';
 import { CloseOutlined } from '@ant-design/icons';
-import { arrayMoveImmutable } from 'utils/array-move';
+import { arrayMoveImmutable } from 'utils/arrayUtils';
 import HierarchicalTreeGenes from 'components/plots/hierarchical-tree-genes/HierarchicalTreeGenes';
 import GeneSearchBar from 'components/plots/GeneSearchBar';
 

@@ -54,7 +54,7 @@ const ProfileSettings = () => {
     if (name || email || changedUserAttributes[agreedEmailsKey]) {
       setEmailError(false);
       await Auth.updateUserAttributes(user, changedUserAttributes)
-        .then(() => pushNotificationMessage('success', endUserMessages.ACCOUNT_DETAILS_UPDATED, 3))
+        .then((a) => pushNotificationMessage('success', endUserMessages.ACCOUNT_DETAILS_UPDATED, 3))
         .catch(() => {
           setEmailError(true);
         });
@@ -86,7 +86,8 @@ const ProfileSettings = () => {
     }
 
     dispatch(loadUser());
-    setChanges(initialState);
+
+    setNewAttributes(initialState);
   };
 
   // the user might not be loaded already - then return <Empty/>

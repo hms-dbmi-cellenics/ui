@@ -5,8 +5,8 @@ import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import '@testing-library/jest-dom';
 import initialState, { experimentTemplate } from 'redux/reducers/experiments/initialState';
-import ProjectsList from 'components/data-management/ProjectsList';
-import ProjectCard from 'components/data-management/ProjectCard';
+import ProjectsList from 'components/data-management/project/ProjectsList';
+import ProjectCard from 'components/data-management/project/ProjectCard';
 import '__test__/test-utils/setupTests';
 
 const mockStore = configureMockStore([thunk]);

@@ -10,6 +10,7 @@ import { initialPlotConfigStates } from 'redux/reducers/componentConfig/initialS
 import { generateDataProcessingPlotUuid } from 'utils/generateCustomPlotUuid';
 import CellSizeDistribution from 'components/data-processing/CellSizeDistribution/CellSizeDistribution';
 import CalculationConfig from 'components/data-processing/CellSizeDistribution/CalculationConfig';
+import SliderWithInput from 'components/SliderWithInput';
 import generateExperimentSettingsMock from '../../../test-utils/experimentSettings.mock';
 
 import filterStatisticsMock from '../../../test-utils/plotData.mock';
@@ -146,5 +147,32 @@ describe('CellSizeDistribution', () => {
     // 1 main 2 miniature
     expect(plots.length).toEqual(3);
     expect(tables.length).toEqual(1);
+  });
+  it('Disables bin step slider when plot type is knee plot', () => {
+    const modifiedWithData = {
+      ...withData,
+      componentConfig: {
+        ...withData.componentConfig,
+        plotType: 'kneePlot',
+      },
+    };
+
+    const store = mockStore(modifiedWithData);
+
+    const component = mount(
+      <Provider store={store}>
+        <CellSizeDistribution
+          experimentId={experimentId}
+          sampleId={sampleId}
+          sampleIds={sampleIds}
+          onConfigChange={() => { }}
+        />
+      </Provider>,
+    );
+
+    const page = component.find(CellSizeDistribution).at(0);
+    const calculationConfig = page.find(CalculationConfig);
+    const sliderWithInput = calculationConfig.find(SliderWithInput);
+    expect(sliderWithInput.props().disabled).toBe(true);
   });
 });

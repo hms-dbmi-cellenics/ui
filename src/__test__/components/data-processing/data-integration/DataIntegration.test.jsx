@@ -1,7 +1,9 @@
 import React from 'react';
 import { Provider } from 'react-redux';
 import '__test__/test-utils/setupTests';
-import { screen, render, waitFor } from '@testing-library/react';
+import {
+  screen, render, waitFor, within,
+} from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import _ from 'lodash';
 import fake from '__test__/test-utils/constants';
@@ -9,13 +11,13 @@ import mockAPI, {
   statusResponse,
   promiseResponse,
   generateDefaultMockAPIResponses,
-  dispatchWorkRequestMock,
 } from '__test__/test-utils/mockAPI';
 import cellSetsData from '__test__/data/cell_sets.json';
 import { MAX_LEGEND_ITEMS } from 'components/plots/helpers/PlotLegendAlert';
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 import { makeStore } from 'redux/store';
-import { dispatchWorkRequest } from 'utils/work/seekWorkResponse';
+import fetchWork from 'utils/work/fetchWork';
+
 import mockEmbedding from '__test__/data/embedding.json';
 
 import { generateDataProcessingPlotUuid } from 'utils/generateCustomPlotUuid';
@@ -34,19 +36,7 @@ const frequencyPlotTitle = 'Frequency plot coloured by sample';
 
 enableFetchMocks();
 
-jest.mock('object-hash', () => {
-  const objectHash = jest.requireActual('object-hash');
-  const mockWorkResultETag = jest.requireActual('__test__/test-utils/mockWorkResultETag');
-
-  const mockWorkRequestETag = (ETagParams) => `${ETagParams.body.name}`;
-
-  return mockWorkResultETag(objectHash, mockWorkRequestETag);
-});
-
-jest.mock('utils/work/seekWorkResponse', () => ({
-  __esModule: true,
-  dispatchWorkRequest: jest.fn(() => true),
-}));
+jest.mock('utils/work/fetchWork');
 
 const mockWorkerResponses = {
   GetEmbedding: mockEmbedding,
@@ -86,9 +76,9 @@ describe('DataIntegration', () => {
     fetchMock.resetMocks();
     fetchMock.doMock();
 
-    dispatchWorkRequest
+    fetchWork
       .mockReset()
-      .mockImplementationOnce(dispatchWorkRequestMock(mockWorkerResponses));
+      .mockImplementation((_experimentId, body) => mockWorkerResponses[body.name]);
 
     fetchMock.mockIf(/.*/, mockAPI(mockApiResponses));
     storeState = makeStore();
@@ -215,5 +205,32 @@ describe('DataIntegration', () => {
 
     // The legend alert plot text should appear
     expect(screen.getByText(/We have hidden the plot legend, because it is too large and it interferes with the display of the plot/)).toBeInTheDocument();
+  });
+
+  it('Renders the elbow plot by default when the experiment is single sample', async () => {
+    // Remove all sample other than the first one.
+    // This way, getIsUnisample() will detect the exp as unisample
+    const unisampleCellSetsData = _.cloneDeep(cellSetsData);
+    _.find(unisampleCellSetsData.cellSets, { key: 'sample' }).children.splice(1);
+
+    const mockSingleSampleApiResponses = {
+      ...generateDefaultMockAPIResponses(fake.EXPERIMENT_ID),
+      [`experiments/${fake.EXPERIMENT_ID}/cellSets$`]: () => promiseResponse(
+        JSON.stringify(unisampleCellSetsData),
+      ),
+    };
+
+    fetchMock
+      .mockReset()
+      .mockIf(/.*/, mockAPI(mockSingleSampleApiResponses));
+
+    storeState = makeStore();
+    await storeState.dispatch(loadBackendStatus(fake.EXPERIMENT_ID));
+    await storeState.dispatch(loadProcessingSettings(fake.EXPERIMENT_ID));
+    await storeState.dispatch(loadCellSets(fake.EXPERIMENT_ID));
+
+    await renderDataIntegration(storeState);
+
+    expect(screen.getByRole('radio', { name: 'Elbow plot showing principal components' })).toBeChecked();
   });
 });

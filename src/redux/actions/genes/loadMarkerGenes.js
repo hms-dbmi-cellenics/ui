@@ -5,6 +5,7 @@ import {
 } from 'redux/actionTypes/genes';
 
 import fetchWork from 'utils/work/fetchWork';
+import getCellSetsThatAffectDownsampling from 'utils/work/getCellSetsThatAffectDownsampling';
 import getTimeoutForWorkerTask from 'utils/getTimeoutForWorkerTask';
 import handleError from 'utils/http/handleError';
 import endUserMessages from 'utils/endUserMessages';
@@ -15,14 +16,19 @@ const loadMarkerGenes = (
   const {
     numGenes = 5,
     groupedTracks = ['sample', 'louvain'],
-    selectedCellSet = 'louvain',
+    selectedCellSetKey = 'louvain',
     selectedPoints = 'All',
     hiddenCellSets = [],
   } = options;
 
+  const cellSets = await getCellSetsThatAffectDownsampling(
+    experimentId, selectedCellSetKey, groupedTracks, dispatch, getState,
+  );
+
   const downsampleSettings = {
-    selectedCellSet,
+    selectedCellSet: selectedCellSetKey,
     groupedTracks,
+    cellSets,
     selectedPoints,
     hiddenCellSets: Array.from(hiddenCellSets),
   };
@@ -36,7 +42,8 @@ const loadMarkerGenes = (
   try {
     const timeout = getTimeoutForWorkerTask(getState(), 'MarkerHeatmap');
 
-    let requestETag;
+    // TODO ask martin if it's fine to use null as default
+    let requestETag = null;
 
     const {
       orderedGeneNames,

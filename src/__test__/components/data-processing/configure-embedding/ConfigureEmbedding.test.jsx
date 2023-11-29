@@ -9,13 +9,13 @@ import mockAPI, {
   statusResponse,
   promiseResponse,
   generateDefaultMockAPIResponses,
-  dispatchWorkRequestMock,
 } from '__test__/test-utils/mockAPI';
 import cellSetsData from '__test__/data/cell_sets.json';
 import { MAX_LEGEND_ITEMS } from 'components/plots/helpers/PlotLegendAlert';
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 import { makeStore } from 'redux/store';
-import { dispatchWorkRequest } from 'utils/work/seekWorkResponse';
+import fetchWork from 'utils/work/fetchWork';
+
 import mockEmbedding from '__test__/data/embedding.json';
 
 import { generateDataProcessingPlotUuid } from 'utils/generateCustomPlotUuid';
@@ -36,19 +36,7 @@ const embeddingPreviewNumOfUmisPlotUuid = generateDataProcessingPlotUuid(null, f
 
 enableFetchMocks();
 
-jest.mock('object-hash', () => {
-  const objectHash = jest.requireActual('object-hash');
-  const mockWorkResultETag = jest.requireActual('__test__/test-utils/mockWorkResultETag');
-
-  const mockWorkRequestETag = (ETagParams) => `${ETagParams.body.name}`;
-
-  return mockWorkResultETag(objectHash, mockWorkRequestETag);
-});
-
-jest.mock('utils/work/seekWorkResponse', () => ({
-  __esModule: true,
-  dispatchWorkRequest: jest.fn(),
-}));
+jest.mock('utils/work/fetchWork');
 
 const mockWorkerResponses = {
   GetEmbedding: mockEmbedding,
@@ -97,18 +85,9 @@ describe('Configure Embedding', () => {
     fetchMock.resetMocks();
     fetchMock.doMock();
 
-    dispatchWorkRequest
+    fetchWork
       .mockReset()
-      // Call for GetEmbedding
-      .mockImplementationOnce(dispatchWorkRequestMock(mockWorkerResponses))
-      // Call for GetMitochondrialContent
-      .mockImplementationOnce(dispatchWorkRequestMock(mockWorkerResponses))
-      // Call for GetDoubletScore
-      .mockImplementationOnce(dispatchWorkRequestMock(mockWorkerResponses))
-      // Call for GetNGenes
-      .mockImplementationOnce(dispatchWorkRequestMock(mockWorkerResponses))
-      // Call for GetNUmis
-      .mockImplementationOnce(dispatchWorkRequestMock(mockWorkerResponses));
+      .mockImplementation((_experimentId, body) => mockWorkerResponses[body.name]);
 
     fetchMock.mockIf(/.*/, mockAPI(mockApiResponses));
     storeState = makeStore();

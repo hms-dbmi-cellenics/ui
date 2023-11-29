@@ -86,7 +86,6 @@
     "next-with-less": "^2.0.5",
     "nprogress": "^0.2.0",
     "null-loader": "^3.0.0",
-    "object-hash": "^2.0.3",
     "prop-types": "^15.7.2",
     "rc-util": "^5.28.0",
     "react": "^18.2.0",

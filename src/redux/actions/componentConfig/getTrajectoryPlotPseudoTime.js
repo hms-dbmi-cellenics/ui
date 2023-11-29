@@ -4,7 +4,6 @@ import handleError from 'utils/http/handleError';
 import endUserMessages from 'utils/endUserMessages';
 import fetchWork from 'utils/work/fetchWork';
 import getTimeoutForWorkerTask from 'utils/getTimeoutForWorkerTask';
-import getEmbeddingETag from 'utils/work/getEmbeddingETag';
 
 const getTrajectoryPlotPseudoTime = (
   rootNodes,
@@ -15,7 +14,6 @@ const getTrajectoryPlotPseudoTime = (
   // Currenty monocle3 only trajectory analysis only supports
   // UMAP embedding. Therefore, this embedding is specifically fetched.
   const embeddingMethod = 'umap';
-  const embeddingETag = await getEmbeddingETag(experimentId, getState, dispatch, embeddingMethod);
 
   const timeout = getTimeoutForWorkerTask(getState(), 'TrajectoryAnalysisPseudotime');
 
@@ -24,12 +22,13 @@ const getTrajectoryPlotPseudoTime = (
     embeddingSettings,
   } = getState().experimentSettings.processing.configureEmbedding;
 
+  // the request needs the embeddingETag to merge that data with the rds
+  // the embeddingETag is added by the API to this body
   const body = {
     name: 'GetTrajectoryAnalysisPseudoTime',
     embedding: {
       method: embeddingMethod,
       methodSettings: embeddingSettings.methodSettings[embeddingMethod],
-      ETag: embeddingETag,
     },
     clustering: {
       method: clusteringSettings.method,

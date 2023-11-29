@@ -8,6 +8,7 @@ import {
 
 import fetchWork from 'utils/work/fetchWork';
 import getTimeoutForWorkerTask from 'utils/getTimeoutForWorkerTask';
+import getCellSetsThatAffectDownsampling from 'utils/work/getCellSetsThatAffectDownsampling';
 
 // Debounce so that we only fetch once the settings are done being set up
 const loadDownsampledGeneExpression = (
@@ -16,23 +17,6 @@ const loadDownsampledGeneExpression = (
   componentUuid,
   withHiddenCellSets = false,
 ) => async (dispatch, getState) => {
-  const state = getState();
-
-  const {
-    groupedTracks,
-    selectedCellSet,
-    selectedPoints,
-  } = state.componentConfig[componentUuid]?.config;
-
-  const hiddenCellSets = withHiddenCellSets ? Array.from(state.cellSets.hidden) : [];
-
-  const downsampleSettings = {
-    selectedCellSet,
-    groupedTracks,
-    selectedPoints,
-    hiddenCellSets,
-  };
-
   if (genes.length === 0) {
     dispatch({
       type: DOWNSAMPLED_GENES_EXPRESSION_LOADED,
@@ -45,6 +29,28 @@ const loadDownsampledGeneExpression = (
     return;
   }
 
+  const state = getState();
+
+  const {
+    groupedTracks,
+    selectedCellSet: selectedCellSetKey,
+    selectedPoints,
+  } = state.componentConfig[componentUuid]?.config;
+
+  const hiddenCellSets = withHiddenCellSets ? Array.from(state.cellSets.hidden) : [];
+
+  const cellSets = await getCellSetsThatAffectDownsampling(
+    experimentId, selectedCellSetKey, groupedTracks, dispatch, getState,
+  );
+
+  const downsampleSettings = {
+    selectedCellSet: selectedCellSetKey,
+    groupedTracks,
+    cellSets,
+    selectedPoints,
+    hiddenCellSets,
+  };
+
   const body = {
     name: 'GeneExpression',
     genes,
@@ -55,7 +61,7 @@ const loadDownsampledGeneExpression = (
   const timeout = getTimeoutForWorkerTask(getState(), 'GeneExpression');
 
   try {
-    let requestETag;
+    let requestETag = null;
 
     const {
       orderedGeneNames,

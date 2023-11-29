@@ -9,6 +9,7 @@ exports[`processUpload Uploads and updates redux correctly when there are no err
     },
     "method": "put",
     "onUploadProgress": [Function],
+    "signal": AbortSignal {},
     "url": "theSignedUrl1",
   },
   {
@@ -18,6 +19,7 @@ exports[`processUpload Uploads and updates redux correctly when there are no err
     },
     "method": "put",
     "onUploadProgress": [Function],
+    "signal": AbortSignal {},
     "url": "theSignedUrl2",
   },
 ]
