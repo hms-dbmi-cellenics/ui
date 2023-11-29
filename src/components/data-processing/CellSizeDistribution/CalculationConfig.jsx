@@ -16,7 +16,7 @@ const MIN_CELL_SIZE_PLACEHOLDER = 10800;
 
 const CellSizeDistributionConfig = (props) => {
   const {
-    config, disabled, updateSettings, highestUmi,
+    config, disabled, updateSettings, highestUmi, plotType,
   } = props;
 
   const withinRange = (cellSize) => Math.max(Math.min(cellSize, highestUmi), 0);
@@ -54,7 +54,7 @@ const CellSizeDistributionConfig = (props) => {
           onUpdate={(value) => {
             updateSettings({ binStep: value });
           }}
-          disabled={disabled}
+          disabled={disabled || plotType === 'kneePlot'}
         />
       </Form.Item>
     </>
@@ -65,12 +65,14 @@ CellSizeDistributionConfig.defaultProps = {
   config: {},
   disabled: false,
   highestUmi: null,
+  plotType: null,
 };
 CellSizeDistributionConfig.propTypes = {
   updateSettings: PropTypes.func,
   config: PropTypes.object,
   disabled: PropTypes.bool,
   highestUmi: PropTypes.number,
+  plotType: PropTypes.string,
 };
 
 export default CellSizeDistributionConfig;
