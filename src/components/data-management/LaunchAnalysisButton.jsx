@@ -13,6 +13,7 @@ import integrationTestConstants from 'utils/integrationTestConstants';
 
 import { useAppRouter } from 'utils/AppRouteProvider';
 import calculatePipelinesRerunStatus from 'utils/data-management/calculatePipelinesRerunStatus';
+import fileNamesByTech from 'utils/filenamesByTech';
 
 const LaunchButtonTemplate = (props) => {
   const {
@@ -100,8 +101,9 @@ const LaunchAnalysisButton = () => {
     const metadataKeysAvailable = activeExperiment.metadataKeys.length;
 
     const allSampleFilesUploaded = (sample) => {
-      // Check if all files for a given tech has been uploaded
-      const { fileNames } = sample;
+      // Check if all files for a given tech have been uploaded
+      const fileNames = fileNamesByTech[sample.type];
+
       if (
         !fileUploadSpecifications[sample.type].requiredFiles.every(
           (file) => fileNames.includes(file.key),
