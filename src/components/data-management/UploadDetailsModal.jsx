@@ -16,7 +16,7 @@ const UploadDetailsModal = (props) => {
   } = props;
 
   const {
-    name, upload, size, lastModified, fileObject = undefined,
+    upload, size, lastModified, fileObject = undefined,
   } = data ?? {};
 
   const { progress, status } = upload ?? false;
@@ -118,8 +118,6 @@ const UploadDetailsModal = (props) => {
             </Row>
           )}
         {renderFields(extraFields)}
-
-        {!isNotUploadedModal && renderFields({ Filename: name })}
 
         {
           isSuccessModal || isUploading ? renderFields({ 'File size': bytesToSize(size), 'Upload date': fromISODateToFormatted(lastModified) })

@@ -26,7 +26,6 @@ const samplesFileUpdate = (state, action) => {
         ...state[sampleUuid].files,
         [fileName]: {
           ...newFile,
-          lastModified,
         },
       },
       lastModified,
