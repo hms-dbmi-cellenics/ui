@@ -9,7 +9,6 @@ const sampleTemplate = {
   lastModified: null,
   complete: false,
   error: false,
-  fileNames: [],
   files: {},
   metadata: {},
   options: {},

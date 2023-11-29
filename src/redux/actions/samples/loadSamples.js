@@ -12,7 +12,6 @@ const toApiV1 = (samples, experimentId) => {
   const apiV1Samples = {};
 
   const buildApiv1Files = (files) => {
-    const fileNames = [];
     const apiV1Files = {};
 
     Object.keys(files).forEach((key) => {
@@ -20,8 +19,6 @@ const toApiV1 = (samples, experimentId) => {
       if (!fileType) throw new Error('No sample file found');
 
       const fileName = fileNameForApiV1[fileType];
-
-      fileNames.push(fileNameForApiV1[fileType]);
 
       apiV1Files[fileName] = {
         size: files[key].size,
@@ -33,11 +30,11 @@ const toApiV1 = (samples, experimentId) => {
       };
     });
 
-    return { apiV1Files, fileNames };
+    return apiV1Files;
   };
 
   samples.forEach((sample) => {
-    const { apiV1Files, fileNames } = buildApiv1Files(sample.files);
+    const apiV1Files = buildApiv1Files(sample.files);
     apiV1Samples[sample.id] = {
       experimentId,
       metadata: sample.metadata,
@@ -47,7 +44,6 @@ const toApiV1 = (samples, experimentId) => {
       files: apiV1Files,
       type: sample.sampleTechnology,
       options: sample.options,
-      fileNames,
       uuid: sample.id,
     };
   });

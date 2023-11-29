@@ -13,7 +13,7 @@ import integrationTestConstants from 'utils/integrationTestConstants';
 
 import { useAppRouter } from 'utils/AppRouteProvider';
 import calculatePipelinesRerunStatus from 'utils/data-management/calculatePipelinesRerunStatus';
-import fileNamesByTech from 'utils/filenamesByTech';
+import fileNamesByTech from 'utils/fileNamesByTech';
 
 const LaunchButtonTemplate = (props) => {
   const {
