@@ -398,4 +398,18 @@ describe('samplesReducer', () => {
 
     expect(newState).toMatchSnapshot();
   });
+
+  it('Sample file update doesnt change anything if the sample no longer exists', () => {
+    const newState = samplesReducer(initialState, {
+      type: SAMPLES_FILE_UPDATE,
+      payload: {
+        sampleUuid: mockUuid1,
+        fileName,
+        fileDiff: mockFile,
+        lastModified: 'newLastModified',
+      },
+    });
+
+    expect(newState).toEqual(initialState);
+  });
 });

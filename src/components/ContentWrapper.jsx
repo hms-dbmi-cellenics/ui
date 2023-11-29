@@ -400,24 +400,52 @@ const ContentWrapper = (props) => {
       .includes(currentModule) && disableIfNoExperiment;
     const seuratCompleteDisable = disabledIfSeuratComplete && seuratComplete;
 
-    return (
-      <Menu.Item
-        id={module}
-        disabled={notProcessedExperimentDisable || pipelineStatusDisable
-          || seuratCompleteDisable || nonExperimentModule}
-        key={module}
-        icon={icon}
-        onClick={() => navigateTo(
-          module,
-          { experimentId: currentExperimentId },
-        )}
-      >
-        {name}
-      </Menu.Item>
-    );
+    return {
+      key: module,
+      icon,
+      label: name,
+      disabled: notProcessedExperimentDisable || pipelineStatusDisable
+      || seuratCompleteDisable || nonExperimentModule,
+      onClick: () => navigateTo(
+        module,
+        { experimentId: currentExperimentId },
+      ),
+    };
   };
 
   if (!user) return <></>;
+
+  const mainMenuItems = menuLinks
+    .filter((item) => !item.disableIfNoExperiment)
+    .map(menuItemRender);
+
+  const groupMenuItems = menuLinks
+    .filter((item) => item.disableIfNoExperiment)
+    .map(menuItemRender);
+
+  const groupItem = {
+    type: 'group',
+    label: !collapsed && (
+      <Tooltip title={experimentName} placement='right'>
+        <Space direction='vertical' style={{ width: '100%', cursor: 'default' }}>
+          <Text
+            style={{
+              width: '100%',
+              color: '#999999',
+            }}
+            strong
+            ellipsis
+          >
+            {experimentName || 'No analysis'}
+          </Text>
+          {experimentName && <Text style={{ color: '#999999' }}>Current analysis</Text>}
+        </Space>
+      </Tooltip>
+    ),
+    children: groupMenuItems,
+  };
+
+  const menuItems = [...mainMenuItems, groupItem];
 
   return (
     <>
@@ -444,43 +472,10 @@ const ContentWrapper = (props) => {
               <Menu
                 data-test-id={integrationTestConstants.ids.NAVIGATION_MENU}
                 theme='dark'
-                selectedKeys={
-                  menuLinks
-                    .filter(({ module }) => module === currentModule)
-                    .map(({ module }) => module)
-                }
+                selectedKeys={menuLinks.filter(({ module }) => module === currentModule).map(({ module }) => module)}
                 mode='inline'
-              >
-                {menuLinks.filter((item) => !item.disableIfNoExperiment).map(menuItemRender)}
-
-                <Menu.ItemGroup
-                  title={!collapsed && (
-                    <Tooltip title={experimentName} placement='right'>
-                      <Space direction='vertical' style={{ width: '100%', cursor: 'default' }}>
-                        <Text
-                          style={{
-                            width: '100%',
-                            color: '#999999',
-                          }}
-                          strong
-                          ellipsis
-                        >
-                          {experimentName || 'No analysis'}
-                        </Text>
-                        {experimentName && (
-                          <Text style={{ color: '#999999' }}>
-                            Current analysis
-                          </Text>
-                        )}
-                      </Space>
-                    </Tooltip>
-
-                  )}
-                >
-                  {menuLinks.filter((item) => item.disableIfNoExperiment).map(menuItemRender)}
-                </Menu.ItemGroup>
-
-              </Menu>
+                items={menuItems}
+              />
             </div>
           </Sider>
           <Layout

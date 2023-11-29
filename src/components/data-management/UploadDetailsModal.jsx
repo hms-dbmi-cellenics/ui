@@ -12,7 +12,7 @@ dayjs.extend(utc);
 
 const UploadDetailsModal = (props) => {
   const {
-    visible, onCancel, file, extraFields, onDownload, onRetry, onDelete,
+    onCancel, file, extraFields, onDownload, onRetry, onDelete,
   } = props;
 
   const {

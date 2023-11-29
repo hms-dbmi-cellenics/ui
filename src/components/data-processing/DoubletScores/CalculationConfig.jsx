@@ -33,11 +33,15 @@ const DoubletScoresConfig = (props) => {
     </>
   );
 };
-
+DoubletScoresConfig.defaultProps = {
+  updateSettings: () => {},
+  config: {},
+  disabled: false,
+};
 DoubletScoresConfig.propTypes = {
-  updateSettings: PropTypes.func.isRequired,
-  config: PropTypes.object.isRequired,
-  disabled: PropTypes.bool.isRequired,
+  updateSettings: PropTypes.func,
+  config: PropTypes.object,
+  disabled: PropTypes.bool,
 };
 
 export default DoubletScoresConfig;

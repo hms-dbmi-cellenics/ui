@@ -3,7 +3,7 @@ import { loadProcessingSettings } from 'redux/actions/experimentSettings';
 
 import fetchWork from 'utils/work/fetchWork';
 import getTimeoutForWorkerTask from 'utils/getTimeoutForWorkerTask';
-import writeToFileURL from 'utils/writeToFileURL';
+import writeToFileURL from 'utils/upload/writeToFileURL';
 import downloadFromUrl from 'utils/downloadFromUrl';
 import handleError from 'utils/http/handleError';
 import endUserMessages from 'utils/endUserMessages';
@@ -24,6 +24,7 @@ const downloadProcessedMatrix = (experimentId) => async (dispatch, getState) => 
     // the embeddingETag is added by the API to this body
     const body = {
       name: taskName,
+      embeddingMethod,
     };
 
     const timeout = getTimeoutForWorkerTask(getState(), taskName);

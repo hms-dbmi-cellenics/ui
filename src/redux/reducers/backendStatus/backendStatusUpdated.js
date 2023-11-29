@@ -3,7 +3,7 @@ import produce from 'immer';
 
 import initialState from 'redux/reducers/backendStatus/initialState';
 
-import mergeObjectReplacingArrays from 'utils/mergeObjectReplacingArrays';
+import { mergeObjectReplacingArrays } from 'utils/arrayUtils';
 
 const backendStatusUpdated = produce((draft, action) => {
   const { experimentId, status } = action.payload;

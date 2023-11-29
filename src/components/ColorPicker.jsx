@@ -34,8 +34,8 @@ const ColorPicker = (props) => {
         content={pickerComponent()}
         placement='bottom'
         trigger='click'
-        visible={visible}
-        onVisibleChange={(newVisible) => setVisible(newVisible)}
+        open={visible}
+        onOpenChange={(newVisible) => setVisible(newVisible)}
         destroyTooltipOnHide
         zIndex={zIndex}
       >

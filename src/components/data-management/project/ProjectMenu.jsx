@@ -6,10 +6,10 @@ import {
 
 import integrationTestConstants from 'utils/integrationTestConstants';
 import processUpload from 'utils/upload/processUpload';
-import DownloadDataButton from './DownloadDataButton';
-import LaunchAnalysisButton from './LaunchAnalysisButton';
-import FileUploadModal from './FileUploadModal';
-import ShareExperimentModal from './ShareExperimentModal';
+import DownloadDataButton from 'components/data-management/DownloadDataButton';
+import LaunchAnalysisButton from 'components/data-management/LaunchAnalysisButton';
+import FileUploadModal from 'components/data-management/FileUploadModal';
+import ShareExperimentModal from 'components/data-management/ShareExperimentModal';
 
 const ProjectMenu = () => {
   const dispatch = useDispatch();
