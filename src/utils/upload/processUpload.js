@@ -18,7 +18,7 @@ import endUserMessages from 'utils/endUserMessages';
 import pushNotificationMessage from 'utils/pushNotificationMessage';
 
 const prepareAndUploadFileToS3 = async (
-  file, uploadUrlParams, type, onStatusUpdate = () => { }, abortController = null,
+  file, uploadUrlParams, type, abortController, onStatusUpdate = () => { },
 ) => {
   let parts = null;
   const { signedUrls, uploadId, fileId } = uploadUrlParams;
@@ -89,7 +89,7 @@ const createAndUploadSampleFile = async (file, experimentId, sampleId, dispatch,
     try {
       file.fileObject = await loadAndCompressIfNecessary(file, () => {
         dispatch(updateSampleFileUpload(
-          experimentId, sampleId, fileType, UploadStatus.COMPRESSING,
+          experimentId, sampleId, sampleFileId, fileType, UploadStatus.COMPRESSING,
         ));
       });
 
@@ -99,7 +99,9 @@ const createAndUploadSampleFile = async (file, experimentId, sampleId, dispatch,
         ? UploadStatus.FILE_READ_ABORTED
         : UploadStatus.FILE_READ_ERROR;
 
-      dispatch(updateSampleFileUpload(experimentId, sampleId, fileType, fileErrorStatus));
+      dispatch(updateSampleFileUpload(
+        experimentId, sampleId, sampleFileId, fileType, fileErrorStatus,
+      ));
       return;
     }
   }
@@ -114,15 +116,15 @@ const createAndUploadSampleFile = async (file, experimentId, sampleId, dispatch,
 
     const updateSampleFileUploadProgress = (status, percentProgress = 0) => dispatch(
       updateSampleFileUpload(
-        experimentId, sampleId, fileType, status, percentProgress,
+        experimentId, sampleId, sampleFileId, fileType, status, percentProgress,
       ),
     );
 
     const uploadUrlParams = { signedUrls, uploadId, fileId: sampleFileId };
-    await prepareAndUploadFileToS3(file, uploadUrlParams, 'sample', updateSampleFileUploadProgress, abortController);
+    await prepareAndUploadFileToS3(file, uploadUrlParams, 'sample', abortController, updateSampleFileUploadProgress);
   } catch (e) {
     dispatch(updateSampleFileUpload(
-      experimentId, sampleId, fileType, UploadStatus.UPLOAD_ERROR,
+      experimentId, sampleId, sampleFileId, fileType, UploadStatus.UPLOAD_ERROR,
     ));
   }
 };
