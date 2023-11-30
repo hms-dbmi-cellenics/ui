@@ -11,7 +11,7 @@ const putPartInS3 = async (
       method: 'put',
       data: blob,
       url: signedUrl,
-      signal: abortController.signal,
+      signal: abortController?.signal,
       headers: {
         'Content-Type': 'application/octet-stream',
       },
