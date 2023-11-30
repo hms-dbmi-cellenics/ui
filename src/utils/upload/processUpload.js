@@ -18,7 +18,7 @@ import endUserMessages from 'utils/endUserMessages';
 import pushNotificationMessage from 'utils/pushNotificationMessage';
 
 const prepareAndUploadFileToS3 = async (
-  file, uploadUrlParams, type, onStatusUpdate = () => { }, abortController = null,
+  file, uploadUrlParams, type, abortController, onStatusUpdate = () => { },
 ) => {
   let parts = null;
   const { signedUrls, uploadId, fileId } = uploadUrlParams;
@@ -121,7 +121,7 @@ const createAndUploadSampleFile = async (file, experimentId, sampleId, dispatch,
     );
 
     const uploadUrlParams = { signedUrls, uploadId, fileId: sampleFileId };
-    await prepareAndUploadFileToS3(file, uploadUrlParams, 'sample', updateSampleFileUploadProgress, abortController);
+    await prepareAndUploadFileToS3(file, uploadUrlParams, 'sample', abortController, updateSampleFileUploadProgress);
   } catch (e) {
     dispatch(updateSampleFileUpload(
       experimentId, sampleId, sampleFileId, fileType, UploadStatus.UPLOAD_ERROR,
