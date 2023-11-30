@@ -16,7 +16,7 @@ const downloadProcessedMatrix = (experimentId) => async (dispatch, getState) => 
       method: embeddingMethod,
     } = getState().experimentSettings.processing.configureEmbedding.embeddingSettings;
 
-    await dispatch(loadEmbedding(experimentId, embeddingMethod));
+    await dispatch(loadEmbedding(experimentId, embeddingMethod, true));
 
     const taskName = 'DownloadAnnotSeuratObject';
 
