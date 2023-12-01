@@ -15,7 +15,6 @@ import { sampleTech } from 'utils/constants';
 import UploadStatus from 'utils/upload/UploadStatus';
 
 import fileNameForApiV1 from 'utils/upload/fileNameForApiV1';
-import getFileTypeV2 from 'utils/getFileTypeV2';
 
 // If the sample name of new samples coincides with already existing
 // ones we should not create new samples,
@@ -116,16 +115,22 @@ const createSamples = (
         createdDate,
         lastModified: createdDate,
         options,
-        metadata: experiment?.metadataKeys
-          .reduce((acc, curr) => ({ ...acc, [curr]: METADATA_DEFAULT_VALUE }), {}) || {},
-        files: Object.values(files).reduce(((acc, curr) => {
-          const fileType = fileNameForApiV1[getFileTypeV2(curr.name, sampleTechnology)];
+        metadata: experiment?.metadataKeys.reduce(
+          (acc, metadataKey) => (
+            { ...acc, [metadataKey]: METADATA_DEFAULT_VALUE }), {},
+        ) ?? {},
+
+        files: Object.values(files).reduce(((acc, file) => {
+          const fileTypeV1 = fileNameForApiV1[file.type];
 
           return (
-            { ...acc, [fileType]: { upload: { status: UploadStatus.UPLOADING } } }
+            { ...acc, [fileTypeV1]: { upload: { status: UploadStatus.UPLOADING } } }
           );
         }), {}),
       }));
+
+    console.log('newSamplesToReduxDebug');
+    console.log(newSamplesToRedux);
 
     dispatch({
       type: SAMPLES_CREATED,

@@ -26,6 +26,26 @@ const createSampleFile = (
       size: fileForApiV1.size,
     };
 
+    const {
+      size,
+      // valid: true,
+      upload,
+      // name: 'features.tsv.gz',
+      fileObject,
+      path,
+      errors,
+      compressed,
+    } = fileForApiV1;
+
+    const fileForRedux = {
+      size,
+      upload,
+      fileObject,
+      path,
+      errors,
+      compressed,
+    };
+
     dispatch({
       type: SAMPLES_FILE_UPDATE,
       payload: {
@@ -33,7 +53,8 @@ const createSampleFile = (
         lastModified: updatedAt,
         fileName: fileNameForApiV1[type],
         fileDiff: {
-          ...fileForApiV1,
+          // ...fileForApiV1,
+          ...fileForRedux,
           upload: {
             status: UploadStatus.UPLOADING, progress: 0, abortController,
           },

@@ -22,7 +22,7 @@ import config from 'config';
 import { sampleTech } from 'utils/constants';
 import techOptions, { techNamesToDisplay } from 'utils/upload/fileUploadSpecifications';
 import handleError from 'utils/http/handleError';
-import { fileObjectToFileRecord } from 'utils/upload/processUpload';
+import { fileObjectToFileRecord, getFileSampleAndName } from 'utils/upload/processUpload';
 import integrationTestConstants from 'utils/integrationTestConstants';
 import endUserMessages from 'utils/endUserMessages';
 
@@ -169,6 +169,14 @@ const FileUploadModal = (props) => {
     </>
   );
 
+  const getFilePathToDisplay = (fileObject) => (
+    // if the file has a path, trim to just the file and its folder.
+    // otherwise simply use its name
+    fileObject.path
+      ? Object.values(getFileSampleAndName(fileObject.path)).join('/')
+      : fileObject.name
+  );
+
   return (
     <Modal
       title=''
@@ -210,7 +218,8 @@ const FileUploadModal = (props) => {
                   defaultValue={selectedTech}
                   disabled={currentSelectedTech}
                   onChange={(value) => setSelectedTech(value)}
-                  style={{ width: 180 }} // Fix the width so that the dropdown doesn't change size when the value changes
+                  // Fix the width so that the dropdown doesn't change size when the value changes
+                  style={{ width: 180 }}
                 >
                   {
                     Object.values(sampleTech)
@@ -314,7 +323,7 @@ const FileUploadModal = (props) => {
                         ellipsis={{ tooltip: file.name }}
                         style={{ width: '200px' }}
                       >
-                        {file.name}
+                        {getFilePathToDisplay(file.fileObject)}
 
                       </Text>
                       <DeleteOutlined style={{ color: 'crimson' }} onClick={() => { removeFile(file.name); }} />
