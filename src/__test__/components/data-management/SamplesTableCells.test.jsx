@@ -13,7 +13,7 @@ import {
 } from 'components/data-management/SamplesTableCells';
 import UploadStatus, { messageForStatus } from 'utils/upload/UploadStatus';
 import { makeStore } from 'redux/store';
-import mockAPI, { generateDefaultMockAPIResponses } from '__test__/test-utils/mockAPI';
+import mockAPI, { generateDefaultMockAPIResponses, statusResponse } from '__test__/test-utils/mockAPI';
 import { loadSamples, updateSampleFileUpload } from 'redux/actions/samples';
 
 import fake from '__test__/test-utils/constants';
@@ -40,6 +40,7 @@ jest.mock('swr', () => () => ({
 
 const experimentId = `${fake.EXPERIMENT_ID}-0`;
 const sampleId = `${fake.SAMPLE_ID}-0`;
+const sampleFileId = `${fake.SAMPLE_FILE_ID}`;
 
 enableFetchMocks();
 
@@ -50,7 +51,10 @@ describe('UploadCell', () => {
 
   beforeEach(async () => {
     fetchMock.mockClear();
-    fetchMock.mockIf(/.*/, mockAPI(generateDefaultMockAPIResponses(experimentId)));
+    fetchMock.mockIf(/.*/, mockAPI({
+      [`experiments/${experimentId}/sampleFiles/${sampleFileId}$`]: () => statusResponse(200, 'OK'),
+      ...generateDefaultMockAPIResponses(experimentId),
+    }));
 
     storeState = makeStore();
 
@@ -73,7 +77,7 @@ describe('UploadCell', () => {
 
     await storeState.dispatch(
       updateSampleFileUpload(
-        experimentId, sampleId, 'features10x', UploadStatus.UPLOADING, percentUploaded,
+        experimentId, sampleId, sampleFileId, 'features10x', UploadStatus.UPLOADING, percentUploaded,
       ),
     );
 
