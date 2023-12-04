@@ -4,28 +4,66 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import _ from 'lodash';
 import { Col, Row, Space } from 'antd';
-import { getPlotConfigs, getCellSets } from 'redux/selectors';
+import { getPlotConfigs, getCellSets, getGeneList } from 'redux/selectors';
 import { loadCellSets } from 'redux/actions/cellSets';
-
+import {
+  updatePlotConfig,
+  loadPlotConfig,
+} from 'redux/actions/componentConfig/index';
 import PlatformError from 'components/PlatformError';
+import loadConditionalComponentConfig from 'redux/actions/componentConfig/loadConditionalComponentConfig';
+import MultiViewEditor from 'components/plots/styling/MultiViewEditor';
+import { generateMultiViewGridPlotUuid } from 'utils/generateCustomPlotUuid';
+
+const multiViewType = 'multiView';
 
 const MultiViewGrid = (props) => {
   const {
     experimentId,
     renderPlot,
-    multiViewUuid,
     updateAllWithChanges,
+    plotType,
   } = props;
-
+  const multiViewUuid = `${multiViewType}-${plotType}`;
   const dispatch = useDispatch();
 
   const cellSets = useSelector(getCellSets());
 
   const multiViewConfig = useSelector((state) => state.componentConfig[multiViewUuid].config);
   const plotConfigs = useSelector(getPlotConfigs(multiViewConfig.plotUuids));
+  const multiViewPlotUuids = multiViewConfig?.plotUuids;
+  const [selectedPlotUuid, setSelectedPlotUuid] = useState(multiViewUuid);
 
   const [plots, setPlots] = useState({});
   const previousMultiViewConfig = useRef({});
+  const shownGenes = _.compact(multiViewPlotUuids?.map((uuid) => plotConfigs[uuid]?.shownGene));
+  const selectedConfig = plotConfigs[selectedPlotUuid];
+  const geneList = useSelector(getGeneList());
+
+  const geneNames = Object.keys(geneList.data);
+
+  const updateMultiViewWithChanges = (updateField) => {
+    dispatch(updatePlotConfig(multiViewUuid, updateField));
+  };
+
+  const resetMultiView = () => {
+    updateMultiViewWithChanges({ nrows: 1, ncols: 1, plotUuids: [selectedPlotUuid] });
+  };
+  const loadComponent = (componentUuid, type, skipAPI, customConfig) => {
+    dispatch(loadConditionalComponentConfig(
+      experimentId, componentUuid, type, skipAPI, customConfig,
+    ));
+  };
+  const updatePlotWithChanges = (updateField) => {
+    dispatch(updatePlotConfig(selectedPlotUuid, updateField));
+  };
+  useEffect(() => {
+    if (!multiViewConfig) {
+      const customConfig = { plotUuids: [multiViewUuid] };
+      loadComponent(multiViewUuid, multiViewType, false, customConfig);
+      // loadComponent(plotUuid, plotType, false);
+    }
+  }, []);
 
   useEffect(() => {
     if (
@@ -33,7 +71,16 @@ const MultiViewGrid = (props) => {
       || _.isEqual(previousMultiViewConfig.current, multiViewConfig)
       || Object.values(plotConfigs).includes(undefined)
     ) return;
+    if (!multiViewPlotUuids.includes(selectedPlotUuid)) {
+      setSelectedPlotUuid(multiViewPlotUuids[0]);
+    }
+    // load new plots for all multi view plotUuids, with highest dispersion gene if not saved
 
+    multiViewPlotUuids.forEach((uuid) => {
+      if (!plotConfigs[uuid]) {
+        loadComponent(uuid, plotType, false);
+      }
+    });
     const previousPlotUuids = previousMultiViewConfig.current.plotUuids ?? [];
     const currentPlotUuids = multiViewConfig.plotUuids;
 
@@ -47,21 +94,70 @@ const MultiViewGrid = (props) => {
       }
 
       const plotsToAdd = _.difference(currentPlotUuids, previousPlotUuids);
-
+      console.log('plots to add ', plotsToAdd);
       const newPlots = { ...plots };
 
       plotsToAdd.forEach((plotUuid) => {
-        newPlots[plotUuid] = renderPlot(plotUuid);
+        newPlots[plotUuid] = renderPlot(plotUuid, updatePlotWithChanges);
       });
 
       setPlots(newPlots);
     }
   }, [multiViewConfig, plotConfigs]);
 
+  const addGeneToMultiView = (genes) => {
+    const validGenes = genes.filter((gene) => geneNames.includes(gene));
+    const genesToAdd = validGenes.slice(0, 30 - multiViewPlotUuids.length);
+
+    if (genesToAdd.length === 0) return;
+
+    const plotUuidIndexes = multiViewPlotUuids.map((uuid) => parseInt(uuid.match(/[0-9]+/g), 10));
+    const newIndexes = [...Array(30).keys()].filter((index) => !plotUuidIndexes.includes(index));
+
+    const newPlotUuids = [...multiViewPlotUuids];
+
+    genesToAdd.forEach((gene, index) => {
+      const plotUuidToAdd = generateMultiViewGridPlotUuid(multiViewUuid, newIndexes[index]);
+      newPlotUuids.push(plotUuidToAdd);
+
+      // Taking the config the user currently sees (selectedConfig),
+      //  copy it and add the gene-specific settings
+      const customConfig = {
+        ...selectedConfig,
+        shownGene: gene,
+        title: { text: gene },
+      };
+
+      loadComponent(plotUuidToAdd, plotType, true, customConfig);
+    });
+
+    const multiViewUpdatedFields = { plotUuids: newPlotUuids };
+
+    const gridSize = multiViewConfig.nrows * multiViewConfig.ncols;
+    if (gridSize < newPlotUuids.length) {
+      const newSize = Math.ceil(Math.sqrt(newPlotUuids.length));
+      _.merge(multiViewUpdatedFields, { nrows: newSize, ncols: newSize });
+    }
+
+    updateMultiViewWithChanges(multiViewUpdatedFields);
+  };
   const spaceAlign = (multiViewConfig.plotUuids.length > 1)
     ? 'start'
     : 'center';
 
+  const renderMultiViewEditor = () => {
+    console.log('his');
+    return (
+      <MultiViewEditor
+        multiViewConfig={multiViewConfig}
+        addGeneToMultiView={addGeneToMultiView}
+        onMultiViewUpdate={updateMultiViewWithChanges}
+        selectedPlotUuid={selectedPlotUuid}
+        setSelectedPlotUuid={setSelectedPlotUuid}
+        shownGenes={shownGenes}
+      />
+    );
+  };
   const render = () => {
     if (cellSets.error) {
       return (

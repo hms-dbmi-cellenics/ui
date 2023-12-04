@@ -104,6 +104,13 @@ const ViolinIndex = ({ experimentId }) => {
     if (!multiViewPlotUuids.includes(selectedPlotUuid)) {
       setSelectedPlotUuid(multiViewPlotUuids[0]);
     }
+    // load new plots for all multi view plotUuids, with highest dispersion gene if not saved
+
+    multiViewPlotUuids.forEach((uuid) => {
+      if (!plotConfigs[uuid]) {
+        loadComponent(uuid, plotType, false);
+      }
+    });
   }, [multiViewConfig]);
 
   // find highest dispersion genes for initial plot state
@@ -113,17 +120,6 @@ const ViolinIndex = ({ experimentId }) => {
     const [gene] = getHighestDispersionGenes(geneList.data, 1);
     setHighestDispersionGene(gene);
   }, [geneList]);
-
-  // load new plots for all multi view plotUuids, with highest dispersion gene if not saved
-  useEffect(() => {
-    if (!multiViewConfig) return;
-
-    multiViewPlotUuids.forEach((uuid) => {
-      if (!plotConfigs[uuid]) {
-        loadComponent(uuid, plotType, false);
-      }
-    });
-  }, [multiViewConfig]);
 
   // update default configs to show highest dispersion gene
   useEffect(() => {

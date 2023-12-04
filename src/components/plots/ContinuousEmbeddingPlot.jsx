@@ -53,8 +53,9 @@ const ContinuousEmbeddingPlot = (props) => {
   useEffect(() => {
     changeEmbeddingAxesIfNecessary(config, embeddingSettings?.method, onUpdate);
   }, [config, embeddingSettings?.method]);
-
   useEffect(() => {
+    console.log('LOADING!!!', !embeddingLoading, config, plotData, cellSets.accessible, embeddingData);
+
     if (!embeddingLoading
       && !embeddingError
       && config
@@ -102,7 +103,6 @@ const ContinuousEmbeddingPlot = (props) => {
         />
       );
     }
-
     if (!config
       || loading
       || !cellSets.accessible

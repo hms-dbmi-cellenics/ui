@@ -20,8 +20,6 @@ const MultiViewEditor = (props) => {
   const {
     multiViewConfig,
     addGeneToMultiView,
-    updateAll,
-    setUpdateAll,
     onMultiViewUpdate,
     selectedPlotUuid,
     setSelectedPlotUuid,
@@ -31,6 +29,7 @@ const MultiViewEditor = (props) => {
   const [localNRows, setLocalNRows] = useState(null);
   const [localNCols, setLocalNCols] = useState(null);
   const [options, setOptions] = useState([]);
+  const [updateAll, setUpdateAll] = useState(true);
 
   const renderUuidOptions = (plotUuids) => {
     if (!plotUuids) return [];
@@ -62,7 +61,7 @@ const MultiViewEditor = (props) => {
       setOptions(renderUuidOptions(multiViewConfig.plotUuids));
     }
   }, [multiViewConfig, shownGenes, localNRows, localNCols]);
-
+  console.log('MULTI CONFIG ,', multiViewConfig);
   if (!multiViewConfig) {
     return (
       <div data-testid='skeletonInput'>
