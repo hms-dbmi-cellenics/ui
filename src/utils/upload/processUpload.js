@@ -124,8 +124,6 @@ const createAndUploadSampleFile = async (file, experimentId, sampleId, dispatch,
     const uploadUrlParams = { signedUrls, uploadId, fileId: sampleFileId };
     await prepareAndUploadFileToS3(file, uploadUrlParams, 'sample', abortController, updateSampleFileUploadProgress);
   } catch (e) {
-    console.log('eDebug');
-    console.log(e);
     dispatch(updateSampleFileUpload(
       experimentId, sampleId, sampleFileId, file.type, UploadStatus.UPLOAD_ERROR,
     ));

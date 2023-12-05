@@ -129,9 +129,6 @@ const createSamples = (
         }), {}),
       }));
 
-    console.log('newSamplesToReduxDebug');
-    console.log(newSamplesToRedux);
-
     dispatch({
       type: SAMPLES_CREATED,
       payload: {

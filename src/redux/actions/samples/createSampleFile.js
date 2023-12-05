@@ -28,7 +28,6 @@ const createSampleFile = (
 
     const {
       size,
-      // valid: true,
       upload,
       // name: 'features.tsv.gz',
       fileObject,
@@ -38,6 +37,7 @@ const createSampleFile = (
     } = fileForApiV1;
 
     const fileForRedux = {
+      valid: true,
       size,
       upload,
       fileObject,
