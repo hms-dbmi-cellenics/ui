@@ -116,7 +116,6 @@ const LaunchAnalysisButton = () => {
       for (const fileName of fileNames) {
         const checkedFile = sample.files[fileName];
         allUploaded = allUploaded
-          && checkedFile.valid
           && checkedFile.upload.status === UploadStatus.UPLOADED;
 
         if (!allUploaded) break;

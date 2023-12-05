@@ -36,7 +36,6 @@ const createSampleFile = (
     } = fileForApiV1;
 
     const fileForRedux = {
-      valid: true,
       size,
       upload,
       fileObject,

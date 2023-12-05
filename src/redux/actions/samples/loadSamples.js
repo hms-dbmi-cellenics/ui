@@ -19,7 +19,6 @@ const toApiV1 = (samples, experimentId) => {
 
       apiV1Files[fileType] = {
         size: files[key].size,
-        valid: true,
         upload: {
           status: files[key].uploadStatus,
         },
