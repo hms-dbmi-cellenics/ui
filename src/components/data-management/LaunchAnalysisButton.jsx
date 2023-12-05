@@ -101,19 +101,10 @@ const LaunchAnalysisButton = () => {
     const metadataKeysAvailable = activeExperiment.metadataKeys.length;
 
     const allSampleFilesUploaded = (sample) => {
-      // Check if all files for a given tech have been uploaded
-      const fileNames = fileNamesByTech[sample.type];
-
-      if (
-        !fileUploadSpecifications[sample.type].requiredFiles.every(
-          (file) => fileNames.includes(file.key),
-        )
-      ) { return false; }
-
       let allUploaded = true;
 
       // eslint-disable-next-line no-restricted-syntax
-      for (const fileName of fileNames) {
+      for (const fileName of Object.keys(sample.files)) {
         const checkedFile = sample.files[fileName];
         allUploaded = allUploaded
           && checkedFile.upload.status === UploadStatus.UPLOADED;
