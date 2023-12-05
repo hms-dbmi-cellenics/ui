@@ -32,9 +32,9 @@ const fileUploadSpecifications = {
       ['<code>matrix.mtx</code> or <code>matrix.mtx.gz</code>'],
     ],
     requiredFiles: [
-      { key: 'barcodes.tsv.gz', displayedName: 'barcodes.tsv' },
-      { key: 'features.tsv.gz', displayedName: 'genes.tsv' },
-      { key: 'matrix.mtx.gz', displayedName: 'matrix.mtx' },
+      { key: 'barcodes10x', displayedName: 'barcodes.tsv' },
+      { key: 'features10x', displayedName: 'genes.tsv' },
+      { key: 'matrix10x', displayedName: 'matrix.mtx' },
     ],
     fileUploadParagraphs: [
       'For each sample, upload a folder containing the 3 required files. The folder\'s name will be used to name the sample in it. You can change this name later in Data Management.',
@@ -62,7 +62,7 @@ const fileUploadSpecifications = {
       ['\uD83D\uDCA1if file size is over 15GB, try removing any assays not indicated above.'],
     ],
     requiredFiles: [
-      { key: 'r.rds', displayedName: 'seurat rds' },
+      { key: 'seurat', displayedName: 'seurat rds' },
     ],
     fileUploadParagraphs: [
       '<p>For your dataset, upload a single <code>*.rds</code> file with the Seurat object (max 15GB).</p>',
@@ -80,7 +80,7 @@ const fileUploadSpecifications = {
   },
   [sampleTech.RHAPSODY]: {
     acceptedFiles: new Set(['expression_data.st', 'expression_data.st.gz']),
-    requiredFiles: [{ key: 'expression_data.st.gz', displayedName: 'expression_data.st' }],
+    requiredFiles: [{ key: 'rhapsody', displayedName: 'expression_data.st' }],
     inputInfo: [
       ['<code>expression_data.st</code> or <code>expression_data.st.gz</code>'],
     ],
@@ -96,7 +96,7 @@ const fileUploadSpecifications = {
   },
   [sampleTech.H5]: {
     acceptedFiles: new Set(['matrix.h5', 'matrix.h5.gz']),
-    requiredFiles: [{ key: 'matrix.h5.gz', displayedName: 'matrix.h5' }],
+    requiredFiles: [{ key: '10x_h5', displayedName: 'matrix.h5' }],
     inputInfo: [['<code>matrix.h5</code> or <code>matrix.h5.gz</code>']],
     fileUploadParagraphs: [`For each sample, upload a folder containing the h5 file. The folder's
     name will be used to name the sample in it.

@@ -6,7 +6,6 @@ import { SAMPLES_FILE_UPDATE } from 'redux/actionTypes/samples';
 
 import UploadStatus from 'utils/upload/UploadStatus';
 import updateSampleFileUpload from 'redux/actions/samples/updateSampleFileUpload';
-import fileNameForApiV1 from 'utils/upload/fileNameForApiV1';
 
 const createSampleFile = (
   experimentId,
@@ -50,8 +49,8 @@ const createSampleFile = (
       type: SAMPLES_FILE_UPDATE,
       payload: {
         sampleUuid: sampleId,
+        sampleFileType: type,
         lastModified: updatedAt,
-        fileName: fileNameForApiV1[type],
         fileDiff: {
           // ...fileForApiV1,
           ...fileForRedux,

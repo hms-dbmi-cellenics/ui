@@ -1,10 +1,10 @@
 import { sampleTech } from 'utils/constants';
 
 const fileNamesByTech = {
-  [sampleTech['10X']]: ['features.tsv.gz', 'barcodes.tsv.gz', 'matrix.mtx.gz'],
-  [sampleTech.H5]: ['matrix.h5.gz'],
-  [sampleTech.SEURAT]: ['r.rds'],
-  [sampleTech.RHAPSODY]: ['expression_data.st.gz'],
+  [sampleTech['10X']]: ['features10x', 'barcodes10x', 'matrix10x'],
+  [sampleTech.H5]: ['10x_h5'],
+  [sampleTech.SEURAT]: ['seurat'],
+  [sampleTech.RHAPSODY]: ['rhapsody'],
 };
 
 export default fileNamesByTech;

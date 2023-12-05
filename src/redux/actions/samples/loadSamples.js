@@ -1,6 +1,5 @@
 import fetchAPI from 'utils/http/fetchAPI';
 import handleError from 'utils/http/handleError';
-import fileNameForApiV1 from 'utils/upload/fileNameForApiV1';
 
 import {
   SAMPLES_LOADED,
@@ -18,9 +17,7 @@ const toApiV1 = (samples, experimentId) => {
       const fileType = files[key]?.sampleFileType;
       if (!fileType) throw new Error('No sample file found');
 
-      const fileName = fileNameForApiV1[fileType];
-
-      apiV1Files[fileName] = {
+      apiV1Files[fileType] = {
         size: files[key].size,
         valid: true,
         upload: {

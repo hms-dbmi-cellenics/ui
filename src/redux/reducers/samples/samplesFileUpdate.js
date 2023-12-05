@@ -2,7 +2,7 @@ import _ from 'lodash';
 
 const samplesFileUpdate = (state, action) => {
   const {
-    sampleUuid, fileName, fileDiff, lastModified,
+    sampleUuid, sampleFileType, fileDiff, lastModified,
   } = action.payload;
 
   // There's a possible race condition where a file update can reach this place
@@ -11,7 +11,7 @@ const samplesFileUpdate = (state, action) => {
     return state;
   }
 
-  const oldFile = state[sampleUuid].files?.[fileName];
+  const oldFile = state[sampleUuid].files?.[sampleFileType];
   let newFile = fileDiff;
 
   if (oldFile) {
@@ -24,7 +24,7 @@ const samplesFileUpdate = (state, action) => {
       ...state[sampleUuid],
       files: {
         ...state[sampleUuid].files,
-        [fileName]: {
+        [sampleFileType]: {
           ...newFile,
         },
       },
