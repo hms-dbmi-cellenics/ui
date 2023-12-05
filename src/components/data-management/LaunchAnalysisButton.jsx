@@ -7,13 +7,11 @@ import _ from 'lodash';
 
 import { modules, sampleTech } from 'utils/constants';
 
-import fileUploadSpecifications from 'utils/upload/fileUploadSpecifications';
 import UploadStatus from 'utils/upload/UploadStatus';
 import integrationTestConstants from 'utils/integrationTestConstants';
 
 import { useAppRouter } from 'utils/AppRouteProvider';
 import calculatePipelinesRerunStatus from 'utils/data-management/calculatePipelinesRerunStatus';
-import fileNamesByTech from 'utils/fileNamesByTech';
 
 const LaunchButtonTemplate = (props) => {
   const {
