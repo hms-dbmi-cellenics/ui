@@ -127,7 +127,9 @@ const UploadCell = (props) => {
     }
   };
   const onDownload = () => {
-    downloadSampleFile(activeExperimentId, sampleUuid, uploadDetailsModalData.name, selectedTech);
+    downloadSampleFile(
+      activeExperimentId, sampleUuid, uploadDetailsModalData.fileCategory, selectedTech,
+    );
   };
 
   const onUpload = (fileObject, retryUpload = false) => {
