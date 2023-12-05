@@ -100,20 +100,9 @@ const LaunchAnalysisButton = () => {
 
     const metadataKeysAvailable = activeExperiment.metadataKeys.length;
 
-    const allSampleFilesUploaded = (sample) => {
-      let allUploaded = true;
-
-      // eslint-disable-next-line no-restricted-syntax
-      for (const fileName of Object.keys(sample.files)) {
-        const checkedFile = sample.files[fileName];
-        allUploaded = allUploaded
-          && checkedFile.upload.status === UploadStatus.UPLOADED;
-
-        if (!allUploaded) break;
-      }
-
-      return allUploaded;
-    };
+    const allSampleFilesUploaded = (sample) => (
+      Object.values(sample.files).every((file) => file.upload.status === UploadStatus.UPLOADED)
+    );
 
     const allSampleMetadataInserted = (sample) => {
       if (!metadataKeysAvailable) return true;
