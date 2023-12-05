@@ -19,6 +19,7 @@ import downloadSampleFile from 'utils/data-management/downloadSampleFile';
 import { createAndUploadSampleFile, fileObjectToFileRecord } from 'utils/upload/processUpload';
 import endUserMessages from 'utils/endUserMessages';
 import handleError from 'utils/http/handleError';
+import { fileTypeToDisplay } from 'utils/getFileTypeV2';
 import EditableField from '../EditableField';
 import UploadDetailsModal from './UploadDetailsModal';
 
@@ -166,7 +167,7 @@ const UploadCell = (props) => {
           onRetry={() => onUpload(uploadDetailsModalData, true)}
           extraFields={{
             Sample: sample?.name,
-            Category: uploadDetailsModalData.fileCategory,
+            Category: fileTypeToDisplay[uploadDetailsModalData.fileCategory],
           }}
         />
       )}
