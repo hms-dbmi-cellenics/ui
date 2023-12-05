@@ -25,7 +25,6 @@ const UploadDetailsModal = (props) => {
   const isNotUploadedModal = status === UploadStatus.FILE_NOT_FOUND;
   const isUploading = status === UploadStatus.UPLOADING;
 
-  // title={!isNotUploadedModal ? (isSuccessModal ? 'Upload successful' : 'Upload error') : 'File not found'}
   const modalTitle = messageForStatus(status);
 
   function bytesToSize(bytes) {
