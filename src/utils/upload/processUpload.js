@@ -182,7 +182,7 @@ const processUpload = async (filesList, technology, samples, experimentId, dispa
         uuid: sampleUuid,
         files: {
           ...acc[sampleName]?.files,
-          [fileName]: file,
+          [file.type]: file,
         },
       },
     };
