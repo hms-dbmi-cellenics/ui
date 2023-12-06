@@ -10,7 +10,6 @@ import loadAndCompressIfNecessary from 'utils/upload/loadAndCompressIfNecessary'
 import { inspectFile, Verdict } from 'utils/upload/fileInspector';
 import fetchAPI from 'utils/http/fetchAPI';
 
-import getFileType from 'utils/getFileType';
 import { sampleTech } from 'utils/constants';
 import fileUploadSpecifications from 'utils/upload/fileUploadSpecifications';
 import processMultipartUpload from 'utils/upload/processMultipartUpload';
@@ -165,10 +164,7 @@ const processUpload = async (filesList, technology, samples, experimentId, dispa
   const samplesMap = filesList.reduce((acc, file) => {
     const { sample: sampleName, name } = getFileSampleAndName(file.fileObject.path.replace(/[\s]{2,}/ig, ' '));
 
-    const fileName = fileUploadSpecifications[technology].getCorrespondingName(name);
-
-    // TODO decide what to do with file.type before merging
-    file.type = getFileType(fileName, technology);
+    file.type = fileUploadSpecifications[technology].getCorrespondingType(name);
 
     const sampleUuid = Object.values(samples).filter(
       (s) => s.name === sampleName

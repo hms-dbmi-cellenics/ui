@@ -40,10 +40,23 @@ const fileUploadSpecifications = {
     // setting to empty string allows folder upload on dropzone click
     webkitdirectory: '',
     isNameValid(fileName) { return matchFileName(fileName, this.acceptedFiles); },
-    getCorrespondingName(fileName) {
+    getCorrespondingType(fileName) {
+      const fileNameToType = {
+        'matrix.mtx.gz': 'matrix10x',
+        'barcodes.tsv.gz': 'barcodes10x',
+        'features.tsv.gz': 'features10x',
+        'genes.tsv.gz': 'features10x',
+        'matrix.mtx': 'matrix10x',
+        'barcodes.tsv': 'barcodes10x',
+        'features.tsv': 'features10x',
+        'genes.tsv': 'features10x',
+      };
+
       const allowedNames = Array.from(this.acceptedFiles);
 
-      return allowedNames.find((allowedName) => fileName.endsWith(allowedName));
+      const name = allowedNames.find((allowedName) => fileName.endsWith(allowedName));
+
+      return fileNameToType[name];
     },
   },
   [sampleTech.SEURAT]: {
@@ -70,7 +83,7 @@ const fileUploadSpecifications = {
         (validExtension) => fileName.endsWith(validExtension),
       );
     },
-    getCorrespondingName: () => 'r.rds',
+    getCorrespondingType: () => 'seurat',
   },
   [sampleTech.RHAPSODY]: {
     acceptedFiles: new Set(['expression_data.st', 'expression_data.st.gz']),
@@ -86,7 +99,7 @@ const fileUploadSpecifications = {
     dropzoneText: 'Drag and drop folders here or click to browse.',
     webkitdirectory: '',
     isNameValid: (fileName) => fileName.toLowerCase().match(/.*expression_data.st(.gz)?$/),
-    getCorrespondingName: (fileName) => fileName,
+    getCorrespondingType: () => 'rhapsody',
   },
   [sampleTech.H5]: {
     acceptedFiles: new Set(['matrix.h5', 'matrix.h5.gz']),
@@ -96,7 +109,7 @@ const fileUploadSpecifications = {
     name will be used to name the sample in it.
     You can change this name later in Data Management.`],
     isNameValid: (fileName) => fileName.toLowerCase().match(/.*matrix.h5(.gz)?$/),
-    getCorrespondingName: (fileName) => fileName,
+    getCorrespondingType: () => 'rhapsody',
   },
 };
 

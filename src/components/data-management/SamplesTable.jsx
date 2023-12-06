@@ -38,7 +38,7 @@ import integrationTestConstants from 'utils/integrationTestConstants';
 import useConditionalEffect from 'utils/customHooks/useConditionalEffect';
 import fileUploadSpecifications from 'utils/upload/fileUploadSpecifications';
 import { sampleTech } from 'utils/constants';
-import { fileTypeToDisplay } from 'utils/getFileType';
+import fileTypeToDisplay from 'utils/fileTypeToDisplay';
 
 const { Text } = Typography;
 
