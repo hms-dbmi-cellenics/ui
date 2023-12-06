@@ -91,24 +91,20 @@ const SamplesTable = forwardRef((props, ref) => {
         <SampleNameCell cellInfo={{ text, record, indx }} />
       ),
     },
-    ...fileUploadSpecifications[selectedTech]?.requiredFiles?.map((requiredFile, indx) => {
-      const fileNameWithoutExtension = requiredFile.split('.')[0];
-
-      return ({
-        index: 2 + indx,
-        title: <center>{fileTypeToDisplay[requiredFile]}</center>,
-        key: fileNameWithoutExtension,
-        dataIndex: fileNameWithoutExtension,
-        width: 170,
-        onCell: () => ({ style: { margin: '0px', padding: '0px' } }),
-        render: (tableCellData) => tableCellData && (
-          <UploadCell
-            columnId={requiredFile}
-            sampleUuid={tableCellData.sampleUuid}
-          />
-        ),
-      });
-    }) || [],
+    ...fileUploadSpecifications[selectedTech]?.requiredFiles?.map((requiredFile, indx) => ({
+      index: 2 + indx,
+      title: <center>{fileTypeToDisplay[requiredFile]}</center>,
+      key: requiredFile,
+      dataIndex: requiredFile,
+      width: 170,
+      onCell: () => ({ style: { margin: '0px', padding: '0px' } }),
+      render: (tableCellData) => tableCellData && (
+        <UploadCell
+          columnId={requiredFile}
+          sampleUuid={tableCellData.sampleUuid}
+        />
+      ),
+    })) || [],
 
   ]), [selectedTech]);
 
@@ -233,10 +229,7 @@ const SamplesTable = forwardRef((props, ref) => {
 
   const generateDataForItem = useCallback((sampleUuid) => {
     const sampleFileNames = fileUploadSpecifications[selectedTech]?.requiredFiles
-      .map((requiredFile) => ([
-        requiredFile.split('.')[0],
-        { sampleUuid },
-      ]));
+      .map((requiredFile) => ([requiredFile, { sampleUuid }]));
 
     return {
       key: sampleUuid,
