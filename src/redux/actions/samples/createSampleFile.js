@@ -11,7 +11,7 @@ const createSampleFile = (
   experimentId,
   sampleId,
   type,
-  fileForApiV1,
+  file,
   abortController,
 ) => async (dispatch) => {
   const updatedAt = dayjs().toISOString();
@@ -22,18 +22,17 @@ const createSampleFile = (
     const url = `/v2/experiments/${experimentId}/samples/${sampleId}/sampleFiles/${type}`;
     const body = {
       sampleFileId,
-      size: fileForApiV1.size,
+      size: file.size,
     };
 
     const {
       size,
       upload,
-      // name: 'features.tsv.gz',
       fileObject,
       path,
       errors,
       compressed,
-    } = fileForApiV1;
+    } = file;
 
     const fileForRedux = {
       size,
@@ -51,7 +50,6 @@ const createSampleFile = (
         sampleFileType: type,
         lastModified: updatedAt,
         fileDiff: {
-          // ...fileForApiV1,
           ...fileForRedux,
           upload: {
             status: UploadStatus.UPLOADING, progress: 0, abortController,
