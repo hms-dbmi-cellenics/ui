@@ -1,4 +1,5 @@
 import { sampleTech } from 'utils/constants';
+import sampleFileType from 'utils/sampleFileType';
 
 const techNamesToDisplay = {
   [sampleTech['10X']]: '10X Chromium',
@@ -31,7 +32,7 @@ const fileUploadSpecifications = {
       ['<code>barcodes.tsv</code> or <code>barcodes.tsv.gz</code>'],
       ['<code>matrix.mtx</code> or <code>matrix.mtx.gz</code>'],
     ],
-    requiredFiles: ['barcodes10x', 'features10x', 'matrix10x'],
+    requiredFiles: [sampleFileType.BARCODES_10_X, sampleFileType.FEATURES_10_X, sampleFileType.MATRIX_10_X],
     fileUploadParagraphs: [
       'For each sample, upload a folder containing the 3 required files. The folder\'s name will be used to name the sample in it. You can change this name later in Data Management.',
       'The required files for each sample are:',
@@ -42,14 +43,14 @@ const fileUploadSpecifications = {
     isNameValid(fileName) { return matchFileName(fileName, this.acceptedFiles); },
     getCorrespondingType(fileName) {
       const fileNameToType = {
-        'matrix.mtx.gz': 'matrix10x',
-        'barcodes.tsv.gz': 'barcodes10x',
-        'features.tsv.gz': 'features10x',
-        'genes.tsv.gz': 'features10x',
-        'matrix.mtx': 'matrix10x',
-        'barcodes.tsv': 'barcodes10x',
-        'features.tsv': 'features10x',
-        'genes.tsv': 'features10x',
+        'barcodes.tsv.gz': sampleFileType.BARCODES_10_X,
+        'barcodes.tsv': sampleFileType.BARCODES_10_X,
+        'features.tsv.gz': sampleFileType.FEATURES_10_X,
+        'genes.tsv.gz': sampleFileType.FEATURES_10_X,
+        'features.tsv': sampleFileType.FEATURES_10_X,
+        'genes.tsv': sampleFileType.FEATURES_10_X,
+        'matrix.mtx.gz': sampleFileType.MATRIX_10_X,
+        'matrix.mtx': sampleFileType.MATRIX_10_X,
       };
 
       const allowedNames = Array.from(this.acceptedFiles);

@@ -19,7 +19,7 @@ import downloadSampleFile from 'utils/data-management/downloadSampleFile';
 import { createAndUploadSampleFile, fileObjectToFileRecord } from 'utils/upload/processUpload';
 import endUserMessages from 'utils/endUserMessages';
 import handleError from 'utils/http/handleError';
-import fileTypeToDisplay from 'utils/fileTypeToDisplay';
+import { fileTypeToDisplay } from 'utils/sampleFileType';
 import EditableField from '../EditableField';
 import UploadDetailsModal from './UploadDetailsModal';
 
