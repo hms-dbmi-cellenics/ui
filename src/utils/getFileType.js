@@ -32,7 +32,7 @@ const fileTypeToDisplay = {
   rhapsody: 'expression_data.st',
 };
 
-const getFileTypeV2 = (fileName, selectedTech) => {
+const getFileType = (fileName, selectedTech) => {
   const fileTypes = fileTypesByTech[selectedTech];
 
   if (Object.keys(fileTypes).length === 1) return Object.values(fileTypes)[0];
@@ -40,5 +40,5 @@ const getFileTypeV2 = (fileName, selectedTech) => {
   return fileTypes[fileName];
 };
 
-export default getFileTypeV2;
+export default getFileType;
 export { fileTypeToDisplay };
