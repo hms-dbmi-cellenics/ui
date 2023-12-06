@@ -31,11 +31,7 @@ const fileUploadSpecifications = {
       ['<code>barcodes.tsv</code> or <code>barcodes.tsv.gz</code>'],
       ['<code>matrix.mtx</code> or <code>matrix.mtx.gz</code>'],
     ],
-    requiredFiles: [
-      { key: 'barcodes10x', displayedName: 'barcodes.tsv' },
-      { key: 'features10x', displayedName: 'genes.tsv' },
-      { key: 'matrix10x', displayedName: 'matrix.mtx' },
-    ],
+    requiredFiles: ['barcodes10x', 'features10x', 'matrix10x'],
     fileUploadParagraphs: [
       'For each sample, upload a folder containing the 3 required files. The folder\'s name will be used to name the sample in it. You can change this name later in Data Management.',
       'The required files for each sample are:',
@@ -61,9 +57,7 @@ const fileUploadSpecifications = {
       ['\uD83D\uDCA1sample level metadata in <code>scdata@meta.data</code> that groups samples in <code>scdata$samples</code> is auto-detected for downstream analysis.'],
       ['\uD83D\uDCA1if file size is over 15GB, try removing any assays not indicated above.'],
     ],
-    requiredFiles: [
-      { key: 'seurat', displayedName: 'seurat rds' },
-    ],
+    requiredFiles: ['seurat'],
     fileUploadParagraphs: [
       '<p>For your dataset, upload a single <code>*.rds</code> file with the Seurat object (max 15GB).</p>',
       '<p>The Seurat object must contain the following slots and metadata:</p>',
@@ -80,7 +74,7 @@ const fileUploadSpecifications = {
   },
   [sampleTech.RHAPSODY]: {
     acceptedFiles: new Set(['expression_data.st', 'expression_data.st.gz']),
-    requiredFiles: [{ key: 'rhapsody', displayedName: 'expression_data.st' }],
+    requiredFiles: ['rhapsody'],
     inputInfo: [
       ['<code>expression_data.st</code> or <code>expression_data.st.gz</code>'],
     ],
@@ -96,7 +90,7 @@ const fileUploadSpecifications = {
   },
   [sampleTech.H5]: {
     acceptedFiles: new Set(['matrix.h5', 'matrix.h5.gz']),
-    requiredFiles: [{ key: '10x_h5', displayedName: 'matrix.h5' }],
+    requiredFiles: ['10x_h5'],
     inputInfo: [['<code>matrix.h5</code> or <code>matrix.h5.gz</code>']],
     fileUploadParagraphs: [`For each sample, upload a folder containing the h5 file. The folder's
     name will be used to name the sample in it.

@@ -38,6 +38,7 @@ import integrationTestConstants from 'utils/integrationTestConstants';
 import useConditionalEffect from 'utils/customHooks/useConditionalEffect';
 import fileUploadSpecifications from 'utils/upload/fileUploadSpecifications';
 import { sampleTech } from 'utils/constants';
+import { fileTypeToDisplay } from 'utils/getFileType';
 
 const { Text } = Typography;
 
@@ -90,19 +91,19 @@ const SamplesTable = forwardRef((props, ref) => {
         <SampleNameCell cellInfo={{ text, record, indx }} />
       ),
     },
-    ...fileUploadSpecifications[selectedTech]?.requiredFiles?.map((fileName, indx) => {
-      const fileNameWithoutExtension = fileName.key.split('.')[0];
+    ...fileUploadSpecifications[selectedTech]?.requiredFiles?.map((requiredFile, indx) => {
+      const fileNameWithoutExtension = requiredFile.split('.')[0];
 
       return ({
         index: 2 + indx,
-        title: <center>{fileName.displayedName}</center>,
+        title: <center>{fileTypeToDisplay[requiredFile]}</center>,
         key: fileNameWithoutExtension,
         dataIndex: fileNameWithoutExtension,
         width: 170,
         onCell: () => ({ style: { margin: '0px', padding: '0px' } }),
         render: (tableCellData) => tableCellData && (
           <UploadCell
-            columnId={fileName.key}
+            columnId={requiredFile}
             sampleUuid={tableCellData.sampleUuid}
           />
         ),
@@ -232,8 +233,8 @@ const SamplesTable = forwardRef((props, ref) => {
 
   const generateDataForItem = useCallback((sampleUuid) => {
     const sampleFileNames = fileUploadSpecifications[selectedTech]?.requiredFiles
-      .map((fileName) => ([
-        fileName.key.split('.')[0],
+      .map((requiredFile) => ([
+        requiredFile.split('.')[0],
         { sampleUuid },
       ]));
 
