@@ -107,8 +107,8 @@ const FileUploadModal = (props) => {
 
       filteredFiles = filteredFiles
         // Remove all files that aren't in a folder
-        .filter((file) => {
-          const inFolder = file.path.includes('/');
+        .filter((fileObject) => {
+          const inFolder = fileObject.path.includes('/');
 
           filesNotInFolder ||= !inFolder;
 
