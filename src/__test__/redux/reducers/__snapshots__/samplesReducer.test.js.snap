@@ -441,21 +441,13 @@ exports[`samplesReducer Updates sample files correctly 1`] = `
     "createdDate": "2021-01-01T14:48:00.000Z",
     "error": false,
     "experimentId": null,
-    "fileNames": [
-      "features.tsv",
-    ],
     "files": {
-      "features.tsv": {
+      "features10x": {
         "error": false,
-        "lastModified": "newLastModified",
-        "mime": "",
-        "name": "features.tsv",
         "objectKey": "",
-        "path": "",
         "size": 0,
         "success": false,
         "upload": {
-          "amplifyPromise": null,
           "status": null,
         },
       },
