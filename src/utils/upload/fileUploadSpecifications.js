@@ -110,7 +110,7 @@ const fileUploadSpecifications = {
     name will be used to name the sample in it.
     You can change this name later in Data Management.`],
     isNameValid: (fileName) => fileName.toLowerCase().match(/.*matrix.h5(.gz)?$/),
-    getCorrespondingType: () => 'rhapsody',
+    getCorrespondingType: () => '10x_h5',
   },
 };
 
