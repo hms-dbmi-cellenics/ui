@@ -14,6 +14,7 @@ const sampleTemplate = {
   options: {},
 };
 
+// TODO: Update, this initial state doesn't even match the previously used structure
 const sampleFileTemplate = {
   objectKey: '',
   name: null,
