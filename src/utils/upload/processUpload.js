@@ -84,7 +84,9 @@ const createAndUploadSampleFile = async (
     return;
   }
 
-  // Take the fileName now because after loadAndCompressIfNecessary the name could be lost
+  // Take the fileName now because after loadAndCompressIfNecessary the name could
+  // be lost in the compression. If it is compressed fileObject becomes a uInt8Array
+  // instead of the fileReader metadata object that it is now
   const fileName = file.fileObject.name;
 
   if (!file.compressed) {
