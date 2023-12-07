@@ -70,6 +70,7 @@ const ViolinIndex = ({ experimentId }) => {
     ));
   };
 
+  // wont need
   const updateMultiViewWithChanges = (updateField) => {
     dispatch(updatePlotConfig(multiViewUuid, updateField));
   };
@@ -121,6 +122,7 @@ const ViolinIndex = ({ experimentId }) => {
     setHighestDispersionGene(gene);
   }, [geneList]);
 
+  // TODO REMOVE THIS BELOW
   // update default configs to show highest dispersion gene
   useEffect(() => {
     if (!highestDispersionGene || !multiViewConfig) return;

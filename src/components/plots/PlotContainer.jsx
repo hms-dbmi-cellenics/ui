@@ -41,7 +41,7 @@ const PlotContainer = (props) => {
   const debounceSave = useCallback(
     _.debounce(() => dispatch(savePlotConfig(experimentId, plotUuid)), saveDebounceTime), [plotUuid],
   );
-
+  console.log('CONFIG IS ', config, 'PLOT UUID IS ', plotUuid);
   const defaultOnUpdate = (obj) => {
     dispatch(updatePlotConfig(plotUuid, obj));
   };
@@ -88,13 +88,13 @@ const PlotContainer = (props) => {
     setIsResetDisabled(true);
   };
 
-  if (!config) {
-    return (
-      <div style={{ paddingLeft: '2em' }}>
-        <Skeleton active paragraph={{ rows: 1 }} title={{ width: 500 }} />
-      </div>
-    );
-  }
+  // if (!config) {
+  //   return (
+  //     <div style={{ paddingLeft: '2em' }}>
+  //       <Skeleton active paragraph={{ rows: 1 }} title={{ width: 500 }} />
+  //     </div>
+  //   );
+  // }
 
   const renderPlotToolbarControls = () => (
     <Space style={{ marginRight: '0.5em' }}>

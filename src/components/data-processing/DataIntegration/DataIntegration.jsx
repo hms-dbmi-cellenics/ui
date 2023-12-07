@@ -68,7 +68,6 @@ const DataIntegration = (props) => {
               },
             }}
             actions={actions}
-            onUpdate={updatePlotWithChanges}
           />
         </Space>
       ),

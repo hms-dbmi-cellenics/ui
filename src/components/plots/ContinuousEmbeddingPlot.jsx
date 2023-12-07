@@ -11,16 +11,38 @@ import { getCellSets } from 'redux/selectors';
 import { generateSpec, generateData } from 'utils/plotSpecs/generateEmbeddingContinuousSpec';
 import PlatformError from '../PlatformError';
 import Loader from '../Loader';
-import changeEmbeddingAxesIfNecessary from './helpers/changeEmbeddingAxesIfNecessary';
 
 const ContinuousEmbeddingPlot = (props) => {
   const {
     experimentId, config,
     plotData, truncatedPlotData,
     actions, loading, error,
-    reloadPlotData, onUpdate,
+    reloadPlotData, useReduxData, plotUuid,
   } = props;
   const dispatch = useDispatch();
+
+  const geneExpression = useSelector((state) => state.genes.expression.full);
+  const componentConfigs = useSelector((state) => state.componentConfig);
+  const currentConfig = config || componentConfigs[plotUuid].config;
+  const [dataState, setDataState] = useState({
+    plotData,
+    truncatedPlotData,
+    loading,
+    error,
+  });
+
+  // we can either pass the data to the component or let it
+  // use redux data
+  useEffect(() => {
+    if (useReduxData && currentConfig?.shownGene) {
+      setDataState({
+        plotData: geneExpression.matrix.getRawExpression(currentConfig?.shownGene),
+        truncatedPlotData: geneExpression.matrix.getTruncatedExpression(currentConfig?.shownGene),
+        loading: geneExpression.loading.length > 0,
+        error: geneExpression.error,
+      });
+    }
+  }, [geneExpression, currentConfig?.shownGene]);
 
   const embeddingSettings = useSelector(
     (state) => state.experimentSettings.originalProcessing?.configureEmbedding?.embeddingSettings,
@@ -51,33 +73,30 @@ const ContinuousEmbeddingPlot = (props) => {
   }, [embeddingSettings?.method]);
 
   useEffect(() => {
-    changeEmbeddingAxesIfNecessary(config, embeddingSettings?.method, onUpdate);
-  }, [config, embeddingSettings?.method]);
-  useEffect(() => {
-    console.log('LOADING!!!', !embeddingLoading, config, plotData, cellSets.accessible, embeddingData);
-
     if (!embeddingLoading
       && !embeddingError
-      && config
-      && plotData?.length > 0
+      && currentConfig
+      && dataState.plotData?.length > 0
       && cellSets.accessible
-      && embeddingData?.length) {
+      && embeddingData?.length
+      && embeddingSettings?.method) {
       setPlotSpec(
         generateSpec(
-          config,
+          currentConfig,
+          embeddingSettings.method,
           generateData(
             cellSets,
-            config.selectedSample,
-            config.truncatedValues ? truncatedPlotData : plotData,
+            currentConfig.selectedSample,
+            currentConfig.truncatedValues ? dataState.truncatedPlotData : dataState.plotData,
             embeddingData,
           ),
         ),
       );
     }
-  }, [config, plotData, embeddingData, cellSets, embeddingLoading]);
+  }, [currentConfig, dataState, embeddingData, cellSets, embeddingLoading]);
 
   const render = () => {
-    if (error) {
+    if (dataState.error) {
       return (
         <PlatformError
           error={error}
@@ -103,8 +122,8 @@ const ContinuousEmbeddingPlot = (props) => {
         />
       );
     }
-    if (!config
-      || loading
+    if (!currentConfig
+      || dataState.loading
       || !cellSets.accessible
       || embeddingLoading
       || Object.keys(plotSpec).length === 0) {
@@ -135,6 +154,10 @@ ContinuousEmbeddingPlot.defaultProps = {
   plotData: null,
   truncatedPlotData: null,
   actions: true,
+  useReduxData: false,
+  loading: false,
+  error: false,
+  plotUuid: null,
 };
 
 ContinuousEmbeddingPlot.propTypes = {
@@ -146,10 +169,11 @@ ContinuousEmbeddingPlot.propTypes = {
     PropTypes.bool,
     PropTypes.object,
   ]),
-  loading: PropTypes.bool.isRequired,
-  error: PropTypes.bool.isRequired,
+  plotUuid: PropTypes.string,
+  loading: PropTypes.bool,
+  error: PropTypes.bool,
   reloadPlotData: PropTypes.func,
-  onUpdate: PropTypes.func.isRequired,
+  useReduxData: PropTypes.bool,
 };
 
 export default ContinuousEmbeddingPlot;
