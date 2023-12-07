@@ -31,6 +31,7 @@ const createSampleFile = (
     // TODO we should check if they can be separated somehow between
     // The ones that are relevant for the api vs
     // the ones that are only necessary for retry (fileObject, compressed)
+    // Perhaps into an uploadRetryParams object or something
     const fileForRedux = _.pick(file, ['size', 'upload', 'fileObject', 'compressed']);
 
     dispatch({
