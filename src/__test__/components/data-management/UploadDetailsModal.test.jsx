@@ -5,7 +5,7 @@ import {
 import '@testing-library/jest-dom';
 import userEvent from '@testing-library/user-event';
 import UploadDetailsModal from 'components/data-management/UploadDetailsModal';
-import UploadStatus, { messageForStatus } from 'utils/upload/UploadStatus';
+import UploadStatus from 'utils/upload/UploadStatus';
 
 const mockOnDelete = jest.fn();
 const mockOnCancel = jest.fn();
@@ -15,7 +15,6 @@ const mockOnRetry = jest.fn();
 const defaultProps = {
   visible: true,
   data: {
-    name: 'example.txt',
     size: 1024,
     lastModified: new Date().toISOString(),
     upload: {
@@ -41,9 +40,9 @@ describe('UploadDetailsModal', () => {
 
   it('displays the modal with the correct title when uploaded', () => {
     renderUploadDetailsModal({
-      file: {
-        ...defaultProps.file,
-        upload: { ...defaultProps.file.upload, status: UploadStatus.UPLOADED },
+      data: {
+        ...defaultProps.data,
+        upload: { ...defaultProps.data.upload, status: UploadStatus.UPLOADED },
       },
     });
 
@@ -52,8 +51,8 @@ describe('UploadDetailsModal', () => {
 
   it('displays the modal with the correct title when file not found', () => {
     renderUploadDetailsModal({
-      file: {
-        ...defaultProps.file,
+      data: {
+        ...defaultProps.data,
         upload: { status: UploadStatus.FILE_NOT_FOUND },
       },
     });
@@ -62,9 +61,9 @@ describe('UploadDetailsModal', () => {
 
   it('calls onRetry when the retry button is clicked', async () => {
     renderUploadDetailsModal({
-      file: {
-        ...defaultProps.file,
-        upload: { ...defaultProps.file.upload, status: UploadStatus.ERROR },
+      data: {
+        ...defaultProps.data,
+        upload: { ...defaultProps.data.upload, status: UploadStatus.ERROR },
         fileObject: [1, 2, 3, 4, 5, 6],
       },
     });
@@ -79,9 +78,9 @@ describe('UploadDetailsModal', () => {
 
   it('calls onDownload when the download button is clicked', () => {
     renderUploadDetailsModal({
-      file: {
-        ...defaultProps.file,
-        upload: { ...defaultProps.file.upload, status: UploadStatus.UPLOADED },
+      data: {
+        ...defaultProps.data,
+        upload: { ...defaultProps.data.upload, status: UploadStatus.UPLOADED },
       },
     });
 
@@ -94,9 +93,9 @@ describe('UploadDetailsModal', () => {
   it('renders error message when there is an upload error', () => {
     const status = UploadStatus.UPLOAD_ERROR;
     renderUploadDetailsModal({
-      file: {
-        ...defaultProps.file,
-        upload: { ...defaultProps.file.upload, status },
+      data: {
+        ...defaultProps.data,
+        upload: { ...defaultProps.data.upload, status },
       },
     });
 
@@ -106,9 +105,9 @@ describe('UploadDetailsModal', () => {
   it('Deleting the file calls onDelete', () => {
     const status = UploadStatus.UPLOADED;
     renderUploadDetailsModal({
-      file: {
-        ...defaultProps.file,
-        upload: { ...defaultProps.file.upload, status },
+      data: {
+        ...defaultProps.data,
+        upload: { ...defaultProps.data.upload, status },
       },
     });
 
