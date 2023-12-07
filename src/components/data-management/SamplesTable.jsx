@@ -228,14 +228,14 @@ const SamplesTable = forwardRef((props, ref) => {
   };
 
   const generateDataForItem = useCallback((sampleUuid) => {
-    const sampleFileNames = fileUploadSpecifications[selectedTech]?.requiredFiles
+    const sampleFileTypes = fileUploadSpecifications[selectedTech]?.requiredFiles
       .map((requiredFile) => ([requiredFile, { sampleUuid }]));
 
     return {
       key: sampleUuid,
       name: samples[sampleUuid]?.name || 'UPLOAD ERROR: Please reupload sample',
       uuid: sampleUuid,
-      ...Object.fromEntries(sampleFileNames),
+      ...Object.fromEntries(sampleFileTypes),
     };
   }, [activeExperiment?.sampleIds, selectedTech, samples]);
 
