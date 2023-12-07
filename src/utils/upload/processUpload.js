@@ -62,7 +62,9 @@ const prepareAndUploadFileToS3 = async (
   return parts;
 };
 
-const createAndUploadSampleFile = async (file, experimentId, sampleId, dispatch, selectedTech) => {
+const createAndUploadSampleFile = async (
+  file, fileType, experimentId, sampleId, dispatch, selectedTech,
+) => {
   const abortController = new AbortController();
 
   let sampleFileId;
@@ -72,7 +74,7 @@ const createAndUploadSampleFile = async (file, experimentId, sampleId, dispatch,
       createSampleFile(
         experimentId,
         sampleId,
-        file.type,
+        fileType,
         file,
         abortController,
       ),
@@ -89,7 +91,7 @@ const createAndUploadSampleFile = async (file, experimentId, sampleId, dispatch,
     try {
       file.fileObject = await loadAndCompressIfNecessary(file, () => {
         dispatch(updateSampleFileUpload(
-          experimentId, sampleId, sampleFileId, file.type, UploadStatus.COMPRESSING,
+          experimentId, sampleId, sampleFileId, fileType, UploadStatus.COMPRESSING,
         ));
       });
 
@@ -100,7 +102,7 @@ const createAndUploadSampleFile = async (file, experimentId, sampleId, dispatch,
         : UploadStatus.FILE_READ_ERROR;
 
       dispatch(updateSampleFileUpload(
-        experimentId, sampleId, sampleFileId, file.type, fileErrorStatus,
+        experimentId, sampleId, sampleFileId, fileType, fileErrorStatus,
       ));
       return;
     }
@@ -116,7 +118,7 @@ const createAndUploadSampleFile = async (file, experimentId, sampleId, dispatch,
 
     const updateSampleFileUploadProgress = (status, percentProgress = 0) => dispatch(
       updateSampleFileUpload(
-        experimentId, sampleId, sampleFileId, file.type, status, percentProgress,
+        experimentId, sampleId, sampleFileId, fileType, status, percentProgress,
       ),
     );
 
@@ -124,7 +126,7 @@ const createAndUploadSampleFile = async (file, experimentId, sampleId, dispatch,
     await prepareAndUploadFileToS3(file, uploadUrlParams, 'sample', abortController, updateSampleFileUploadProgress);
   } catch (e) {
     dispatch(updateSampleFileUpload(
-      experimentId, sampleId, sampleFileId, file.type, UploadStatus.UPLOAD_ERROR,
+      experimentId, sampleId, sampleFileId, fileType, UploadStatus.UPLOAD_ERROR,
     ));
   }
 };
@@ -164,7 +166,7 @@ const processUpload = async (filesList, technology, samples, experimentId, dispa
   const samplesMap = filesList.reduce((acc, file) => {
     const { sample: sampleName, name } = getFileSampleAndName(file.fileObject.path.replace(/[\s]{2,}/ig, ' '));
 
-    file.type = fileUploadSpecifications[technology].getCorrespondingType(name);
+    const fileType = fileUploadSpecifications[technology].getCorrespondingType(name);
 
     const sampleUuid = Object.values(samples).filter(
       (s) => s.name === sampleName
@@ -178,7 +180,7 @@ const processUpload = async (filesList, technology, samples, experimentId, dispa
         uuid: sampleUuid,
         files: {
           ...acc[sampleName]?.files,
-          [file.type]: file,
+          [fileType]: file,
         },
       },
     };
@@ -204,10 +206,11 @@ const processUpload = async (filesList, technology, samples, experimentId, dispa
     const promises = [];
 
     validSamplesList.forEach(([name, sample]) => {
-      Object.values(sample.files).forEach((file) => {
+      Object.entries(sample.files).forEach(([type, file]) => {
         promises.push(
           async () => await createAndUploadSampleFile(
             file,
+            type,
             experimentId,
             sampleIdsByName[name],
             dispatch,
@@ -257,6 +260,7 @@ const fileObjectToFileRecord = async (fileObject, technology) => {
       status: UploadStatus.UPLOADING,
       progress: 0,
     },
+
     errors: error,
     compressed: verdict === Verdict.VALID_ZIPPED,
   };

@@ -118,8 +118,8 @@ const createSamples = (
             { ...acc, [metadataKey]: METADATA_DEFAULT_VALUE }), {},
         ) ?? {},
 
-        files: Object.values(files).reduce(((acc, file) => (
-          { ...acc, [file.type]: { upload: { status: UploadStatus.UPLOADING } } }
+        files: Object.keys(files).reduce(((acc, [fileType]) => (
+          { ...acc, [fileType]: { upload: { status: UploadStatus.UPLOADING } } }
         )), {}),
       }));
 

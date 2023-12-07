@@ -1,3 +1,4 @@
+import _ from 'lodash';
 import React, { useEffect, useState } from 'react';
 import {
   Space, Typography, Progress, Tooltip, Button,
@@ -16,9 +17,7 @@ import integrationTestConstants from 'utils/integrationTestConstants';
 import UploadStatus, { messageForStatus } from 'utils/upload/UploadStatus';
 import styles from 'components/data-management/SamplesTableCells.module.css';
 import downloadSampleFile from 'utils/data-management/downloadSampleFile';
-import { createAndUploadSampleFile, fileObjectToFileRecord } from 'utils/upload/processUpload';
-import endUserMessages from 'utils/endUserMessages';
-import handleError from 'utils/http/handleError';
+import { createAndUploadSampleFile } from 'utils/upload/processUpload';
 import { fileTypeToDisplay } from 'utils/sampleFileType';
 import EditableField from '../EditableField';
 import UploadDetailsModal from './UploadDetailsModal';
@@ -133,9 +132,19 @@ const UploadCell = (props) => {
     );
   };
 
-  const onRetry = (fileObject) => {
+  const onRetry = () => {
+    const fileToUpload = _.pick(uploadDetailsModalData, ['size', 'upload', 'fileObject']);
+    const fileType = uploadDetailsModalData.fileCategory;
+
     // if retrying an upload we dont need to revalidate the file since it was done before
-    createAndUploadSampleFile(fileObject, activeExperimentId, sampleUuid, dispatch, selectedTech);
+    createAndUploadSampleFile(
+      fileToUpload,
+      fileType,
+      activeExperimentId,
+      sampleUuid,
+      dispatch,
+      selectedTech,
+    );
 
     setUploadDetailsModalVisible(false);
   };
@@ -151,7 +160,7 @@ const UploadCell = (props) => {
           onCancel={() => setUploadDetailsModalVisible(false)}
           onDownload={onDownload}
           onDelete={() => dispatch(deleteSamples([sampleUuid]))}
-          onRetry={() => onRetry(uploadDetailsModalData, true)}
+          onRetry={() => onRetry()}
           extraFields={{
             Sample: sample?.name,
             Category: fileTypeToDisplay[uploadDetailsModalData.fileCategory],
