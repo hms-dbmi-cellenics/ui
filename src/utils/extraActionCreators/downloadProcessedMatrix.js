@@ -16,7 +16,7 @@ const downloadProcessedMatrix = (experimentId) => async (dispatch, getState) => 
       method: embeddingMethod,
     } = getState().experimentSettings.processing.configureEmbedding.embeddingSettings;
 
-    await dispatch(loadEmbedding(experimentId, embeddingMethod));
+    await dispatch(loadEmbedding(experimentId, embeddingMethod, true));
 
     const taskName = 'DownloadAnnotSeuratObject';
 
@@ -24,6 +24,7 @@ const downloadProcessedMatrix = (experimentId) => async (dispatch, getState) => 
     // the embeddingETag is added by the API to this body
     const body = {
       name: taskName,
+      embeddingMethod,
     };
 
     const timeout = getTimeoutForWorkerTask(getState(), taskName);

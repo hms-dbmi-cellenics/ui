@@ -1,4 +1,4 @@
-import { Environment, isBrowser } from 'utils/deploymentInfo';
+import { isBrowser } from 'utils/deploymentInfo';
 
 import cache from 'utils/cache';
 import dispatchWorkRequest from 'utils/work/dispatchWorkRequest';
@@ -68,11 +68,6 @@ const fetchWork = async (
     throw new Error('Disabling network interaction on server');
   }
 
-  const { environment } = getState().networkResources;
-  if (environment === Environment.DEVELOPMENT && !localStorage.getItem('disableCache')) {
-    localStorage.setItem('disableCache', 'true');
-  }
-
   // 1. Contact the API to get ETag and possible S3 signedURL
   const { ETag, signedUrl, request } = await dispatchWorkRequest(
     experimentId,
@@ -82,7 +77,7 @@ const fetchWork = async (
       broadcast,
       ...extras,
     },
-    dispatch,
+    getState,
   );
 
   onETagGenerated(ETag);

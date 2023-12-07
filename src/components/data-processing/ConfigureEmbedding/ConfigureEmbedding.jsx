@@ -7,7 +7,7 @@ import {
 } from 'antd';
 import SelectData from 'components/plots/styling/embedding-continuous/SelectData';
 
-import { isUnisample } from 'utils/experimentPredicates';
+import { getIsUnisample } from 'utils/experimentPredicates';
 
 import CategoricalEmbeddingPlot from 'components/plots/CategoricalEmbeddingPlot';
 import ContinuousEmbeddingPlot from 'components/plots/ContinuousEmbeddingPlot';
@@ -405,7 +405,7 @@ const ConfigureEmbedding = (props) => {
       );
     }
 
-    if (plotColouring === 'sample' && cellSets.accessible && isUnisample(cellSets.hierarchy)
+    if (plotColouring === 'sample' && cellSets.accessible && getIsUnisample(cellSets.hierarchy)
     ) {
       return (
         <center>

@@ -1,7 +1,9 @@
 import React from 'react';
 import { Provider } from 'react-redux';
 import '__test__/test-utils/setupTests';
-import { screen, render, waitFor } from '@testing-library/react';
+import {
+  screen, render, waitFor, within,
+} from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import _ from 'lodash';
 import fake from '__test__/test-utils/constants';
@@ -203,5 +205,32 @@ describe('DataIntegration', () => {
 
     // The legend alert plot text should appear
     expect(screen.getByText(/We have hidden the plot legend, because it is too large and it interferes with the display of the plot/)).toBeInTheDocument();
+  });
+
+  it('Renders the elbow plot by default when the experiment is single sample', async () => {
+    // Remove all sample other than the first one.
+    // This way, getIsUnisample() will detect the exp as unisample
+    const unisampleCellSetsData = _.cloneDeep(cellSetsData);
+    _.find(unisampleCellSetsData.cellSets, { key: 'sample' }).children.splice(1);
+
+    const mockSingleSampleApiResponses = {
+      ...generateDefaultMockAPIResponses(fake.EXPERIMENT_ID),
+      [`experiments/${fake.EXPERIMENT_ID}/cellSets$`]: () => promiseResponse(
+        JSON.stringify(unisampleCellSetsData),
+      ),
+    };
+
+    fetchMock
+      .mockReset()
+      .mockIf(/.*/, mockAPI(mockSingleSampleApiResponses));
+
+    storeState = makeStore();
+    await storeState.dispatch(loadBackendStatus(fake.EXPERIMENT_ID));
+    await storeState.dispatch(loadProcessingSettings(fake.EXPERIMENT_ID));
+    await storeState.dispatch(loadCellSets(fake.EXPERIMENT_ID));
+
+    await renderDataIntegration(storeState);
+
+    expect(screen.getByRole('radio', { name: 'Elbow plot showing principal components' })).toBeChecked();
   });
 });

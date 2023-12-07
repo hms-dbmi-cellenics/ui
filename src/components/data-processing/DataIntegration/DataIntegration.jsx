@@ -1,5 +1,5 @@
 import React, {
-  useState, useEffect, useRef, useCallback,
+  useState, useEffect, useRef, useCallback, useMemo,
 } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import {
@@ -24,7 +24,7 @@ import ElbowPlot from 'components/plots/ElbowPlot';
 import { generateDataProcessingPlotUuid } from 'utils/generateCustomPlotUuid';
 import EmptyPlot from 'components/plots/helpers/EmptyPlot';
 import PlotStyling from 'components/plots/styling/PlotStyling';
-import { isUnisample } from 'utils/experimentPredicates';
+import { getIsUnisample } from 'utils/experimentPredicates';
 import PlotLegendAlert, { MAX_LEGEND_ITEMS } from 'components/plots/helpers/PlotLegendAlert';
 import CalculationConfig from './CalculationConfig';
 
@@ -33,9 +33,14 @@ const DataIntegration = (props) => {
   const {
     experimentId, onConfigChange, stepDisabled, stepHadErrors, disableDataIntegration,
   } = props;
-  const [selectedPlot, setSelectedPlot] = useState('embedding');
-  const [plot, setPlot] = useState(null);
+
   const cellSets = useSelector(getCellSets());
+
+  const isUnisample = useMemo(() => getIsUnisample(cellSets.hierarchy));
+
+  const [selectedPlot, setSelectedPlot] = useState(isUnisample ? 'elbow' : 'embedding');
+  const [plot, setPlot] = useState(null);
+
   const filterName = 'dataIntegration';
   const configureEmbeddingFilterName = 'configureEmbedding';
 
@@ -274,7 +279,7 @@ const DataIntegration = (props) => {
       );
     }
 
-    if ((selectedPlot === 'embedding' || selectedPlot === 'frequency') && cellSets.accessible && isUnisample(cellSets.hierarchy)
+    if ((selectedPlot === 'embedding' || selectedPlot === 'frequency') && cellSets.accessible && isUnisample
     ) {
       return (
         <center>
