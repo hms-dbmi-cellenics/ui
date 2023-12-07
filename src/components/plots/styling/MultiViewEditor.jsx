@@ -16,16 +16,14 @@ import { arrayMoveImmutable } from 'utils/arrayUtils';
 import HierarchicalTreeGenes from 'components/plots/hierarchical-tree-genes/HierarchicalTreeGenes';
 import GeneSearchBar from 'components/plots/GeneSearchBar';
 import { useDispatch, useSelector } from 'react-redux';
-import { getPlotConfigs, getCellSets, getGeneList } from 'redux/selectors';
+import { getPlotConfigs, getGeneList } from 'redux/selectors';
 import {
   updatePlotConfig,
   savePlotConfig,
 } from 'redux/actions/componentConfig/index';
 import { generateMultiViewGridPlotUuid } from 'utils/generateCustomPlotUuid';
-import { plotTypes, plotUuids } from 'utils/constants';
+import { plotUuids } from 'utils/constants';
 import loadConditionalComponentConfig from 'redux/actions/componentConfig/loadConditionalComponentConfig';
-
-const multiViewType = plotTypes.MULTI_VIEW_PLOT;
 
 const MultiViewEditor = (props) => {
   const {
@@ -38,7 +36,6 @@ const MultiViewEditor = (props) => {
   } = props;
   const dispatch = useDispatch();
   const multiViewUuid = plotUuids.getMultiPlotUuid(plotType);
-
   const [localNRows, setLocalNRows] = useState(null);
   const [localNCols, setLocalNCols] = useState(null);
   const [options, setOptions] = useState([]);
@@ -64,11 +61,6 @@ const MultiViewEditor = (props) => {
 
   const updateMultiViewWithChanges = (updateField) => {
     dispatch(updatePlotConfig(multiViewUuid, updateField));
-  };
-
-  // make reset work
-  const resetMultiView = () => {
-    updateMultiViewWithChanges({ nrows: 1, ncols: 1, plotUuids: [selectedPlotUuid] });
   };
 
   useEffect(() => {
@@ -269,6 +261,8 @@ MultiViewEditor.propTypes = {
   plotUuid: PropTypes.string.isRequired,
   selectedPlotUuid: PropTypes.string.isRequired,
   setSelectedPlotUuid: PropTypes.func.isRequired,
+  updateAll: PropTypes.bool.isRequired,
+  setUpdateAll: PropTypes.func.isRequired,
 };
 
 export default MultiViewEditor;

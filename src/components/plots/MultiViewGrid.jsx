@@ -50,29 +50,20 @@ const MultiViewGrid = (props) => {
   const highestDispersionGene = useSelector(
     (state) => state.genes.properties.views[plotUuid]?.data[0],
   );
-  const geneExpression = useSelector((state) => state.genes.expression.full);
 
   const expression = useSelector((state) => state.genes.expression.full);
-
-  const updateMultiViewWithChanges = (updateField) => {
-    dispatch(updatePlotConfig(multiViewUuid, updateField));
-  };
 
   const loadComponent = (componentUuid, type, skipAPI, customConfig) => {
     dispatch(loadConditionalComponentConfig(
       experimentId, componentUuid, type, skipAPI, customConfig,
     ));
   };
-  // const updatePlotWithChanges = (updateField) => {
-  //   dispatch(updatePlotConfig(selectedPlotUuid, updateField));
-  // };
 
   useEffect(() => {
     if (!highestDispersionGene) {
       dispatch(loadPaginatedGeneProperties(experimentId, PROPERTIES, plotUuid, tableState));
     }
   }, []);
-
   useEffect(() => {
     // initial set up if there are no plots
     // plotting one plot using the highest dispersion gene

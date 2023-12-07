@@ -6,21 +6,21 @@ import {
 import SelectData from 'components/plots/styling/SelectData';
 import MultiViewEditor from 'components/plots/styling/MultiViewEditor';
 import GeneSearchBar from 'components/plots/GeneSearchBar';
+import { plotUuids, plotTypes } from 'utils/constants';
 
 const { Panel } = Collapse;
-
+const plotUuid = plotUuids.VIOLIN_PLOT;
+const plotType = plotTypes.VIOLIN_PLOT;
 const ViolinControls = (props) => {
   const {
+    experimentId,
     config,
-    multiViewConfig,
     onUpdate,
     onUpdateConditional,
     updateAll,
     setUpdateAll,
-    onMultiViewUpdate,
     selectedPlotUuid,
     setSelectedPlotUuid,
-    addGeneToMultiView,
     cellSets,
     shownGenes,
   } = props;
@@ -39,11 +39,11 @@ const ViolinControls = (props) => {
       </Panel>
       <Panel header='View multiple plots' key='view-multiple-plots'>
         <MultiViewEditor
-          multiViewConfig={multiViewConfig}
-          addGeneToMultiView={addGeneToMultiView}
           updateAll={updateAll}
+          experimentId={experimentId}
           setUpdateAll={setUpdateAll}
-          onMultiViewUpdate={onMultiViewUpdate}
+          plotUuid={plotUuid}
+          plotType={plotType}
           selectedPlotUuid={selectedPlotUuid}
           setSelectedPlotUuid={setSelectedPlotUuid}
           shownGenes={shownGenes}
@@ -88,23 +88,19 @@ const ViolinControls = (props) => {
 
 ViolinControls.propTypes = {
   config: PropTypes.object,
-  multiViewConfig: PropTypes.object,
   onUpdate: PropTypes.func.isRequired,
   onUpdateConditional: PropTypes.func.isRequired,
   updateAll: PropTypes.bool.isRequired,
   setUpdateAll: PropTypes.func.isRequired,
-  onMultiViewUpdate: PropTypes.func.isRequired,
-  addGeneToMultiView: PropTypes.func.isRequired,
   selectedPlotUuid: PropTypes.string.isRequired,
   setSelectedPlotUuid: PropTypes.func.isRequired,
   cellSets: PropTypes.object.isRequired,
-  shownGenes: PropTypes.array,
+  shownGenes: PropTypes.array.isRequired,
+  experimentId: PropTypes.string.isRequired,
 };
 
 ViolinControls.defaultProps = {
   config: null,
-  multiViewConfig: null,
-  shownGenes: [],
 };
 
 export default ViolinControls;
