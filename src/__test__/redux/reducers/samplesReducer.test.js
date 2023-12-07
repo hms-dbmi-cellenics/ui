@@ -55,7 +55,6 @@ describe('samplesReducer', () => {
 
   const mockFile = {
     ...sampleFileTemplate,
-    name: fileName,
   };
 
   it('Reduces identical state on unknown action', () => expect(
