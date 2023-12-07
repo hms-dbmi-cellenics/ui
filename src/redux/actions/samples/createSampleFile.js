@@ -26,7 +26,7 @@ const createSampleFile = (
       size: file.size,
     };
 
-    // Leaving out path, errors, compressed, type
+    // Leaving out path, errors, compressed
     // They are used during the upload process, not redux
     // TODO we should check if they can be removed althogether from the file
     const fileForRedux = _.pick(file, ['size', 'upload', 'fileObject']);
