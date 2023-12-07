@@ -67,7 +67,7 @@ const FileUploadModal = (props) => {
   const [filesList, setFilesList] = useState([]);
 
   useEffect(() => {
-    setCanUpload(filesList.length && filesList.every((file) => file.valid));
+    setCanUpload(filesList.length && filesList.every((file) => !file.errors));
   }, [filesList]);
 
   useEffect(() => {
@@ -309,7 +309,7 @@ const FileUploadModal = (props) => {
                     style={{ width: '100%' }}
                   >
                     <Space>
-                      {file.valid
+                      {!file.errors
                         ? (
                           <>
                             <CheckCircleTwoTone twoToneColor='#52c41a' />
