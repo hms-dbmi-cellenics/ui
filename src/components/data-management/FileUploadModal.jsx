@@ -173,7 +173,7 @@ const FileUploadModal = (props) => {
     // if the file has a path, trim to just the file and its folder.
     // otherwise simply use its name
     fileObject.path
-      ? Object.values(getFileSampleAndName(fileObject.path)).join('/')
+      ? _.trim(Object.values(getFileSampleAndName(fileObject.path)).join('/'), '/')
       : fileObject.name
   );
 
