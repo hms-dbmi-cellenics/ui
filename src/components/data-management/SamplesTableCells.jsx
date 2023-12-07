@@ -128,7 +128,7 @@ const UploadCell = (props) => {
   };
   const onDownload = () => {
     downloadSampleFile(
-      activeExperimentId, sampleUuid, uploadDetailsModalData.fileCategory, selectedTech,
+      activeExperimentId, sampleUuid, uploadDetailsModalData.fileCategory,
     );
   };
 
