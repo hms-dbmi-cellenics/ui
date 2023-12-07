@@ -133,22 +133,9 @@ const UploadCell = (props) => {
     );
   };
 
-  const onUpload = (fileObject, retryUpload = false) => {
-    if (!uploadDetailsModalData) {
-      return;
-    }
+  const onRetry = (fileObject) => {
     // if retrying an upload we dont need to revalidate the file since it was done before
-    if (retryUpload) {
-      createAndUploadSampleFile(fileObject, activeExperimentId, sampleUuid, dispatch, selectedTech);
-    } else {
-      fileObjectToFileRecord(fileObject, selectedTech).then((newFile) => {
-        if (newFile.valid) {
-          createAndUploadSampleFile(newFile, activeExperimentId, sampleUuid, dispatch, selectedTech);
-        } else {
-          handleError('error', endUserMessages.ERROR_FILE_CATEGORY);
-        }
-      });
-    }
+    createAndUploadSampleFile(fileObject, activeExperimentId, sampleUuid, dispatch, selectedTech);
 
     setUploadDetailsModalVisible(false);
   };
@@ -164,7 +151,7 @@ const UploadCell = (props) => {
           onCancel={() => setUploadDetailsModalVisible(false)}
           onDownload={onDownload}
           onDelete={() => dispatch(deleteSamples([sampleUuid]))}
-          onRetry={() => onUpload(uploadDetailsModalData, true)}
+          onRetry={() => onRetry(uploadDetailsModalData, true)}
           extraFields={{
             Sample: sample?.name,
             Category: fileTypeToDisplay[uploadDetailsModalData.fileCategory],
