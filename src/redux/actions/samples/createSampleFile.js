@@ -1,3 +1,4 @@
+import _ from 'lodash';
 import dayjs from 'dayjs';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -25,23 +26,10 @@ const createSampleFile = (
       size: file.size,
     };
 
-    const {
-      size,
-      upload,
-      fileObject,
-      path,
-      errors,
-      compressed,
-    } = file;
-
-    const fileForRedux = {
-      size,
-      upload,
-      fileObject,
-      path,
-      errors,
-      compressed,
-    };
+    // Leaving out path, errors, compressed, type, valid
+    // They are used during the upload process, not redux
+    // TODO we should check if they can be removed althogether from the file
+    const fileForRedux = _.pick(file, ['size', 'upload', 'fileObject']);
 
     dispatch({
       type: SAMPLES_FILE_UPDATE,
