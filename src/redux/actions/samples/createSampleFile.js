@@ -26,10 +26,12 @@ const createSampleFile = (
       size: file.size,
     };
 
-    // Leaving out path, errors, compressed
+    // Leaving out path, errors
     // They are used during the upload process, not redux
-    // TODO we should check if they can be removed althogether from the file
-    const fileForRedux = _.pick(file, ['size', 'upload', 'fileObject']);
+    // TODO we should check if they can be separated somehow between
+    // The ones that are relevant for the api vs
+    // the ones that are only necessary for retry (fileObject, compressed)
+    const fileForRedux = _.pick(file, ['size', 'upload', 'fileObject', 'compressed']);
 
     dispatch({
       type: SAMPLES_FILE_UPDATE,

@@ -133,12 +133,11 @@ const UploadCell = (props) => {
   };
 
   const onRetry = () => {
-    const fileToUpload = _.pick(uploadDetailsModalData, ['size', 'upload', 'fileObject']);
     const fileType = uploadDetailsModalData.fileCategory;
 
     // if retrying an upload we dont need to revalidate the file since it was done before
     createAndUploadSampleFile(
-      fileToUpload,
+      file,
       fileType,
       activeExperimentId,
       sampleUuid,
