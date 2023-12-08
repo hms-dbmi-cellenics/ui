@@ -1,5 +1,5 @@
 /* eslint-disable no-param-reassign */
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
 import ViolinControls from 'components/plots/styling/violin/ViolinControls';
@@ -7,13 +7,12 @@ import _ from 'lodash';
 
 import {
   updatePlotConfig,
-  savePlotConfig,
 } from 'redux/actions/componentConfig/index';
 import { loadCellSets } from 'redux/actions/cellSets';
 import Header from 'components/Header';
 import PlotContainer from 'components/plots/PlotContainer';
 import ViolinPlotMain from 'components/plots/ViolinPlotMain';
-import { getCellSets, getGeneList, getPlotConfigs } from 'redux/selectors';
+import { getCellSets, getPlotConfigs } from 'redux/selectors';
 import { plotNames, plotUuids, plotTypes } from 'utils/constants';
 import MultiViewGrid from 'components/plots/MultiViewGrid';
 
@@ -26,16 +25,6 @@ const ViolinIndex = ({ experimentId }) => {
 
   const multiViewConfig = useSelector((state) => state.componentConfig[multiViewUuid]?.config);
   const multiViewPlotUuids = multiViewConfig?.plotUuids;
-
-  const debounceSaveAll = useCallback(_.debounce(() => {
-    const allComponentUuids = _.concat(multiViewUuid, multiViewPlotUuids);
-
-    allComponentUuids.forEach((uuid) => {
-      if (uuid) {
-        dispatch(savePlotConfig(experimentId, uuid));
-      }
-    });
-  }, 2000), [multiViewConfig]);
 
   const plotConfigs = useSelector(getPlotConfigs(multiViewPlotUuids));
 
@@ -67,14 +56,8 @@ const ViolinIndex = ({ experimentId }) => {
     dispatch(loadCellSets(experimentId));
   }, []);
 
-  useEffect(() => {
-    if (!multiViewConfig || !multiViewPlotUuids.every((uuid) => plotConfigs[uuid])) return;
-
-    debounceSaveAll();
-  }, [plotConfigs, multiViewConfig]);
-
   const resetMultiView = () => {
-    updateMultiViewWithChanges({ nrows: 1, ncols: 1, plotUuids: [selectedPlotUuid] });
+    updateMultiViewWithChanges({ nrows: 1, ncols: 1, plotUuids: [] });
   };
 
   const plotStylingConfig = [
@@ -122,7 +105,6 @@ const ViolinIndex = ({ experimentId }) => {
   const renderExtraPanels = () => (
     <ViolinControls
       config={selectedConfig}
-      onUpdate={updatePlotWithChanges}
       onUpdateConditional={updateAll ? updateAllWithChanges : updatePlotWithChanges}
       updateAll={updateAll}
       setUpdateAll={setUpdateAll}
@@ -160,7 +142,7 @@ const ViolinIndex = ({ experimentId }) => {
         plotStylingConfig={plotStylingConfig}
         plotInfo='In order to rename existing clusters or create new ones, use the cell set tool, located in the Data Exploration page.'
         extraControlPanels={renderExtraPanels()}
-        defaultActiveKey='gene-selection'
+        defaultActiveKey='view-multiple-plots'
         onUpdate={updateAll ? updateAllWithChanges : updatePlotWithChanges}
         onPlotReset={resetMultiView}
       >

@@ -906,11 +906,12 @@ const initialPlotConfigStates = {
   dataIntegrationEmbedding: dataIntegrationEmbeddingInitialConfig,
   dataIntegrationFrequency: dataIntegrationFrequencyInitialConfig,
   dataIntegrationElbow: dataIntegrationElbowPlotInitialConfig,
+  multiView: multiViewInitialConfig,
+
 };
 
 const initialComponentConfigStates = {
   interactiveHeatmap: interactiveHeatmapInitialConfig,
-  multiView: multiViewInitialConfig,
 };
 
 const initialPlotDataState = {

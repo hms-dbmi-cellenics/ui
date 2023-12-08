@@ -1,4 +1,6 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, {
+  useEffect, useState, useRef, useCallback,
+} from 'react';
 import PropTypes from 'prop-types';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -8,7 +10,9 @@ import { getPlotConfigs, getCellSets } from 'redux/selectors';
 import { loadCellSets } from 'redux/actions/cellSets';
 import {
   updatePlotConfig,
+  savePlotConfig,
 } from 'redux/actions/componentConfig/index';
+
 import PlatformError from 'components/PlatformError';
 import loadConditionalComponentConfig from 'redux/actions/componentConfig/loadConditionalComponentConfig';
 import Loader from 'components/Loader';
@@ -43,6 +47,7 @@ const MultiViewGrid = (props) => {
   const multiViewConfig = useSelector((state) => state.componentConfig[multiViewUuid]?.config);
   const plotConfigs = useSelector(getPlotConfigs(multiViewConfig?.plotUuids));
   const multiViewPlotUuids = multiViewConfig?.plotUuids;
+  const firstPlotUuid = `${plotUuid}-0`;
 
   const [plots, setPlots] = useState({});
   const previousMultiViewConfig = useRef({});
@@ -50,7 +55,9 @@ const MultiViewGrid = (props) => {
   const highestDispersionGene = useSelector(
     (state) => state.genes.properties.views[plotUuid]?.data[0],
   );
-
+  const debounceSave = useCallback(_.debounce(() => {
+    dispatch(savePlotConfig(experimentId, multiViewUuid));
+  }, 2000), [multiViewConfig]);
   const expression = useSelector((state) => state.genes.expression.full);
 
   const loadComponent = (componentUuid, type, skipAPI, customConfig) => {
@@ -63,13 +70,30 @@ const MultiViewGrid = (props) => {
     if (!highestDispersionGene) {
       dispatch(loadPaginatedGeneProperties(experimentId, PROPERTIES, plotUuid, tableState));
     }
+    loadComponent(multiViewUuid, multiViewType, false);
   }, []);
+
+  useEffect(() => {
+    if (!multiViewConfig) return;
+
+    debounceSave();
+  }, [plotConfigs, multiViewConfig]);
+
+  useEffect(() => {
+    if (plotConfigs[firstPlotUuid]
+      && !plotConfigs[firstPlotUuid]?.shownGene
+      && highestDispersionGene) {
+      dispatch(updatePlotConfig(firstPlotUuid,
+        { shownGene: highestDispersionGene, title: { text: highestDispersionGene } }));
+    }
+  }, [plotConfigs]);
+
   useEffect(() => {
     // initial set up if there are no plots
     // plotting one plot using the highest dispersion gene
-    if (!multiViewConfig && highestDispersionGene) {
-      dispatch(loadGeneExpression(experimentId, [highestDispersionGene], plotUuid));
-      const firstPlotUuid = `${plotUuid}-0`;
+
+    if ((highestDispersionGene && !multiViewPlotUuids?.length)) {
+      dispatch(loadGeneExpression(experimentId, [highestDispersionGene], firstPlotUuid));
 
       const customMultiPlotConfig = { plotUuids: [firstPlotUuid] };
       loadComponent(multiViewUuid, multiViewType, true, customMultiPlotConfig);
@@ -77,13 +101,13 @@ const MultiViewGrid = (props) => {
       const customFirstPlotConfig = { shownGene: highestDispersionGene, title: { text: highestDispersionGene } };
       loadComponent(firstPlotUuid, plotType, true, customFirstPlotConfig);
     }
-  }, [multiViewConfig, highestDispersionGene]);
+  }, [multiViewConfig, highestDispersionGene, plotConfigs]);
 
   useEffect(() => {
     if (!shownGenes?.length) return;
 
     const unLoadedGenes = shownGenes.filter((gene) => (
-      !expression.matrix.geneIsLoaded(gene)
+      gene && !expression.matrix.geneIsLoaded(gene)
     ));
     if (unLoadedGenes.length > 0) {
       dispatch(loadGeneExpression(experimentId, unLoadedGenes, plotUuid));
@@ -94,11 +118,7 @@ const MultiViewGrid = (props) => {
     if (
       !multiViewConfig
       || _.isEqual(previousMultiViewConfig.current, multiViewConfig)
-      || Object.values(plotConfigs).includes(undefined)
     ) return;
-
-    // load new plots for all multi view plotUuids, with highest dispersion gene if not saved
-
     multiViewPlotUuids.forEach((uuid) => {
       if (!plotConfigs[uuid]) {
         loadComponent(uuid, plotType, false);

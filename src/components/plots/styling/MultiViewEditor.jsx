@@ -19,7 +19,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import { getPlotConfigs, getGeneList } from 'redux/selectors';
 import {
   updatePlotConfig,
-  savePlotConfig,
 } from 'redux/actions/componentConfig/index';
 import { generateMultiViewGridPlotUuid } from 'utils/generateCustomPlotUuid';
 import { plotUuids } from 'utils/constants';
@@ -99,7 +98,6 @@ const MultiViewEditor = (props) => {
     const newPlotUuids = [...multiViewPlotUuids];
 
     genesToAdd.forEach((gene, index) => {
-      // check if plotType is ook!!
       const plotUuidToAdd = generateMultiViewGridPlotUuid(plotUuid, newIndexes[index]);
       newPlotUuids.push(plotUuidToAdd);
 
@@ -110,7 +108,6 @@ const MultiViewEditor = (props) => {
         shownGene: gene,
         title: { text: gene },
       };
-      // loadComponent(plotUuidToAdd, plotType, true, customConfig);
 
       dispatch(loadConditionalComponentConfig(
         experimentId, plotUuidToAdd, plotType, true, customConfig,

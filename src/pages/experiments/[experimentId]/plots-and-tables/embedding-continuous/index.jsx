@@ -106,7 +106,7 @@ const ContinuousEmbeddingPage = ({ experimentId }) => {
       <Panel header='Select data' key='select-data'>
         <SelectData
           config={config}
-          onUpdate={updateAllWithChanges}
+          onUpdate={updateAll ? updateAllWithChanges : updatePlotWithChanges}
           cellSets={cellSets}
         />
       </Panel>
@@ -134,9 +134,9 @@ const ContinuousEmbeddingPage = ({ experimentId }) => {
         plotType={plotType}
         plotStylingConfig={plotStylingConfig}
         extraControlPanels={renderExtraPanels()}
-        defaultActiveKey='gene-selection'
+        defaultActiveKey='view-multiple-plots'
         onPlotReset={() => dispatch(
-          updatePlotConfig(multiViewUuid, { nrows: 1, ncols: 1, plotUuids: [selectedPlotUuid] }),
+          updatePlotConfig(multiViewUuid, { nrows: 1, ncols: 1, plotUuids: [] }),
         )}
         onUpdate={updateAll ? updateAllWithChanges : updatePlotWithChanges}
       >

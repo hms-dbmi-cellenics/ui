@@ -36,8 +36,8 @@ const mockWorkerResponses = {
 };
 
 const experimentId = fake.EXPERIMENT_ID;
-const plotUuid = 'ViolinMain';
-const multiViewUuid = 'multiView-ViolinMain';
+const plotUuid = 'ViolinMain-0';
+const multiViewUuid = 'multiView-violin';
 
 const customAPIResponses = {
   [`/plots/${plotUuid}$`]: (req) => {
@@ -91,7 +91,6 @@ describe('ViolinIndex', () => {
   it('Loads controls and elements', async () => {
     await renderViolinPage(storeState);
 
-    expect(screen.getByText(/Gene selection/i)).toBeInTheDocument();
     expect(screen.getByText(/View multiple plots/i)).toBeInTheDocument();
     expect(screen.getByText(/Select data/i)).toBeInTheDocument();
     expect(screen.getByText(/Data transformation/i)).toBeInTheDocument();
@@ -105,33 +104,6 @@ describe('ViolinIndex', () => {
     await renderViolinPage(storeState);
 
     expect(screen.getByRole('graphics-document', { name: 'Violin plot' })).toBeInTheDocument();
-  });
-
-  it('Changes the shown gene', async () => {
-    await renderViolinPage(storeState);
-
-    userEvent.click(screen.getByText(/Gene selection/i));
-
-    const searchBox = screen.getByRole('combobox', { name: 'SearchBar' });
-
-    userEvent.clear(searchBox);
-    userEvent.type(searchBox, 'cc');
-
-    const option = screen.getByTitle('Ccl5');
-
-    await act(async () => {
-      // the element has pointer-events set to 'none', skip check
-      // based on https://stackoverflow.com/questions/61080116
-      userEvent.click(option, undefined, { skipPointerEventsCheck: true });
-    });
-
-    userEvent.click(screen.getByText('Search'));
-
-    expect(searchBox.textContent).toBe('');
-
-    await waitFor(() => expect(screen.getByRole('graphics-document', { name: 'Violin plot' })).toBeInTheDocument());
-
-    expect(storeState.getState().componentConfig[plotUuid].config.shownGene).toBe('Ccl5');
   });
 
   it('Changes to raw expression', async () => {
@@ -171,7 +143,7 @@ describe('ViolinIndex', () => {
     expect(_.isEqual([multiViewConfig.nrows, multiViewConfig.ncols], [2, 2])).toBe(true);
 
     // New plot's config is correct
-    expect(storeState.getState().componentConfig['ViolinMain-0']).toMatchSnapshot('new-config');
+    expect(storeState.getState().componentConfig['ViolinMain-1']).toMatchSnapshot('new-config');
   });
 
   it('Adds new plot using same config as previous plot', async () => {
