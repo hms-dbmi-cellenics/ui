@@ -23,7 +23,7 @@ const ContinuousEmbeddingPlot = (props) => {
 
   const geneExpression = useSelector((state) => state.genes.expression.full);
   const componentConfigs = useSelector((state) => state.componentConfig);
-  const currentConfig = config || componentConfigs[plotUuid].config;
+  const currentConfig = config || componentConfigs[plotUuid]?.config;
   const [dataState, setDataState] = useState({
     plotData,
     truncatedPlotData,
