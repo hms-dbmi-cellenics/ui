@@ -55,6 +55,7 @@ const MultiViewGrid = (props) => {
   const highestDispersionGene = useSelector(
     (state) => state.genes.properties.views[plotUuid]?.data[0],
   );
+
   const debounceSaveAll = useCallback(_.debounce(() => {
     const allComponentUuids = _.concat(multiViewUuid, multiViewPlotUuids);
     allComponentUuids.forEach((uuid) => {
@@ -75,7 +76,9 @@ const MultiViewGrid = (props) => {
     if (!highestDispersionGene) {
       dispatch(loadPaginatedGeneProperties(experimentId, PROPERTIES, plotUuid, tableState));
     }
-    loadComponent(multiViewUuid, multiViewType, false);
+    if (!multiViewConfig) {
+      loadComponent(multiViewUuid, multiViewType, false);
+    }
   }, []);
 
   useEffect(() => {

@@ -372,7 +372,7 @@ exports[`generateData generate spec returns the right data 1`] = `
     "dx": 0,
     "font": "sans-serif",
     "fontSize": 20,
-    "text": "",
+    "text": null,
   },
   "width": 700,
 }
