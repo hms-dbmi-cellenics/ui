@@ -71,47 +71,51 @@ const SamplesTable = forwardRef((props, ref) => {
 
   const [samplesLoaded, setSamplesLoaded] = useState(false);
 
-  const initialTableColumns = useMemo(() => ([
-    {
-      fixed: 'left',
-      index: 0,
-      key: 'sort',
-      dataIndex: 'sort',
-      width: 50,
-      render: () => <DragHandle />,
-    },
-    {
-      className: `${integrationTestConstants.classes.SAMPLE_CELL}`,
-      index: 1,
-      key: 'sample',
-      title: selectedTech === sampleTech.SEURAT ? 'File' : 'Sample',
-      dataIndex: 'name',
-      fixed: 'left',
-      render: (text, record, indx) => (
-        <SampleNameCell cellInfo={{ text, record, indx }} />
-      ),
-    },
-    ...fileUploadSpecifications[selectedTech]?.requiredFiles?.map((requiredFile, indx) => ({
-      index: 2 + indx,
-      title: <center>{fileTypeToDisplay[requiredFile]}</center>,
-      key: requiredFile,
-      dataIndex: requiredFile,
-      width: 170,
-      onCell: () => ({ style: { margin: '0px', padding: '0px' } }),
-      render: (tableCellData) => tableCellData && (
-        <UploadCell
-          columnId={requiredFile}
-          sampleUuid={tableCellData.sampleUuid}
-        />
-      ),
-    })) || [],
+  const initialTableColumns = useMemo(() => {
+    if (_.isNil(selectedTech)) return [];
 
-  ]), [selectedTech]);
+    return ([
+      {
+        fixed: 'left',
+        index: 0,
+        key: 'sort',
+        dataIndex: 'sort',
+        width: 50,
+        render: () => <DragHandle />,
+      },
+      {
+        className: `${integrationTestConstants.classes.SAMPLE_CELL}`,
+        index: 1,
+        key: 'sample',
+        title: selectedTech === sampleTech.SEURAT ? 'File' : 'Sample',
+        dataIndex: 'name',
+        fixed: 'left',
+        render: (text, record, indx) => (
+          <SampleNameCell cellInfo={{ text, record, indx }} />
+        ),
+      },
+      ...fileUploadSpecifications[selectedTech].requiredFiles.map((requiredFile, indx) => ({
+        index: 2 + indx,
+        title: <center>{fileTypeToDisplay[requiredFile]}</center>,
+        key: requiredFile,
+        dataIndex: requiredFile,
+        width: 170,
+        onCell: () => ({ style: { margin: '0px', padding: '0px' } }),
+        render: (tableCellData) => tableCellData && (
+          <UploadCell
+            columnId={requiredFile}
+            sampleUuid={tableCellData.sampleUuid}
+          />
+        ),
+      })),
+
+    ]);
+  }, [selectedTech]);
 
   const [tableColumns, setTableColumns] = useState(initialTableColumns);
 
   useEffect(() => {
-    if (activeExperiment?.sampleIds.length > 0 && samplesLoaded) {
+    if (activeExperiment?.sampleIds.length > 0 && !samplesLoading) {
       // if there are samples - build the table columns
       const sanitizedSampleNames = new Set(
         activeExperiment.sampleIds.map((id) => samples[id]?.name.trim()),
@@ -121,9 +125,10 @@ const SamplesTable = forwardRef((props, ref) => {
       const metadataColumns = activeExperiment.metadataKeys.map(
         (metadataKey) => createInitializedMetadataColumn(metadataKeyToName(metadataKey)),
       ) || [];
+
       setTableColumns([...initialTableColumns, ...metadataColumns]);
     }
-  }, [samples, activeExperiment?.sampleIds, samplesLoaded]);
+  }, [samples, activeExperiment?.sampleIds, samplesLoading]);
 
   useConditionalEffect(() => {
     setSamplesLoaded(false);
