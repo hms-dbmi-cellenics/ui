@@ -17,7 +17,7 @@ const UploadDetailsModal = (props) => {
 
   const {
     upload, size, lastModified, fileObject = undefined,
-  } = data ?? {};
+  } = data;
 
   const { progress, status } = upload ?? false;
 
