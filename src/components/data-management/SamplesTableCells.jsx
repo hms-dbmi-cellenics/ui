@@ -40,7 +40,7 @@ const UploadCell = (props) => {
   const { activeExperimentId } = useSelector((state) => state.experiments.meta);
 
   const [uploadDetailsModalVisible, setUploadDetailsModalVisible] = useState(false);
-  const [uploadDetailsModalData, setUploadDetailsModalData] = useState(false);
+  const [uploadDetailsModalData, setUploadDetailsModalData] = useState(null);
 
   useEffect(() => {
     setUploadDetailsModalData(file);
