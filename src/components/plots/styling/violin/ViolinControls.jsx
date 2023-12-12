@@ -24,7 +24,7 @@ const ViolinControls = (props) => {
   } = props;
 
   return (
-    <Collapse>
+    <Collapse defaultActiveKey='view-multiple-plots'>
       <Panel header='View multiple plots' key='view-multiple-plots'>
         <MultiViewEditor
           updateAll={updateAll}
