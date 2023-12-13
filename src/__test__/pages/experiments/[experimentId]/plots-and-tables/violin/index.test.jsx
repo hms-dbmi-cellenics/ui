@@ -90,6 +90,7 @@ describe('ViolinIndex', () => {
 
   it('Loads controls and elements', async () => {
     await renderViolinPage(storeState);
+    expect(screen.getByText(/Gene selection/i)).toBeInTheDocument();
 
     expect(screen.getByText(/View multiple plots/i)).toBeInTheDocument();
     expect(screen.getByText(/Select data/i)).toBeInTheDocument();
@@ -173,5 +174,31 @@ describe('ViolinIndex', () => {
 
     // New plot's config contains normalised set to raw too
     expect(storeState.getState().componentConfig['ViolinMain-0'].config.normalised).toEqual('raw');
+  });
+  it('Changes the shown gene', async () => {
+    await renderViolinPage(storeState);
+
+    userEvent.click(screen.getByText(/Gene selection/i));
+
+    const searchBox = screen.getAllByRole('combobox', { name: 'SearchBar' })[0];
+
+    userEvent.clear(searchBox);
+    userEvent.type(searchBox, 'cc');
+
+    const option = screen.getByTitle('Ccl5');
+
+    await act(async () => {
+      // the element has pointer-events set to 'none', skip check
+      // based on https://stackoverflow.com/questions/61080116
+      userEvent.click(option, undefined, { skipPointerEventsCheck: true });
+    });
+
+    userEvent.click(screen.getByText('Search'));
+
+    expect(searchBox.textContent).toBe('');
+
+    await waitFor(() => expect(screen.getByRole('graphics-document', { name: 'Violin plot' })).toBeInTheDocument());
+
+    expect(storeState.getState().componentConfig[plotUuid].config.shownGene).toBe('Ccl5');
   });
 });
