@@ -6,6 +6,7 @@ import {
 import SelectData from 'components/plots/styling/SelectData';
 import MultiViewEditor from 'components/plots/styling/MultiViewEditor';
 import { plotUuids, plotTypes } from 'utils/constants';
+import GeneSearchBar from 'components/plots/GeneSearchBar';
 
 const { Panel } = Collapse;
 const plotUuid = plotUuids.VIOLIN_PLOT;
@@ -21,10 +22,18 @@ const ViolinControls = (props) => {
     setSelectedPlotUuid,
     cellSets,
     shownGenes,
+    changeFirstPlotGene,
   } = props;
 
   return (
     <Collapse defaultActiveKey='view-multiple-plots'>
+      <Panel header='Gene selection' key='gene-selection'>
+        <GeneSearchBar
+          onSelect={changeFirstPlotGene}
+          allowMultiple={false}
+          buttonText='Search'
+        />
+      </Panel>
       <Panel header='View multiple plots' key='view-multiple-plots'>
         <MultiViewEditor
           updateAll={updateAll}
@@ -84,6 +93,7 @@ ViolinControls.propTypes = {
   cellSets: PropTypes.object.isRequired,
   shownGenes: PropTypes.array.isRequired,
   experimentId: PropTypes.string.isRequired,
+  changeFirstPlotGene: PropTypes.func.isRequired,
 };
 
 ViolinControls.defaultProps = {

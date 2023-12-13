@@ -4,6 +4,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
 import ViolinControls from 'components/plots/styling/violin/ViolinControls';
 import _ from 'lodash';
+import { loadGeneExpression } from 'redux/actions/genes';
 
 import {
   updatePlotConfig,
@@ -113,6 +114,7 @@ const ViolinIndex = ({ experimentId }) => {
       cellSets={cellSets}
       shownGenes={shownGenes}
       experimentId={experimentId}
+      changeFirstPlotGene={changeFirstPlotGene}
     />
   );
 
@@ -122,6 +124,13 @@ const ViolinIndex = ({ experimentId }) => {
       plotUuid={plotUuidToRender}
     />
   );
+
+  const changeFirstPlotGene = (gene) => {
+    dispatch(loadGeneExpression(
+        experimentId, [plotConfigs[`${plotUuid}-0`]?.shownGene], gene,
+      ))
+    dispatch(updatePlotConfig(`${plotUuid}-0`, {shownGene: gene, title: { text: gene }}))
+  };
 
   const renderMultiView = () => (
     <MultiViewGrid

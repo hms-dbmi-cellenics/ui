@@ -21,6 +21,7 @@ import {
 import { loadCellSets } from 'redux/actions/cellSets';
 import { getCellSets, getPlotConfigs } from 'redux/selectors';
 import { plotNames, plotUuids, plotTypes } from 'utils/constants';
+import GeneSearchBar from 'components/plots/GeneSearchBar';
 
 const { Panel } = Collapse;
 
@@ -93,14 +94,28 @@ const ContinuousEmbeddingPage = ({ experimentId }) => {
       experimentId={experimentId}
       plotUuid={plotUuidToRender}
       useReduxData
-      reloadPlotData={() => loadGeneExpression(
+      reloadPlotData={() => dispatch(loadGeneExpression(
         experimentId, [plotConfigs[plotUuidToRender]?.shownGene], plotUuidToRender,
-      )}
+      ))}
     />
   );
 
+  const changeFirstPlotGene = (gene) => {
+    dispatch(loadGeneExpression(
+        experimentId, [plotConfigs[`${plotUuid}-0`]?.shownGene], gene,
+      ))
+    dispatch(updatePlotConfig(`${plotUuid}-0`, {shownGene: gene, title: { text: gene }}))
+  };
+
   const renderExtraPanels = () => (
     <>
+      <Panel header='Gene selection' key='gene-selection'>
+        <GeneSearchBar
+          allowMultiple={false}
+          onSelect={changeFirstPlotGene}
+          buttonText='Submit'
+        />
+      </Panel>
       <Panel header='Select data' key='select-data'>
         <SelectData
           config={config}
