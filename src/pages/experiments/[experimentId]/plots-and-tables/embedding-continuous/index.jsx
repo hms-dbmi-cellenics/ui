@@ -34,7 +34,6 @@ const ContinuousEmbeddingPage = ({ experimentId }) => {
   const cellSets = useSelector(getCellSets());
   const multiViewConfig = useSelector((state) => state.componentConfig[multiViewUuid]?.config);
   const multiViewPlotUuids = multiViewConfig?.plotUuids;
-  const geneExpression = useSelector((state) => state.genes.expression.full);
   const plotConfigs = useSelector(getPlotConfigs(multiViewPlotUuids));
   const shownGenes = _.compact(multiViewPlotUuids?.map((uuid) => plotConfigs[uuid]?.shownGene));
   const [selectedPlotUuid, setSelectedPlotUuid] = useState(`${plotUuid}-0`);

@@ -114,11 +114,11 @@ const MultiViewGrid = (props) => {
   useEffect(() => {
     if (!shownGenes?.length) return;
 
-    const unLoadedGenes = shownGenes.filter((gene) => (
+    const genesToLoad = shownGenes.filter((gene) => (
       gene && !expression.matrix.geneIsLoaded(gene)
     ));
-    if (unLoadedGenes.length > 0) {
-      dispatch(loadGeneExpression(experimentId, unLoadedGenes, plotUuid));
+    if (genesToLoad.length > 0) {
+      dispatch(loadGeneExpression(experimentId, genesToLoad, plotUuid));
     }
   }, [shownGenes, expression]);
 
@@ -191,7 +191,7 @@ const MultiViewGrid = (props) => {
               {
                 _.times(multiViewConfig.ncols, (j) => (
                   <Col flex key={multiViewConfig.ncols * i + j}>
-                    {plots[multiViewConfig.plotUuids[multiViewConfig.ncols * i + j]] || <div />}
+                    {plots[multiViewConfig.plotUuids[multiViewConfig.ncols * i + j]] ?? <div />}
                   </Col>
                 ))
               }

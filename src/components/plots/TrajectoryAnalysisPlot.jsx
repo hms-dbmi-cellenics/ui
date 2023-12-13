@@ -298,6 +298,7 @@ TrajectoryAnalysisPlot.defaultProps = {
   onClickNode: () => { },
   onLassoSelection: () => { },
 };
+
 TrajectoryAnalysisPlot.propTypes = {
   experimentId: PropTypes.string.isRequired,
   plotUuid: PropTypes.string.isRequired,
