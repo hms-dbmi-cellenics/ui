@@ -12,7 +12,7 @@ const getCellSetsThatAffectDownsampling = async (
   const selectedCellSetsKeys = children.map((cellSet) => cellSet.key);
 
   const groupedCellSetKeys = getCellSetsHierarchy(groupedTracks)(getState())
-    .map((cellClass) => cellClass.children)
+    .map((cellClass) => cellClass?.children)
     .flat()
     .map(({ key }) => key);
 
