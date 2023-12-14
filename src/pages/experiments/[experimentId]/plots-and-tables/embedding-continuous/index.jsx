@@ -11,7 +11,6 @@ import MultiViewGrid from 'components/plots/MultiViewGrid';
 
 import SelectData from 'components/plots/styling/embedding-continuous/SelectData';
 import Header from 'components/Header';
-import ContinuousEmbeddingPlot from 'components/plots/ContinuousEmbeddingPlot';
 import PlotContainer from 'components/plots/PlotContainer';
 import { loadGeneExpression } from 'redux/actions/genes';
 
@@ -22,7 +21,7 @@ import { loadCellSets } from 'redux/actions/cellSets';
 import { getCellSets, getPlotConfigs } from 'redux/selectors';
 import { plotNames, plotUuids, plotTypes } from 'utils/constants';
 import GeneSearchBar from 'components/plots/GeneSearchBar';
-
+import ContinuousEmbeddingPlotsTables from 'components/plots/ContinuousEmbeddingPlotsTables';
 const { Panel } = Collapse;
 
 const plotUuid = plotUuids.CONTINUOUS_EMBEDDING;
@@ -90,13 +89,10 @@ const ContinuousEmbeddingPage = ({ experimentId }) => {
     dispatch(updatePlotConfig(selectedPlotUuid, updateField));
   };
   const renderPlot = (plotUuidToRender) => (
-    <ContinuousEmbeddingPlot
+    <ContinuousEmbeddingPlotsTables
       experimentId={experimentId}
       plotUuid={plotUuidToRender}
-      useReduxData
-      reloadPlotData={() => dispatch(loadGeneExpression(
-        experimentId, [plotConfigs[plotUuidToRender]?.shownGene], plotUuidToRender,
-      ))}
+
     />
   );
 
