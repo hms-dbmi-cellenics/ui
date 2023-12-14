@@ -65,7 +65,7 @@ const MultiViewEditor = (props) => {
   useEffect(() => {
     if (!multiViewConfig) return;
 
-    if (!selectedPlotUuid && multiViewPlotUuids.length) {
+    if ((!selectedPlotUuid && multiViewPlotUuids.length) || !multiViewPlotUuids.includes(selectedPlotUuid)) {
       setSelectedPlotUuid(multiViewPlotUuids[0]);
     }
     if (localNRows !== multiViewConfig.nrows) {
