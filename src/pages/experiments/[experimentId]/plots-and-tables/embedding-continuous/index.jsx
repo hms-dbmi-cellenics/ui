@@ -21,7 +21,7 @@ import { loadCellSets } from 'redux/actions/cellSets';
 import { getCellSets, getPlotConfigs } from 'redux/selectors';
 import { plotNames, plotUuids, plotTypes } from 'utils/constants';
 import GeneSearchBar from 'components/plots/GeneSearchBar';
-import ContinuousEmbeddingPlotsTables from 'components/plots/ContinuousEmbeddingPlotsTables';
+import ContinuousEmbeddingReduxWrapper from 'components/plots/ContinuousEmbeddingReduxWrapper';
 const { Panel } = Collapse;
 
 const plotUuid = plotUuids.CONTINUOUS_EMBEDDING;
@@ -89,7 +89,7 @@ const ContinuousEmbeddingPage = ({ experimentId }) => {
     dispatch(updatePlotConfig(selectedPlotUuid, updateField));
   };
   const renderPlot = (plotUuidToRender) => (
-    <ContinuousEmbeddingPlotsTables
+    <ContinuousEmbeddingReduxWrapper
       experimentId={experimentId}
       plotUuid={plotUuidToRender}
 
@@ -112,13 +112,6 @@ const ContinuousEmbeddingPage = ({ experimentId }) => {
           buttonText='Submit'
         />
       </Panel>
-      <Panel header='Select data' key='select-data'>
-        <SelectData
-          config={config}
-          onUpdate={updateAll ? updateAllWithChanges : updatePlotWithChanges}
-          cellSets={cellSets}
-        />
-      </Panel>
       <Panel header='View multiple plots' key='view-multiple-plots'>
         <MultiViewEditor
           shownGenes={shownGenes}
@@ -129,6 +122,13 @@ const ContinuousEmbeddingPage = ({ experimentId }) => {
           setSelectedPlotUuid={setSelectedPlotUuid}
           updateAll={updateAll}
           setUpdateAll={setUpdateAll}
+        />
+      </Panel>
+            <Panel header='Select data' key='select-data'>
+        <SelectData
+          config={config}
+          onUpdate={updateAll ? updateAllWithChanges : updatePlotWithChanges}
+          cellSets={cellSets}
         />
       </Panel>
     </>

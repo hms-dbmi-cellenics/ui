@@ -7,7 +7,7 @@ import ContinuousEmbeddingPlot from './ContinuousEmbeddingPlot';
 // wrapper component used in plots and tables
 // where the data for the embedding needs to be derived from redux
 // on change rerendering the component
-const ContinuousEmbeddingPlotsTables = (props) => {
+const ContinuousEmbeddingReduxWrapper = (props) => {
   const {
     experimentId, actions, plotUuid,
   } = props;
@@ -30,10 +30,10 @@ const ContinuousEmbeddingPlotsTables = (props) => {
     />
   );
 };
-ContinuousEmbeddingPlotsTables.defaultProps = {
+ContinuousEmbeddingReduxWrapper.defaultProps = {
   actions: true,
 };
-ContinuousEmbeddingPlotsTables.propTypes = {
+ContinuousEmbeddingReduxWrapper.propTypes = {
   experimentId: PropTypes.string.isRequired,
   actions: PropTypes.oneOfType([
     PropTypes.bool,
@@ -41,4 +41,4 @@ ContinuousEmbeddingPlotsTables.propTypes = {
   ]),
   plotUuid: PropTypes.string.isRequired,
 };
-export default ContinuousEmbeddingPlotsTables;
+export default ContinuousEmbeddingReduxWrapper;
