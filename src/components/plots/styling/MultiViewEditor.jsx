@@ -223,7 +223,7 @@ const MultiViewEditor = (props) => {
             min={1}
             max={30}
             value={localNRows}
-            onChange={(value) => { onRowsChange(value); }}
+            onChange={(value) => (value && onRowsChange(value))}
           />
         </Col>
         <Col span={2}>
@@ -239,7 +239,7 @@ const MultiViewEditor = (props) => {
             min={1}
             max={30}
             value={localNCols}
-            onChange={(value) => { onColsChange(value); }}
+            onChange={(value) => (value && onColsChange(value))}
           />
         </Col>
       </Row>
