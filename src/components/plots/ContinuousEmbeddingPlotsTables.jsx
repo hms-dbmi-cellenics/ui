@@ -12,7 +12,7 @@ const ContinuousEmbeddingPlotsTables = (props) => {
     experimentId, actions, plotUuid,
   } = props;
   const dispatch = useDispatch();
-  const config = useSelector((state) => state.componentConfig[plotUuid].config);
+  const config = useSelector((state) => state.componentConfig[plotUuid]?.config);
   const geneExpression = useSelector((state) => state.genes.expression.full);
 
   return (
