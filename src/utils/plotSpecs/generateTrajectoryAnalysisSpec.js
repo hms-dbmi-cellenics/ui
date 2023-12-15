@@ -59,6 +59,7 @@ const generateBaseSpec = (
   embeddingData,
   viewState,
   numClusters,
+  method,
 ) => ({
   $schema: 'https://vega.github.io/schema/vega/v5.json',
   description: 'Trajectory analysis plot',
@@ -241,7 +242,7 @@ const generateBaseSpec = (
       grid: true,
       domain: true,
       orient: 'bottom',
-      title: config?.axes.xAxisText,
+      title: config?.axes.xAxisText || `${method} 1`,
       titleFont: config?.fontStyle.font,
       labelFont: config?.fontStyle.font,
       labelColor: config?.colour.masterColour,
@@ -268,7 +269,7 @@ const generateBaseSpec = (
       gridWidth: (config?.axes.gridWidth / 20),
       tickColor: config?.colour.masterColour,
       offset: config?.axes.offset,
-      title: config?.axes.yAxisText,
+      title: config?.axes.yAxisText || `${method} 2`,
       titleFont: config?.fontStyle.font,
       labelFont: config?.fontStyle.font,
       labelColor: config?.colour.masterColour,
@@ -778,12 +779,14 @@ const generateTrajectoryAnalysisSpec = (
   startingNodesData,
   selectedNodeIds,
   nodesData,
+  embeddingMethod,
 ) => {
   const spec = generateBaseSpec(
     config,
     embeddingPlotData,
     viewState,
     cellSetLegendsData.length,
+    embeddingMethod,
   );
 
   if (displaySettings.showPseudotimeValues && pseudotimeData) {

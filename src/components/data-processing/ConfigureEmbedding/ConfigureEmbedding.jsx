@@ -165,7 +165,6 @@ const ConfigureEmbedding = (props) => {
         loading={loading}
         error={error}
         reloadPlotData={() => dispatch(loadCellMeta(experimentId, colouring))}
-        onUpdate={updatePlotWithChanges}
         actions={actions}
       />
     );
@@ -178,7 +177,6 @@ const ConfigureEmbedding = (props) => {
         experimentId={experimentId}
         config={config}
         actions={actions}
-        onUpdate={updatePlotWithChanges}
       />
     </Space>
   );

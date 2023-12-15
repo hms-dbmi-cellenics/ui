@@ -65,8 +65,7 @@ const ViolinPlotMain = (props) => {
     }
 
     if (
-      !config
-      || config?.shownGene === 'notSelected'
+      !config?.shownGene
       || expression.loading.includes(config?.shownGene)
       || !cellSets.accessible
     ) {

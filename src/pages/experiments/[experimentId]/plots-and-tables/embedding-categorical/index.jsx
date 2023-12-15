@@ -156,7 +156,6 @@ const EmbeddingCategoricalPage = ({ experimentId }) => {
           experimentId={experimentId}
           config={config}
           plotUuid={plotUuid}
-          onUpdate={updatePlotWithChanges}
         />
       </Space>
     );
