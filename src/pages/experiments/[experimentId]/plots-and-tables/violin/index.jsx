@@ -122,7 +122,7 @@ const ViolinIndex = ({ experimentId }) => {
       cellSets={cellSets}
       shownGenes={shownGenes}
       experimentId={experimentId}
-      changeFirstPlotGene={changeSelectedPlotGene}
+      changeSelectedPlotGene={changeSelectedPlotGene}
     />
   );
 

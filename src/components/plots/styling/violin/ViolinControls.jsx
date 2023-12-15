@@ -22,14 +22,14 @@ const ViolinControls = (props) => {
     setSelectedPlotUuid,
     cellSets,
     shownGenes,
-    changeFirstPlotGene,
+    changeSelectedPlotGene,
   } = props;
 
   return (
     <Collapse defaultActiveKey='view-multiple-plots'>
       <Panel header='Gene selection' key='gene-selection'>
         <GeneSearchBar
-          onSelect={changeFirstPlotGene}
+          onSelect={changeSelectedPlotGene}
           allowMultiple={false}
           buttonText='Search'
         />
@@ -93,7 +93,7 @@ ViolinControls.propTypes = {
   cellSets: PropTypes.object.isRequired,
   shownGenes: PropTypes.array.isRequired,
   experimentId: PropTypes.string.isRequired,
-  changeFirstPlotGene: PropTypes.func.isRequired,
+  changeSelectedPlotGene: PropTypes.func.isRequired,
 };
 
 ViolinControls.defaultProps = {
