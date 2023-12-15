@@ -1,6 +1,5 @@
 import fetchAPI from 'utils/http/fetchAPI';
 import handleError from 'utils/http/handleError';
-import fileNameForApiV1 from 'utils/upload/fileNameForApiV1';
 
 import {
   SAMPLES_LOADED,
@@ -8,51 +7,43 @@ import {
   SAMPLES_LOADING,
 } from 'redux/actionTypes/samples';
 
-const toApiV1 = (samples, experimentId) => {
-  const apiV1Samples = {};
+const adaptedToRedux = (samples, experimentId) => {
+  const reduxSamples = {};
 
-  const buildApiv1Files = (files) => {
-    const fileNames = [];
+  const buildReduxFiles = (files) => {
     const apiV1Files = {};
 
     Object.keys(files).forEach((key) => {
       const fileType = files[key]?.sampleFileType;
       if (!fileType) throw new Error('No sample file found');
 
-      const fileName = fileNameForApiV1[fileType];
-
-      fileNames.push(fileNameForApiV1[fileType]);
-
-      apiV1Files[fileName] = {
+      apiV1Files[fileType] = {
         size: files[key].size,
-        valid: true,
-        name: fileName,
         upload: {
           status: files[key].uploadStatus,
         },
       };
     });
 
-    return { apiV1Files, fileNames };
+    return apiV1Files;
   };
 
   samples.forEach((sample) => {
-    const { apiV1Files, fileNames } = buildApiv1Files(sample.files);
-    apiV1Samples[sample.id] = {
+    const reduxFiles = buildReduxFiles(sample.files);
+    reduxSamples[sample.id] = {
       experimentId,
       metadata: sample.metadata,
       createdDate: sample.createdAt,
       name: sample.name,
       lastModified: sample.updatedAt,
-      files: apiV1Files,
+      files: reduxFiles,
       type: sample.sampleTechnology,
       options: sample.options,
-      fileNames,
       uuid: sample.id,
     };
   });
 
-  return apiV1Samples;
+  return reduxSamples;
 };
 
 const loadSamples = (experimentId) => async (dispatch) => {
@@ -65,7 +56,7 @@ const loadSamples = (experimentId) => async (dispatch) => {
     const url = `/v2/experiments/${experimentId}/samples`;
     const data = await fetchAPI(url);
 
-    const samples = toApiV1(data, experimentId);
+    const samples = adaptedToRedux(data, experimentId);
 
     dispatch({
       type: SAMPLES_LOADED,
@@ -87,5 +78,3 @@ const loadSamples = (experimentId) => async (dispatch) => {
 };
 
 export default loadSamples;
-
-export { toApiV1 };
