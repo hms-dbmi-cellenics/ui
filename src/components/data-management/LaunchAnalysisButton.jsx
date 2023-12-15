@@ -112,7 +112,7 @@ const LaunchAnalysisButton = () => {
   ]);
 
   const getAllExperimentSampleFiles = useCallback(() => (
-    activeExperiment.sampleIds.flatMap((sampleId) => Object.values(samples[sampleId].files))
+    activeExperiment.sampleIds.flatMap((sampleId) => Object.values(samples[sampleId]?.files ?? {}))
   ), [samples, activeExperiment?.sampleIds]);
 
   const getAnyFileUploadFailed = useCallback(() => {
