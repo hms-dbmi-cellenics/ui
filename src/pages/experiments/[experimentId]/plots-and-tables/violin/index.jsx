@@ -103,6 +103,14 @@ const ViolinIndex = ({ experimentId }) => {
 
   ];
 
+  const changeSelectedPlotGene = (gene) => {
+    const plotUuidToUpdate = updateAll ? multiViewPlotUuids[0] : selectedPlotUuid;
+    dispatch(loadGeneExpression(
+      experimentId, [plotConfigs[plotUuidToUpdate]?.shownGene], gene,
+    ));
+    dispatch(updatePlotConfig(plotUuidToUpdate, { shownGene: gene, title: { text: gene } }));
+  };
+
   const renderExtraPanels = () => (
     <ViolinControls
       config={selectedConfig}
@@ -114,7 +122,7 @@ const ViolinIndex = ({ experimentId }) => {
       cellSets={cellSets}
       shownGenes={shownGenes}
       experimentId={experimentId}
-      changeFirstPlotGene={changeFirstPlotGene}
+      changeFirstPlotGene={changeSelectedPlotGene}
     />
   );
 
@@ -124,13 +132,6 @@ const ViolinIndex = ({ experimentId }) => {
       plotUuid={plotUuidToRender}
     />
   );
-
-  const changeFirstPlotGene = (gene) => {
-    dispatch(loadGeneExpression(
-        experimentId, [plotConfigs[`${plotUuid}-0`]?.shownGene], gene,
-      ))
-    dispatch(updatePlotConfig(`${plotUuid}-0`, {shownGene: gene, title: { text: gene }}))
-  };
 
   const renderMultiView = () => (
     <MultiViewGrid

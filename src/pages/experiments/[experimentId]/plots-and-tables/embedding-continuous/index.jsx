@@ -22,6 +22,7 @@ import { getCellSets, getPlotConfigs } from 'redux/selectors';
 import { plotNames, plotUuids, plotTypes } from 'utils/constants';
 import GeneSearchBar from 'components/plots/GeneSearchBar';
 import ContinuousEmbeddingReduxWrapper from 'components/plots/ContinuousEmbeddingReduxWrapper';
+
 const { Panel } = Collapse;
 
 const plotUuid = plotUuids.CONTINUOUS_EMBEDDING;
@@ -96,11 +97,12 @@ const ContinuousEmbeddingPage = ({ experimentId }) => {
     />
   );
 
-  const changeFirstPlotGene = (gene) => {
+  const changeSelectedPlotGene = (gene) => {
+    const plotUuidToUpdate = updateAll ? multiViewPlotUuids[0] : selectedPlotUuid;
     dispatch(loadGeneExpression(
-        experimentId, [plotConfigs[`${plotUuid}-0`]?.shownGene], gene,
-      ))
-    dispatch(updatePlotConfig(`${plotUuid}-0`, {shownGene: gene, title: { text: gene }}))
+      experimentId, [plotConfigs[plotUuidToUpdate]?.shownGene], gene,
+    ));
+    dispatch(updatePlotConfig(plotUuidToUpdate, { shownGene: gene, title: { text: gene } }));
   };
 
   const renderExtraPanels = () => (
@@ -108,7 +110,7 @@ const ContinuousEmbeddingPage = ({ experimentId }) => {
       <Panel header='Gene selection' key='gene-selection'>
         <GeneSearchBar
           allowMultiple={false}
-          onSelect={changeFirstPlotGene}
+          onSelect={changeSelectedPlotGene}
           buttonText='Submit'
         />
       </Panel>
@@ -124,7 +126,7 @@ const ContinuousEmbeddingPage = ({ experimentId }) => {
           setUpdateAll={setUpdateAll}
         />
       </Panel>
-            <Panel header='Select data' key='select-data'>
+      <Panel header='Select data' key='select-data'>
         <SelectData
           config={config}
           onUpdate={updateAll ? updateAllWithChanges : updatePlotWithChanges}
