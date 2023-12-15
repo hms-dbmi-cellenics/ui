@@ -164,9 +164,12 @@ const LaunchAnalysisButton = () => {
     }
 
     if (!canLaunchAnalysis()) {
+      const message = !cellLevelMetadataIsReady
+        ? 'Ensure that the cell level metadata file is uploaded correctly'
+        : 'Ensure that all samples are uploaded successfully and all relevant metadata is inserted.';
       return (
         <Tooltip
-          title='Ensure that all samples are uploaded successfully and all relevant metadata is inserted.'
+          title={message}
         >
           {/* disabled button inside tooltip causes tooltip to not function */}
           {/* https://github.com/react-component/tooltip/issues/18#issuecomment-140078802 */}
