@@ -1,7 +1,7 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import {
-  Button, Tooltip, Popconfirm,
+  Button, Tooltip, Popconfirm, Typography, Space,
 } from 'antd';
 import _ from 'lodash';
 
@@ -12,25 +12,9 @@ import integrationTestConstants from 'utils/integrationTestConstants';
 
 import { useAppRouter } from 'utils/AppRouteProvider';
 import calculatePipelinesRerunStatus from 'utils/data-management/calculatePipelinesRerunStatus';
+import { WarningOutlined } from '@ant-design/icons';
 
-const LaunchButtonTemplate = (props) => {
-  const {
-    // eslint-disable-next-line react/prop-types
-    onClick, disabled, text, loading,
-  } = props;
-
-  return (
-    <Button
-      data-test-id={integrationTestConstants.ids.PROCESS_PROJECT_BUTTON}
-      type='primary'
-      disabled={disabled}
-      onClick={onClick}
-      loading={loading}
-    >
-      {text}
-    </Button>
-  );
-};
+const { Text } = Typography;
 
 const LaunchAnalysisButton = () => {
   const dispatch = useDispatch();
@@ -126,6 +110,57 @@ const LaunchAnalysisButton = () => {
     activeExperiment?.metadataKeys,
     activeExperiment.cellLevelMetadata?.uploadStatus,
   ]);
+
+  const getAllExperimentSampleFiles = useCallback(() => (
+    activeExperiment.sampleIds.flatMap((sampleId) => Object.values(samples[sampleId].files))
+  ), [samples, activeExperiment?.sampleIds]);
+
+  const getAnyFileUploadFailed = useCallback(() => {
+    const nonErrorStatuses = [UploadStatus.UPLOADED, UploadStatus.UPLOADING];
+
+    const cellLevelUploadError = !_.isNil(activeExperiment.cellLevelMetadata)
+      && !nonErrorStatuses.includes(activeExperiment.cellLevelMetadata.uploadStatus);
+
+    const sampleFileUploadError = getAllExperimentSampleFiles()
+      .some((sampleFile) => !nonErrorStatuses.includes(sampleFile.upload.status));
+
+    return cellLevelUploadError || sampleFileUploadError;
+  }, [
+    samples,
+    activeExperiment?.sampleIds,
+    activeExperiment.cellLevelMetadata,
+  ]);
+
+  const LaunchButtonTemplate = (props) => {
+    const {
+      // eslint-disable-next-line react/prop-types
+      onClick, disabled, text, loading,
+    } = props;
+
+    return (
+      <Button
+        data-test-id={integrationTestConstants.ids.PROCESS_PROJECT_BUTTON}
+        type='primary'
+        disabled={disabled}
+        onClick={onClick}
+        loading={loading}
+      >
+        {
+          getAnyFileUploadFailed() ? (
+            <Space>
+              <Text type='danger'>
+                <WarningOutlined />
+              </Text>
+              {text}
+            </Space>
+          ) : (
+            text
+          )
+        }
+
+      </Button>
+    );
+  };
 
   const renderLaunchButton = () => {
     let buttonText;
