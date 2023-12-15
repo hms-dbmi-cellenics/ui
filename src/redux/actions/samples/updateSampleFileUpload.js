@@ -5,7 +5,6 @@ import endUserMessages from 'utils/endUserMessages';
 import fetchAPI from 'utils/http/fetchAPI';
 import handleError from 'utils/http/handleError';
 import UploadStatus from 'utils/upload/UploadStatus';
-import fileNameForApiV1 from 'utils/upload/fileNameForApiV1';
 
 const updateSampleFileUpload = (
   experimentId, sampleId, sampleFileId, type, uploadStatus, uploadProgress,
@@ -34,8 +33,8 @@ const updateSampleFileUpload = (
         type: SAMPLES_FILE_UPDATE,
         payload: {
           sampleUuid: sampleId,
+          sampleFileType: type,
           lastModified: updatedAt,
-          fileName: fileNameForApiV1[type],
           fileDiff: { upload: { status: UploadStatus.UPLOAD_ERROR } },
         },
       });
@@ -50,8 +49,8 @@ const updateSampleFileUpload = (
     type: SAMPLES_FILE_UPDATE,
     payload: {
       sampleUuid: sampleId,
+      sampleFileType: type,
       lastModified: updatedAt,
-      fileName: fileNameForApiV1[type],
       fileDiff: { upload: { status: uploadStatus, progress: uploadProgress } },
     },
   });

@@ -9,24 +9,19 @@ const sampleTemplate = {
   lastModified: null,
   complete: false,
   error: false,
-  fileNames: [],
   files: {},
   metadata: {},
   options: {},
 };
 
+// TODO: Update, this initial state doesn't even match the previously used structure
 const sampleFileTemplate = {
   objectKey: '',
-  name: null,
   size: 0,
-  mime: '',
-  path: '',
   success: false,
   error: false,
-  lastModified: '',
   upload: {
     status: null,
-    amplifyPromise: null,
   },
 };
 

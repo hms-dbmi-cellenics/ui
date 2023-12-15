@@ -17,6 +17,7 @@ import mockAPI, { generateDefaultMockAPIResponses, statusResponse } from '__test
 import { loadSamples, updateSampleFileUpload } from 'redux/actions/samples';
 
 import fake from '__test__/test-utils/constants';
+import sampleFileType from 'utils/sampleFileType';
 
 jest.mock('swr', () => () => ({
   data: [
@@ -45,7 +46,7 @@ const sampleFileId = `${fake.SAMPLE_FILE_ID}`;
 enableFetchMocks();
 
 describe('UploadCell', () => {
-  const fileCategory = 'features.tsv.gz';
+  const fileCategory = sampleFileType.FEATURES_10_X;
 
   let storeState = null;
 

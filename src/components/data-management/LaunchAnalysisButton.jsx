@@ -7,7 +7,6 @@ import _ from 'lodash';
 
 import { modules, sampleTech } from 'utils/constants';
 
-import fileUploadSpecifications from 'utils/upload/fileUploadSpecifications';
 import UploadStatus from 'utils/upload/UploadStatus';
 import integrationTestConstants from 'utils/integrationTestConstants';
 
@@ -99,29 +98,9 @@ const LaunchAnalysisButton = () => {
 
     const metadataKeysAvailable = activeExperiment.metadataKeys.length;
 
-    const allSampleFilesUploaded = (sample) => {
-      // Check if all files for a given tech has been uploaded
-      const { fileNames } = sample;
-      if (
-        !fileUploadSpecifications[sample.type].requiredFiles.every(
-          (file) => fileNames.includes(file.key),
-        )
-      ) { return false; }
-
-      let allUploaded = true;
-
-      // eslint-disable-next-line no-restricted-syntax
-      for (const fileName of fileNames) {
-        const checkedFile = sample.files[fileName];
-        allUploaded = allUploaded
-          && checkedFile.valid
-          && checkedFile.upload.status === UploadStatus.UPLOADED;
-
-        if (!allUploaded) break;
-      }
-
-      return allUploaded;
-    };
+    const allSampleFilesUploaded = (sample) => (
+      Object.values(sample.files).every((file) => file.upload.status === UploadStatus.UPLOADED)
+    );
 
     const allSampleMetadataInserted = (sample) => {
       if (!metadataKeysAvailable) return true;
