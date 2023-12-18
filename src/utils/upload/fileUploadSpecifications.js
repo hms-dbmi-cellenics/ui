@@ -114,11 +114,12 @@ const fileUploadSpecifications = {
     getCorrespondingType: () => '10x_h5',
   },
   [sampleTech.PARSE]: {
-    // TODO, we need to accept non-compressed now (since we removed the validation for compressed-only)
-    // It can probably be added in a matchFileName-like function (or modifying existing one). WARN: it is used in 10x too
     acceptedFiles: new Set([
+      'all_genes.csv',
       'all_genes.csv.gz',
+      'cell_metadata.csv',
       'cell_metadata.csv.gz',
+      'DGE.mtx',
       'DGE.mtx.gz',
     ]),
     inputInfo: [
