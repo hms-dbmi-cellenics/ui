@@ -50,12 +50,16 @@ const CalculationConfig = (props) => {
     </>
   );
 };
-
+CalculationConfig.defaultProps = {
+  updateSettings: () => {},
+  config: {},
+  disabled: false,
+};
 CalculationConfig.propTypes = {
-  updateSettings: PropTypes.func.isRequired,
-  config: PropTypes.object.isRequired,
+  updateSettings: PropTypes.func,
+  config: PropTypes.object,
   plotType: PropTypes.string.isRequired,
-  disabled: PropTypes.bool.isRequired,
+  disabled: PropTypes.bool,
 };
 
 export default CalculationConfig;

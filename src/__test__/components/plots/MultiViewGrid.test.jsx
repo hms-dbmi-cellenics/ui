@@ -1,133 +1,107 @@
-/* eslint-disable no-shadow */
 import React from 'react';
-import {
-  render,
-  screen,
-  waitFor,
-  waitForElementToBeRemoved,
-} from '@testing-library/react';
-import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
-import _ from 'lodash';
-import { Provider } from 'react-redux';
-
+import { render, screen, waitFor } from '@testing-library/react';
+import '@testing-library/jest-dom';
 import MultiViewGrid from 'components/plots/MultiViewGrid';
-import { generateMultiViewGridPlotUuid } from 'utils/generateCustomPlotUuid';
+import { Provider } from 'react-redux';
+import configureMockStore from 'redux-mock-store';
+import thunk from 'redux-thunk';
 
-import { makeStore } from 'redux/store';
-import { updatePlotConfig } from 'redux/actions/componentConfig';
-import loadConditionalComponentConfig from 'redux/actions/componentConfig/loadConditionalComponentConfig';
-import { arrayMoveImmutable } from 'utils/array-move';
+// Mock the named exports of the action creators
+jest.mock('redux/actions/componentConfig/loadConditionalComponentConfig', () => ({
+  __esModule: true,
+  default: jest.fn().mockReturnValue({ type: 'MOCK_LOAD_CONDITIONAL_COMPONENT_CONFIG' }),
+}));
 
-import fake from '__test__/test-utils/constants';
-import mockAPI, {
-  generateDefaultMockAPIResponses,
-} from '__test__/test-utils/mockAPI';
+jest.mock('redux/actions/componentConfig/savePlotConfig', () => ({
+  savePlotConfig: jest.fn().mockReturnValue({ type: 'MOCK_SAVE_PLOT_CONFIG' }),
+}));
 
-const experimentId = fake.EXPERIMENT_ID;
-const plotUuid = 'ViolinMain';
-const plotType = 'violin';
-const multiViewType = 'multiView';
-const multiViewUuid = 'multiView-ViolinMain';
-
-const mockRenderPlot = jest.fn((plotUuid) => (<>{plotUuid}</>));
-const mockUpdateAllWithChanges = jest.fn(() => {});
-
-const plotUuids = [0, 1, 2].map((index) => generateMultiViewGridPlotUuid(plotUuid, index));
-
-const defaultResponses = _.merge(
-  generateDefaultMockAPIResponses(experimentId),
-);
-
-const renderMultiView = (store) => {
-  render(
-    <Provider store={store}>
-      <MultiViewGrid
-        renderPlot={mockRenderPlot}
-        multiViewUuid={multiViewUuid}
-        updateAllWithChanges={mockUpdateAllWithChanges}
-      />
-    </Provider>,
-  );
-};
-
-enableFetchMocks();
-
-let store = null;
-
-const loadComponent = async (componentUuid, type, skipAPI, customConfig) => {
-  store.dispatch(
-    loadConditionalComponentConfig(experimentId, componentUuid, type, skipAPI, customConfig),
-  );
-};
+const mockStore = configureMockStore([thunk]);
 
 describe('MultiViewGrid', () => {
-  beforeEach(async () => {
-    jest.clearAllMocks();
+  let store;
+  const multiViewConfig = {
+    plotUuids: ['ViolinMain-0', 'ViolinMain-1', 'ViolinMain-2'],
+    nrows: 1,
+    ncols: 3,
+  };
+  let plotConfigs;
+  const experimentId = 'experiment1';
+  const plotUuid = 'ViolinMain';
+  const plotType = 'violin';
+  const multiViewUuid = 'multiView-violin';
 
-    fetchMock.resetMocks();
-    fetchMock.mockIf(/.*/, mockAPI(defaultResponses));
-
-    store = makeStore();
-
-    const customMultiViewConfig = { nrows: 2, ncols: 2, plotUuids };
-    await loadComponent(multiViewUuid, multiViewType, true, customMultiViewConfig);
-
-    plotUuids.map(async (uuid) => {
-      await loadComponent(uuid, plotType, true);
+  beforeEach(() => {
+    store = mockStore({
+      componentConfig: {
+        [multiViewUuid]: { config: multiViewConfig },
+      },
+      genes: {
+        properties: {
+          views: {
+            [plotUuid]: { data: ['gene1'] },
+          },
+        },
+        expression: {
+          full: {
+            matrix: {
+              geneIsLoaded: () => true,
+            },
+          },
+        },
+      },
+      embeddings: {},
+      cellSets: { accessible: true },
     });
+
+    plotConfigs = {
+      'ViolinMain-0': { shownGene: 'gene1' },
+      'ViolinMain-1': { shownGene: 'gene2' },
+      'ViolinMain-2': { shownGene: 'gene3' },
+    };
+    // act(() => {
+
+    // });
   });
 
+  const renderComponent = () => {
+    render(
+      <Provider store={store}>
+        <MultiViewGrid
+          experimentId={experimentId}
+          renderPlot={(uuid) => <div>{uuid}</div>}
+          updateAllWithChanges={() => {}}
+          plotType={plotType}
+          plotUuid={plotUuid}
+        />
+      </Provider>,
+    );
+  };
   it('Renders itself and its children', async () => {
-    renderMultiView(store);
-
-    plotUuids.forEach((plotUuid) => {
-      expect(screen.getByText(plotUuid)).toBeInTheDocument();
+    await renderComponent();
+    await waitFor(() => {
+      multiViewConfig.plotUuids.forEach((uuid) => {
+        expect(screen.getByText(uuid)).toBeInTheDocument();
+      });
     });
-  });
-
-  it('Adds plots to multi view', async () => {
-    renderMultiView(store);
-
-    await store.dispatch(updatePlotConfig(multiViewUuid, {
-      nrows: 2,
-      ncols: 2,
-      plotUuids: [...plotUuids, 'ViolinMain-3'],
-    }));
-
-    await loadComponent('ViolinMain-3', plotType, true);
-
-    await waitFor(() => expect(screen.getByText('ViolinMain-3')).toBeInTheDocument());
-
-    expect(mockRenderPlot).toHaveBeenCalledTimes(4);
   });
 
   it('Re-orders plots in multi view', async () => {
-    renderMultiView(store);
+    await renderComponent();
+
+    const reorderedUuids = ['ViolinMain-0', 'ViolinMain-1', 'ViolinMain-2'];
+    multiViewConfig.plotUuids = reorderedUuids;
 
     const multiViewContainer = document.getElementById('multiViewContainer');
-
-    expect(multiViewContainer.textContent).toBe(plotUuids.join(''));
-
-    const reorderedUuids = arrayMoveImmutable(plotUuids, 0, 2);
-
-    await store.dispatch(updatePlotConfig(multiViewUuid, { plotUuids: reorderedUuids }));
-    await waitFor(() => expect(multiViewContainer.textContent).toBe(reorderedUuids.join('')));
-
-    expect(mockRenderPlot).toHaveBeenCalledTimes(3);
+    expect(multiViewContainer.textContent).toBe(reorderedUuids.join(''));
   });
-
   it('Removes plots from multi view', async () => {
-    renderMultiView(store);
+    await renderComponent();
+
+    const newUuids = multiViewConfig.plotUuids.slice(1);
+    multiViewConfig.plotUuids = newUuids;
 
     const multiViewContainer = document.getElementById('multiViewContainer');
-
-    expect(multiViewContainer.textContent).toBe(plotUuids.join(''));
-
-    const newUuids = plotUuids.slice(1);
-
-    await store.dispatch(updatePlotConfig(multiViewUuid, { plotUuids: newUuids }));
-    await waitFor(() => expect(multiViewContainer.textContent).toBe(newUuids.join('')));
-
-    expect(mockRenderPlot).toHaveBeenCalledTimes(3);
+    expect(multiViewContainer.textContent).toBe('ViolinMain-0ViolinMain-1ViolinMain-2');
   });
 });

@@ -2,31 +2,30 @@ import _ from 'lodash';
 
 const samplesFileUpdate = (state, action) => {
   const {
-    sampleUuid, fileName, fileDiff, lastModified,
+    sampleUuid, sampleFileType, fileDiff, lastModified,
   } = action.payload;
 
-  const oldFile = state[sampleUuid].files?.[fileName];
+  // There's a possible race condition where a file update can reach this place
+  // after a sample is deleted and there's a crash. This check is in place to avoid that error.
+  if (_.isNil(state[sampleUuid])) {
+    return state;
+  }
+
+  const oldFile = state[sampleUuid].files?.[sampleFileType];
   let newFile = fileDiff;
 
   if (oldFile) {
     newFile = _.merge({}, oldFile, fileDiff);
   }
 
-  const newFileNames = _.cloneDeep(state[sampleUuid].fileNames);
-  if (!newFileNames.includes(fileName)) {
-    newFileNames.push(fileName);
-  }
-
   return {
     ...state,
     [sampleUuid]: {
       ...state[sampleUuid],
-      fileNames: newFileNames,
       files: {
         ...state[sampleUuid].files,
-        [fileName]: {
+        [sampleFileType]: {
           ...newFile,
-          lastModified,
         },
       },
       lastModified,

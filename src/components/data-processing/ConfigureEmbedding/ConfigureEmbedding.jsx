@@ -7,7 +7,7 @@ import {
 } from 'antd';
 import SelectData from 'components/plots/styling/embedding-continuous/SelectData';
 
-import { isUnisample } from 'utils/experimentPredicates';
+import { getIsUnisample } from 'utils/experimentPredicates';
 
 import CategoricalEmbeddingPlot from 'components/plots/CategoricalEmbeddingPlot';
 import ContinuousEmbeddingPlot from 'components/plots/ContinuousEmbeddingPlot';
@@ -135,11 +135,11 @@ const ConfigureEmbedding = (props) => {
     const { loading, data: plotData, error } = cellMeta[colouring];
     const modifiedConfig = {
       ...config,
-      axes:{
+      axes: {
         ...config.axes,
         yAxisText: config.axes.yAxisText || plotColouring,
-      }
-    }
+      },
+    };
     return (
       <ViolinFilterPlot
         experimentId={experimentId}
@@ -165,7 +165,6 @@ const ConfigureEmbedding = (props) => {
         loading={loading}
         error={error}
         reloadPlotData={() => dispatch(loadCellMeta(experimentId, colouring))}
-        onUpdate={updatePlotWithChanges}
         actions={actions}
       />
     );
@@ -178,7 +177,6 @@ const ConfigureEmbedding = (props) => {
         experimentId={experimentId}
         config={config}
         actions={actions}
-        onUpdate={updatePlotWithChanges}
       />
     </Space>
   );
@@ -406,7 +404,7 @@ const ConfigureEmbedding = (props) => {
       );
     }
 
-    if (plotColouring === 'sample' && cellSets.accessible && isUnisample(cellSets.hierarchy)
+    if (plotColouring === 'sample' && cellSets.accessible && getIsUnisample(cellSets.hierarchy)
     ) {
       return (
         <center>

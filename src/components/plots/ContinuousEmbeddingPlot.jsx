@@ -11,14 +11,13 @@ import { getCellSets } from 'redux/selectors';
 import { generateSpec, generateData } from 'utils/plotSpecs/generateEmbeddingContinuousSpec';
 import PlatformError from '../PlatformError';
 import Loader from '../Loader';
-import changeEmbeddingAxesIfNecessary from './helpers/changeEmbeddingAxesIfNecessary';
 
 const ContinuousEmbeddingPlot = (props) => {
   const {
     experimentId, config,
     plotData, truncatedPlotData,
     actions, loading, error,
-    reloadPlotData, onUpdate,
+    reloadPlotData,
   } = props;
   const dispatch = useDispatch();
 
@@ -51,10 +50,6 @@ const ContinuousEmbeddingPlot = (props) => {
   }, [embeddingSettings?.method]);
 
   useEffect(() => {
-    changeEmbeddingAxesIfNecessary(config, embeddingSettings?.method, onUpdate);
-  }, [config, embeddingSettings?.method]);
-
-  useEffect(() => {
     if (!embeddingLoading
       && !embeddingError
       && config
@@ -64,6 +59,7 @@ const ContinuousEmbeddingPlot = (props) => {
       setPlotSpec(
         generateSpec(
           config,
+          embeddingSettings.method,
           generateData(
             cellSets,
             config.selectedSample,
@@ -149,7 +145,6 @@ ContinuousEmbeddingPlot.propTypes = {
   loading: PropTypes.bool.isRequired,
   error: PropTypes.bool.isRequired,
   reloadPlotData: PropTypes.func,
-  onUpdate: PropTypes.func.isRequired,
 };
 
 export default ContinuousEmbeddingPlot;

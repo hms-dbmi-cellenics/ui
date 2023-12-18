@@ -113,10 +113,13 @@ const createSamples = (
         createdDate,
         lastModified: createdDate,
         options,
-        metadata: experiment?.metadataKeys
-          .reduce((acc, curr) => ({ ...acc, [curr]: METADATA_DEFAULT_VALUE }), {}) || {},
-        files: Object.values(files).reduce(((acc, curr) => (
-          { ...acc, [curr.name]: { upload: { status: UploadStatus.UPLOADING } } }
+        metadata: experiment?.metadataKeys.reduce(
+          (acc, metadataKey) => (
+            { ...acc, [metadataKey]: METADATA_DEFAULT_VALUE }), {},
+        ) ?? {},
+
+        files: Object.keys(files).reduce(((acc, fileType) => (
+          { ...acc, [fileType]: { upload: { status: UploadStatus.UPLOADING } } }
         )), {}),
       }));
 

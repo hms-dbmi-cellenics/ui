@@ -12,39 +12,62 @@ import {
   Radio,
 } from 'antd';
 import { CloseOutlined } from '@ant-design/icons';
-import { arrayMoveImmutable } from 'utils/array-move';
+import { arrayMoveImmutable } from 'utils/arrayUtils';
 import HierarchicalTreeGenes from 'components/plots/hierarchical-tree-genes/HierarchicalTreeGenes';
 import GeneSearchBar from 'components/plots/GeneSearchBar';
+import { useDispatch, useSelector } from 'react-redux';
+import { getPlotConfigs, getGeneList } from 'redux/selectors';
+import {
+  updatePlotConfig,
+} from 'redux/actions/componentConfig/index';
+import { generateMultiViewGridPlotUuid } from 'utils/generateCustomPlotUuid';
+import { plotUuids } from 'utils/constants';
+import loadConditionalComponentConfig from 'redux/actions/componentConfig/loadConditionalComponentConfig';
 
 const MultiViewEditor = (props) => {
   const {
-    multiViewConfig,
-    addGeneToMultiView,
-    updateAll,
-    setUpdateAll,
-    onMultiViewUpdate,
-    selectedPlotUuid,
-    setSelectedPlotUuid,
+    experimentId,
+    plotType,
+    plotUuid,
     shownGenes,
+    selectedPlotUuid, setSelectedPlotUuid,
+    updateAll, setUpdateAll,
   } = props;
-
+  const dispatch = useDispatch();
+  const multiViewUuid = plotUuids.getMultiPlotUuid(plotType);
   const [localNRows, setLocalNRows] = useState(null);
   const [localNCols, setLocalNCols] = useState(null);
   const [options, setOptions] = useState([]);
+  const multiViewConfig = useSelector((state) => state.componentConfig[multiViewUuid]?.config);
+  const multiViewPlotUuids = multiViewConfig?.plotUuids;
+  const plotConfigs = useSelector(getPlotConfigs(multiViewConfig?.plotUuids));
 
-  const renderUuidOptions = (plotUuids) => {
-    if (!plotUuids) return [];
+  const selectedConfig = plotConfigs[selectedPlotUuid];
 
-    return plotUuids.map((plotUuid, index) => {
+  const geneList = useSelector(getGeneList());
+
+  const geneNames = Object.keys(geneList.data);
+
+  const renderUuidOptions = (uuids) => {
+    if (!uuids) return [];
+
+    return uuids.map((uuid, index) => {
       const row = Math.floor(index / localNCols) + 1;
       const col = (index % localNCols) + 1;
-      return { label: `${row}.${col} ${shownGenes[index]}`, value: plotUuid };
+      return { label: `${row}.${col} ${shownGenes[index]}`, value: uuid };
     });
+  };
+
+  const updateMultiViewWithChanges = (updateField) => {
+    dispatch(updatePlotConfig(multiViewUuid, updateField));
   };
 
   useEffect(() => {
     if (!multiViewConfig) return;
 
+    if ((!selectedPlotUuid && multiViewPlotUuids.length) || !multiViewPlotUuids.includes(selectedPlotUuid)) {
+      setSelectedPlotUuid(multiViewPlotUuids[0]);
+    }
     if (localNRows !== multiViewConfig.nrows) {
       setLocalNRows(multiViewConfig.nrows);
     }
@@ -63,6 +86,45 @@ const MultiViewEditor = (props) => {
     }
   }, [multiViewConfig, shownGenes, localNRows, localNCols]);
 
+  const addGeneToMultiView = (genes) => {
+    const validGenes = genes.filter((gene) => geneNames.includes(gene));
+    const genesToAdd = validGenes.slice(0, 30 - multiViewPlotUuids.length);
+
+    if (genesToAdd.length === 0) return;
+
+    const plotUuidIndexes = multiViewPlotUuids.map((uuid) => parseInt(uuid.match(/[0-9]+/g), 10));
+    const newIndexes = [...Array(30).keys()].filter((index) => !plotUuidIndexes.includes(index));
+
+    const newPlotUuids = [...multiViewPlotUuids];
+
+    genesToAdd.forEach((gene, index) => {
+      const plotUuidToAdd = generateMultiViewGridPlotUuid(plotUuid, newIndexes[index]);
+      newPlotUuids.push(plotUuidToAdd);
+
+      // Taking the config the user currently sees (selectedConfig),
+      //  copy it and add the gene-specific settings
+      const customConfig = {
+        ...selectedConfig,
+        shownGene: gene,
+        title: { text: gene },
+      };
+
+      dispatch(loadConditionalComponentConfig(
+        experimentId, plotUuidToAdd, plotType, true, customConfig,
+      ));
+    });
+
+    const multiViewUpdatedFields = { plotUuids: newPlotUuids };
+
+    const gridSize = multiViewConfig.nrows * multiViewConfig.ncols;
+    if (gridSize < newPlotUuids.length) {
+      const newSize = Math.ceil(Math.sqrt(newPlotUuids.length));
+      _.merge(multiViewUpdatedFields, { nrows: newSize, ncols: newSize });
+    }
+
+    updateMultiViewWithChanges(multiViewUpdatedFields);
+  };
+
   if (!multiViewConfig) {
     return (
       <div data-testid='skeletonInput'>
@@ -74,26 +136,26 @@ const MultiViewEditor = (props) => {
   const onGeneReorder = (index, newPosition) => {
     const newPlotUuids = arrayMoveImmutable(multiViewConfig.plotUuids, index, newPosition);
 
-    onMultiViewUpdate({ plotUuids: newPlotUuids });
+    updateMultiViewWithChanges({ plotUuids: newPlotUuids });
   };
 
   const onNodeDelete = (index) => {
     const newPlotUuids = [...multiViewConfig.plotUuids];
     _.pullAt(newPlotUuids, index);
 
-    onMultiViewUpdate({ plotUuids: newPlotUuids });
+    updateMultiViewWithChanges({ plotUuids: newPlotUuids });
   };
 
   const onRowsChange = (value) => {
     setLocalNRows(value);
 
-    if (value) onMultiViewUpdate({ nrows: value });
+    if (value) updateMultiViewWithChanges({ nrows: value });
   };
 
   const onColsChange = (value) => {
     setLocalNCols(value);
 
-    if (value) onMultiViewUpdate({ ncols: value });
+    if (value) updateMultiViewWithChanges({ ncols: value });
   };
 
   const hideDeleteButton = (shownGenes.length === 1);
@@ -161,7 +223,7 @@ const MultiViewEditor = (props) => {
             min={1}
             max={30}
             value={localNRows}
-            onChange={(value) => { onRowsChange(value); }}
+            onChange={(value) => (value && onRowsChange(value))}
           />
         </Col>
         <Col span={2}>
@@ -177,7 +239,7 @@ const MultiViewEditor = (props) => {
             min={1}
             max={30}
             value={localNCols}
-            onChange={(value) => { onColsChange(value); }}
+            onChange={(value) => (value && onColsChange(value))}
           />
         </Col>
       </Row>
@@ -190,18 +252,14 @@ const MultiViewEditor = (props) => {
 };
 
 MultiViewEditor.propTypes = {
-  multiViewConfig: PropTypes.object,
-  addGeneToMultiView: PropTypes.func.isRequired,
-  updateAll: PropTypes.bool.isRequired,
-  setUpdateAll: PropTypes.func.isRequired,
-  onMultiViewUpdate: PropTypes.func.isRequired,
+  shownGenes: PropTypes.array.isRequired,
+  plotType: PropTypes.string.isRequired,
+  experimentId: PropTypes.string.isRequired,
+  plotUuid: PropTypes.string.isRequired,
   selectedPlotUuid: PropTypes.string.isRequired,
   setSelectedPlotUuid: PropTypes.func.isRequired,
-  shownGenes: PropTypes.array.isRequired,
-};
-
-MultiViewEditor.defaultProps = {
-  multiViewConfig: null,
+  updateAll: PropTypes.bool.isRequired,
+  setUpdateAll: PropTypes.func.isRequired,
 };
 
 export default MultiViewEditor;

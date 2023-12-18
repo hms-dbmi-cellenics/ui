@@ -28,7 +28,7 @@ import { initialExperimentBackendStatus } from 'redux/reducers/backendStatus/ini
 import PipelineStatus from 'utils/pipelineStatusValues';
 import { sampleTech } from 'utils/constants';
 import UploadStatus from 'utils/upload/UploadStatus';
-import ProjectDetails from 'components/data-management/ProjectDetails';
+import ProjectDetails from 'components/data-management/project/ProjectDetails';
 
 import '__test__/test-utils/setupTests';
 import createTestComponentFactory from '__test__/test-utils/testComponentFactory';

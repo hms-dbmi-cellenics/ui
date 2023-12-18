@@ -23,7 +23,7 @@ const ProjectDeleteModal = (props) => {
     <Modal
       className={integrationTestConstants.classes.DELETE_PROJECT_MODAL}
       title='Confirm delete'
-      visible
+      open
       footer={(
         <Space>
           <Button

@@ -25,28 +25,28 @@ import loadAndCompressIfNecessary from 'utils/upload/loadAndCompressIfNecessary'
 enableFetchMocks();
 
 const getValidFiles = (cellrangerVersion, compressed = true) => {
-  const filename = cellrangerVersion === 'v2' ? 'genes.tsv.gz' : 'features.tsv.gz';
+  const featuresFilename = cellrangerVersion === 'v2' ? 'genes.tsv.gz' : 'features.tsv.gz';
 
   let fileList = [
     {
-      name: `WT13/${filename}`,
-      fileObject: mockFile(filename, '/'),
+      name: `${featuresFilename}`,
+      fileObject: mockFile(featuresFilename, 'WT13'),
       upload: { status: UploadStatus.UPLOADING },
       errors: '',
       compressed,
       valid: true,
     },
     {
-      name: 'WT13/barcodes.tsv.gz',
-      fileObject: mockFile('barcodes.tsv.gz', '/'),
+      name: 'barcodes.tsv.gz',
+      fileObject: mockFile('barcodes.tsv.gz', 'WT13'),
       upload: { status: UploadStatus.UPLOADING },
       errors: '',
       compressed,
       valid: true,
     },
     {
-      name: 'WT13/matrix.mtx.gz',
-      fileObject: mockFile('matrix.mtx.gz', '/'),
+      name: 'matrix.mtx.gz',
+      fileObject: mockFile('matrix.mtx.gz', 'WT13'),
       upload: { status: UploadStatus.UPLOADING },
       errors: '',
       compressed,
@@ -140,7 +140,13 @@ const mockProcessUploadCalls = () => {
       result = { status: 200, body: JSON.stringify({ WT13: sampleId }) };
     }
 
+    // Create sample file
     if (new RegExp(`/v2/experiments/${mockExperimentId}/samples/.*/sampleFiles/.*`).test(url)) {
+      result = { status: 200, body: JSON.stringify({}) };
+    }
+
+    // Update sample file status
+    if (new RegExp(`/v2/experiments/${mockExperimentId}/sampleFiles/.*`).test(url)) {
       result = { status: 200, body: JSON.stringify({}) };
     }
 

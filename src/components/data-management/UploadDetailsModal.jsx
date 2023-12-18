@@ -12,20 +12,19 @@ dayjs.extend(utc);
 
 const UploadDetailsModal = (props) => {
   const {
-    visible, onCancel, file, extraFields, onDownload, onRetry, onDelete,
+    onCancel, data, extraFields, onDownload, onRetry, onDelete,
   } = props;
 
   const {
-    name, upload, size, lastModified, fileObject = undefined,
-  } = file ?? {};
+    upload, size, lastModified, fileObject = undefined,
+  } = data;
 
-  const { progress, status } = upload ?? false;
+  const { progress, status } = upload;
 
   const isSuccessModal = status === UploadStatus.UPLOADED;
   const isNotUploadedModal = status === UploadStatus.FILE_NOT_FOUND;
   const isUploading = status === UploadStatus.UPLOADING;
 
-  // title={!isNotUploadedModal ? (isSuccessModal ? 'Upload successful' : 'Upload error') : 'File not found'}
   const modalTitle = messageForStatus(status);
 
   function bytesToSize(bytes) {
@@ -119,8 +118,6 @@ const UploadDetailsModal = (props) => {
           )}
         {renderFields(extraFields)}
 
-        {!isNotUploadedModal && renderFields({ Filename: name })}
-
         {
           isSuccessModal || isUploading ? renderFields({ 'File size': bytesToSize(size), 'Upload date': fromISODateToFormatted(lastModified) })
             : renderFields({ Error: messageForStatus(status) })
@@ -135,7 +132,7 @@ const UploadDetailsModal = (props) => {
 
 UploadDetailsModal.propTypes = {
   onCancel: PropTypes.func.isRequired,
-  file: PropTypes.object.isRequired,
+  data: PropTypes.object.isRequired,
   extraFields: PropTypes.object,
   onDownload: PropTypes.func.isRequired,
   onDelete: PropTypes.func.isRequired,

@@ -10,7 +10,6 @@ import loadAndCompressIfNecessary from 'utils/upload/loadAndCompressIfNecessary'
 import { inspectFile, Verdict } from 'utils/upload/fileInspector';
 import fetchAPI from 'utils/http/fetchAPI';
 
-import getFileTypeV2 from 'utils/getFileTypeV2';
 import { sampleTech } from 'utils/constants';
 import fileUploadSpecifications from 'utils/upload/fileUploadSpecifications';
 import processMultipartUpload from 'utils/upload/processMultipartUpload';
@@ -18,7 +17,7 @@ import endUserMessages from 'utils/endUserMessages';
 import pushNotificationMessage from 'utils/pushNotificationMessage';
 
 const prepareAndUploadFileToS3 = async (
-  file, uploadUrlParams, type, onStatusUpdate = () => { },
+  file, uploadUrlParams, type, abortController, onStatusUpdate = () => { },
 ) => {
   let parts = null;
   const { signedUrls, uploadId, fileId } = uploadUrlParams;
@@ -34,7 +33,9 @@ const prepareAndUploadFileToS3 = async (
     onStatusUpdate(UploadStatus.UPLOADING, percentProgress);
   };
   try {
-    parts = await processMultipartUpload(file, signedUrls, createOnUploadProgressForPart);
+    parts = await processMultipartUpload(
+      file, signedUrls, createOnUploadProgressForPart, abortController,
+    );
   } catch (e) {
     onStatusUpdate(UploadStatus.UPLOAD_ERROR);
     return;
@@ -61,8 +62,10 @@ const prepareAndUploadFileToS3 = async (
   return parts;
 };
 
-const createAndUploadSampleFile = async (file, experimentId, sampleId, dispatch, selectedTech) => {
-  const fileType = getFileTypeV2(file.name, selectedTech);
+const createAndUploadSampleFile = async (
+  file, fileType, experimentId, sampleId, dispatch, selectedTech,
+) => {
+  const abortController = new AbortController();
 
   let sampleFileId;
 
@@ -73,6 +76,7 @@ const createAndUploadSampleFile = async (file, experimentId, sampleId, dispatch,
         sampleId,
         fileType,
         file,
+        abortController,
       ),
     );
   } catch (e) {
@@ -80,11 +84,16 @@ const createAndUploadSampleFile = async (file, experimentId, sampleId, dispatch,
     return;
   }
 
+  // Take the fileName now because after loadAndCompressIfNecessary the name could
+  // be lost in the compression. If it is compressed fileObject becomes a uInt8Array
+  // instead of the fileReader metadata object that it is now
+  const fileName = file.fileObject.name;
+
   if (!file.compressed) {
     try {
       file.fileObject = await loadAndCompressIfNecessary(file, () => {
         dispatch(updateSampleFileUpload(
-          experimentId, sampleId, fileType, UploadStatus.COMPRESSING,
+          experimentId, sampleId, sampleFileId, fileType, UploadStatus.COMPRESSING,
         ));
       });
 
@@ -94,7 +103,9 @@ const createAndUploadSampleFile = async (file, experimentId, sampleId, dispatch,
         ? UploadStatus.FILE_READ_ABORTED
         : UploadStatus.FILE_READ_ERROR;
 
-      dispatch(updateSampleFileUpload(experimentId, sampleId, fileType, fileErrorStatus));
+      dispatch(updateSampleFileUpload(
+        experimentId, sampleId, sampleFileId, fileType, fileErrorStatus,
+      ));
       return;
     }
   }
@@ -104,21 +115,20 @@ const createAndUploadSampleFile = async (file, experimentId, sampleId, dispatch,
       experimentId,
       sampleFileId,
       file.size,
-      getMetadata(file, selectedTech),
+      getMetadata(fileName, selectedTech),
     );
 
     const updateSampleFileUploadProgress = (status, percentProgress = 0) => dispatch(
       updateSampleFileUpload(
-        experimentId, sampleId, fileType, status, percentProgress,
+        experimentId, sampleId, sampleFileId, fileType, status, percentProgress,
       ),
     );
 
     const uploadUrlParams = { signedUrls, uploadId, fileId: sampleFileId };
-
-    await prepareAndUploadFileToS3(file, uploadUrlParams, 'sample', updateSampleFileUploadProgress);
+    await prepareAndUploadFileToS3(file, uploadUrlParams, 'sample', abortController, updateSampleFileUploadProgress);
   } catch (e) {
     dispatch(updateSampleFileUpload(
-      experimentId, sampleId, fileType, UploadStatus.UPLOAD_ERROR,
+      experimentId, sampleId, sampleFileId, fileType, UploadStatus.UPLOAD_ERROR,
     ));
   }
 };
@@ -134,29 +144,31 @@ const beginSampleFileUpload = async (experimentId, sampleFileId, size, metadata)
   },
 );
 
-const getMetadata = (file, selectedTech) => {
+const getMetadata = (fileName, selectedTech) => {
   const metadata = {};
   if (selectedTech === sampleTech['10X']) {
-    if (file.name.includes('genes')) {
+    if (fileName.includes('genes')) {
       metadata.cellranger_version = 'v2';
-    } else if (file.name.includes('features')) {
+    } else if (fileName.includes('features')) {
       metadata.cellranger_version = 'v3';
     }
   }
+
   return metadata;
+};
+
+const getFileSampleAndName = (filePath) => {
+  const [sample, name] = _.takeRight(filePath.split('/'), 2);
+
+  return { sample, name };
 };
 
 const processUpload = async (filesList, technology, samples, experimentId, dispatch) => {
   // First use map to make it easy to add files in the already existing sample entry
   const samplesMap = filesList.reduce((acc, file) => {
-    const pathToArray = file.name.trim().replace(/[\s]{2,}/ig, ' ').split('/');
+    const { sample: sampleName, name } = getFileSampleAndName(file.fileObject.path.replace(/[\s]{2,}/ig, ' '));
 
-    const sampleName = pathToArray[0];
-    const fileName = fileUploadSpecifications[technology].getCorrespondingName(_.last(pathToArray));
-
-    // Update the file name so that instead of being saved as
-    // e.g. WT13/matrix.tsv.gz, we save it as matrix.tsv.gz
-    file.name = fileName;
+    const fileType = fileUploadSpecifications[technology].getCorrespondingType(name);
 
     const sampleUuid = Object.values(samples).filter(
       (s) => s.name === sampleName
@@ -170,7 +182,7 @@ const processUpload = async (filesList, technology, samples, experimentId, dispa
         uuid: sampleUuid,
         files: {
           ...acc[sampleName]?.files,
-          [fileName]: file,
+          [fileType]: file,
         },
       },
     };
@@ -196,10 +208,11 @@ const processUpload = async (filesList, technology, samples, experimentId, dispa
     const promises = [];
 
     validSamplesList.forEach(([name, sample]) => {
-      Object.values(sample.files).forEach((file) => {
+      Object.entries(sample.files).forEach(([type, file]) => {
         promises.push(
           async () => await createAndUploadSampleFile(
             file,
+            type,
             experimentId,
             sampleIdsByName[name],
             dispatch,
@@ -232,12 +245,6 @@ const processUpload = async (filesList, technology, samples, experimentId, dispa
 const fileObjectToFileRecord = async (fileObject, technology) => {
   // This is the first stage in uploading a file.
 
-  // if the file has a path, trim to just the file and its folder.
-  // otherwise simply use its name
-  const filename = (fileObject.path)
-    ? _.takeRight(fileObject.path.split('/'), 2).join('/')
-    : fileObject.name;
-
   const verdict = await inspectFile(fileObject, technology);
 
   let error = '';
@@ -248,7 +255,6 @@ const fileObjectToFileRecord = async (fileObject, technology) => {
   }
 
   return {
-    name: filename,
     fileObject,
     size: fileObject.size,
     path: fileObject.path,
@@ -256,7 +262,7 @@ const fileObjectToFileRecord = async (fileObject, technology) => {
       status: UploadStatus.UPLOADING,
       progress: 0,
     },
-    valid: !error,
+
     errors: error,
     compressed: verdict === Verdict.VALID_ZIPPED,
   };
@@ -266,6 +272,7 @@ export {
   fileObjectToFileRecord,
   createAndUploadSampleFile,
   prepareAndUploadFileToS3,
+  getFileSampleAndName,
 };
 
 export default processUpload;

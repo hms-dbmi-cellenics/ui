@@ -52,7 +52,7 @@ const ExpressionCellSetModal = (props) => {
 
   return (
     <Modal
-      visible
+      open
       title='Create a new cell set based on gene expression'
       onCancel={onCancel}
       footer={[
