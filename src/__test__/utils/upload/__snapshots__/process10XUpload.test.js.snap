@@ -73,7 +73,7 @@ exports[`processUpload Should not upload files if there are errors beginning the
     },
   ],
   [
-    "http://localhost:3000/v2/experiments/project-uuid/samples/mockSampleId/sampleFiles/features10x",
+    "http://localhost:3000/v2/experiments/project-uuid/sampleFiles/mockSampleFileId",
     {
       "body": "{"uploadStatus":"uploadError"}",
       "headers": {
@@ -83,7 +83,7 @@ exports[`processUpload Should not upload files if there are errors beginning the
     },
   ],
   [
-    "http://localhost:3000/v2/experiments/project-uuid/samples/mockSampleId/sampleFiles/barcodes10x",
+    "http://localhost:3000/v2/experiments/project-uuid/sampleFiles/mockSampleFileId",
     {
       "body": "{"uploadStatus":"uploadError"}",
       "headers": {
@@ -93,7 +93,7 @@ exports[`processUpload Should not upload files if there are errors beginning the
     },
   ],
   [
-    "http://localhost:3000/v2/experiments/project-uuid/samples/mockSampleId/sampleFiles/matrix10x",
+    "http://localhost:3000/v2/experiments/project-uuid/sampleFiles/mockSampleFileId",
     {
       "body": "{"uploadStatus":"uploadError"}",
       "headers": {
@@ -193,7 +193,7 @@ exports[`processUpload Updates redux correctly when there are file upload errors
     },
   ],
   [
-    "http://localhost:3000/v2/experiments/project-uuid/samples/mockSampleId/sampleFiles/features10x",
+    "http://localhost:3000/v2/experiments/project-uuid/sampleFiles/mockSampleFileId",
     {
       "body": "{"uploadStatus":"uploadError"}",
       "headers": {
@@ -203,7 +203,7 @@ exports[`processUpload Updates redux correctly when there are file upload errors
     },
   ],
   [
-    "http://localhost:3000/v2/experiments/project-uuid/samples/mockSampleId/sampleFiles/barcodes10x",
+    "http://localhost:3000/v2/experiments/project-uuid/sampleFiles/mockSampleFileId",
     {
       "body": "{"uploadStatus":"uploadError"}",
       "headers": {
@@ -213,7 +213,7 @@ exports[`processUpload Updates redux correctly when there are file upload errors
     },
   ],
   [
-    "http://localhost:3000/v2/experiments/project-uuid/samples/mockSampleId/sampleFiles/matrix10x",
+    "http://localhost:3000/v2/experiments/project-uuid/sampleFiles/mockSampleFileId",
     {
       "body": "{"uploadStatus":"uploadError"}",
       "headers": {
@@ -363,7 +363,7 @@ exports[`processUpload Uploads and updates redux correctly when there are no err
     },
   ],
   [
-    "http://localhost:3000/v2/experiments/project-uuid/samples/mockSampleId/sampleFiles/features10x",
+    "http://localhost:3000/v2/experiments/project-uuid/sampleFiles/mockSampleFileId",
     {
       "body": "{"uploadStatus":"uploaded"}",
       "headers": {
@@ -373,7 +373,7 @@ exports[`processUpload Uploads and updates redux correctly when there are no err
     },
   ],
   [
-    "http://localhost:3000/v2/experiments/project-uuid/samples/mockSampleId/sampleFiles/barcodes10x",
+    "http://localhost:3000/v2/experiments/project-uuid/sampleFiles/mockSampleFileId",
     {
       "body": "{"uploadStatus":"uploaded"}",
       "headers": {
@@ -383,7 +383,7 @@ exports[`processUpload Uploads and updates redux correctly when there are no err
     },
   ],
   [
-    "http://localhost:3000/v2/experiments/project-uuid/samples/mockSampleId/sampleFiles/matrix10x",
+    "http://localhost:3000/v2/experiments/project-uuid/sampleFiles/mockSampleFileId",
     {
       "body": "{"uploadStatus":"uploaded"}",
       "headers": {
@@ -533,7 +533,7 @@ exports[`processUpload Uploads and updates redux correctly when there are no err
     },
   ],
   [
-    "http://localhost:3000/v2/experiments/project-uuid/samples/mockSampleId/sampleFiles/features10x",
+    "http://localhost:3000/v2/experiments/project-uuid/sampleFiles/mockSampleFileId",
     {
       "body": "{"uploadStatus":"uploaded"}",
       "headers": {
@@ -543,7 +543,7 @@ exports[`processUpload Uploads and updates redux correctly when there are no err
     },
   ],
   [
-    "http://localhost:3000/v2/experiments/project-uuid/samples/mockSampleId/sampleFiles/barcodes10x",
+    "http://localhost:3000/v2/experiments/project-uuid/sampleFiles/mockSampleFileId",
     {
       "body": "{"uploadStatus":"uploaded"}",
       "headers": {
@@ -553,7 +553,7 @@ exports[`processUpload Uploads and updates redux correctly when there are no err
     },
   ],
   [
-    "http://localhost:3000/v2/experiments/project-uuid/samples/mockSampleId/sampleFiles/matrix10x",
+    "http://localhost:3000/v2/experiments/project-uuid/sampleFiles/mockSampleFileId",
     {
       "body": "{"uploadStatus":"uploaded"}",
       "headers": {

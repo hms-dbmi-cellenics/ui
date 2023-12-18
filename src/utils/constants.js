@@ -32,6 +32,7 @@ const plotTypes = {
   DOT_PLOT: 'DotPlot',
   TRAJECTORY_ANALYSIS: 'TrajectoryAnalysis',
   NORMALIZED_EXPRESSION_MATRIX: 'NormalizedExpressionMatrix',
+  MULTI_VIEW_PLOT: 'multiView',
 };
 
 const plotUuids = {
@@ -44,6 +45,7 @@ const plotUuids = {
   DOT_PLOT: 'DotPlotMain',
   TRAJECTORY_ANALYSIS: 'trajectoryAnalysisMain',
   NORMALIZED_EXPRESSION_MATRIX: 'normalized-matrix',
+  getMultiPlotUuid: (plotType) => `${plotTypes.MULTI_VIEW_PLOT}-${plotType}`,
 };
 
 const plotNames = {
