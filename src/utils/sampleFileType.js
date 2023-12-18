@@ -5,6 +5,9 @@ const sampleFileType = {
   H5_10_X: '10x_h5',
   SEURAT: 'seurat',
   RHAPSODY: 'rhapsody',
+  FEATURES_PARSE: 'featuresParse',
+  BARCODES_PARSE: 'barcodesParse',
+  MATRIX_PARSE: 'matrixParse',
 };
 
 const fileTypeToDisplay = {
@@ -13,7 +16,9 @@ const fileTypeToDisplay = {
   [sampleFileType.MATRIX_10_X]: 'matrix.mtx',
   [sampleFileType.H5_10_X]: 'matrix.h5',
   [sampleFileType.SEURAT]: 'seurat rds',
-  [sampleFileType.RHAPSODY]: 'expression_data.st',
+  [sampleFileType.FEATURES_PARSE]: 'all_genes.csv',
+  [sampleFileType.BARCODES_PARSE]: 'cell_metadata.csv',
+  [sampleFileType.MATRIX_PARSE]: 'DGE.mtx',
 };
 
 export default sampleFileType;

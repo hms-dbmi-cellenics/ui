@@ -6,6 +6,7 @@ const techNamesToDisplay = {
   [sampleTech.RHAPSODY]: 'BD Rhapsody',
   [sampleTech.SEURAT]: 'Seurat',
   [sampleTech.H5]: '10X Chromium - H5',
+  [sampleTech.PARSE]: 'Parse Evercode',
 };
 
 const matchFileName = (fileName, fileNames) => {
@@ -104,13 +105,48 @@ const fileUploadSpecifications = {
   },
   [sampleTech.H5]: {
     acceptedFiles: new Set(['matrix.h5', 'matrix.h5.gz']),
-    requiredFiles: ['10x_h5'],
     inputInfo: [['<code>matrix.h5</code> or <code>matrix.h5.gz</code>']],
+    requiredFiles: ['10x_h5'],
     fileUploadParagraphs: [`For each sample, upload a folder containing the h5 file. The folder's
     name will be used to name the sample in it.
     You can change this name later in Data Management.`],
     isNameValid: (fileName) => fileName.toLowerCase().match(/.*matrix.h5(.gz)?$/),
     getCorrespondingType: () => '10x_h5',
+  },
+  [sampleTech.PARSE]: {
+    // TODO, we need to accept non-compressed now (since we removed the validation for compressed-only)
+    // It can probably be added in a matchFileName-like function (or modifying existing one). WARN: it is used in 10x too
+    acceptedFiles: new Set([
+      'all_genes.csv.gz',
+      'cell_metadata.csv.gz',
+      'DGE.mtx.gz',
+    ]),
+    inputInfo: [
+      ['<code>all_genes.csv</code> or <code>all_genes.csv.gz</code>'],
+      ['<code>cell_metadata.csv</code> or <code>cell_metadata.csv.gz</code>'],
+      ['<code>DGE.mtx</code> or <code>DGE.mtx.gz</code>'],
+    ],
+    requiredFiles: ['matrixParse', 'barcodesParse', 'featuresParse'],
+    fileUploadParagraphs: [
+      'For each sample, upload a folder containing the 3 required files. The folder\'s name will be used to name the sample in it. You can change this name later in Data Management.',
+      'The required files for each sample are:',
+    ],
+    dropzoneText: 'Drag and drop folders here or click to browse.',
+    // setting to empty string allows folder upload on dropzone click
+    webkitdirectory: '',
+    isNameValid(fileName) { return matchFileName(fileName, this.acceptedFiles); },
+    getCorrespondingType(fileName) {
+      const fileNameToType = {
+        'all_genes.csv.gz': sampleFileType.FEATURES_PARSE,
+        'all_genes.csv': sampleFileType.FEATURES_PARSE,
+        'cell_metadata.csv.gz': sampleFileType.BARCODES_PARSE,
+        'cell_metadata.csv': sampleFileType.BARCODES_PARSE,
+        'DGE.mtx.gz': sampleFileType.MATRIX_PARSE,
+        'DGE.mtx': sampleFileType.MATRIX_PARSE,
+      };
+
+      return fileNameToType[fileName];
+    },
   },
 };
 
