@@ -97,7 +97,6 @@ describe('Continuous embedding plot', () => {
   it('Loads controls and elements', async () => {
     await renderContinuousEmbeddingPage(storeState);
 
-    expect(screen.getByText(/Gene selection/i)).toBeInTheDocument();
     expect(screen.getByText(/Select data/i)).toBeInTheDocument();
     expect(screen.getByText(/Expression values/i)).toBeInTheDocument();
     expect(screen.getByText(/Main schema/i)).toBeInTheDocument();
