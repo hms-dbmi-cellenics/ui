@@ -3,6 +3,7 @@ import deleteCellSet from './deleteCellSet';
 import deleteCellClass from './deleteCellClass';
 import runCellSetsClustering from './runCellSetsClustering';
 import runCellSetsAnnotation from './runCellSetsAnnotation';
+import runCellCycleScoring from './runCellCycleScoring';
 import updateCellSetsClustering from './updateCellSetsClustering';
 
 import loadCellSets from './loadCellSets';
@@ -11,6 +12,7 @@ import updateCellSetProperty from './updateCellSetProperty';
 import updateCellSetSelected from './updateCellSetSelected';
 import setCellSetHiddenStatus from './setCellSetHiddenStatus';
 import unhideAllCellSets from './unhideAllCellSets';
+
 
 export {
   createCellSet,
@@ -25,4 +27,5 @@ export {
   updateCellSetProperty,
   setCellSetHiddenStatus,
   unhideAllCellSets,
+  runCellCycleScoring,
 };

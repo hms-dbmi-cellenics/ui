@@ -53,6 +53,7 @@ const dependencyGetters = {
   ScTypeAnnotate: [],
   GetExpressionCellSets: [],
   GetEmbedding: [],
+  CellCycleScoring: [],
   ListGenes: [],
   DifferentialExpression: [getClusteringSettings],
   BatchDifferentialExpression: [getClusteringSettings],
