@@ -2,92 +2,47 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { useSelector, useDispatch } from 'react-redux';
-
+import MultiViewEditor from 'components/plots/styling/MultiViewEditor';
+import _ from 'lodash';
 import {
   Collapse,
 } from 'antd';
+import MultiViewGrid from 'components/plots/MultiViewGrid';
 
 import SelectData from 'components/plots/styling/embedding-continuous/SelectData';
 import Header from 'components/Header';
-import ContinuousEmbeddingPlot from 'components/plots/ContinuousEmbeddingPlot';
 import PlotContainer from 'components/plots/PlotContainer';
-import { loadPaginatedGeneProperties, loadGeneExpression } from 'redux/actions/genes';
+import { loadGeneExpression } from 'redux/actions/genes';
 
 import {
   updatePlotConfig,
-  loadPlotConfig,
 } from 'redux/actions/componentConfig/index';
 import { loadCellSets } from 'redux/actions/cellSets';
-import { getCellSets } from 'redux/selectors';
-import { plotNames } from 'utils/constants';
+import { getCellSets, getPlotConfigs } from 'redux/selectors';
+import { plotNames, plotUuids, plotTypes } from 'utils/constants';
 import GeneSearchBar from 'components/plots/GeneSearchBar';
+import ContinuousEmbeddingReduxWrapper from 'components/plots/ContinuousEmbeddingReduxWrapper';
 
 const { Panel } = Collapse;
 
-const plotUuid = 'embeddingContinuousMain';
-const plotType = 'embeddingContinuous';
-const PROPERTIES = ['dispersions'];
-const tableState = {
-  pagination: {
-    current: 1, pageSize: 1000000, showSizeChanger: true,
-  },
-  geneNamesFilter: null,
-  sorter: { field: PROPERTIES[0], columnKey: PROPERTIES[0], order: 'descend' },
-};
+const plotUuid = plotUuids.CONTINUOUS_EMBEDDING;
+const plotType = plotTypes.CONTINUOUS_EMBEDDING;
+const multiViewUuid = plotUuids.getMultiPlotUuid(plotType);
 
 const ContinuousEmbeddingPage = ({ experimentId }) => {
   const dispatch = useDispatch();
-  const config = useSelector((state) => state.componentConfig[plotUuid]?.config);
-  const loadedGene = useSelector((state) => state.genes.expression.views[plotUuid]?.data);
+  const config = useSelector((state) => state.componentConfig[multiViewUuid]?.config);
   const cellSets = useSelector(getCellSets());
-
-  const geneExpression = useSelector((state) => state.genes.expression.full);
-  const fetching = useSelector((state) => state.genes.properties.views[plotUuid]?.fetching);
-  const highestDispersionGene = useSelector(
-    (state) => state.genes.properties.views[plotUuid]?.data[0],
-  );
-
-  const [searchedGene, setSearchedGene] = useState();
+  const multiViewConfig = useSelector((state) => state.componentConfig[multiViewUuid]?.config);
+  const multiViewPlotUuids = multiViewConfig?.plotUuids;
+  const plotConfigs = useSelector(getPlotConfigs(multiViewPlotUuids));
+  const shownGenes = _.compact(multiViewPlotUuids?.map((uuid) => plotConfigs[uuid]?.shownGene));
+  const [selectedPlotUuid, setSelectedPlotUuid] = useState(`${plotUuid}-0`);
+  const [updateAll, setUpdateAll] = useState(true);
 
   useEffect(() => {
-    if (!config) dispatch(loadPlotConfig(experimentId, plotUuid, plotType));
     dispatch(loadCellSets(experimentId));
   }, []);
-
-  useEffect(() => {
-    if (config?.shownGene && !searchedGene) {
-      // Loads expression for saved gene in the config in the initial loading of the plot
-      // if a new gene wasn't searched for
-      dispatch(loadGeneExpression(experimentId, [config.shownGene], plotUuid));
-    }
-  }, [config?.shownGene]);
-
-  useEffect(() => {
-    if (loadedGene && loadedGene.length) {
-      updatePlotWithChanges({ shownGene: loadedGene[0] });
-    }
-  }, [loadedGene]);
-
-  useEffect(() => {
-    if (searchedGene) {
-      dispatch(loadGeneExpression(experimentId, [searchedGene], plotUuid));
-    }
-  }, [searchedGene]);
-
-  if (config?.shownGene === null && !fetching && !highestDispersionGene) {
-    dispatch(loadPaginatedGeneProperties(experimentId, PROPERTIES, plotUuid, tableState));
-  }
-
-  useEffect(() => {
-    if (config?.shownGene === null && highestDispersionGene) {
-      updatePlotWithChanges({ shownGene: highestDispersionGene });
-      dispatch(loadGeneExpression(experimentId, [highestDispersionGene], plotUuid));
-    }
-  }, [highestDispersionGene, config]);
-
-  const updatePlotWithChanges = (updateField) => {
-    dispatch(updatePlotConfig(plotUuid, updateField));
-  };
 
   const plotStylingConfig = [
     {
@@ -126,19 +81,55 @@ const ContinuousEmbeddingPage = ({ experimentId }) => {
     },
   ];
 
+  const updateAllWithChanges = (updateField) => {
+    multiViewPlotUuids.forEach((uuid) => {
+      dispatch(updatePlotConfig(uuid, updateField));
+    });
+  };
+  const updatePlotWithChanges = (updateField) => {
+    dispatch(updatePlotConfig(selectedPlotUuid, updateField));
+  };
+  const renderPlot = (plotUuidToRender) => (
+    <ContinuousEmbeddingReduxWrapper
+      experimentId={experimentId}
+      plotUuid={plotUuidToRender}
+
+    />
+  );
+
+  const changeSelectedPlotGene = (gene) => {
+    const plotUuidToUpdate = updateAll ? multiViewPlotUuids[0] : selectedPlotUuid;
+    dispatch(loadGeneExpression(
+      experimentId, [plotConfigs[plotUuidToUpdate]?.shownGene], gene,
+    ));
+    dispatch(updatePlotConfig(plotUuidToUpdate, { shownGene: gene, title: { text: gene } }));
+  };
+
   const renderExtraPanels = () => (
     <>
       <Panel header='Gene selection' key='gene-selection'>
         <GeneSearchBar
           allowMultiple={false}
-          onSelect={setSearchedGene}
+          onSelect={changeSelectedPlotGene}
           buttonText='Submit'
+        />
+      </Panel>
+      <Panel header='View multiple plots' key='view-multiple-plots'>
+        <MultiViewEditor
+          shownGenes={shownGenes}
+          plotType={plotType}
+          experimentId={experimentId}
+          plotUuid={plotUuid}
+          selectedPlotUuid={selectedPlotUuid}
+          setSelectedPlotUuid={setSelectedPlotUuid}
+          updateAll={updateAll}
+          setUpdateAll={setUpdateAll}
         />
       </Panel>
       <Panel header='Select data' key='select-data'>
         <SelectData
           config={config}
-          onUpdate={updatePlotWithChanges}
+          onUpdate={updateAll ? updateAllWithChanges : updatePlotWithChanges}
           cellSets={cellSets}
         />
       </Panel>
@@ -150,28 +141,22 @@ const ContinuousEmbeddingPage = ({ experimentId }) => {
       <Header title={plotNames.CONTINUOUS_EMBEDDING} />
       <PlotContainer
         experimentId={experimentId}
-        plotUuid={plotUuid}
+        plotUuid={selectedPlotUuid}
         plotType={plotType}
         plotStylingConfig={plotStylingConfig}
         extraControlPanels={renderExtraPanels()}
-        defaultActiveKey='gene-selection'
+        defaultActiveKey='view-multiple-plots'
+        onPlotReset={() => dispatch(
+          updatePlotConfig(multiViewUuid, { nrows: 1, ncols: 1, plotUuids: [] }),
+        )}
+        onUpdate={updateAll ? updateAllWithChanges : updatePlotWithChanges}
       >
-        <ContinuousEmbeddingPlot
+        <MultiViewGrid
           experimentId={experimentId}
-          config={config}
+          renderPlot={renderPlot}
+          updateAllWithChanges={updateAllWithChanges}
+          plotType={plotType}
           plotUuid={plotUuid}
-          plotData={
-            geneExpression.matrix.getRawExpression(config?.shownGene)
-          }
-          truncatedPlotData={
-            geneExpression.matrix.getTruncatedExpression(config?.shownGene)
-          }
-          loading={geneExpression.loading.length > 0}
-          error={geneExpression.error}
-          reloadPlotData={() => loadGeneExpression(
-            experimentId, [config?.shownGene], plotUuid,
-          )}
-          onUpdate={updatePlotWithChanges}
         />
       </PlotContainer>
     </>

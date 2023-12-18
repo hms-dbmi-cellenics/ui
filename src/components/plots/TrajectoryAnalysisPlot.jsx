@@ -21,8 +21,6 @@ import { getCellSets } from 'redux/selectors';
 
 import { Alert } from 'antd';
 
-import changeEmbeddingAxesIfNecessary from 'components/plots/helpers/changeEmbeddingAxesIfNecessary';
-
 const TrajectoryAnalysisPlot = forwardRef((props, ref) => {
   // Currenty monocle3 trajectory analysis only supports
   // UMAP embedding. Therefore, this embedding is specifically fetched.
@@ -33,7 +31,6 @@ const TrajectoryAnalysisPlot = forwardRef((props, ref) => {
     plotUuid,
     displaySettings,
     actions,
-    onUpdate,
     onClickNode,
     onLassoSelection,
   } = props;
@@ -87,10 +84,6 @@ const TrajectoryAnalysisPlot = forwardRef((props, ref) => {
       dispatch(loadEmbedding(experimentId, embeddingMethod));
     }
   }, [experimentId, embeddingMethod, embeddingSettings]);
-
-  useEffect(() => {
-    changeEmbeddingAxesIfNecessary(config, embeddingMethod, onUpdate);
-  }, [config, embeddingMethod]);
 
   const { plotData: embeddingPlotData, cellSetLegendsData } = useMemo(() => {
     if (
@@ -202,6 +195,7 @@ const TrajectoryAnalysisPlot = forwardRef((props, ref) => {
       startingNodesData,
       config.selectedNodes,
       startingNodesPlotData?.nodes,
+      embeddingMethod,
     );
 
     return spec;
@@ -299,6 +293,11 @@ const TrajectoryAnalysisPlot = forwardRef((props, ref) => {
 
   return render();
 });
+TrajectoryAnalysisPlot.defaultProps = {
+  actions: true,
+  onClickNode: () => { },
+  onLassoSelection: () => { },
+};
 
 TrajectoryAnalysisPlot.propTypes = {
   experimentId: PropTypes.string.isRequired,
@@ -308,15 +307,8 @@ TrajectoryAnalysisPlot.propTypes = {
     PropTypes.bool,
     PropTypes.object,
   ]),
-  onUpdate: PropTypes.func.isRequired,
   onClickNode: PropTypes.func,
   onLassoSelection: PropTypes.func,
-};
-
-TrajectoryAnalysisPlot.defaultProps = {
-  actions: true,
-  onClickNode: () => { },
-  onLassoSelection: () => { },
 };
 
 export default TrajectoryAnalysisPlot;

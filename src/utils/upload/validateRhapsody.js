@@ -6,8 +6,7 @@ const columnsToSearch = [
 ];
 
 const validateRhapsody = async (sample) => {
-  const fileObjectKey = Object.keys(sample.files).filter((key) => key.toLowerCase().includes('expression_data.st'))[0];
-  const { compressed, fileObject } = sample.files[fileObjectKey];
+  const { compressed, fileObject } = sample.files.rhapsody;
   const fileArrBuffer = await fileObject.slice(0, 800).arrayBuffer();
 
   const file = compressed

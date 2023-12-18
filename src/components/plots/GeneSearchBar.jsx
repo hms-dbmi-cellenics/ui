@@ -24,7 +24,6 @@ const GeneSearchBar = (props) => {
 
   const { data } = useSelector(getGeneList());
   const geneList = Object.keys(data);
-
   const [searchState, setSearchState] = useState({ value: '', options: [] });
 
   const GENES_REGEX = /(?<!-)[,\s]+(?!-)/;

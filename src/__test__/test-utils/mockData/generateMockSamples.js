@@ -1,6 +1,7 @@
 import _ from 'lodash';
 
 import fake from '__test__/test-utils/constants';
+import sampleFileType from 'utils/sampleFileType';
 
 const mockSampleTemplate = (experimentId, sampleId, idx) => ({
   id: sampleId,
@@ -13,19 +14,19 @@ const mockSampleTemplate = (experimentId, sampleId, idx) => ({
   files: {
     matrix10X: {
       uploadStatus: 'uploaded',
-      sampleFileType: 'matrix10x',
+      sampleFileType: sampleFileType.MATRIX_10_X,
       size: 1000,
       s3Path: 'testcfd8122f-25af-4f1a-a306-3268d44ed401',
     },
     barcodes10X: {
       uploadStatus: 'uploaded',
-      sampleFileType: 'barcodes10x',
+      sampleFileType: sampleFileType.BARCODES_10_X,
       size: 100,
       s3Path: 'testcfd8122f-25af-4f1a-a306-3268d44ed402',
     },
     features10X: {
       uploadStatus: 'uploaded',
-      sampleFileType: 'features10x',
+      sampleFileType: sampleFileType.FEATURES_10_X,
       size: 100,
       s3Path: 'testcfd8122f-25af-4f1a-a306-3268d44ed403',
     },

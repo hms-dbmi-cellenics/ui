@@ -15,35 +15,24 @@ exports[`loadSample action Works correctly 1`] = `
     "e03ef6ea-5014-4e57-aecd-59964ac9172c": {
       "createdDate": "2021-12-07 17:36:27.773+00",
       "experimentId": "1234",
-      "fileNames": [
-        "matrix.mtx.gz",
-        "barcodes.tsv.gz",
-        "features.tsv.gz",
-      ],
       "files": {
-        "barcodes.tsv.gz": {
-          "name": "barcodes.tsv.gz",
+        "barcodes10x": {
           "size": undefined,
           "upload": {
             "status": "uploaded",
           },
-          "valid": true,
         },
-        "features.tsv.gz": {
-          "name": "features.tsv.gz",
+        "features10x": {
           "size": undefined,
           "upload": {
             "status": "uploaded",
           },
-          "valid": true,
         },
-        "matrix.mtx.gz": {
-          "name": "matrix.mtx.gz",
+        "matrix10x": {
           "size": undefined,
           "upload": {
             "status": "uploaded",
           },
-          "valid": true,
         },
       },
       "lastModified": "2021-12-07 17:38:42.036+00",

@@ -4,7 +4,7 @@ const FILE_CHUNK_SIZE = 10000000;
 const MAX_RETRIES = 2;
 
 const putPartInS3 = async (
-  blob, signedUrl, onUploadProgress, currentRetry = 0, abortController = null,
+  blob, signedUrl, onUploadProgress, abortController, currentRetry = 0,
 ) => {
   try {
     return await axios.request({
@@ -19,7 +19,9 @@ const putPartInS3 = async (
     });
   } catch (e) {
     if (currentRetry < MAX_RETRIES) {
-      return await putPartInS3(blob, signedUrl, onUploadProgress, currentRetry + 1);
+      return await putPartInS3(
+        blob, signedUrl, onUploadProgress, abortController, currentRetry + 1,
+      );
     }
 
     throw e;
@@ -42,8 +44,8 @@ const processMultipartUpload = async (
       blob,
       signedUrl,
       createOnUploadProgressForPart(index),
-      0,
       abortController,
+      0,
     );
 
     promises.push(req);

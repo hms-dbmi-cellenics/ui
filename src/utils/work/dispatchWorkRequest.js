@@ -1,6 +1,25 @@
 import dayjs from 'dayjs';
+import { Environment } from 'utils/deploymentInfo';
 
 import fetchAPI from 'utils/http/fetchAPI';
+// Disable unique keys to reallow reuse of work results in development
+const DISABLE_UNIQUE_KEYS = [
+  'GetEmbedding',
+];
+
+const getCacheUniquenessKey = (taskName, environment) => {
+  // Disable cache in development or if localStorage says so
+  // Do not disable for embeddings requests because download seurat & trajectory depend on that ETag
+  if (
+    environment !== Environment.PRODUCTION
+    && (localStorage.getItem('disableCache') === 'true' || environment === Environment.DEVELOPMENT)
+    && !DISABLE_UNIQUE_KEYS.includes(taskName)
+  ) {
+    return Math.random();
+  }
+
+  return null;
+};
 
 const getWorkerTimeout = (taskName, defaultTimeout) => {
   switch (taskName) {
@@ -21,6 +40,7 @@ const dispatchWorkRequest = async (
   body,
   timeout,
   requestProps,
+  getState,
 ) => {
   const { name: taskName } = body;
 
@@ -32,11 +52,18 @@ const dispatchWorkRequest = async (
   // this should be removed if we make each request run in a different worker
   const workerTimeoutDate = getWorkerTimeout(taskName, timeout);
 
+  const { environment } = getState().networkResources;
+  const cacheUniquenessKey = getCacheUniquenessKey(taskName, environment);
+
+  // eslint-disable-next-line no-param-reassign
+  requestProps.cacheUniquenessKey = cacheUniquenessKey;
+
   const request = {
     experimentId,
     timeout: workerTimeoutDate,
     body,
-    ...requestProps,
+    requestProps,
+
   };
 
   const { data: { ETag, signedUrl } } = await fetchAPI(

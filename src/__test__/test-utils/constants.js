@@ -6,6 +6,7 @@ export default {
   EXPERIMENT_NAME: 'Test Experiment',
   PROJECT_ID: 'test24b6-8600-test-mock-63822d2fmock',
   SAMPLE_ID: 'test9188-d682-test-mock-cb6d644cmock',
+  SAMPLE_FILE_ID: 'test4321-1234-test-mock-sampfilemock',
   API_ENDPOINT: /^http?:\/\/localhost:3000.*$/,
   S3_ENDPOINT: 'http://mock.s3.amazonaws.com',
   // pragma: allowlist secret

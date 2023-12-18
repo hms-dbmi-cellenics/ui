@@ -57,12 +57,10 @@ const mockUnzippedSample = {
     'expression_data.st',
   ],
   files: {
-    'expression_data.st': {
+    rhapsody: {
       ...sampleFileTemplate,
-      name: 'expression_data.st',
       fileObject: mockUnzippedFileObjects['expression_data.st'],
       size: mockUnzippedFileObjects['expression_data.st'].size,
-      path: '/sample1/expression_data.st',
       compressed: false,
     },
   },
@@ -75,8 +73,8 @@ describe('validateRhapsody', () => {
 
   it('Throws an error invalid column format', async () => {
     const mockInvalidColumn = _.cloneDeep(mockUnzippedSample);
-    mockInvalidColumn.files['expression_data.st'].fileObject = mockUnzippedFileObjects['expression_data_invalid_column.st'];
-    mockInvalidColumn.files['expression_data.st'].size = mockUnzippedFileObjects['expression_data_invalid_column.st'].size;
+    mockInvalidColumn.files.rhapsody.fileObject = mockUnzippedFileObjects['expression_data_invalid_column.st'];
+    mockInvalidColumn.files.rhapsody.size = mockUnzippedFileObjects['expression_data_invalid_column.st'].size;
 
     await expect(validateRhapsody(mockInvalidColumn)).rejects.toThrowErrorMatchingSnapshot();
   });

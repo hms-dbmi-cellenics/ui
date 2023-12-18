@@ -10,12 +10,11 @@ import { loadProcessingSettings } from 'redux/actions/experimentSettings';
 import { getCellSets } from 'redux/selectors';
 import PlatformError from 'components/PlatformError';
 import Loader from 'components/Loader';
-import changeEmbeddingAxesIfNecessary from 'components/plots/helpers/changeEmbeddingAxesIfNecessary';
 import 'vega-webgl-renderer';
 
 const CategoricalEmbeddingPlot = (props) => {
   const {
-    experimentId, config, actions, onUpdate,
+    experimentId, config, actions,
   } = props;
   const dispatch = useDispatch();
   const cellSets = useSelector(getCellSets());
@@ -49,10 +48,6 @@ const CategoricalEmbeddingPlot = (props) => {
   }, [experimentId, embeddingSettings?.method]);
 
   useEffect(() => {
-    changeEmbeddingAxesIfNecessary(config, embeddingSettings?.method, onUpdate);
-  }, [config, embeddingSettings?.method]);
-
-  useEffect(() => {
     if (!config || !cellSets.accessible) return;
 
     if (embeddingData?.length) {
@@ -61,7 +56,7 @@ const CategoricalEmbeddingPlot = (props) => {
         cellSetLegendsData,
       } = generateData(cellSets, config.selectedSample, config.selectedCellSet, embeddingData);
 
-      setPlotSpec(generateSpec(config, plotData, cellSetLegendsData));
+      setPlotSpec(generateSpec(config, embeddingSettings?.method, plotData, cellSetLegendsData));
     }
   }, [config, cellSets, embeddingData, config]);
 
@@ -118,7 +113,6 @@ CategoricalEmbeddingPlot.propTypes = {
     PropTypes.bool,
     PropTypes.object,
   ]),
-  onUpdate: PropTypes.func.isRequired,
 };
 
 CategoricalEmbeddingPlot.defaultProps = {

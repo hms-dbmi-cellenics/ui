@@ -74,22 +74,14 @@ const getMatrixHead = async (matrix) => {
   return matrixHeader;
 };
 
-const getSampleFiles = (sample) => {
-  const barcodes = sample.files['barcodes.tsv.gz'] || sample.files['barcodes.tsv'];
-  const features = sample.files['features.tsv.gz'] || sample.files['features.tsv'] || sample.files['genes.tsv.gz'] || sample.files['genes.tsv'];
-  const matrix = sample.files['matrix.mtx.gz'] || sample.files['matrix.mtx'];
-
-  return { barcodes, features, matrix };
-};
-
 const validateSampleCompleteness = async (sampleFiles) => {
-  const { barcodes, features, matrix } = sampleFiles;
+  const { barcodes10x, features10x, matrix10x } = sampleFiles;
 
   const missingFiles = [];
 
-  if (!barcodes) missingFiles.push('barcodes');
-  if (!features) missingFiles.push('features');
-  if (!matrix) missingFiles.push('matrix');
+  if (!barcodes10x) missingFiles.push('barcodes');
+  if (!features10x) missingFiles.push('features');
+  if (!matrix10x) missingFiles.push('matrix');
 
   if (missingFiles.length) {
     throw new SampleValidationError(errorMessages.missingFiles(missingFiles));
@@ -97,9 +89,9 @@ const validateSampleCompleteness = async (sampleFiles) => {
 };
 
 const validateMatrixFormat = async (sampleFiles) => {
-  const { matrix } = sampleFiles;
+  const { matrix10x } = sampleFiles;
 
-  const matrixHead = await getMatrixHead(matrix);
+  const matrixHead = await getMatrixHead(matrix10x);
 
   // Reject sample if type of count matrix is "array" not "coordinate"
   // See https://networkrepository.com/mtx-matrix-market-format.html
@@ -110,18 +102,18 @@ const validateMatrixFormat = async (sampleFiles) => {
 };
 
 const validateFileSizes = async (sampleFiles) => {
-  const { barcodes, features, matrix } = sampleFiles;
+  const { barcodes10x, features10x, matrix10x } = sampleFiles;
   const errors = [];
 
-  const matrixHead = await getMatrixHead(matrix);
+  const matrixHead = await getMatrixHead(matrix10x);
 
   const [
     expectedNumFeatures,
     expectedNumBarcodes,
   ] = extractSampleSizes(matrixHead);
 
-  const numBarcodesFound = await getNumLines(barcodes);
-  const numFeaturesFound = await getNumLines(features);
+  const numBarcodesFound = await getNumLines(barcodes10x);
+  const numFeaturesFound = await getNumLines(features10x);
 
   if (numBarcodesFound === expectedNumFeatures
     && numFeaturesFound === expectedNumBarcodes) {
@@ -144,11 +136,9 @@ const validateFileSizes = async (sampleFiles) => {
 };
 
 const validate10x = async (sample) => {
-  const sampleFiles = getSampleFiles(sample);
-
-  await validateSampleCompleteness(sampleFiles);
-  await validateMatrixFormat(sampleFiles);
-  await validateFileSizes(sampleFiles);
+  await validateSampleCompleteness(sample.files);
+  await validateMatrixFormat(sample.files);
+  await validateFileSizes(sample.files);
 };
 
 export default validate10x;
