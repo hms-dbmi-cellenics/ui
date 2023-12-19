@@ -5,6 +5,7 @@ import waitForActions from 'redux-mock-store-await-actions';
 import axios from 'axios';
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 import { waitFor } from '@testing-library/react';
+import each from 'jest-each';
 
 import {
   SAMPLES_CREATED, SAMPLES_FILE_UPDATE, SAMPLES_SAVED, SAMPLES_SAVING, SAMPLES_VALIDATING_UPDATED,
@@ -173,7 +174,7 @@ describe('processUpload', () => {
     store = mockStore(initialState);
   });
 
-  it('Uploads and updates redux correctly when there are no errors with cellranger v3', async () => {
+  each(['v2', 'v3']).it('Uploads and updates redux correctly when there are no errors with cellranger %s', async (cellrangerVersion) => {
     const mockAxiosCalls = [];
     const uploadSuccess = (params) => {
       mockAxiosCalls.push(params);
@@ -184,7 +185,7 @@ describe('processUpload', () => {
       .mockImplementationOnce(uploadSuccess)
       .mockImplementationOnce(uploadSuccess);
 
-    const filesList = getValidFiles('v3');
+    const filesList = getValidFiles(cellrangerVersion);
 
     await processUpload(
       filesList,
@@ -228,78 +229,6 @@ describe('processUpload', () => {
       SAMPLES_SAVING, SAMPLES_CREATED, SAMPLES_SAVED,
       ...Array(6).fill(SAMPLES_FILE_UPDATE),
     ]);
-
-    // There are 3 files actions with status uploading
-    expect(uploadingStatusProperties.length).toEqual(3);
-    // There are 3 files actions with status uploaded
-    expect(uploadedStatusProperties.length).toEqual(3);
-
-    // axios request calls are correct
-    expect(axios.request.mock.calls.map((call) => call[0])).toMatchSnapshot();
-
-    // If we trigger axios onUploadProgress it updates the progress correctly
-    axios.request.mock.calls[0][0].onUploadProgress({ loaded: filesList[0].fileObject.size / 2 });
-
-    await waitForActions(
-      store,
-      [{
-        type: SAMPLES_FILE_UPDATE,
-        payload: { fileDiff: { upload: { status: UploadStatus.UPLOADING, progress: 50 } } },
-      }],
-      { matcher: waitForActions.matchers.containing },
-    );
-
-    expect(fetchMock.mock.calls).toMatchSnapshot('fetch calls');
-  });
-
-  it('Uploads and updates redux correctly when there are no errors with cellranger v2', async () => {
-    const mockAxiosCalls = [];
-    const uploadSuccess = (params) => {
-      mockAxiosCalls.push(params);
-      return Promise.resolve({ headers: { etag: 'etag-blah' } });
-    };
-
-    axios.request.mockImplementationOnce(uploadSuccess)
-      .mockImplementationOnce(uploadSuccess)
-      .mockImplementationOnce(uploadSuccess);
-
-    const filesList = getValidFiles('v2');
-
-    await processUpload(
-      filesList,
-      sampleType,
-      store.getState().samples,
-      mockExperimentId,
-      store.dispatch,
-    );
-
-    // Wait for uploads to be made
-    await waitForActions(
-      store,
-      new Array(3).fill({
-        type: SAMPLES_FILE_UPDATE,
-        payload: { fileDiff: { upload: { status: UploadStatus.UPLOADED } } },
-      }),
-      { matcher: waitForActions.matchers.containing },
-    );
-
-    // Three axios put calls are made
-    expect(mockAxiosCalls.length).toBe(3);
-    // Each put call is made with the correct information
-    expect(mockAxiosCalls[0].data).toBeInstanceOf(Blob);
-    expect(mockAxiosCalls[1].data).toBeInstanceOf(Blob);
-    expect(mockAxiosCalls[2].data).toBeInstanceOf(Blob);
-
-    const fileUpdateActions = store.getActions().filter(
-      (action) => action.type === SAMPLES_FILE_UPDATE,
-    );
-    const uploadProperties = fileUpdateActions.map((action) => action.payload.fileDiff.upload);
-    const uploadingStatusProperties = uploadProperties.filter(
-      ({ status }) => status === UploadStatus.UPLOADING,
-    );
-    const uploadedStatusProperties = uploadProperties.filter(
-      ({ status }) => status === UploadStatus.UPLOADED,
-    );
 
     // There are 3 files actions with status uploading
     expect(uploadingStatusProperties.length).toEqual(3);
