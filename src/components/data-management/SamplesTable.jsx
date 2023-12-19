@@ -72,7 +72,24 @@ const SamplesTable = forwardRef((props, ref) => {
   const [samplesLoaded, setSamplesLoaded] = useState(false);
 
   const initialTableColumns = useMemo(() => {
-    if (_.isNil(selectedTech)) return [];
+    const filesColumns = !_.isNil(selectedTech)
+      ? fileUploadSpecifications[selectedTech].requiredFiles.map(
+        (requiredFile, indx) => ({
+          index: 2 + indx,
+          title: <center>{fileTypeToDisplay[requiredFile]}</center>,
+          key: requiredFile,
+          dataIndex: requiredFile,
+          width: 170,
+          onCell: () => ({ style: { margin: '0px', padding: '0px' } }),
+          render: (tableCellData) => tableCellData && (
+            <UploadCell
+              columnId={requiredFile}
+              sampleUuid={tableCellData.sampleUuid}
+            />
+          ),
+        }),
+      )
+      : [];
 
     return ([
       {
@@ -94,21 +111,7 @@ const SamplesTable = forwardRef((props, ref) => {
           <SampleNameCell cellInfo={{ text, record, indx }} />
         ),
       },
-      ...fileUploadSpecifications[selectedTech].requiredFiles.map((requiredFile, indx) => ({
-        index: 2 + indx,
-        title: <center>{fileTypeToDisplay[requiredFile]}</center>,
-        key: requiredFile,
-        dataIndex: requiredFile,
-        width: 170,
-        onCell: () => ({ style: { margin: '0px', padding: '0px' } }),
-        render: (tableCellData) => tableCellData && (
-          <UploadCell
-            columnId={requiredFile}
-            sampleUuid={tableCellData.sampleUuid}
-          />
-        ),
-      })),
-
+      ...filesColumns,
     ]);
   }, [selectedTech]);
 
