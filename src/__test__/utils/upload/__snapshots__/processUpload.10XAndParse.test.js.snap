@@ -225,7 +225,7 @@ exports[`processUpload Updates redux correctly when there are file upload errors
 ]
 `;
 
-exports[`processUpload Uploads and updates redux correctly when there are no errors with cellranger v2 1`] = `
+exports[`processUpload Uploads and updates redux correctly when there are no errors with 10x, cellranger: v2  1`] = `
 [
   {
     "data": Blob {},
@@ -260,7 +260,7 @@ exports[`processUpload Uploads and updates redux correctly when there are no err
 ]
 `;
 
-exports[`processUpload Uploads and updates redux correctly when there are no errors with cellranger v2: fetch calls 1`] = `
+exports[`processUpload Uploads and updates redux correctly when there are no errors with 10x, cellranger: v2 : fetch calls 1`] = `
 [
   [
     "http://localhost:3000/v2/experiments/project-uuid/samples",
@@ -395,7 +395,7 @@ exports[`processUpload Uploads and updates redux correctly when there are no err
 ]
 `;
 
-exports[`processUpload Uploads and updates redux correctly when there are no errors with cellranger v3 1`] = `
+exports[`processUpload Uploads and updates redux correctly when there are no errors with 10x, cellranger: v3  1`] = `
 [
   {
     "data": Blob {},
@@ -430,7 +430,7 @@ exports[`processUpload Uploads and updates redux correctly when there are no err
 ]
 `;
 
-exports[`processUpload Uploads and updates redux correctly when there are no errors with cellranger v3: fetch calls 1`] = `
+exports[`processUpload Uploads and updates redux correctly when there are no errors with 10x, cellranger: v3 : fetch calls 1`] = `
 [
   [
     "http://localhost:3000/v2/experiments/project-uuid/samples",
@@ -476,6 +476,176 @@ exports[`processUpload Uploads and updates redux correctly when there are no err
     "http://localhost:3000/v2/experiments/project-uuid/sampleFiles/mockSampleFileId/beginUpload",
     {
       "body": "{"size":1024,"metadata":{"cellranger_version":"v3"}}",
+      "headers": {
+        "Content-Type": "application/json",
+      },
+      "method": "POST",
+    },
+  ],
+  [
+    "http://localhost:3000/v2/experiments/project-uuid/sampleFiles/mockSampleFileId/beginUpload",
+    {
+      "body": "{"size":1024,"metadata":{}}",
+      "headers": {
+        "Content-Type": "application/json",
+      },
+      "method": "POST",
+    },
+  ],
+  [
+    "http://localhost:3000/v2/experiments/project-uuid/sampleFiles/mockSampleFileId/beginUpload",
+    {
+      "body": "{"size":1024,"metadata":{}}",
+      "headers": {
+        "Content-Type": "application/json",
+      },
+      "method": "POST",
+    },
+  ],
+  [
+    "http://localhost:3000/v2/completeMultipartUpload",
+    {
+      "body": "{"parts":[{"ETag":"etag-blah","PartNumber":1}],"uploadId":"some_id","fileId":"mockSampleFileId","type":"sample"}",
+      "headers": {
+        "Content-Type": "application/json",
+      },
+      "method": "POST",
+    },
+  ],
+  [
+    "http://localhost:3000/v2/completeMultipartUpload",
+    {
+      "body": "{"parts":[{"ETag":"etag-blah","PartNumber":1}],"uploadId":"some_id","fileId":"mockSampleFileId","type":"sample"}",
+      "headers": {
+        "Content-Type": "application/json",
+      },
+      "method": "POST",
+    },
+  ],
+  [
+    "http://localhost:3000/v2/completeMultipartUpload",
+    {
+      "body": "{"parts":[{"ETag":"etag-blah","PartNumber":1}],"uploadId":"some_id","fileId":"mockSampleFileId","type":"sample"}",
+      "headers": {
+        "Content-Type": "application/json",
+      },
+      "method": "POST",
+    },
+  ],
+  [
+    "http://localhost:3000/v2/experiments/project-uuid/sampleFiles/mockSampleFileId",
+    {
+      "body": "{"uploadStatus":"uploaded"}",
+      "headers": {
+        "Content-Type": "application/json",
+      },
+      "method": "PATCH",
+    },
+  ],
+  [
+    "http://localhost:3000/v2/experiments/project-uuid/sampleFiles/mockSampleFileId",
+    {
+      "body": "{"uploadStatus":"uploaded"}",
+      "headers": {
+        "Content-Type": "application/json",
+      },
+      "method": "PATCH",
+    },
+  ],
+  [
+    "http://localhost:3000/v2/experiments/project-uuid/sampleFiles/mockSampleFileId",
+    {
+      "body": "{"uploadStatus":"uploaded"}",
+      "headers": {
+        "Content-Type": "application/json",
+      },
+      "method": "PATCH",
+    },
+  ],
+]
+`;
+
+exports[`processUpload Uploads and updates redux correctly when there are no errors with parse, cellranger: $cellrangerVersion  1`] = `
+[
+  {
+    "data": Blob {},
+    "headers": {
+      "Content-Type": "application/octet-stream",
+    },
+    "method": "put",
+    "onUploadProgress": [Function],
+    "signal": AbortSignal {},
+    "url": "theSignedUrl",
+  },
+  {
+    "data": Blob {},
+    "headers": {
+      "Content-Type": "application/octet-stream",
+    },
+    "method": "put",
+    "onUploadProgress": [Function],
+    "signal": AbortSignal {},
+    "url": "theSignedUrl",
+  },
+  {
+    "data": Blob {},
+    "headers": {
+      "Content-Type": "application/octet-stream",
+    },
+    "method": "put",
+    "onUploadProgress": [Function],
+    "signal": AbortSignal {},
+    "url": "theSignedUrl",
+  },
+]
+`;
+
+exports[`processUpload Uploads and updates redux correctly when there are no errors with parse, cellranger: $cellrangerVersion : fetch calls 1`] = `
+[
+  [
+    "http://localhost:3000/v2/experiments/project-uuid/samples",
+    {
+      "body": "[{"name":"WT13","sampleTechnology":"parse","options":{}}]",
+      "headers": {
+        "Content-Type": "application/json",
+      },
+      "method": "POST",
+    },
+  ],
+  [
+    "http://localhost:3000/v2/experiments/project-uuid/samples/mockSampleId/sampleFiles/featuresParse",
+    {
+      "body": "{"sampleFileId":"mockSampleFileId","size":1024}",
+      "headers": {
+        "Content-Type": "application/json",
+      },
+      "method": "POST",
+    },
+  ],
+  [
+    "http://localhost:3000/v2/experiments/project-uuid/samples/mockSampleId/sampleFiles/barcodesParse",
+    {
+      "body": "{"sampleFileId":"mockSampleFileId","size":1024}",
+      "headers": {
+        "Content-Type": "application/json",
+      },
+      "method": "POST",
+    },
+  ],
+  [
+    "http://localhost:3000/v2/experiments/project-uuid/samples/mockSampleId/sampleFiles/matrixParse",
+    {
+      "body": "{"sampleFileId":"mockSampleFileId","size":1024}",
+      "headers": {
+        "Content-Type": "application/json",
+      },
+      "method": "POST",
+    },
+  ],
+  [
+    "http://localhost:3000/v2/experiments/project-uuid/sampleFiles/mockSampleFileId/beginUpload",
+    {
+      "body": "{"size":1024,"metadata":{}}",
       "headers": {
         "Content-Type": "application/json",
       },
