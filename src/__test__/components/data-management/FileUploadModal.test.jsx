@@ -431,4 +431,57 @@ describe('FileUploadModal', () => {
       expect(screen.getByText(filename)).toBeInTheDocument();
     });
   });
+
+  it('drag and drop works with Parse file', async () => {
+    await renderFileUploadModal(initialStore);
+
+    // Switch file upload to Parse
+    const displayedName = techNamesToDisplay[sampleTech.PARSE];
+
+    const techSelection = screen.getByRole('combobox', { name: 'sampleTechnologySelect' });
+
+    act(() => {
+      fireEvent.change(techSelection, { target: { value: sampleTech.PARSE } });
+    });
+
+    // The 2nd option is the selection
+    const option = screen.getByText(displayedName);
+
+    act(() => {
+      fireEvent.click(option);
+    });
+
+    // It mentions the files that can be uploaded
+    techOptions[sampleTech.PARSE].acceptedFiles.forEach((filename) => {
+      expect(screen.getByText(filename)).toBeInTheDocument();
+    });
+
+    expect(await screen.queryByText(/To upload/)).not.toBeInTheDocument();
+    // It has a select button to select technology
+    const uploadInput = document.querySelector(
+      `[data-test-id="${integrationTestConstants.ids.FILE_UPLOAD_INPUT}"]`,
+    );
+
+    // create an all genes file (features)
+    const file = mockFile('all_genes.csv.gz', '/WT13');
+
+    //  drop it into drop-zone
+    await act(async () => {
+      Object.defineProperty(uploadInput, 'files', {
+        value: [file],
+      });
+
+      fireEvent.drop(uploadInput);
+    });
+
+    // It shows up as ready to upload
+    expect(await screen.findByText(/To upload/)).toBeInTheDocument();
+    expect(await screen.findByText(file.path.slice(1))).toBeInTheDocument();
+
+    const uploadButtonText = screen.getAllByText(/Upload/i).pop();
+    const uploadButton = uploadButtonText.closest('button');
+
+    // Upload is enabled because the file is considered valid
+    expect(uploadButton).not.toBeDisabled();
+  });
 });
