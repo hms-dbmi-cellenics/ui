@@ -40,7 +40,7 @@ const inspectFile = async (file, technology) => {
     return inspectH5File(file);
   } if (technology === sampleTech.PARSE) {
     // TODO: look into adding validation
-    return file;
+    return inspectParseFile(file);
   }
 
   return Verdict.INVALID_FORMAT;
@@ -87,7 +87,9 @@ const inspect10XFile = async (file) => {
   return Verdict.INVALID_FORMAT;
 };
 
-const inspectRhapsodyFile = async (file) => (isGzipped(file));
+const inspectRhapsodyFile = async (file) => await isGzipped(file);
+
+const inspectParseFile = async (file) => await isGzipped(file);
 
 export {
   inspectFile,
