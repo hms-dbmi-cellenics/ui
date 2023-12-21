@@ -50,6 +50,7 @@ const extraHelpText = {
       </ul>
     </Paragraph>
   ),
+  [sampleTech.PARSE]: () => <></>,
 };
 
 const FileUploadModal = (props) => {

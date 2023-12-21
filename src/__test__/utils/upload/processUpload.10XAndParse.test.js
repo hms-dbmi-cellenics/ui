@@ -16,7 +16,8 @@ import UploadStatus from 'utils/upload/UploadStatus';
 
 import processUpload from 'utils/upload/processUpload';
 
-import validate from 'utils/upload/validate10x';
+import validate10x from 'utils/upload/validate10x';
+import validateParse from 'utils/upload/validateParse';
 import pushNotificationMessage from 'utils/pushNotificationMessage';
 import { sampleTech } from 'utils/constants';
 import mockFile from '__test__/test-utils/mockFile';
@@ -24,29 +25,45 @@ import loadAndCompressIfNecessary from 'utils/upload/loadAndCompressIfNecessary'
 
 enableFetchMocks();
 
-const getValidFiles = (cellrangerVersion, compressed = true) => {
-  const featuresFilename = cellrangerVersion === 'v2' ? 'genes.tsv.gz' : 'features.tsv.gz';
+const getValidFiles = (selectedSampleTech, optionals = {}) => {
+  const { cellrangerVersion = null, compressed = true } = optionals;
+
+  let featuresFileName;
+  let barcodesFileName;
+  let matrixFileName;
+
+  if (selectedSampleTech === sampleTech['10X']) {
+    featuresFileName = cellrangerVersion === 'v2' ? 'genes.tsv.gz' : 'features.tsv.gz';
+    barcodesFileName = 'barcodes.tsv.gz';
+    matrixFileName = 'matrix.mtx.gz';
+  } else if (selectedSampleTech === sampleTech.PARSE) {
+    featuresFileName = 'all_genes.csv.gz';
+    barcodesFileName = 'cell_metadata.csv.gz';
+    matrixFileName = 'DGE.mtx.gz';
+  } else {
+    throw new Error(`${selectedSampleTech} not implemented`);
+  }
 
   let fileList = [
     {
-      name: `${featuresFilename}`,
-      fileObject: mockFile(featuresFilename, 'WT13'),
+      name: `${featuresFileName}`,
+      fileObject: mockFile(featuresFileName, 'WT13'),
       upload: { status: UploadStatus.UPLOADING },
       errors: '',
       compressed,
       valid: true,
     },
     {
-      name: 'barcodes.tsv.gz',
-      fileObject: mockFile('barcodes.tsv.gz', 'WT13'),
+      name: barcodesFileName,
+      fileObject: mockFile(barcodesFileName, 'WT13'),
       upload: { status: UploadStatus.UPLOADING },
       errors: '',
       compressed,
       valid: true,
     },
     {
-      name: 'matrix.mtx.gz',
-      fileObject: mockFile('matrix.mtx.gz', 'WT13'),
+      name: matrixFileName,
+      fileObject: mockFile(matrixFileName, 'WT13'),
       upload: { status: UploadStatus.UPLOADING },
       errors: '',
       compressed,
@@ -58,7 +75,6 @@ const getValidFiles = (cellrangerVersion, compressed = true) => {
   return fileList;
 };
 
-const sampleType = sampleTech['10X'];
 const mockSampleUuid = 'sample-uuid';
 const mockExperimentId = 'project-uuid';
 const sampleName = 'mockSampleName';
@@ -122,6 +138,7 @@ jest.mock('axios', () => ({
 jest.mock('utils/pushNotificationMessage');
 
 jest.mock('utils/upload/validate10x');
+jest.mock('utils/upload/validateParse');
 
 let store = null;
 
@@ -162,7 +179,11 @@ const mockProcessUploadCalls = () => {
   });
 };
 
-describe('processUpload', () => {
+describe.each([
+  { selectedSampleTech: sampleTech.PARSE, cellrangerVersion: null },
+  { selectedSampleTech: sampleTech['10X'], cellrangerVersion: 'v2' },
+  { selectedSampleTech: sampleTech['10X'], cellrangerVersion: 'v3' },
+])('processUpload $selectedSampleTech, $cellrangerVersion', ({ selectedSampleTech, cellrangerVersion }) => {
   beforeEach(() => {
     jest.clearAllMocks();
 
@@ -170,10 +191,15 @@ describe('processUpload', () => {
     fetchMock.doMock();
     mockProcessUploadCalls();
 
+    validate10x.mockReset().mockImplementation(() => { });
+    validateParse.mockReset().mockImplementation(() => { });
+
     store = mockStore(initialState);
   });
 
-  it('Uploads and updates redux correctly when there are no errors with cellranger v3', async () => {
+  it('Uploads and updates redux correctly when there are no errors', async () => {
+    const filesList = getValidFiles(selectedSampleTech, { cellrangerVersion });
+
     const mockAxiosCalls = [];
     const uploadSuccess = (params) => {
       mockAxiosCalls.push(params);
@@ -184,11 +210,9 @@ describe('processUpload', () => {
       .mockImplementationOnce(uploadSuccess)
       .mockImplementationOnce(uploadSuccess);
 
-    const filesList = getValidFiles('v3');
-
     await processUpload(
       filesList,
-      sampleType,
+      selectedSampleTech,
       store.getState().samples,
       mockExperimentId,
       store.dispatch,
@@ -252,78 +276,6 @@ describe('processUpload', () => {
     expect(fetchMock.mock.calls).toMatchSnapshot('fetch calls');
   });
 
-  it('Uploads and updates redux correctly when there are no errors with cellranger v2', async () => {
-    const mockAxiosCalls = [];
-    const uploadSuccess = (params) => {
-      mockAxiosCalls.push(params);
-      return Promise.resolve({ headers: { etag: 'etag-blah' } });
-    };
-
-    axios.request.mockImplementationOnce(uploadSuccess)
-      .mockImplementationOnce(uploadSuccess)
-      .mockImplementationOnce(uploadSuccess);
-
-    const filesList = getValidFiles('v2');
-
-    await processUpload(
-      filesList,
-      sampleType,
-      store.getState().samples,
-      mockExperimentId,
-      store.dispatch,
-    );
-
-    // Wait for uploads to be made
-    await waitForActions(
-      store,
-      new Array(3).fill({
-        type: SAMPLES_FILE_UPDATE,
-        payload: { fileDiff: { upload: { status: UploadStatus.UPLOADED } } },
-      }),
-      { matcher: waitForActions.matchers.containing },
-    );
-
-    // Three axios put calls are made
-    expect(mockAxiosCalls.length).toBe(3);
-    // Each put call is made with the correct information
-    expect(mockAxiosCalls[0].data).toBeInstanceOf(Blob);
-    expect(mockAxiosCalls[1].data).toBeInstanceOf(Blob);
-    expect(mockAxiosCalls[2].data).toBeInstanceOf(Blob);
-
-    const fileUpdateActions = store.getActions().filter(
-      (action) => action.type === SAMPLES_FILE_UPDATE,
-    );
-    const uploadProperties = fileUpdateActions.map((action) => action.payload.fileDiff.upload);
-    const uploadingStatusProperties = uploadProperties.filter(
-      ({ status }) => status === UploadStatus.UPLOADING,
-    );
-    const uploadedStatusProperties = uploadProperties.filter(
-      ({ status }) => status === UploadStatus.UPLOADED,
-    );
-
-    // There are 3 files actions with status uploading
-    expect(uploadingStatusProperties.length).toEqual(3);
-    // There are 3 files actions with status uploaded
-    expect(uploadedStatusProperties.length).toEqual(3);
-
-    // axios request calls are correct
-    expect(axios.request.mock.calls.map((call) => call[0])).toMatchSnapshot();
-
-    // If we trigger axios onUploadProgress it updates the progress correctly
-    axios.request.mock.calls[0][0].onUploadProgress({ loaded: filesList[0].fileObject.size / 2 });
-
-    await waitForActions(
-      store,
-      [{
-        type: SAMPLES_FILE_UPDATE,
-        payload: { fileDiff: { upload: { status: UploadStatus.UPLOADING, progress: 50 } } },
-      }],
-      { matcher: waitForActions.matchers.containing },
-    );
-
-    expect(fetchMock.mock.calls).toMatchSnapshot('fetch calls');
-  });
-
   it('Updates redux correctly when there are file upload errors', async () => {
     const mockAxiosCalls = [];
 
@@ -337,8 +289,8 @@ describe('processUpload', () => {
       .mockImplementationOnce(uploadError);
 
     await processUpload(
-      getValidFiles('v3'),
-      sampleType,
+      getValidFiles(selectedSampleTech, { cellrangerVersion }),
+      selectedSampleTech,
       store.getState().samples,
       mockExperimentId,
       store.dispatch,
@@ -386,8 +338,8 @@ describe('processUpload', () => {
     fetchMock.mockReject(new Error('Error'));
 
     await processUpload(
-      getValidFiles('v3'),
-      sampleType,
+      getValidFiles(selectedSampleTech, { cellrangerVersion }),
+      selectedSampleTech,
       store.getState().samples,
       mockExperimentId,
       store.dispatch,
@@ -426,8 +378,8 @@ describe('processUpload', () => {
     });
 
     await processUpload(
-      getValidFiles('v3'),
-      sampleType,
+      getValidFiles(selectedSampleTech, { cellrangerVersion }),
+      selectedSampleTech,
       store.getState().samples,
       mockExperimentId,
       store.dispatch,
@@ -449,13 +401,17 @@ describe('processUpload', () => {
   });
 
   it('Should not upload sample and show notification if uploaded sample is invalid', async () => {
-    validate.mockImplementationOnce(
+    validate10x.mockImplementationOnce(
+      () => { throw new Error('Some file error'); },
+    );
+
+    validateParse.mockImplementationOnce(
       () => { throw new Error('Some file error'); },
     );
 
     await processUpload(
-      getValidFiles('v2'),
-      sampleType,
+      getValidFiles(selectedSampleTech, { cellrangerVersion }),
+      selectedSampleTech,
       store.getState().samples,
       mockExperimentId,
       store.dispatch,
@@ -484,11 +440,11 @@ describe('processUpload', () => {
       finishCompression = resolve;
     }));
 
-    const filesList = getValidFiles('v3', false);
+    const filesList = getValidFiles(selectedSampleTech, { cellrangerVersion, compressed: false });
 
     processUpload(
       filesList,
-      sampleType,
+      selectedSampleTech,
       store.getState().samples,
       mockExperimentId,
       store.dispatch,

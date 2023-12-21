@@ -20,6 +20,7 @@ const sampleTech = {
   RHAPSODY: 'rhapsody',
   SEURAT: 'seurat',
   H5: '10x_h5',
+  PARSE: 'parse',
 };
 
 const plotTypes = {
