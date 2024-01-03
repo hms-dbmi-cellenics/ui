@@ -75,7 +75,7 @@ const louvainClusters = cellSetsData.cellSets.find(({ key }) => key === 'louvain
 
 const experimentId = '1234';
 
-const getClusterByName = (clusterName) => {
+const getClusterByName = (clusterName, storeState) => {
   const clusterKey = Object.keys(storeState.getState().cellSets.properties).filter((key) => {
     if (storeState.getState().cellSets.properties[key].name === clusterName) {
       return key;
@@ -94,8 +94,6 @@ const defaultProps = {
 
 const cellSetsToolFactory = createTestComponentFactory(CellSetsTool, defaultProps);
 
-let storeState;
-
 // Mocking samples update / delete routes
 const customResponses = {
   [`experiments/${experimentId}/cellSets$`]: () => promiseResponse(JSON.stringify(cellSetsData)),
@@ -106,6 +104,8 @@ const mockAPIResponse = _.merge(
 );
 
 describe('CellSetsTool', () => {
+  let storeState;
+
   beforeEach(async () => {
     jest.clearAllMocks();
 
@@ -241,7 +241,7 @@ describe('CellSetsTool', () => {
     userEvent.click(customCellSetsGroup);
 
     screen.getByText('New Cluster');
-    const newClusterKey = getClusterByName('New Cluster');
+    const newClusterKey = getClusterByName('New Cluster', storeState);
 
     const cluster3CellIds = louvainClusters.find(({ name }) => name === 'Cluster 3').cellIds;
     const cluster4CellIds = louvainClusters.find(({ name }) => name === 'Cluster 4').cellIds;
@@ -309,7 +309,7 @@ describe('CellSetsTool', () => {
 
     screen.getByText('New Cluster');
 
-    const newClusterKey = getClusterByName('New Cluster');
+    const newClusterKey = getClusterByName('New Cluster', storeState);
     const actualIntersection = storeState.getState().cellSets.properties[newClusterKey].cellIds;
 
     const expectedIntersection = new Set([1, 2, 3, 4]);
@@ -444,7 +444,7 @@ describe('CellSetsTool', () => {
     userEvent.click(customCellSetsGroup);
 
     screen.getByText('New Cluster');
-    const newClusterKey = getClusterByName('New Cluster');
+    const newClusterKey = getClusterByName('New Cluster', storeState);
     const actualComplement = storeState.getState().cellSets.properties[newClusterKey].cellIds;
 
     expect(actualComplement).toMatchSnapshot();
@@ -470,7 +470,7 @@ describe('CellSetsTool', () => {
     userEvent.click(cellCetsGroups[1]);
 
     screen.getByText('New Cluster');
-    const newClusterKey = getClusterByName('New Cluster');
+    const newClusterKey = getClusterByName('New Cluster', storeState);
 
     expect(cellCetsGroups.length).toEqual(4);
 
@@ -745,11 +745,16 @@ describe('CellSetsTool', () => {
   });
 });
 
-// Enable when AnnotateClustersTool panel is enabled
 describe('AnnotateClustersTool', () => {
+  let storeState;
+
   beforeEach(async () => {
     jest.clearAllMocks();
 
+    fetchMock.resetMocks();
+    fetchMock.mockIf(/.*/, mockAPI(mockAPIResponse));
+
+    storeState = makeStore();
     await storeState.dispatch(loadBackendStatus(experimentId));
 
     await act(async () => {
@@ -761,10 +766,10 @@ describe('AnnotateClustersTool', () => {
     });
 
     // Switch to tab
-    const annotateClustersTabTitle = screen.getByText('Annotate clusters');
+    const annotateClustersTab = screen.getByText('Annotate clusters');
 
     // Switch to tab
-    userEvent.click(annotateClustersTabTitle);
+    userEvent.click(annotateClustersTab);
   });
 
   it('Renders correctly', async () => {
@@ -801,6 +806,55 @@ describe('AnnotateClustersTool', () => {
     // Click the button
     act(() => {
       userEvent.click(button);
+    });
+
+    // It dispatches a work request
+    await waitFor(() => {
+      expect(fetchWork).toMatchSnapshot();
+    });
+  });
+});
+
+describe('ScoreCellCycleTool', () => {
+  let storeState;
+  beforeEach(async () => {
+    jest.clearAllMocks();
+
+    fetchMock.resetMocks();
+    fetchMock.mockIf(/.*/, mockAPI(mockAPIResponse));
+
+    storeState = makeStore();
+    await storeState.dispatch(loadBackendStatus(experimentId));
+
+    await act(async () => {
+      render(
+        <Provider store={storeState}>
+          {cellSetsToolFactory()}
+        </Provider>,
+      );
+    });
+
+    // Switch to tab
+    const scoreCellCycleTab = screen.getByText('Score Cell Cycle');
+
+    // Switch to tab
+    act(() => {
+      userEvent.click(scoreCellCycleTab);
+    });
+  });
+
+  it('Renders correctly', async () => {
+    // Check displays correct option
+    screen.getByText(/Seurat/);
+
+    // Displays button and it's enabled
+    expect(screen.getByRole('button', { name: /Compute/ })).toBeEnabled();
+  });
+
+  it('Can dispatch work request', async () => {
+    // Click the button
+    act(() => {
+      userEvent.click(screen.getByRole('button', { name: /Compute/ }));
     });
 
     // It dispatches a work request
