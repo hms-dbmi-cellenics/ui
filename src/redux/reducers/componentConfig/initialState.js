@@ -188,7 +188,7 @@ const frequencyInitialConfig = {
   title: titleBaseState,
   axes: {
     ...axesBaseState,
-    xAxisText: 'Sample',
+    xAxisText: 'Samples',
     yAxisText: 'Proportion',
     xAxisRotateLabels: true,
     offset: 10,
@@ -236,7 +236,7 @@ const violinConfig = {
   colour: colourBaseState,
   marker: markerBaseState,
   labels: labelBaseState,
-  shownGene: 'notSelected',
+  shownGene: null,
   selectedCellSet: 'louvain',
   selectedPoints: 'All',
   selectedPointsVisible: true,
@@ -420,7 +420,7 @@ const embeddingPreviewMitochondrialContentInitialConfig = {
   colour: colourBaseState,
   marker: markerBaseState,
   labels: labelBaseState,
-  shownGene: 'notSelected',
+  shownGene: null,
   selectedSample: 'All',
 };
 
@@ -906,11 +906,12 @@ const initialPlotConfigStates = {
   dataIntegrationEmbedding: dataIntegrationEmbeddingInitialConfig,
   dataIntegrationFrequency: dataIntegrationFrequencyInitialConfig,
   dataIntegrationElbow: dataIntegrationElbowPlotInitialConfig,
+  multiView: multiViewInitialConfig,
+
 };
 
 const initialComponentConfigStates = {
   interactiveHeatmap: interactiveHeatmapInitialConfig,
-  multiView: multiViewInitialConfig,
 };
 
 const initialPlotDataState = {

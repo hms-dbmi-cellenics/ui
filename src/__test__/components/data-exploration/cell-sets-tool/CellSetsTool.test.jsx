@@ -17,15 +17,14 @@ import { makeStore } from 'redux/store';
 import CellSetsTool from 'components/data-exploration/cell-sets-tool/CellSetsTool';
 import { createCellSet } from 'redux/actions/cellSets';
 
-import { dispatchWorkRequest } from 'utils/work/seekWorkResponse';
+import fetchWork from 'utils/work/fetchWork';
+
 import mockAPI, { generateDefaultMockAPIResponses, promiseResponse } from '__test__/test-utils/mockAPI';
 import { loadBackendStatus } from 'redux/actions/backendStatus';
 
 enableFetchMocks();
 
-jest.mock('utils/work/seekWorkResponse', () => ({
-  dispatchWorkRequest: jest.fn(),
-}));
+jest.mock('utils/work/fetchWork');
 
 jest.mock('utils/socketConnection', () => {
   const mockEmit = jest.fn();
@@ -73,7 +72,6 @@ cellSetsWithAnnotatedCellClass.cellSets.push(
 );
 
 const louvainClusters = cellSetsData.cellSets.find(({ key }) => key === 'louvain').children;
-const sampleList = cellSetsData.cellSets.find(({ key }) => key === 'sample').children;
 
 const experimentId = '1234';
 
@@ -807,18 +805,7 @@ describe('AnnotateClustersTool', () => {
 
     // It dispatches a work request
     await waitFor(() => {
-      expect(dispatchWorkRequest).toHaveBeenCalledWith(
-        experimentId,
-        {
-          name: 'ScTypeAnnotate',
-          species: 'mouse',
-          tissue: 'Liver',
-        },
-        expect.anything(),
-        expect.anything(),
-        { PipelineRunETag: '2021-10-20T12:51:44.755Z', broadcast: true },
-        expect.anything(),
-      );
+      expect(fetchWork).toMatchSnapshot();
     });
   });
 });

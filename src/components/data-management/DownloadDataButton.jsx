@@ -101,7 +101,7 @@ const DownloadDataButton = () => {
             {downloadingProcessedSeurat && <ClipLoader size={20} color='#8f0b10' />}
           </Space>
         </Tooltip>
-      )
+      ),
     },
     {
       key: 'download-processing-settings',
@@ -122,9 +122,9 @@ const DownloadDataButton = () => {
               Data Processing settings (.txt)
             </Tooltip>
           )
-      )
-    }
-  ]
+      ),
+    },
+  ];
 
   return (
     <Dropdown
@@ -135,7 +135,7 @@ const DownloadDataButton = () => {
         items: menuItems,
         onClick: (e) => {
           if (e.key !== 'download-processed-seurat') setDropdownExpanded(false);
-        }
+        },
       }}
       placement='bottomRight'
       disabled={

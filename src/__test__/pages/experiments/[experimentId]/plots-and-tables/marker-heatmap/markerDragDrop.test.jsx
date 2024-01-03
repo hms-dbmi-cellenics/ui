@@ -7,9 +7,9 @@ import { act } from 'react-dom/test-utils';
 import { Provider } from 'react-redux';
 import { loadBackendStatus } from 'redux/actions/backendStatus';
 import { makeStore } from 'redux/store';
-import { dispatchWorkRequest } from 'utils/work/seekWorkResponse';
+import fetchWork from 'utils/work/fetchWork';
+
 import expressionDataFAKEGENE from '__test__/data/gene_expression_FAKEGENE.json';
-import markerGenesData2 from '__test__/data/marker_genes_2.json';
 import markerGenesData5 from '__test__/data/marker_genes_5.json';
 import geneList from '__test__/data/paginated_gene_expression.json';
 
@@ -17,36 +17,19 @@ import preloadAll from 'jest-next-dynamic';
 
 import fake from '__test__/test-utils/constants';
 import mockAPI, {
-  dispatchWorkRequestMock,
   generateDefaultMockAPIResponses,
   promiseResponse,
   statusResponse,
 } from '__test__/test-utils/mockAPI';
 import createTestComponentFactory from '__test__/test-utils/testComponentFactory';
 import waitForComponentToPaint from '__test__/test-utils/waitForComponentToPaint';
-import { arrayMoveImmutable } from 'utils/array-move';
+import { arrayMoveImmutable } from 'utils/arrayUtils';
 
 jest.mock('components/header/UserButton', () => () => <></>);
 jest.mock('react-resize-detector', () => (props) => {
   // eslint-disable-next-line react/prop-types
   const { children } = props;
   return children({ width: 800, height: 800 });
-});
-
-// Mock hash so we can control the ETag that is produced by hash.MD5 when fetching work requests
-// EtagParams is the object that's passed to the function which generates ETag in fetchWork
-jest.mock('object-hash', () => {
-  const objectHash = jest.requireActual('object-hash');
-  const mockWorkResultETag = jest.requireActual('__test__/test-utils/mockWorkResultETag');
-
-  const mockWorkRequestETag = (ETagParams) => {
-    if (ETagParams.body.name === 'ListGenes') return 'ListGenes';
-    return `${ETagParams.body.nGenes}-marker-genes`;
-  };
-
-  const mockGeneExpressionETag = (ETagParams) => `${ETagParams.missingGenesBody.genes.join('-')}-expression`;
-
-  return mockWorkResultETag(objectHash, mockWorkRequestETag, mockGeneExpressionETag);
 });
 
 // Disable local cache
@@ -58,14 +41,10 @@ jest.mock('localforage', () => ({
   length: () => 0,
 }));
 
-jest.mock('utils/work/seekWorkResponse', () => ({
-  __esModule: true,
-  dispatchWorkRequest: jest.fn(),
-}));
+jest.mock('utils/work/fetchWork');
 
 const mockWorkerResponses = {
-  '5-marker-genes': markerGenesData5,
-  '2-marker-genes': markerGenesData2,
+  MarkerHeatmap: markerGenesData5,
   'FAKEGENE-expression': expressionDataFAKEGENE,
   ListGenes: geneList,
 };
@@ -79,10 +58,7 @@ const customAPIResponses = {
     if (req.method === 'PUT') return promiseResponse(JSON.stringify('OK'));
     return statusResponse(404, 'Not Found');
   },
-  [`/v2/workRequest/${experimentId}/5-marker-genes$`]: () => statusResponse(200, 'OK'),
-  [`/v2/workRequest/${experimentId}/2-marker-genes$`]: () => statusResponse(200, 'OK'),
-  [`/v2/workRequest/${experimentId}/FAKEGENE-expression$`]: () => statusResponse(200, 'OK'),
-  [`/v2/workRequest/${experimentId}/ListGenes$`]: () => statusResponse(200, 'OK'),
+  [`/v2/workRequest/${experimentId}`]: () => statusResponse(200, 'OK'),
 };
 
 const defaultResponses = _.merge(
@@ -127,9 +103,9 @@ describe('Drag and drop enzyme tests', () => {
   beforeEach(async () => {
     jest.clearAllMocks();
 
-    dispatchWorkRequest
+    fetchWork
       .mockReset()
-      .mockImplementation(dispatchWorkRequestMock(mockWorkerResponses));
+      .mockImplementation((_experimentId, body) => mockWorkerResponses[body.name]);
 
     enableFetchMocks();
     fetchMock.resetMocks();

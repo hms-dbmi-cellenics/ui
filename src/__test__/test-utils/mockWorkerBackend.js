@@ -1,18 +1,18 @@
 import * as socketConnectionMocks from 'utils/socketConnection';
-import * as seekWorkResponseMocks from 'utils/work/seekWorkResponse';
+import * as fetchWorkResponseMocks from 'utils/work/fetchWork';
 
 import SocketMock from 'socket.io-mock';
 
 const socketMock = new SocketMock();
 
-jest.mock('utils/work/seekWorkResponse', () => {
+jest.mock('utils/work/fetchWork', () => {
   const mockSeekFromS3 = jest.fn();
-  const originalModule = jest.requireActual('utils/work/seekWorkResponse');
+  const originalModule = jest.requireActual('utils/work/fetchWork');
 
   return {
     __esModule: true, // Use it when dealing with esModules
     ...originalModule,
-    seekFromS3: mockSeekFromS3,
+    fetchWork: mockSeekFromS3,
   };
 });
 
@@ -63,7 +63,7 @@ jest.mock('utils/socketConnection', () => {
 
 // To mock worker response, modify the response returned from the API
 // Set to null to force fetch from API
-seekWorkResponseMocks.seekFromS3.mockImplementation(() => null);
+fetchWorkResponseMocks.fetchWork.mockImplementation(() => null);
 
 // Set up socket emitter mock
 socketConnectionMocks.mockEmit.mockImplementation((workRequestType, requestBody) => {

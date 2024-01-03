@@ -1,37 +1,20 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import {
-  Button, Tooltip, Popconfirm,
+  Button, Tooltip, Popconfirm, Typography, Space,
 } from 'antd';
 import _ from 'lodash';
 
 import { modules, sampleTech } from 'utils/constants';
 
-import fileUploadSpecifications from 'utils/upload/fileUploadSpecifications';
 import UploadStatus from 'utils/upload/UploadStatus';
 import integrationTestConstants from 'utils/integrationTestConstants';
 
 import { useAppRouter } from 'utils/AppRouteProvider';
 import calculatePipelinesRerunStatus from 'utils/data-management/calculatePipelinesRerunStatus';
+import { WarningOutlined } from '@ant-design/icons';
 
-const LaunchButtonTemplate = (props) => {
-  const {
-    // eslint-disable-next-line react/prop-types
-    onClick, disabled, text, loading,
-  } = props;
-
-  return (
-    <Button
-      data-test-id={integrationTestConstants.ids.PROCESS_PROJECT_BUTTON}
-      type='primary'
-      disabled={disabled}
-      onClick={onClick}
-      loading={loading}
-    >
-      {text}
-    </Button>
-  );
-};
+const { Text } = Typography;
 
 const LaunchAnalysisButton = () => {
   const dispatch = useDispatch();
@@ -99,29 +82,9 @@ const LaunchAnalysisButton = () => {
 
     const metadataKeysAvailable = activeExperiment.metadataKeys.length;
 
-    const allSampleFilesUploaded = (sample) => {
-      // Check if all files for a given tech has been uploaded
-      const { fileNames } = sample;
-      if (
-        !fileUploadSpecifications[sample.type].requiredFiles.every(
-          (file) => fileNames.includes(file.key),
-        )
-      ) { return false; }
-
-      let allUploaded = true;
-
-      // eslint-disable-next-line no-restricted-syntax
-      for (const fileName of fileNames) {
-        const checkedFile = sample.files[fileName];
-        allUploaded = allUploaded
-          && checkedFile.valid
-          && checkedFile.upload.status === UploadStatus.UPLOADED;
-
-        if (!allUploaded) break;
-      }
-
-      return allUploaded;
-    };
+    const allSampleFilesUploaded = (sample) => (
+      Object.values(sample.files).every((file) => file.upload.status === UploadStatus.UPLOADED)
+    );
 
     const allSampleMetadataInserted = (sample) => {
       if (!metadataKeysAvailable) return true;
@@ -148,6 +111,57 @@ const LaunchAnalysisButton = () => {
     activeExperiment.cellLevelMetadata?.uploadStatus,
   ]);
 
+  const getAllExperimentSampleFiles = useCallback(() => (
+    activeExperiment.sampleIds.flatMap((sampleId) => Object.values(samples[sampleId]?.files ?? {}))
+  ), [samples, activeExperiment?.sampleIds]);
+
+  const getAnyFileUploadFailed = useCallback(() => {
+    const nonErrorStatuses = [UploadStatus.UPLOADED, UploadStatus.UPLOADING];
+
+    const cellLevelUploadError = !_.isNil(activeExperiment.cellLevelMetadata)
+      && !nonErrorStatuses.includes(activeExperiment.cellLevelMetadata.uploadStatus);
+
+    const sampleFileUploadError = getAllExperimentSampleFiles()
+      .some((sampleFile) => !nonErrorStatuses.includes(sampleFile.upload.status));
+
+    return cellLevelUploadError || sampleFileUploadError;
+  }, [
+    samples,
+    activeExperiment?.sampleIds,
+    activeExperiment.cellLevelMetadata,
+  ]);
+
+  const LaunchButtonTemplate = (props) => {
+    const {
+      // eslint-disable-next-line react/prop-types
+      onClick, disabled, text, loading,
+    } = props;
+
+    return (
+      <Button
+        data-test-id={integrationTestConstants.ids.PROCESS_PROJECT_BUTTON}
+        type='primary'
+        disabled={disabled}
+        onClick={onClick}
+        loading={loading}
+      >
+        {
+          getAnyFileUploadFailed() ? (
+            <Space>
+              <Text type='danger'>
+                <WarningOutlined />
+              </Text>
+              {text}
+            </Space>
+          ) : (
+            text
+          )
+        }
+
+      </Button>
+    );
+  };
+
   const renderLaunchButton = () => {
     let buttonText;
 
@@ -164,9 +178,12 @@ const LaunchAnalysisButton = () => {
     }
 
     if (!canLaunchAnalysis()) {
+      const message = !cellLevelMetadataIsReady
+        ? 'Ensure that the cell level metadata file is uploaded correctly'
+        : 'Ensure that all samples are uploaded successfully and all relevant metadata is inserted.';
       return (
         <Tooltip
-          title='Ensure that all samples are uploaded successfully and all relevant metadata is inserted.'
+          title={message}
         >
           {/* disabled button inside tooltip causes tooltip to not function */}
           {/* https://github.com/react-component/tooltip/issues/18#issuecomment-140078802 */}

@@ -35,7 +35,7 @@ const PrivacyPolicyIntercept = (props) => {
   return (
     <Modal
       title='Agree to the Biomage privacy policy to continue using Cellenics'
-      visible
+      open
       centered
       className={styles['ok-to-the-right-modal']}
       cancelText='Sign out'

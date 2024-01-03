@@ -22,7 +22,7 @@ exports[`DownloadDataButton Downloads processed matrix properly 1`] = `
   [
     "testae48e318dab9a1bd0bexperiment-0",
     {
-      "embeddingETag": "40425699abc7c16fbf3430b3d4ff3f3e",
+      "embeddingMethod": "umap",
       "name": "DownloadAnnotSeuratObject",
     },
     [Function],

@@ -6,9 +6,11 @@ export default {
   EXPERIMENT_NAME: 'Test Experiment',
   PROJECT_ID: 'test24b6-8600-test-mock-63822d2fmock',
   SAMPLE_ID: 'test9188-d682-test-mock-cb6d644cmock',
+  SAMPLE_FILE_ID: 'test4321-1234-test-mock-sampfilemock',
   API_ENDPOINT: /^http?:\/\/localhost:3000.*$/,
   S3_ENDPOINT: 'http://mock.s3.amazonaws.com',
   // pragma: allowlist secret
   JWT_TOKEN: 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6Ikpfake.eyJzdWIiOiIxMjM0NTY3ODkwIiwifakeZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTfakeM5MDIyfQ.fakexwRfakeKKF2QT4fwpMeJf36POk6yJV_adQsfake',
   MOCK_DATETIME: '0000-00-00T00:00:00.000Z',
+  ETAG: '380c53b4-mock-etag-8091-4c82336d6d49',
 };

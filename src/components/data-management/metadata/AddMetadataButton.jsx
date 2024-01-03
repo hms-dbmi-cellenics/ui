@@ -1,7 +1,7 @@
 /* eslint-disable no-param-reassign */
 import React, { useState } from 'react';
 import {
-  Dropdown, Button, Tooltip,
+  Dropdown, Button,
 } from 'antd';
 import PropTypes from 'prop-types';
 
@@ -59,7 +59,7 @@ const AddMetadataButton = ({ samplesTableRef }) => {
     }
 
     try {
-      await prepareAndUploadFileToS3(file, uploadUrlParams, 'cellLevelMeta', onUpdateUploadStatus);
+      await prepareAndUploadFileToS3(file, uploadUrlParams, 'cellLevelMeta', new AbortController(), onUpdateUploadStatus);
     } catch (e) {
       pushNotificationMessage('error', 'Something went wrong while uploading your metadata file.');
       console.log(e);

@@ -1,54 +1,13 @@
 import dayjs from 'dayjs';
 
-import getAuthJWT from 'utils/getAuthJWT';
-import fetchAPI from 'utils/http/fetchAPI';
-import unpackResult, { decompressUint8Array } from 'utils/work/unpackResult';
+import { decompressUint8Array } from 'utils/work/unpackResult';
 import parseResult from 'utils/work/parseResult';
 import WorkTimeoutError from 'utils/errors/http/WorkTimeoutError';
 import WorkResponseError from 'utils/errors/http/WorkResponseError';
-import httpStatusCodes from 'utils/http/httpStatusCodes';
 
 import { updateBackendStatus } from 'redux/actions/backendStatus';
 
 const timeoutIds = {};
-
-// getRemainingWorkerStartTime returns how many more seconds the worker is expected to
-// need to be running with an extra 1 minute for a bit of leeway
-const getRemainingWorkerStartTime = (creationTimestamp) => {
-  const now = new Date();
-  const creationTime = new Date(creationTimestamp);
-  const elapsed = parseInt((now - creationTime) / (1000), 10); // gives second difference
-
-  // we assume a worker takes up to 5 minutes to start
-  const totalStartup = 5 * 60;
-  const remainingTime = totalStartup - elapsed;
-  // add an extra minute just in case
-  return remainingTime + 60;
-};
-
-const seekFromS3 = async (taskName, signedUrl) => {
-  const response = await fetch(signedUrl);
-
-  // some WorkRequests like scType and runClustering do not upload data to S3
-  // (nor return it via socket) instead they patch the cellsets through the API.
-  // In those cases the workResults will not exist, and it's fine because data will
-  // be updated through the cellsets.
-  // the forbidden (in addition to the not found) is required because of how signed URLs work
-  //  when you try to download a file from a signedUrl that doesn't exist you get a 403 forbidden
-  // because the user is not authorized to access a file that does not exist
-  if (response.status === httpStatusCodes.NOT_FOUND
-    || response.status === httpStatusCodes.FORBIDDEN) {
-    return null;
-  }
-  if (!response.ok) {
-    throw new Error(`Error ${response.status}: ${response.text}`, { cause: response });
-  }
-
-  const unpackedResult = await unpackResult(response, taskName);
-  const parsedResult = parseResult(unpackedResult, taskName);
-
-  return parsedResult;
-};
 
 // getTimeoutDate returns the date resulting of adding 'timeout' seconds to
 // current time.
@@ -85,18 +44,16 @@ const getWorkerTimeout = (taskName, defaultTimeout) => {
   }
 };
 
-const dispatchWorkRequest = async (
-  experimentId,
-  body,
-  timeout,
+const waitForWorkRequest = async (
   ETag,
-  requestProps,
+  experimentId,
+  request,
+  timeout,
   dispatch,
 ) => {
   const { default: connectionPromise } = await import('utils/socketConnection');
 
   const io = await connectionPromise;
-  const { name: taskName } = body;
 
   // for listGenes, markerHeatmap, & getEmbedding we set a long timeout for the worker
   // after that timeout the worker will skip those requests
@@ -104,34 +61,10 @@ const dispatchWorkRequest = async (
   // as long as it receives "heartbeats" from the worker because that means the worker is alive
   // and progresing.
   // this should be removed if we make each request run in a different worker
-  const workerTimeoutDate = getWorkerTimeout(taskName, timeout);
-
-  const authJWT = await getAuthJWT();
-
-  const request = {
-    ETag,
-    socketId: io.id,
-    experimentId,
-    ...(authJWT && { Authorization: `Bearer ${authJWT}` }),
-    timeout: workerTimeoutDate,
-    body,
-    ...requestProps,
-  };
+  const workerTimeoutDate = getWorkerTimeout(request, timeout);
 
   const timeoutPromise = new Promise((resolve, reject) => {
     setOrRefreshTimeout(request, timeout, reject, ETag);
-
-    io.on(`WorkerInfo-${experimentId}`, (res) => {
-      const { response: { podInfo: { creationTimestamp, phase } } } = res;
-      const extraTime = getRemainingWorkerStartTime(creationTimestamp);
-
-      // this worker info indicates that the work request has been received but the worker
-      // is still spinning up so we will add extra time to account for that.
-      if (phase === 'Pending' && extraTime > 0) {
-        const newTimeout = timeout + extraTime;
-        setOrRefreshTimeout(request, newTimeout, reject, ETag);
-      }
-    });
 
     // this experiment update is received whenever a worker finishes any work request
     // related to the current experiment. We extend the timeout because we know
@@ -161,7 +94,6 @@ const dispatchWorkRequest = async (
 
         if (response.error) {
           const { errorCode, userMessage } = response;
-          console.error(errorCode, userMessage);
 
           return reject(
             new WorkResponseError(errorCode, userMessage, request),
@@ -170,7 +102,6 @@ const dispatchWorkRequest = async (
 
         return resolve({ signedUrl: response.signedUrl });
       }
-
       // If type isn't object, then we have the actual work result,
       // no further downloads are necessary, we just need to decompress and return it
       const decompressedData = await decompressUint8Array(Uint8Array.from(Buffer.from(res, 'base64')));
@@ -179,18 +110,8 @@ const dispatchWorkRequest = async (
     });
   });
 
-  // TODO test what happens when api throws an error here
-  await fetchAPI(
-    `/v2/workRequest/${experimentId}/${ETag}`,
-    {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(request),
-    },
-  );
-
   // TODO switch to using normal WorkRequest for v2 requests
   return await Promise.race([timeoutPromise, responsePromise]);
 };
 
-export { dispatchWorkRequest, seekFromS3 };
+export default waitForWorkRequest;

@@ -3,7 +3,7 @@ import '__test__/test-utils/setupTests';
 
 import { render, screen } from '@testing-library/react';
 
-import ProjectsListContainer from 'components/data-management/ProjectsListContainer';
+import ProjectsListContainer from 'components/data-management/project/ProjectsListContainer';
 import { Provider } from 'react-redux';
 import React from 'react';
 import { act } from 'react-dom/test-utils';

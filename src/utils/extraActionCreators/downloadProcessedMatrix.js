@@ -3,9 +3,8 @@ import { loadProcessingSettings } from 'redux/actions/experimentSettings';
 
 import fetchWork from 'utils/work/fetchWork';
 import getTimeoutForWorkerTask from 'utils/getTimeoutForWorkerTask';
-import writeToFileURL from 'utils/writeToFileURL';
+import writeToFileURL from 'utils/upload/writeToFileURL';
 import downloadFromUrl from 'utils/downloadFromUrl';
-import getEmbeddingETag from 'utils/work/getEmbeddingETag';
 import handleError from 'utils/http/handleError';
 import endUserMessages from 'utils/endUserMessages';
 
@@ -17,13 +16,15 @@ const downloadProcessedMatrix = (experimentId) => async (dispatch, getState) => 
       method: embeddingMethod,
     } = getState().experimentSettings.processing.configureEmbedding.embeddingSettings;
 
-    await dispatch(loadEmbedding(experimentId, embeddingMethod));
+    await dispatch(loadEmbedding(experimentId, embeddingMethod, true));
 
     const taskName = 'DownloadAnnotSeuratObject';
 
+    // the request needs the embeddingETag to merge that data with the rds
+    // the embeddingETag is added by the API to this body
     const body = {
       name: taskName,
-      embeddingETag: await getEmbeddingETag(experimentId, getState, dispatch),
+      embeddingMethod,
     };
 
     const timeout = getTimeoutForWorkerTask(getState(), taskName);

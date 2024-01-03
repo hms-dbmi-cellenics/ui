@@ -316,7 +316,7 @@ const Embedding = (props) => {
         {
           data ? (
             <Scatterplot
-              cellColorEncoding="cellSetSelection"
+              cellColorEncoding='cellSetSelection'
               cellOpacity={0.8}
               cellRadius={cellRadius}
               setCellHighlight={setCellHighlight}

@@ -1,122 +1,46 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`fetchWork runs correctly for gene expression work request 1`] = `
+exports[`fetchWork does not use cache for gene expression request 1`] = `undefined`;
+
+exports[`fetchWork does not use cache for gene expression request 2`] = `
 {
-  "orderedGeneNames": [
-    "A",
-    "B",
-    "C",
-    "D",
-  ],
-  "rawExpression": {
-    "datatype": undefined,
-    "index": [
-      0,
-      0,
-      2,
-      0,
-      2,
-    ],
-    "mathjs": "SparseMatrix",
-    "ptr": [
-      0,
-      1,
-      3,
-      5,
-    ],
-    "size": [
-      3,
-      3,
-    ],
-    "values": [
-      1,
-      2,
-      5,
-      1,
-      6,
-    ],
-  },
-  "stats": {
-    "rawMean": [
-      0.3,
-      2.3,
-      1.3,
-      14.2,
-    ],
-    "rawStdev": [
-      0.4,
-      2,
-      1,
-      1.2,
-    ],
-    "truncatedMax": [
-      1,
-      3,
-      5,
-      0.5,
-    ],
-    "truncatedMin": [
-      0,
-      2,
-      1,
-      0.1,
-    ],
-  },
-  "truncatedExpression": {
-    "datatype": undefined,
-    "index": [
-      0,
-      0,
-      2,
-      0,
-      2,
-    ],
-    "mathjs": "SparseMatrix",
-    "ptr": [
-      0,
-      1,
-      3,
-      5,
-    ],
-    "size": [
-      3,
-      3,
-    ],
-    "values": [
-      1,
-      2,
-      3,
-      0.5,
-      1,
-    ],
-  },
-  "zScore": {
-    "datatype": undefined,
-    "index": [
-      0,
-      0,
-      2,
-      0,
-      2,
-    ],
-    "mathjs": "SparseMatrix",
-    "ptr": [
-      0,
-      1,
-      3,
-      5,
-    ],
-    "size": [
-      3,
-      3,
-    ],
-    "values": [
-      1,
-      1,
-      3,
-      3,
-      1,
-    ],
-  },
+  "S3Data": true,
 }
 `;
+
+exports[`fetchWork returns data from S3 directly if available 1`] = `
+[
+  [
+    "ListGenes",
+    "fakeSignedUrl",
+  ],
+]
+`;
+
+exports[`fetchWork returns data from S3 directly if available 2`] = `
+{
+  "S3Data": true,
+}
+`;
+
+exports[`fetchWork returns data from cache if available 1`] = `
+{
+  "cacheData": true,
+}
+`;
+
+exports[`fetchWork waits and returns data from the worker 1`] = `[]`;
+
+exports[`fetchWork waits and returns data from the worker 2`] = `
+[
+  [
+    "fakeETag",
+    "testae48e318dab9a1bd0bexperiment",
+    null,
+    10,
+    [Function],
+  ],
+]
+`;
+
+exports[`fetchWork waits and returns data from the worker 3`] = `true`;

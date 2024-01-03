@@ -4,12 +4,11 @@ import preloadAll from 'jest-next-dynamic';
 import { render, screen, waitFor } from '@testing-library/react';
 import { act } from 'react-dom/test-utils';
 
-import { dispatchWorkRequest } from 'utils/work/seekWorkResponse';
+import fetchWork from 'utils/work/fetchWork';
 
 import { Provider } from 'react-redux';
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 
-import markerGenesData2 from '__test__/data/marker_genes_2.json';
 import markerGenesData5 from '__test__/data/marker_genes_5.json';
 import noCellsGeneExpression from '__test__/data/no_cells_genes_expression.json';
 import cellSetsData from '__test__/data/cell_sets.json';
@@ -19,7 +18,6 @@ import { makeStore } from 'redux/store';
 import mockAPI, {
   generateDefaultMockAPIResponses,
   delayedResponse,
-  dispatchWorkRequestMock,
 } from '__test__/test-utils/mockAPI';
 
 import HeatmapPlot from 'components/data-exploration/heatmap/HeatmapPlot';
@@ -36,25 +34,10 @@ import { updatePlotConfig } from 'redux/actions/componentConfig';
 
 const experimentId = fake.EXPERIMENT_ID;
 
-// Mock hash so we can control the ETag that is produced by hash.MD5 when fetching work requests
-// EtagParams is the object that's passed to the function which generates ETag in fetchWork
-jest.mock('object-hash', () => {
-  const objectHash = jest.requireActual('object-hash');
-  const mockWorkResultETag = jest.requireActual('__test__/test-utils/mockWorkResultETag');
-  const mockWorkRequestETag = (ETagParams) => `${ETagParams.body.nGenes}-marker-genes`;
-  const mockGeneExpressionETag = (ETagParams) => `${ETagParams.missingGenesBody.genes.join('-')}-expression`;
-
-  return mockWorkResultETag(objectHash, mockWorkRequestETag, mockGeneExpressionETag);
-});
-
-jest.mock('utils/work/seekWorkResponse', () => ({
-  __esModule: true,
-  dispatchWorkRequest: jest.fn(() => true),
-}));
+jest.mock('utils/work/fetchWork');
 
 let vitesscePropsSpy = null;
 jest.mock('next/dynamic', () => () => (props) => {
-  console.log('*** we are coming here: ', props);
   vitesscePropsSpy = props;
   return 'Sup Im a heatmap';
 });
@@ -67,11 +50,8 @@ jest.mock('lodash/sampleSize', () => ({
 enableFetchMocks();
 
 const mockWorkerResponses = {
-  '5-marker-genes': markerGenesData5,
-  '2-marker-genes': markerGenesData2,
+  MarkerHeatmap: markerGenesData5,
 };
-
-const newGeneLoadETag = 'Ms4a4b-Smc4-Ccr7-Ifi27l2a-Gm8369-S100a4-S100a6-Tmem176a-Tmem176b-Cxcr6-5830411N06Rik-Lmo4-Il18r1-Atp2b1-Pde5a-Ccl5-Nkg7-Klrd1-AW112010-Klrc1-Gzma-Stmn1-Hmgn2-Pclaf-Tuba1b-Lyz2-Ifitm3-Fcer1g-Tyrobp-Cst3-Cd74-Igkc-Cd79a-H2-Ab1-H2-Eb1-loading_gene_id-expression';
 
 const loadAndRenderDefaultHeatmap = async (storeState) => {
   await act(async () => {
@@ -88,8 +68,6 @@ const loadAndRenderDefaultHeatmap = async (storeState) => {
 };
 
 const mockAPIResponses = generateDefaultMockAPIResponses(experimentId);
-
-const errorResponse = () => Promise.reject(new Error('Some error idk'));
 
 let storeState = null;
 
@@ -112,9 +90,9 @@ describe('HeatmapPlot', () => {
 
     fetchMock.mockIf(/.*/, mockAPI(mockAPIResponses));
 
-    dispatchWorkRequest
+    fetchWork
       .mockReset()
-      .mockImplementationOnce(dispatchWorkRequestMock(mockWorkerResponses));
+      .mockImplementation((_experimentId, body) => mockWorkerResponses[body.name]);
 
     vitesscePropsSpy = null;
 
@@ -125,11 +103,6 @@ describe('HeatmapPlot', () => {
   });
 
   it('Renders the heatmap component by default if everything loads', async () => {
-    fetchMock.mockIf(/.*/, mockAPI({
-      [`/v2/workRequest/${experimentId}/5-marker-genes$`]: () => Promise.resolve(JSON.stringify(true)),
-      ...mockAPIResponses,
-    }));
-
     await loadAndRenderDefaultHeatmap(storeState);
 
     expect(screen.getByText(/Sup Im a heatmap/i)).toBeInTheDocument();
@@ -154,15 +127,11 @@ describe('HeatmapPlot', () => {
 
   it('Shows loader message if the marker genes are loading', async () => {
     const customWorkerResponses = {
-      [`/v2/workRequest/${experimentId}/5-marker-genes`]: () => delayedResponse({ body: 'Not found', status: 404 }, 10000),
+      [`/v2/workRequest/${experimentId}`]: () => delayedResponse({ body: 'Not found', status: 404 }, 10000),
       ...mockWorkerResponses,
     };
 
     fetchMock.mockIf(/.*/, mockAPI(customWorkerResponses));
-
-    dispatchWorkRequest
-      .mockReset()
-      .mockImplementationOnce(dispatchWorkRequestMock(mockWorkerResponses));
 
     await loadAndRenderDefaultHeatmap(storeState);
 
@@ -170,14 +139,17 @@ describe('HeatmapPlot', () => {
   });
 
   it('Shows loader message if the marker genes are loaded but there\'s other selected genes still loading', async () => {
-    const customWorkerResponses = {
-      ...mockWorkerResponses,
-      [newGeneLoadETag]: () => delayedResponse({ body: 'Not found', status: 404 }, 4000),
-    };
+    let onEtagGeneratedCallback;
 
-    dispatchWorkRequest
+    // we need to manually call the onEtagGenerated callback
+    fetchWork
       .mockReset()
-      .mockImplementation(dispatchWorkRequestMock(customWorkerResponses));
+      .mockImplementationOnce(() => markerGenesData5)
+      .mockImplementationOnce((_experimentId, _body, _getState, _dispatch,
+        { onETagGenerated }) => {
+        onEtagGeneratedCallback = onETagGenerated;
+        return new Promise(() => { });
+      });
 
     await loadAndRenderDefaultHeatmap(storeState);
 
@@ -187,8 +159,9 @@ describe('HeatmapPlot', () => {
     // A new gene is being loaded
     await act(async () => {
       storeState.dispatch(loadDownsampledGeneExpression(experimentId, [...markerGenesData5.orderedGeneNames, 'loading_gene_id'], 'interactiveHeatmap'));
-      jest.runAllTimers();
     });
+
+    onEtagGeneratedCallback();
 
     // Loading screen shows up
     await waitFor(() => {
@@ -197,15 +170,9 @@ describe('HeatmapPlot', () => {
   });
 
   it('Handles marker genes loading error correctly', async () => {
-    const customWorkerResponses = {
-      ...mockWorkerResponses,
-      '5-marker-genes': errorResponse,
-    };
-
-    dispatchWorkRequest
+    fetchWork
       .mockReset()
-      .mockImplementationOnce(() => Promise.resolve(null))
-      .mockImplementationOnce(dispatchWorkRequestMock(customWorkerResponses));
+      .mockImplementationOnce(() => Promise.reject(new Error('Some error idk')));
 
     await loadAndRenderDefaultHeatmap(storeState);
 
@@ -214,14 +181,10 @@ describe('HeatmapPlot', () => {
   });
 
   it('Handles expression data loading error correctly', async () => {
-    const customWorkerResponses = {
-      ...mockWorkerResponses,
-      [newGeneLoadETag]: errorResponse,
-    };
-
-    dispatchWorkRequest
+    fetchWork
       .mockReset()
-      .mockImplementation(dispatchWorkRequestMock(customWorkerResponses));
+      .mockImplementationOnce(() => markerGenesData5)
+      .mockImplementationOnce(() => Promise.reject(new Error('Some error idk')));
 
     await act(async () => {
       await loadAndRenderDefaultHeatmap(storeState);
@@ -233,7 +196,6 @@ describe('HeatmapPlot', () => {
     // A new gene is being loaded
     await act(async () => {
       await storeState.dispatch(loadDownsampledGeneExpression(experimentId, [...markerGenesData5.orderedGeneNames, 'loading_gene_id'], 'interactiveHeatmap'));
-      jest.runAllTimers();
     });
 
     // Error screen shows up
@@ -257,8 +219,8 @@ describe('HeatmapPlot', () => {
       .cellIds.map((cellId) => cellId.toString());
 
     // It loaded once the marker genes
-    expect(dispatchWorkRequest).toHaveBeenCalledTimes(1);
-    expect(dispatchWorkRequest.mock.calls[0][1].name === 'MarkerHeatmap').toBe(true);
+    expect(fetchWork).toHaveBeenCalledTimes(1);
+    expect(fetchWork.mock.calls[0][1].name === 'MarkerHeatmap').toBe(true);
 
     // It shows cells in louvain-3
     expect(isSubset(cellsInLouvain3, vitesscePropsSpy.obsIndex)).toEqual(true);
@@ -273,17 +235,13 @@ describe('HeatmapPlot', () => {
     });
 
     // It performs the request with the new hidden cell sets array
-    expect(dispatchWorkRequest).toHaveBeenCalledTimes(2);
-    expect(dispatchWorkRequest.mock.calls[1]).toMatchSnapshot();
+    expect(fetchWork).toHaveBeenCalledTimes(2);
   });
 
   it('Shows an empty message when all cell sets are hidden ', async () => {
-    dispatchWorkRequest
-      .mockReset()
-      // Mock each of the loadMarkerGenes calls caused by hiding a cell set
-      .mockImplementation(dispatchWorkRequestMock(mockWorkerResponses));
-
-    await loadAndRenderDefaultHeatmap(storeState);
+    await act(async () => {
+      await loadAndRenderDefaultHeatmap(storeState);
+    });
 
     // Renders correctly
     expect(screen.getByText(/Sup Im a heatmap/i)).toBeInTheDocument();
@@ -293,16 +251,15 @@ describe('HeatmapPlot', () => {
       .cellSets.find(({ key: parentKey }) => parentKey === 'louvain')
       .children.map(({ key: cellSetKey }) => cellSetKey);
 
-    dispatchWorkRequest
+    fetchWork
       .mockReset()
       // Last call (all the cellSets are hidden) return empty
-      .mockImplementationOnce(() => Promise.resolve({ data: noCellsGeneExpression }));
-
-    const hideAllCellsPromise = louvainClusterKeys.map(async (cellSetKey) => {
-      storeState.dispatch(setCellSetHiddenStatus(cellSetKey));
-    });
+      .mockImplementationOnce(() => noCellsGeneExpression);
 
     await act(async () => {
+      const hideAllCellsPromise = louvainClusterKeys.map(async (cellSetKey) => {
+        storeState.dispatch(setCellSetHiddenStatus(cellSetKey));
+      });
       await Promise.all(hideAllCellsPromise);
     });
 

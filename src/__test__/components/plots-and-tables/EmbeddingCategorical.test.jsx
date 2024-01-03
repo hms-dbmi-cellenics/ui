@@ -109,13 +109,13 @@ const initialState = {
 };
 const store = mockStore(initialState);
 let component;
-
+const method = 'UMAP';
 const {
   plotData,
   cellSetLegendsData,
 } = generateData(cellSets, config.selectedSample, config.selectedCellSet, embeddingData);
 
-const spec = generateSpec(config, plotData, cellSetLegendsData);
+const spec = generateSpec(config, method, plotData, cellSetLegendsData);
 
 const testPlot = () => mount(
   <Provider store={store}>

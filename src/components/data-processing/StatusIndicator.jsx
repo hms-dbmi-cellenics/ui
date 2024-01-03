@@ -140,7 +140,7 @@ const StatusIndicator = (props) => {
           {statusIndicators[status]?.description}
         </Paragraph>
       </>
-    );;
+    );
   };
 
   const renderIndicator = () => {
@@ -172,9 +172,10 @@ const StatusIndicator = (props) => {
             </Card>
           ),
           key: 'status-indicator',
-        }
-      ]
-    }}>
+        },
+      ],
+    }}
+    >
       <Button
         type='text'
         style={{ paddingTop: '1px' }}

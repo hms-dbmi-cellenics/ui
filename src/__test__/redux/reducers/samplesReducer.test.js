@@ -16,11 +16,11 @@ import {
   SAMPLES_VALIDATING_UPDATED,
 } from 'redux/actionTypes/samples';
 import { EXPERIMENTS_METADATA_RENAME } from 'redux/actionTypes/experiments';
+import sampleFileType from 'utils/sampleFileType';
 
 describe('samplesReducer', () => {
   const mockUuid1 = 'asd123';
   const mockUuid2 = 'qwe234';
-  const fileName = 'features.tsv';
 
   const sample1 = {
     ...sampleTemplate,
@@ -55,7 +55,6 @@ describe('samplesReducer', () => {
 
   const mockFile = {
     ...sampleFileTemplate,
-    name: fileName,
   };
 
   it('Reduces identical state on unknown action', () => expect(
@@ -108,17 +107,13 @@ describe('samplesReducer', () => {
       type: SAMPLES_FILE_UPDATE,
       payload: {
         sampleUuid: mockUuid1,
-        fileName,
+        sampleFileType: sampleFileType.FEATURES_10_X,
         fileDiff: mockFile,
         lastModified: 'newLastModified',
       },
     });
 
-    expect(newState[sample1.uuid].fileNames).toEqual([fileName]);
-    expect(newState[sample1.uuid].files[fileName]).toEqual({
-      ...mockFile,
-      lastModified: 'newLastModified',
-    });
+    expect(newState[sample1.uuid].files[sampleFileType.FEATURES_10_X]).toEqual(mockFile);
     expect(newState).toMatchSnapshot();
   });
 
@@ -397,5 +392,19 @@ describe('samplesReducer', () => {
     expect(newState.meta.validating).toEqual(['otherValidatingExperimentId']);
 
     expect(newState).toMatchSnapshot();
+  });
+
+  it('Sample file update doesnt change anything if the sample no longer exists', () => {
+    const newState = samplesReducer(initialState, {
+      type: SAMPLES_FILE_UPDATE,
+      payload: {
+        sampleUuid: mockUuid1,
+        sampleFileType: sampleFileType.FEATURES_10_X,
+        fileDiff: mockFile,
+        lastModified: 'newLastModified',
+      },
+    });
+
+    expect(newState).toEqual(initialState);
   });
 });

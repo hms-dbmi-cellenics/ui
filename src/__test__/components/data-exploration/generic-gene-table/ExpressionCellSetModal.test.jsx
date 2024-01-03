@@ -9,7 +9,8 @@ import { makeStore } from 'redux/store';
 import ExpressionCellSetModal from 'components/data-exploration/generic-gene-table/ExpressionCellSetModal';
 
 import { GENES_SELECT } from 'redux/actionTypes/genes';
-import { dispatchWorkRequest } from 'utils/work/seekWorkResponse';
+import fetchWork from 'utils/work/fetchWork';
+
 import { loadBackendStatus } from 'redux/actions/backendStatus';
 import { updateExperimentInfo } from 'redux/actions/experimentSettings';
 
@@ -24,9 +25,7 @@ const mockOnCancel = jest.fn();
 
 jest.mock('utils/pushNotificationMessage');
 
-jest.mock('utils/work/seekWorkResponse', () => ({
-  dispatchWorkRequest: jest.fn(),
-}));
+jest.mock('utils/work/fetchWork');
 
 const renderExpressionCellSetModal = async (storeState) => {
   await act(async () => {
@@ -96,12 +95,12 @@ describe('ExpressionCellSetModal', () => {
       userEvent.click(screen.getByText(createButtonText));
     });
 
-    const requestParams = dispatchWorkRequest.mock.calls[0];
+    const requestParams = fetchWork.mock.calls[0];
     expect(requestParams).toMatchSnapshot();
   });
 
   it('Modal closes on success', async () => {
-    dispatchWorkRequest.mockImplementationOnce(() => new Promise((resolve) => {
+    fetchWork.mockImplementationOnce(() => new Promise((resolve) => {
       setTimeout(resolve({ data: 'mockData' }), 2000);
     }));
 
@@ -118,7 +117,7 @@ describe('ExpressionCellSetModal', () => {
   });
 
   it('Modal shows error notification and does not close on error', async () => {
-    dispatchWorkRequest.mockImplementationOnce(() => Promise.reject(new Error('Some error')));
+    fetchWork.mockImplementationOnce(() => Promise.reject(new Error('Some error')));
 
     await renderExpressionCellSetModal(storeState);
 

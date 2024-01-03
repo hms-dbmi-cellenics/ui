@@ -7,7 +7,7 @@ import PropTypes from 'prop-types';
 
 import launchPathwayService from 'utils/pathwayAnalysis/launchPathwayService';
 import getDiffExprGenes from 'utils/extraActionCreators/differentialExpression/getDiffExprGenes';
-import writeToFileURL from 'utils/writeToFileURL';
+import writeToFileURL from 'utils/upload/writeToFileURL';
 import downloadFromUrl from 'utils/downloadFromUrl';
 
 import getBackgroundExpressedGenes from 'utils/extraActionCreators/differentialExpression/getBackgroundExpressedGenes';
@@ -81,7 +81,7 @@ const LaunchPathwayAnalysisModal = (props) => {
   return (
     <>
       <Modal
-        visible
+        open
         title='Pathway Analysis'
         width='50%'
         onCancel={onCancel}

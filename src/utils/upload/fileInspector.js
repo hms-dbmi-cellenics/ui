@@ -23,7 +23,7 @@ const isGzipped = async (file) => {
 
 const inspectFile = async (file, technology) => {
   if (Object.values(sampleTech).includes(technology)
-   && !techOptions[technology].isNameValid(file.name)) {
+    && !techOptions[technology].isNameValid(file.name)) {
     return Verdict.INVALID_NAME;
   }
 
@@ -34,11 +34,15 @@ const inspectFile = async (file, technology) => {
     // only extension is checked
     return Verdict.VALID_ZIPPED;
   } if (technology === sampleTech.RHAPSODY) {
+    // TODO: check why we would forbid non-gzipped files
     return inspectRhapsodyFile(file);
-  }
-  if (technology === sampleTech.H5) {
+  } if (technology === sampleTech.H5) {
     return inspectH5File(file);
+  } if (technology === sampleTech.PARSE) {
+    // TODO: look into adding validation
+    return inspectParseFile(file);
   }
+
   return Verdict.INVALID_FORMAT;
 };
 
@@ -83,7 +87,9 @@ const inspect10XFile = async (file) => {
   return Verdict.INVALID_FORMAT;
 };
 
-const inspectRhapsodyFile = async (file) => (isGzipped(file));
+const inspectRhapsodyFile = async (file) => await isGzipped(file);
+
+const inspectParseFile = async (file) => await isGzipped(file);
 
 export {
   inspectFile,

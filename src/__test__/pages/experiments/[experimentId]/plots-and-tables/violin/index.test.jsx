@@ -8,17 +8,16 @@ import { act } from 'react-dom/test-utils';
 import { Provider } from 'react-redux';
 import { loadBackendStatus } from 'redux/actions/backendStatus';
 import { makeStore } from 'redux/store';
-import { dispatchWorkRequest } from 'utils/work/seekWorkResponse';
+import fetchWork from 'utils/work/fetchWork';
+
 import markerGenes1 from '__test__/data/marker_genes_1.json';
 import paginatedGeneExpressionData from '__test__/data/paginated_gene_expression.json';
 
 import fake from '__test__/test-utils/constants';
 import mockAPI, {
-  dispatchWorkRequestMock,
   generateDefaultMockAPIResponses,
   promiseResponse,
   statusResponse,
-  workerDataResult,
 } from '__test__/test-utils/mockAPI';
 import createTestComponentFactory from '__test__/test-utils/testComponentFactory';
 
@@ -29,31 +28,16 @@ jest.mock('react-resize-detector', () => (props) => {
   return children({ width: 800, height: 800 });
 });
 
-// Mock hash so we can control the ETag that is produced by hash.MD5 when fetching work requests
-// EtagParams is the object that's passed to the function which generates ETag in fetchWork
-jest.mock('object-hash', () => {
-  const objectHash = jest.requireActual('object-hash');
-  const mockWorkResultETag = jest.requireActual('__test__/test-utils/mockWorkResultETag');
-
-  const mockWorkRequestETag = () => 'list-genes';
-  const mockGeneExpressionETag = () => '1-marker-genes';
-
-  return mockWorkResultETag(objectHash, mockWorkRequestETag, mockGeneExpressionETag);
-});
-
-jest.mock('utils/work/seekWorkResponse', () => ({
-  __esModule: true,
-  dispatchWorkRequest: jest.fn(),
-}));
+jest.mock('utils/work/fetchWork');
 
 const mockWorkerResponses = {
-  'list-genes': paginatedGeneExpressionData,
-  '1-marker-genes': markerGenes1,
+  ListGenes: paginatedGeneExpressionData,
+  GeneExpression: markerGenes1,
 };
 
 const experimentId = fake.EXPERIMENT_ID;
-const plotUuid = 'ViolinMain';
-const multiViewUuid = 'multiView-ViolinMain';
+const plotUuid = 'ViolinMain-0';
+const multiViewUuid = 'multiView-violin';
 
 const customAPIResponses = {
   [`/plots/${plotUuid}$`]: (req) => {
@@ -91,12 +75,9 @@ describe('ViolinIndex', () => {
   beforeEach(async () => {
     jest.clearAllMocks();
 
-    dispatchWorkRequest
+    fetchWork
       .mockReset()
-      // 1st call to list genes
-      .mockImplementationOnce(dispatchWorkRequestMock(mockWorkerResponses))
-      // 2nd call to load gene expression
-      .mockImplementationOnce(dispatchWorkRequestMock(mockWorkerResponses));
+      .mockImplementation((_experimentId, body) => mockWorkerResponses[body.name]);
 
     fetchMock.resetMocks();
     fetchMock.mockIf(/.*/, mockAPI(defaultResponses));
@@ -109,8 +90,8 @@ describe('ViolinIndex', () => {
 
   it('Loads controls and elements', async () => {
     await renderViolinPage(storeState);
-
     expect(screen.getByText(/Gene selection/i)).toBeInTheDocument();
+
     expect(screen.getByText(/View multiple plots/i)).toBeInTheDocument();
     expect(screen.getByText(/Select data/i)).toBeInTheDocument();
     expect(screen.getByText(/Data transformation/i)).toBeInTheDocument();
@@ -124,33 +105,6 @@ describe('ViolinIndex', () => {
     await renderViolinPage(storeState);
 
     expect(screen.getByRole('graphics-document', { name: 'Violin plot' })).toBeInTheDocument();
-  });
-
-  it('Changes the shown gene', async () => {
-    await renderViolinPage(storeState);
-
-    userEvent.click(screen.getByText(/Gene selection/i));
-
-    const searchBox = screen.getByRole('combobox', { name: 'SearchBar' });
-
-    userEvent.clear(searchBox);
-    userEvent.type(searchBox, 'cc');
-
-    const option = screen.getByTitle('Ccl5');
-
-    await act(async () => {
-      // the element has pointer-events set to 'none', skip check
-      // based on https://stackoverflow.com/questions/61080116
-      userEvent.click(option, undefined, { skipPointerEventsCheck: true });
-    });
-
-    userEvent.click(screen.getByText('Search'));
-
-    expect(searchBox.textContent).toBe('');
-
-    await waitFor(() => expect(screen.getByRole('graphics-document', { name: 'Violin plot' })).toBeInTheDocument());
-
-    expect(storeState.getState().componentConfig[plotUuid].config.shownGene).toBe('Ccl5');
   });
 
   it('Changes to raw expression', async () => {
@@ -190,7 +144,7 @@ describe('ViolinIndex', () => {
     expect(_.isEqual([multiViewConfig.nrows, multiViewConfig.ncols], [2, 2])).toBe(true);
 
     // New plot's config is correct
-    expect(storeState.getState().componentConfig['ViolinMain-0']).toMatchSnapshot('new-config');
+    expect(storeState.getState().componentConfig['ViolinMain-1']).toMatchSnapshot('new-config');
   });
 
   it('Adds new plot using same config as previous plot', async () => {
@@ -220,5 +174,31 @@ describe('ViolinIndex', () => {
 
     // New plot's config contains normalised set to raw too
     expect(storeState.getState().componentConfig['ViolinMain-0'].config.normalised).toEqual('raw');
+  });
+  it('Changes the shown gene', async () => {
+    await renderViolinPage(storeState);
+
+    userEvent.click(screen.getByText(/Gene selection/i));
+
+    const searchBox = screen.getAllByRole('combobox', { name: 'SearchBar' })[0];
+
+    userEvent.clear(searchBox);
+    userEvent.type(searchBox, 'cc');
+
+    const option = screen.getByTitle('Ccl5');
+
+    await act(async () => {
+      // the element has pointer-events set to 'none', skip check
+      // based on https://stackoverflow.com/questions/61080116
+      userEvent.click(option, undefined, { skipPointerEventsCheck: true });
+    });
+
+    userEvent.click(screen.getByText('Search'));
+
+    expect(searchBox.textContent).toBe('');
+
+    await waitFor(() => expect(screen.getByRole('graphics-document', { name: 'Violin plot' })).toBeInTheDocument());
+
+    expect(storeState.getState().componentConfig[plotUuid].config.shownGene).toBe('Ccl5');
   });
 });

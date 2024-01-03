@@ -22,7 +22,7 @@ import config from 'config';
 import { sampleTech } from 'utils/constants';
 import techOptions, { techNamesToDisplay } from 'utils/upload/fileUploadSpecifications';
 import handleError from 'utils/http/handleError';
-import { fileObjectToFileRecord } from 'utils/upload/processUpload';
+import { fileObjectToFileRecord, getFileSampleAndName } from 'utils/upload/processUpload';
 import integrationTestConstants from 'utils/integrationTestConstants';
 import endUserMessages from 'utils/endUserMessages';
 
@@ -50,6 +50,7 @@ const extraHelpText = {
       </ul>
     </Paragraph>
   ),
+  [sampleTech.PARSE]: () => <></>,
 };
 
 const FileUploadModal = (props) => {
@@ -67,7 +68,7 @@ const FileUploadModal = (props) => {
   const [filesList, setFilesList] = useState([]);
 
   useEffect(() => {
-    setCanUpload(filesList.length && filesList.every((file) => file.valid));
+    setCanUpload(filesList.length && filesList.every((file) => !file.errors));
   }, [filesList]);
 
   useEffect(() => {
@@ -107,8 +108,8 @@ const FileUploadModal = (props) => {
 
       filteredFiles = filteredFiles
         // Remove all files that aren't in a folder
-        .filter((file) => {
-          const inFolder = file.path.includes('/');
+        .filter((fileObject) => {
+          const inFolder = fileObject.path.includes('/');
 
           filesNotInFolder ||= !inFolder;
 
@@ -169,10 +170,12 @@ const FileUploadModal = (props) => {
     </>
   );
 
+  const getFilePathToDisplay = (fileObject) => _.trim(Object.values(getFileSampleAndName(fileObject.path)).join('/'), '/');
+
   return (
     <Modal
       title=''
-      visible
+      open
       onCancel={onCancel}
       width='50%'
       footer={(
@@ -210,7 +213,8 @@ const FileUploadModal = (props) => {
                   defaultValue={selectedTech}
                   disabled={currentSelectedTech}
                   onChange={(value) => setSelectedTech(value)}
-                  style={{ width: 180 }} // Fix the width so that the dropdown doesn't change size when the value changes
+                  // Fix the width so that the dropdown doesn't change size when the value changes
+                  style={{ width: 180 }}
                 >
                   {
                     Object.values(sampleTech)
@@ -300,7 +304,7 @@ const FileUploadModal = (props) => {
                     style={{ width: '100%' }}
                   >
                     <Space>
-                      {file.valid
+                      {!file.errors
                         ? (
                           <>
                             <CheckCircleTwoTone twoToneColor='#52c41a' />
@@ -314,7 +318,7 @@ const FileUploadModal = (props) => {
                         ellipsis={{ tooltip: file.name }}
                         style={{ width: '200px' }}
                       >
-                        {file.name}
+                        {getFilePathToDisplay(file.fileObject)}
 
                       </Text>
                       <DeleteOutlined style={{ color: 'crimson' }} onClick={() => { removeFile(file.name); }} />
