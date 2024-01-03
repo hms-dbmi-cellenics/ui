@@ -13,7 +13,6 @@ import updateCellSetSelected from './updateCellSetSelected';
 import setCellSetHiddenStatus from './setCellSetHiddenStatus';
 import unhideAllCellSets from './unhideAllCellSets';
 
-
 export {
   createCellSet,
   deleteCellSet,
