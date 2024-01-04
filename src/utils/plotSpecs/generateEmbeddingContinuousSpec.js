@@ -3,7 +3,6 @@
 import { getAllCells, getSampleCells } from 'utils/cellSets';
 
 const generateSpec = (config, method, plotData) => {
-  console.log('METHOD IS ', method, typeof (config.axes.xAxisText), 'yes');
   const xScaleDomain = config.axesRanges.xAxisAuto
     ? { data: 'plotData', field: 'x' }
     : [config.axesRanges.xMin, config.axesRanges.xMax];

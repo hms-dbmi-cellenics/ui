@@ -45,7 +45,6 @@ const getExperimentInfo = async (context, store, Auth) => {
   let user;
   try {
     user = await Auth.currentAuthenticatedUser();
-    console.log('HRELLO!!!!');
   } catch (e) {
     if (e === 'The user is not authenticated') {
       throw new APIError(httpStatusCodes.UNAUTHORIZED);
@@ -56,7 +55,7 @@ const getExperimentInfo = async (context, store, Auth) => {
   const jwt = user.getSignInUserSession().getIdToken().getJwtToken();
 
   const url = `${req.protocol}://${req.get('host')}${req.originalUrl}`;
-  console.log('HELLO AGAIN!!!!!');
+
   const experimentDataV2 = await fetchAPI(
     `/v2/experiments/${experimentId}`,
     {},
