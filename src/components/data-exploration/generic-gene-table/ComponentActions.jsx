@@ -60,7 +60,7 @@ const ComponentActions = (props) => {
   }
 
   return (
-    <Dropdown arrow type='link' size='small' menu={menu} trigger={['click']}>
+    <Dropdown arrow type='link' size='small' overlay={menu} trigger={['click']}>
       <Button type='link' size='small'>
         {name}
       </Button>

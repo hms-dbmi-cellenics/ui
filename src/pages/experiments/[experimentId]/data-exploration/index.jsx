@@ -183,7 +183,7 @@ const ExplorationViewPage = ({
           <Dropdown
             trigger={['click']}
             key='search-menu-dropdown'
-            menu={searchMenu}
+            overlay={searchMenu}
             open={addMenuVisible}
             onOpenChange={(visible) => setAddMenuVisible(visible)}
           >
