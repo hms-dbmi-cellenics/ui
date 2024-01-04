@@ -25,8 +25,8 @@ const embeddingCategoricalInitialConfig = {
   },
   axes: {
     ...axesBaseState,
-    xAxisText: 'Umap 1',
-    yAxisText: 'Umap 2',
+    xAxisText: '',
+    yAxisText: '',
     defaultValues: ['x', 'y'],
     offset: 0,
   },
@@ -57,8 +57,8 @@ const embeddingContinuousInitialConfig = {
   },
   axes: {
     ...axesBaseState,
-    xAxisText: 'Umap 1',
-    yAxisText: 'Umap 2',
+    xAxisText: '',
+    yAxisText: '',
     defaultValues: ['x', 'y'],
     offset: 10,
   },
@@ -297,8 +297,8 @@ const trajectoryAnalysisInitialConfig = {
   },
   axes: {
     ...axesBaseState,
-    xAxisText: 'Umap 1',
-    yAxisText: 'Umap 2',
+    xAxisText: '',
+    yAxisText: '',
     defaultValues: ['x', 'y'],
   },
   axesRanges: axesRangesBaseState,

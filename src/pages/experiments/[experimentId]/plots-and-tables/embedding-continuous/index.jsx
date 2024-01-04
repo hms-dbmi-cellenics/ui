@@ -147,7 +147,7 @@ const ContinuousEmbeddingPage = ({ experimentId }) => {
         extraControlPanels={renderExtraPanels()}
         defaultActiveKey='view-multiple-plots'
         onPlotReset={() => dispatch(
-          updatePlotConfig(multiViewUuid, { nrows: 1, ncols: 1, plotUuids: [] }),
+          updatePlotConfig(multiViewUuid, { nrows: 1, ncols: 1, plotUuids: [`${plotUuid}-0`] }),
         )}
         onUpdate={updateAll ? updateAllWithChanges : updatePlotWithChanges}
       >

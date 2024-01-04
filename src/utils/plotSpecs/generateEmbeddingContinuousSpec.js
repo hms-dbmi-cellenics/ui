@@ -3,6 +3,7 @@
 import { getAllCells, getSampleCells } from 'utils/cellSets';
 
 const generateSpec = (config, method, plotData) => {
+  console.log('METHOD IS ', method, typeof (config.axes.xAxisText), 'yes');
   const xScaleDomain = config.axesRanges.xAxisAuto
     ? { data: 'plotData', field: 'x' }
     : [config.axesRanges.xMin, config.axesRanges.xMax];
@@ -78,7 +79,7 @@ const generateSpec = (config, method, plotData) => {
         grid: true,
         domain: true,
         orient: 'bottom',
-        title: config.axes.xAxisText ?? `${method} 1`,
+        title: config.axes.xAxisText || `${method} 1`,
         titleFont: config.fontStyle.font,
         labelFont: config.fontStyle.font,
         labelColor: config.colour.masterColour,
@@ -105,7 +106,7 @@ const generateSpec = (config, method, plotData) => {
         gridWidth: (config.axes.gridWidth / 20),
         tickColor: config.colour.masterColour,
         offset: config.axes.offset,
-        title: config.axes.yAxisText ?? `${method} 2`,
+        title: config.axes.yAxisText || `${method} 2`,
         titleFont: config.fontStyle.font,
         labelFont: config.fontStyle.font,
         labelColor: config.colour.masterColour,
