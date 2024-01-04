@@ -58,7 +58,7 @@ const ViolinIndex = ({ experimentId }) => {
   }, []);
 
   const resetMultiView = () => {
-    updateMultiViewWithChanges({ nrows: 1, ncols: 1, plotUuids: [] });
+    updateMultiViewWithChanges({ nrows: 1, ncols: 1, plotUuids: [`${plotUuid}-0`] });
   };
 
   const plotStylingConfig = [

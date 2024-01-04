@@ -103,7 +103,8 @@ const ContinuousEmbeddingPlot = (props) => {
       || loading
       || !cellSets.accessible
       || embeddingLoading
-      || Object.keys(plotSpec).length === 0) {
+      || Object.keys(plotSpec).length === 0
+      || !plotData?.length) {
       return (
         <center>
           <Loader experimentId={experimentId} />

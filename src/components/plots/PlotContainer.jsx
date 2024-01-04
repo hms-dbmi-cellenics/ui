@@ -37,6 +37,7 @@ const PlotContainer = (props) => {
 
   const [isResetDisabled, setIsResetDisabled] = useState(true);
   const [tileDirection, setTileDirection] = useState(DEFAULT_ORIENTATION);
+
   const { config } = useSelector((state) => state.componentConfig[plotUuid] || {});
   const debounceSave = useCallback(
     _.debounce(() => dispatch(savePlotConfig(experimentId, plotUuid)), saveDebounceTime), [plotUuid],

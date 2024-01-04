@@ -94,7 +94,7 @@ const MultiViewGrid = (props) => {
       dispatch(updatePlotConfig(firstPlotUuid,
         { shownGene: highestDispersionGene, title: { text: highestDispersionGene } }));
     }
-  }, [plotConfigs]);
+  }, [plotConfigs, highestDispersionGene]);
 
   useEffect(() => {
     // initial set up if there are no plots

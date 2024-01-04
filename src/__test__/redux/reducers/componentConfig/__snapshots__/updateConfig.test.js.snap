@@ -16,8 +16,8 @@ exports[`updateConfig Checking if empty update doesnt change anything 1`] = `
         "offset": 0,
         "titleFontSize": 13,
         "xAxisRotateLabels": false,
-        "xAxisText": "Umap 1",
-        "yAxisText": "Umap 2",
+        "xAxisText": null,
+        "yAxisText": null,
       },
       "axesRanges": {
         "xAxisAuto": true,

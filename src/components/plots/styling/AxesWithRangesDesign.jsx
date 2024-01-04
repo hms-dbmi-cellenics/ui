@@ -12,7 +12,6 @@ const AxesWithRangesDesign = (props) => {
   const {
     config, onUpdate,
   } = props;
-
   const hideXRange = typeof config.axesRanges.xAxisAuto === 'undefined';
 
   const hideYRange = typeof config.axesRanges.yAxisAuto === 'undefined';
