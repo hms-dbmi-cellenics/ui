@@ -18,7 +18,7 @@ const fileTypeToDisplay = {
   [sampleFileType.SEURAT]: 'seurat rds',
   [sampleFileType.FEATURES_PARSE]: 'all_genes.csv',
   [sampleFileType.BARCODES_PARSE]: 'cell_metadata.csv',
-  [sampleFileType.MATRIX_PARSE]: 'DGE.mtx',
+  [sampleFileType.MATRIX_PARSE]: 'count_matrix.mtx',
 };
 
 export default sampleFileType;
