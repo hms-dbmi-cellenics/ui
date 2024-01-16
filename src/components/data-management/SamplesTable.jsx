@@ -36,7 +36,7 @@ import DraggableBodyRow from 'components/data-management/DraggableBodyRow';
 import { metadataNameToKey, metadataKeyToName, temporaryMetadataKey } from 'utils/data-management/metadataUtils';
 import integrationTestConstants from 'utils/integrationTestConstants';
 import useConditionalEffect from 'utils/customHooks/useConditionalEffect';
-import fileUploadSpecifications from 'utils/upload/fileUploadSpecifications';
+import fileUploadSpecifications from 'utils/upload/fileUploadUtils';
 import { sampleTech } from 'utils/constants';
 import { fileTypeToDisplay } from 'utils/sampleFileType';
 

@@ -20,7 +20,7 @@ import { useSelector } from 'react-redux';
 
 import config from 'config';
 import { sampleTech } from 'utils/constants';
-import techOptions, { techNamesToDisplay } from 'utils/upload/fileUploadSpecifications';
+import techOptions, { techNamesToDisplay } from 'utils/upload/fileUploadUtils';
 import handleError from 'utils/http/handleError';
 import { fileObjectToFileRecord, getFileSampleAndName } from 'utils/upload/processUpload';
 import integrationTestConstants from 'utils/integrationTestConstants';

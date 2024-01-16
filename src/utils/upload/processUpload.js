@@ -11,7 +11,7 @@ import { inspectFile, Verdict } from 'utils/upload/fileInspector';
 import fetchAPI from 'utils/http/fetchAPI';
 
 import { sampleTech } from 'utils/constants';
-import fileUploadSpecifications from 'utils/upload/fileUploadSpecifications';
+import fileUploadSpecifications from 'utils/upload/fileUploadUtils';
 import processMultipartUpload from 'utils/upload/processMultipartUpload';
 import endUserMessages from 'utils/endUserMessages';
 import pushNotificationMessage from 'utils/pushNotificationMessage';

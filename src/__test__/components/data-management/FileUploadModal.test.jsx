@@ -11,7 +11,7 @@ import configureMockStore from 'redux-mock-store';
 import handleError from 'utils/http/handleError';
 import endUserMessages from 'utils/endUserMessages';
 
-import techOptions, { techNamesToDisplay } from 'utils/upload/fileUploadSpecifications';
+import techOptions, { techNamesToDisplay } from 'utils/upload/fileUploadUtils';
 import { sampleTech } from 'utils/constants';
 
 import mockFile from '__test__/test-utils/mockFile';
