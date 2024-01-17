@@ -18,7 +18,7 @@ import fetchAPI from 'utils/http/fetchAPI';
 import { modules } from 'utils/constants';
 import { useAppRouter } from 'utils/AppRouteProvider';
 import { useDispatch } from 'react-redux';
-import { techNamesToDisplay } from 'utils/upload/fileUploadSpecifications';
+import { techNamesToDisplay } from 'utils/upload/fileUploadUtils';
 
 const { Paragraph } = Typography;
 

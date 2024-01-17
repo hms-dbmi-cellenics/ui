@@ -1,12 +1,17 @@
+import _ from 'lodash';
+
 import { sampleTech } from 'utils/constants';
+import endUserMessages from 'utils/endUserMessages';
+import handleError from 'utils/http/handleError';
 import sampleFileType from 'utils/sampleFileType';
+import { fileObjectToFileRecord } from 'utils/upload/processUpload';
 
 const techNamesToDisplay = {
   [sampleTech['10X']]: '10X Chromium',
   [sampleTech.RHAPSODY]: 'BD Rhapsody',
   [sampleTech.SEURAT]: 'Seurat',
   [sampleTech.H5]: '10X Chromium - H5',
-  [sampleTech.PARSE]: 'Parse Evercode',
+  [sampleTech.PARSE]: 'Parse Evercode WT',
 };
 
 const matchFileName = (fileName, fileNames) => {
@@ -15,8 +20,44 @@ const matchFileName = (fileName, fileNames) => {
   return regexp.test(fileName);
 };
 
+const filterFilesDefaultConstructor = (selectedTech) => async (files) => {
+  let filteredFiles = files;
+
+  let filesNotInFolder = false;
+
+  filteredFiles = filteredFiles
+    // Remove all files that aren't in a folder
+    .filter((fileObject) => {
+      const inFolder = fileObject.path.includes('/');
+
+      filesNotInFolder ||= !inFolder;
+
+      return inFolder;
+    })
+    // Remove all files that don't fit the current technology's valid names
+    .filter((file) => fileUploadUtils[selectedTech].isNameValid(file.name));
+
+  if (filesNotInFolder) {
+    handleError('error', endUserMessages.ERROR_FILES_FOLDER);
+  }
+
+  return await Promise.all(filteredFiles.map((file) => (
+    fileObjectToFileRecord(file, selectedTech)
+  )));
+};
+
+const getFilePathToDisplayDefaultConstructor = (selectedTech) => (filePath) => (
+  _.trim(Object.values(fileUploadUtils[selectedTech].getFileSampleAndName(filePath)).join('/'), '/')
+);
+
+const getFileSampleAndNameDefault = (filePath) => {
+  const [sample, name] = _.takeRight(filePath.split('/'), 2);
+
+  return { sample, name };
+};
+
 /* eslint-disable max-len */
-const fileUploadSpecifications = {
+const fileUploadUtils = {
   [sampleTech['10X']]: {
     acceptedFiles: new Set([
       'barcodes.tsv',
@@ -60,6 +101,9 @@ const fileUploadSpecifications = {
 
       return fileNameToType[name];
     },
+    filterFiles: filterFilesDefaultConstructor(sampleTech['10X']),
+    getFileSampleAndName: getFileSampleAndNameDefault,
+    getFilePathToDisplay: getFilePathToDisplayDefaultConstructor(sampleTech['10X']),
   },
   [sampleTech.SEURAT]: {
     validExtensionTypes: ['.rds'],
@@ -86,6 +130,10 @@ const fileUploadSpecifications = {
       );
     },
     getCorrespondingType: () => 'seurat',
+    // For more information on this one check the TODO1 at FileUploadModal
+    filterFiles: () => { throw new Error('Not Implemented'); },
+    getFilePathToDisplay: getFilePathToDisplayDefaultConstructor(sampleTech.SEURAT),
+    getFileSampleAndName: getFileSampleAndNameDefault,
   },
   [sampleTech.RHAPSODY]: {
     acceptedFiles: new Set(['expression_data.st', 'expression_data.st.gz']),
@@ -102,6 +150,9 @@ const fileUploadSpecifications = {
     webkitdirectory: '',
     isNameValid: (fileName) => fileName.toLowerCase().match(/.*expression_data.st(.gz)?$/),
     getCorrespondingType: () => 'rhapsody',
+    filterFiles: filterFilesDefaultConstructor(sampleTech.RHAPSODY),
+    getFilePathToDisplay: getFilePathToDisplayDefaultConstructor(sampleTech.RHAPSODY),
+    getFileSampleAndName: getFileSampleAndNameDefault,
   },
   [sampleTech.H5]: {
     acceptedFiles: new Set(['matrix.h5', 'matrix.h5.gz']),
@@ -112,6 +163,9 @@ const fileUploadSpecifications = {
     You can change this name later in Data Management.`],
     isNameValid: (fileName) => fileName.toLowerCase().match(/.*matrix.h5(.gz)?$/),
     getCorrespondingType: () => '10x_h5',
+    filterFiles: filterFilesDefaultConstructor(sampleTech.H5),
+    getFilePathToDisplay: getFilePathToDisplayDefaultConstructor(sampleTech.H5),
+    getFileSampleAndName: getFileSampleAndNameDefault,
   },
   [sampleTech.PARSE]: {
     acceptedFiles: new Set([
@@ -121,16 +175,20 @@ const fileUploadSpecifications = {
       'cell_metadata.csv.gz',
       'DGE.mtx',
       'DGE.mtx.gz',
+      'count_matrix.mtx',
+      'count_matrix.mtx.gz',
     ]),
     inputInfo: [
       ['<code>all_genes.csv</code> or <code>all_genes.csv.gz</code>'],
       ['<code>cell_metadata.csv</code> or <code>cell_metadata.csv.gz</code>'],
-      ['<code>DGE.mtx</code> or <code>DGE.mtx.gz</code>'],
+      ['<code>count_matrix.mtx</code>, <code>count_matrix.mtx.gz</code>, <code>DGE.mtx</code> or <code>DGE.mtx.gz</code>'],
     ],
     requiredFiles: ['matrixParse', 'barcodesParse', 'featuresParse'],
     fileUploadParagraphs: [
-      'For each sample, upload a folder containing the 3 required files. The folder\'s name will be used to name the sample in it. You can change this name later in Data Management.',
-      'The required files for each sample are:',
+      'Directly upload the single folder output by the Parse\'s pipeline.',
+      'For each sample, the files contained in either the "DGE_unfiltered" or "DGE_filtered" folders will be used. The containing folder\'s name will be used to name the sample in it. You can change this name later in Data Management.',
+      'Note that files inside the folder "all-samples" ("all-well" in previous versions) are not supported currently and will be ignored.',
+      'The expected files in at least one of the DGE folders are:',
     ],
     dropzoneText: 'Drag and drop folders here or click to browse.',
     // setting to empty string allows folder upload on dropzone click
@@ -144,12 +202,78 @@ const fileUploadSpecifications = {
         'cell_metadata.csv': sampleFileType.BARCODES_PARSE,
         'DGE.mtx.gz': sampleFileType.MATRIX_PARSE,
         'DGE.mtx': sampleFileType.MATRIX_PARSE,
+        'count_matrix.mtx': sampleFileType.MATRIX_PARSE,
+        'count_matrix.mtx.gz': sampleFileType.MATRIX_PARSE,
       };
 
       return fileNameToType[fileName];
+    },
+    filterFiles: async (files) => {
+      const sampleNameMatcher = '([^/]+)';
+
+      const parseUtils = fileUploadUtils[sampleTech.PARSE];
+
+      // Gets a dirNameDGE and a list to filter over
+      // Returns the same list of files
+      //  The valid ones are in a dictionary ordered by their sample names
+      //  The invalid ones are in a list
+      const getFilesMatching = (dirNameDGE, filesToFilter) => {
+        const validFiles = {};
+        const invalidFiles = [];
+
+        const regexes = Array.from(parseUtils.acceptedFiles).map((validFileName) => (
+          new RegExp(`${sampleNameMatcher}/${dirNameDGE}/${validFileName}$`)
+        ));
+
+        filesToFilter.forEach((fileObject) => {
+          let sampleName;
+
+          // Check if any of the valid paths match
+          // If one does, extract the sampleName from it
+          const isValid = regexes.some((regex) => {
+            const result = regex.exec(fileObject.path);
+            sampleName = result?.[1];
+
+            return result;
+          });
+
+          if (isValid) {
+            validFiles[sampleName] = [...(validFiles[sampleName] ?? []), fileObject];
+          } else {
+            invalidFiles.push(fileObject);
+          }
+        });
+
+        return { valid: validFiles, invalid: invalidFiles };
+      };
+
+      const { valid: DGEUnfilteredFiles, invalid } = getFilesMatching('DGE_unfiltered', files);
+      const { valid: DGEFilteredFiles } = getFilesMatching('DGE_filtered', invalid);
+
+      const filesToUpload = _.uniq([...Object.keys(DGEFilteredFiles), ...Object.keys(DGEUnfilteredFiles)])
+        // Only allow sample-specific files, not all samples in one files
+        .filter((sampleName) => !['all-sample', 'all-well', 'All Wells'].includes(sampleName))
+        // if unfiltered files are present, pick them. Otherwise, pick the filtered files
+        .flatMap((sampleName) => (
+          DGEUnfilteredFiles[sampleName] ?? DGEFilteredFiles[sampleName]
+        ));
+
+      return await Promise.all(filesToUpload.map((file) => (
+        fileObjectToFileRecord(file, sampleTech.PARSE)
+      )));
+    },
+    getFilePathToDisplay: (filePath) => {
+      const [sample, filteredState, name] = _.takeRight(_.trim(filePath, '/').split('/'), 3);
+
+      return [sample, filteredState, name].join('/');
+    },
+    getFileSampleAndName: (filePath) => {
+      const [sample, , name] = _.takeRight(filePath.split('/'), 3);
+
+      return { sample, name };
     },
   },
 };
 
 export { techNamesToDisplay };
-export default fileUploadSpecifications;
+export default fileUploadUtils;

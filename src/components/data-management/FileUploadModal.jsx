@@ -20,9 +20,9 @@ import { useSelector } from 'react-redux';
 
 import config from 'config';
 import { sampleTech } from 'utils/constants';
-import techOptions, { techNamesToDisplay } from 'utils/upload/fileUploadSpecifications';
+import fileUploadUtils, { techNamesToDisplay } from 'utils/upload/fileUploadUtils';
 import handleError from 'utils/http/handleError';
-import { fileObjectToFileRecord, getFileSampleAndName } from 'utils/upload/processUpload';
+import { fileObjectToFileRecord } from 'utils/upload/processUpload';
 import integrationTestConstants from 'utils/integrationTestConstants';
 import endUserMessages from 'utils/endUserMessages';
 
@@ -78,10 +78,12 @@ const FileUploadModal = (props) => {
   // Handle on Drop
   const onDrop = async (acceptedFiles) => {
     // Remove all hidden files
-    let filteredFiles = acceptedFiles
+    const filteredFiles = acceptedFiles
       .filter((file) => !file.name.startsWith('.') && !file.name.startsWith('__MACOSX'));
 
     if (selectedTech === sampleTech.SEURAT) {
+      // TODO1 this needs to be further refactored before it is moved into
+      // fileUploadUtils as a filterFiles call, right now it's a bit unnecessarily complicated
       const newFiles = await Promise.all(filteredFiles.map((file) => (
         fileObjectToFileRecord(file, selectedTech)
       )));
@@ -104,27 +106,7 @@ const FileUploadModal = (props) => {
 
       setFilesList([seuratFile]);
     } else {
-      let filesNotInFolder = false;
-
-      filteredFiles = filteredFiles
-        // Remove all files that aren't in a folder
-        .filter((fileObject) => {
-          const inFolder = fileObject.path.includes('/');
-
-          filesNotInFolder ||= !inFolder;
-
-          return inFolder;
-        })
-        // Remove all files that don't fit the current technology's valid names
-        .filter((file) => techOptions[selectedTech].isNameValid(file.name));
-
-      if (filesNotInFolder) {
-        handleError('error', endUserMessages.ERROR_FILES_FOLDER);
-      }
-
-      const newFiles = await Promise.all(filteredFiles.map((file) => (
-        fileObjectToFileRecord(file, selectedTech)
-      )));
+      const newFiles = await fileUploadUtils[selectedTech].filterFiles(filteredFiles);
 
       setFilesList([...filesList, ...newFiles]);
     }
@@ -138,7 +120,7 @@ const FileUploadModal = (props) => {
     setFilesList(newArray);
   };
 
-  const { fileUploadParagraphs, dropzoneText, webkitdirectory } = techOptions[selectedTech];
+  const { fileUploadParagraphs, dropzoneText, webkitdirectory } = fileUploadUtils[selectedTech];
 
   const renderHelpText = () => (
     <>
@@ -151,7 +133,7 @@ const FileUploadModal = (props) => {
           ))
         }
         <List
-          dataSource={techOptions[selectedTech].inputInfo}
+          dataSource={fileUploadUtils[selectedTech].inputInfo}
           size='small'
           itemLayout='vertical'
           bordered
@@ -169,8 +151,6 @@ const FileUploadModal = (props) => {
       </Space>
     </>
   );
-
-  const getFilePathToDisplay = (fileObject) => _.trim(Object.values(getFileSampleAndName(fileObject.path)).join('/'), '/');
 
   return (
     <Modal
@@ -298,7 +278,6 @@ const FileUploadModal = (props) => {
                 itemLayout='horizontal'
                 grid='{column: 4}'
                 renderItem={(file) => (
-
                   <List.Item
                     key={file.name}
                     style={{ width: '100%' }}
@@ -315,16 +294,14 @@ const FileUploadModal = (props) => {
                           </>
                         )}
                       <Text
-                        ellipsis={{ tooltip: file.name }}
+                        ellipsis={{ tooltip: fileUploadUtils[selectedTech].getFilePathToDisplay(file.fileObject.path) }}
                         style={{ width: '200px' }}
                       >
-                        {getFilePathToDisplay(file.fileObject)}
-
+                        {fileUploadUtils[selectedTech].getFilePathToDisplay(file.fileObject.path)}
                       </Text>
                       <DeleteOutlined style={{ color: 'crimson' }} onClick={() => { removeFile(file.name); }} />
                     </Space>
                   </List.Item>
-
                 )}
               />
             </>

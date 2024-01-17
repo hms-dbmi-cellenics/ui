@@ -32,14 +32,26 @@ const getValidFiles = (selectedSampleTech, optionals = {}) => {
   let barcodesFileName;
   let matrixFileName;
 
+  let featuresPathPrefix;
+  let barcodesPathPrefix;
+  let matrixPathPrefix;
+
   if (selectedSampleTech === sampleTech['10X']) {
     featuresFileName = cellrangerVersion === 'v2' ? 'genes.tsv.gz' : 'features.tsv.gz';
     barcodesFileName = 'barcodes.tsv.gz';
     matrixFileName = 'matrix.mtx.gz';
+
+    featuresPathPrefix = 'WT13';
+    barcodesPathPrefix = 'WT13';
+    matrixPathPrefix = 'WT13';
   } else if (selectedSampleTech === sampleTech.PARSE) {
     featuresFileName = 'all_genes.csv.gz';
     barcodesFileName = 'cell_metadata.csv.gz';
     matrixFileName = 'DGE.mtx.gz';
+
+    featuresPathPrefix = 'WT13/DGE_unfiltered';
+    barcodesPathPrefix = 'WT13/DGE_filtered';
+    matrixPathPrefix = 'WT13/DGE_unfiltered';
   } else {
     throw new Error(`${selectedSampleTech} not implemented`);
   }
@@ -47,7 +59,7 @@ const getValidFiles = (selectedSampleTech, optionals = {}) => {
   let fileList = [
     {
       name: `${featuresFileName}`,
-      fileObject: mockFile(featuresFileName, 'WT13'),
+      fileObject: mockFile(featuresFileName, featuresPathPrefix),
       upload: { status: UploadStatus.UPLOADING },
       errors: '',
       compressed,
@@ -55,7 +67,7 @@ const getValidFiles = (selectedSampleTech, optionals = {}) => {
     },
     {
       name: barcodesFileName,
-      fileObject: mockFile(barcodesFileName, 'WT13'),
+      fileObject: mockFile(barcodesFileName, barcodesPathPrefix),
       upload: { status: UploadStatus.UPLOADING },
       errors: '',
       compressed,
@@ -63,7 +75,7 @@ const getValidFiles = (selectedSampleTech, optionals = {}) => {
     },
     {
       name: matrixFileName,
-      fileObject: mockFile(matrixFileName, 'WT13'),
+      fileObject: mockFile(matrixFileName, matrixPathPrefix),
       upload: { status: UploadStatus.UPLOADING },
       errors: '',
       compressed,

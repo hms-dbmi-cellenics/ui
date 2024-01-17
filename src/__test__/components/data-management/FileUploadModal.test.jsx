@@ -1,6 +1,6 @@
 import React from 'react';
 import {
-  render, screen, waitFor, fireEvent,
+  render, screen, waitFor, fireEvent, within,
 } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { act } from 'react-dom/test-utils';
@@ -11,7 +11,7 @@ import configureMockStore from 'redux-mock-store';
 import handleError from 'utils/http/handleError';
 import endUserMessages from 'utils/endUserMessages';
 
-import techOptions, { techNamesToDisplay } from 'utils/upload/fileUploadSpecifications';
+import techOptions, { techNamesToDisplay } from 'utils/upload/fileUploadUtils';
 import { sampleTech } from 'utils/constants';
 
 import mockFile from '__test__/test-utils/mockFile';
@@ -64,15 +64,30 @@ const renderFileUploadModal = async (store, currentSelectedTech = null) => {
   )));
 };
 
-const chromiumTech = techNamesToDisplay[sampleTech['10X']];
 const seuratTech = techNamesToDisplay[sampleTech.SEURAT];
+
+const selectTech = (selectedTech) => {
+  const displayedName = techNamesToDisplay[selectedTech];
+
+  const techSelection = screen.getByRole('combobox', { name: 'sampleTechnologySelect' });
+
+  act(() => {
+    fireEvent.change(techSelection, { target: { value: selectedTech } });
+  });
+
+  // The 2nd option is the selection
+  const option = screen.getByText(displayedName, { selector: '.ant-select-item-option-content' });
+
+  act(() => {
+    fireEvent.click(option);
+  });
+};
 
 describe('FileUploadModal', () => {
   it('contains required components for Chromium 10X', async () => {
     await renderFileUploadModal(initialStore);
 
-    // It has a select button to select technology
-    expect(screen.getByText(chromiumTech)).toBeInTheDocument();
+    selectTech(sampleTech['10X']);
 
     // It contains instructions on what files can be uploaded
     expect(screen.getByText(/For each sample, upload a folder containing/i)).toBeInTheDocument();
@@ -107,26 +122,11 @@ describe('FileUploadModal', () => {
   it('contains required components for Seurat', async () => {
     await renderFileUploadModal(initialStore);
 
-    // It has default chromium selected
-    expect(screen.queryAllByText(chromiumTech).length).toBe(1);
+    // It has default 10x selected
+    expect(screen.queryAllByText(techNamesToDisplay[sampleTech['10X']]).length).toBe(1);
     expect(screen.queryAllByText(seuratTech).length).toBe(0);
 
-    // Switch file upload to Seurat
-    const chosenTech = sampleTech.SEURAT;
-    const displayedName = techNamesToDisplay[chosenTech];
-
-    const techSelection = screen.getByRole('combobox', { name: 'sampleTechnologySelect' });
-
-    act(() => {
-      fireEvent.change(techSelection, { target: { value: sampleTech.SEURAT } });
-    });
-
-    // The 2nd option is the selection
-    const option = screen.getByText(displayedName);
-
-    act(() => {
-      fireEvent.click(option);
-    });
+    selectTech(sampleTech.SEURAT);
 
     // Lists the requirements of the Seurat object
     expect(screen.getByText(/The Seurat object must contain the following slots and metadata:/i)).toBeInTheDocument();
@@ -167,6 +167,8 @@ describe('FileUploadModal', () => {
   it('drag and drop works with valid 10X Chromium file', async () => {
     await renderFileUploadModal(initialStore);
 
+    selectTech(sampleTech['10X']);
+
     expect(await screen.queryByText(/To upload/)).not.toBeInTheDocument();
     // It has a select button to select technology
     const uploadInput = document.querySelector(
@@ -201,22 +203,7 @@ describe('FileUploadModal', () => {
   it('drag and drop works with valid Seurat file', async () => {
     await renderFileUploadModal(initialStore);
 
-    // Switch file upload to Seurat
-    const chosenTech = sampleTech.SEURAT;
-    const displayedName = techNamesToDisplay[chosenTech];
-
-    const techSelection = screen.getByRole('combobox', { name: 'sampleTechnologySelect' });
-
-    act(() => {
-      fireEvent.change(techSelection, { target: { value: sampleTech.SEURAT } });
-    });
-
-    // The 2nd option is the selection
-    const option = screen.getByText(displayedName);
-
-    act(() => {
-      fireEvent.click(option);
-    });
+    selectTech(sampleTech.SEURAT);
 
     expect(await screen.queryByText(/To upload/)).not.toBeInTheDocument();
 
@@ -253,22 +240,7 @@ describe('FileUploadModal', () => {
   it('drag and drop works with valid Seurat file when different experiment has valid uploaded Seurat object', async () => {
     await renderFileUploadModal(prevUpDiffExpStore);
 
-    // Switch file upload to Seurat
-    const chosenTech = sampleTech.SEURAT;
-    const displayedName = techNamesToDisplay[chosenTech];
-
-    const techSelection = screen.getByRole('combobox', { name: 'sampleTechnologySelect' });
-
-    act(() => {
-      fireEvent.change(techSelection, { target: { value: sampleTech.SEURAT } });
-    });
-
-    // The 2nd option is the selection
-    const option = screen.getByText(displayedName);
-
-    act(() => {
-      fireEvent.click(option);
-    });
+    selectTech(sampleTech.SEURAT);
 
     expect(await screen.queryByText(/To upload/)).not.toBeInTheDocument();
 
@@ -312,22 +284,7 @@ describe('FileUploadModal', () => {
 
     expect(techInput).toBeEnabled();
 
-    // Switch file upload to Seurat
-    const chosenTech = sampleTech.SEURAT;
-    const displayedName = techNamesToDisplay[chosenTech];
-
-    const techSelection = screen.getByRole('combobox', { name: 'sampleTechnologySelect' });
-
-    act(() => {
-      fireEvent.change(techSelection, { target: { value: sampleTech.SEURAT } });
-    });
-
-    // The 2nd option is the selection
-    const option = screen.getByText(displayedName);
-
-    act(() => {
-      fireEvent.click(option);
-    });
+    selectTech(sampleTech.SEURAT);
 
     expect(await screen.queryByText(/To upload/)).not.toBeInTheDocument();
 
@@ -436,20 +393,7 @@ describe('FileUploadModal', () => {
     await renderFileUploadModal(initialStore);
 
     // Switch file upload to Parse
-    const displayedName = techNamesToDisplay[sampleTech.PARSE];
-
-    const techSelection = screen.getByRole('combobox', { name: 'sampleTechnologySelect' });
-
-    act(() => {
-      fireEvent.change(techSelection, { target: { value: sampleTech.PARSE } });
-    });
-
-    // The 2nd option is the selection
-    const option = screen.getByText(displayedName);
-
-    act(() => {
-      fireEvent.click(option);
-    });
+    selectTech(sampleTech.PARSE);
 
     // It mentions the files that can be uploaded
     techOptions[sampleTech.PARSE].acceptedFiles.forEach((filename) => {
@@ -457,13 +401,13 @@ describe('FileUploadModal', () => {
     });
 
     expect(await screen.queryByText(/To upload/)).not.toBeInTheDocument();
-    // It has a select button to select technology
+
     const uploadInput = document.querySelector(
       `[data-test-id="${integrationTestConstants.ids.FILE_UPLOAD_INPUT}"]`,
     );
 
     // create an all genes file (features)
-    const file = mockFile('all_genes.csv.gz', '/WT13');
+    const file = mockFile('all_genes.csv.gz', '/WT13/DGE_unfiltered');
 
     //  drop it into drop-zone
     await act(async () => {

@@ -36,7 +36,7 @@ import DraggableBodyRow from 'components/data-management/DraggableBodyRow';
 import { metadataNameToKey, metadataKeyToName, temporaryMetadataKey } from 'utils/data-management/metadataUtils';
 import integrationTestConstants from 'utils/integrationTestConstants';
 import useConditionalEffect from 'utils/customHooks/useConditionalEffect';
-import fileUploadSpecifications from 'utils/upload/fileUploadSpecifications';
+import fileUploadUtils from 'utils/upload/fileUploadUtils';
 import { sampleTech } from 'utils/constants';
 import { fileTypeToDisplay } from 'utils/sampleFileType';
 
@@ -73,7 +73,7 @@ const SamplesTable = forwardRef((props, ref) => {
 
   const initialTableColumns = useMemo(() => {
     const filesColumns = !_.isNil(selectedTech)
-      ? fileUploadSpecifications[selectedTech].requiredFiles.map(
+      ? fileUploadUtils[selectedTech].requiredFiles.map(
         (requiredFile, indx) => ({
           index: 2 + indx,
           title: <center>{fileTypeToDisplay[requiredFile]}</center>,
@@ -236,7 +236,7 @@ const SamplesTable = forwardRef((props, ref) => {
   };
 
   const generateDataForItem = useCallback((sampleUuid) => {
-    const sampleFileTypes = fileUploadSpecifications[selectedTech]?.requiredFiles
+    const sampleFileTypes = fileUploadUtils[selectedTech]?.requiredFiles
       .map((requiredFile) => ([requiredFile, { sampleUuid }]));
 
     return {

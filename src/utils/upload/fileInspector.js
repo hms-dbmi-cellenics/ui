@@ -1,7 +1,7 @@
 import { Gunzip } from 'fflate';
 
 import { sampleTech } from 'utils/constants';
-import techOptions from 'utils/upload/fileUploadSpecifications';
+import techOptions from 'utils/upload/fileUploadUtils';
 import readFileToBuffer from 'utils/upload/readFileToBuffer';
 
 const Verdict = {

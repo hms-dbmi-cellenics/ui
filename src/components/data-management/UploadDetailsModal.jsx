@@ -19,7 +19,7 @@ const UploadDetailsModal = (props) => {
     upload, size, lastModified, fileObject = undefined,
   } = data;
 
-  const { progress, status } = upload;
+  const { progress, status } = upload ?? {};
 
   const isSuccessModal = status === UploadStatus.UPLOADED;
   const isNotUploadedModal = status === UploadStatus.FILE_NOT_FOUND;
