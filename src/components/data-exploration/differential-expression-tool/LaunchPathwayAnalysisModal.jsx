@@ -226,15 +226,6 @@ const LaunchPathwayAnalysisModal = (props) => {
                 {' '}
                 will be submitted. No other information about you or your project will be sent.
               </Paragraph>
-              {externalService === pathwayServices.PANTHERDB && (
-                <Paragraph
-                  style={{
-                    margin: '1rem 0 0 0',
-                  }}
-                >
-                  PantherDB is hosted in an unsecured server (HTTP). You will see a warning when you launch the service. Click “Send anyway” to continue.
-                </Paragraph>
-              )}
             </>
           )}
         />
