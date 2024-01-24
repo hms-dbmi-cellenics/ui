@@ -5,7 +5,7 @@ import {
 const pathwayServices = { PANTHERDB: 'pantherdb', ENRICHR: 'enrichr' };
 
 const serviceUrls = {
-  [pathwayServices.PANTHERDB]: 'http://pantherdb.org/webservices/go/overrep.jsp',
+  [pathwayServices.PANTHERDB]: 'https://pantherdb.org/webservices/go/overrep.jsp',
   [pathwayServices.ENRICHR]: {
     [H_SAPIENS.value]: 'https://maayanlab.cloud/Enrichr/enrich',
     [M_MUSCULUS.value]: 'https://maayanlab.cloud/Enrichr/enrich',
