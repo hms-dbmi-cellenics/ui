@@ -7,6 +7,7 @@ import writeToFileURL from 'utils/upload/writeToFileURL';
 import downloadFromUrl from 'utils/downloadFromUrl';
 import handleError from 'utils/http/handleError';
 import endUserMessages from 'utils/endUserMessages';
+import { sampleTech } from 'utils/constants';
 
 const downloadProcessedMatrix = (experimentId) => async (dispatch, getState) => {
   try {
@@ -15,6 +16,11 @@ const downloadProcessedMatrix = (experimentId) => async (dispatch, getState) => 
     const {
       method: embeddingMethod,
     } = getState().experimentSettings.processing.configureEmbedding.embeddingSettings;
+
+    // embedding is internal if downloading from project created by Seurat object upload
+    const { sampleIds } = getState().experiments[experimentId];
+    const experimentTechnology = getState().samples[sampleIds[0]].type;
+    const isSeurat = experimentTechnology === sampleTech.SEURAT;
 
     await dispatch(loadEmbedding(experimentId, embeddingMethod, true));
 
@@ -25,6 +31,7 @@ const downloadProcessedMatrix = (experimentId) => async (dispatch, getState) => 
     const body = {
       name: taskName,
       embeddingMethod,
+      isSeurat,
     };
 
     const timeout = getTimeoutForWorkerTask(getState(), taskName);
