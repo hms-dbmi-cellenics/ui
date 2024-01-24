@@ -29,7 +29,7 @@ const LaunchPathwayAnalysisModal = (props) => {
 
   const dispatch = useDispatch();
 
-  const [externalService, setExternalService] = useState(pathwayServices.ENRICHR);
+  const [externalService, setExternalService] = useState(pathwayServices.PANTHERDB);
   const [useAllGenes, setUseAllGenes] = useState(true);
   const [numGenes, setNumGenes] = useState(0);
   const [gettingBackgroundGenes, setGettingBackgroundGenes] = useState(false);
