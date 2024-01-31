@@ -54,7 +54,7 @@ import StatusIndicator from 'components/data-processing/StatusIndicator';
 import _ from 'lodash';
 import { getBackendStatus } from 'redux/selectors';
 
-import { loadCellSets } from 'redux/actions/cellSets';
+import { loadCellSets, runCellSetsClustering } from 'redux/actions/cellSets';
 import { loadSamples } from 'redux/actions/samples';
 import { runQC } from 'redux/actions/pipeline';
 
@@ -106,6 +106,8 @@ const DataProcessingPage = ({ experimentId, experimentData }) => {
   const [runQCModalVisible, setRunQCModalVisible] = useState(false);
   const [inputsList, setInputsList] = useState([]);
 
+  const [configDiff, setConfigDiff] = useState(null);
+
   useEffect(() => {
     // If processingConfig is not loaded then reload
     if (Object.keys(processingConfig).length <= 1) {
@@ -134,8 +136,9 @@ const DataProcessingPage = ({ experimentId, experimentData }) => {
     return stepAppearances.length > 0;
   };
 
-  const onConfigChange = useCallback((key) => {
+  const onConfigChange = useCallback((key, diff) => {
     dispatch(addChangedQCFilter(key));
+    setConfigDiff(diff);
   });
 
   const prefixSampleName = (name) => {
@@ -189,7 +192,7 @@ const DataProcessingPage = ({ experimentId, experimentData }) => {
               key={key}
               sampleId={sample.key}
               sampleIds={sampleKeys}
-              onConfigChange={() => onConfigChange(key)}
+              onConfigChange={(diff) => onConfigChange(key, diff)}
               stepDisabled={!checkIfSampleIsEnabled(key)}
               stepHadErrors={getStepHadErrors(key)}
             />
@@ -213,7 +216,7 @@ const DataProcessingPage = ({ experimentId, experimentData }) => {
               key={key}
               sampleId={sample.key}
               sampleIds={sampleKeys}
-              onConfigChange={() => onConfigChange(key)}
+              onConfigChange={(diff) => onConfigChange(key, diff)}
               stepDisabled={!checkIfSampleIsEnabled(key)}
               stepHadErrors={getStepHadErrors(key)}
             />
@@ -237,7 +240,7 @@ const DataProcessingPage = ({ experimentId, experimentData }) => {
               key={key}
               sampleId={sample.key}
               sampleIds={sampleKeys}
-              onConfigChange={() => onConfigChange(key)}
+              onConfigChange={(diff) => onConfigChange(key, diff)}
               stepDisabled={!checkIfSampleIsEnabled(key)}
               stepHadErrors={getStepHadErrors(key)}
             />
@@ -261,7 +264,7 @@ const DataProcessingPage = ({ experimentId, experimentData }) => {
               key={key}
               sampleId={sample.key}
               sampleIds={sampleKeys}
-              onConfigChange={() => onConfigChange(key)}
+              onConfigChange={(diff) => onConfigChange(key, diff)}
               stepDisabled={!checkIfSampleIsEnabled(key)}
               onQCRunClick={() => setRunQCModalVisible(true)}
               stepHadErrors={getStepHadErrors(key)}
@@ -298,7 +301,7 @@ const DataProcessingPage = ({ experimentId, experimentData }) => {
               key={key}
               sampleId={sample.key}
               sampleIds={sampleKeys}
-              onConfigChange={() => onConfigChange(key)}
+              onConfigChange={(diff) => onConfigChange(key, diff)}
               stepDisabled={!checkIfSampleIsEnabled(key)}
               stepHadErrors={getStepHadErrors(key)}
             />
@@ -314,7 +317,7 @@ const DataProcessingPage = ({ experimentId, experimentData }) => {
         <DataIntegration
           experimentId={expId}
           key={key}
-          onConfigChange={() => onConfigChange(key)}
+          onConfigChange={(diff) => onConfigChange(key, diff)}
           disableDataIntegration={sampleKeys && sampleKeys.length === 1}
           stepHadErrors={getStepHadErrors(key)}
         />
@@ -329,7 +332,7 @@ const DataProcessingPage = ({ experimentId, experimentData }) => {
         <ConfigureEmbedding
           experimentId={expId}
           key={key}
-          onConfigChange={() => onConfigChange(key)}
+          onConfigChange={(diff) => onConfigChange(key, diff)}
           stepHadErrors={getStepHadErrors(key)}
         />
       ),
@@ -406,6 +409,13 @@ const DataProcessingPage = ({ experimentId, experimentData }) => {
   // Called when the pipeline is triggered to be run by the user.
   const onPipelineRun = () => {
     setRunQCModalVisible(false);
+
+    if (configDiff.clusteringSettings) {
+      const { resolution } = configDiff.clusteringSettings.methodSettings.louvain;
+      dispatch(saveProcessingSettings(experimentId, currentStep.key));
+      dispatch(runCellSetsClustering(experimentId, resolution));
+    }
+
     dispatch(runQC(experimentId));
   };
 
@@ -695,6 +705,10 @@ const DataProcessingPage = ({ experimentId, experimentData }) => {
                   Your navigation within Cellenics will be restricted during this time.
                   Do you want to start?
                 </p>
+                <Alert
+                  message='Note that you will lose all of your annotated cell sets.'
+                  type='warning'
+                />
               </Modal>
             )
         )}

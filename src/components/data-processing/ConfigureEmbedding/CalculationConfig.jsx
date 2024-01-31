@@ -1,5 +1,5 @@
 import React, {
-  useState, useEffect, useCallback,
+  useState, useEffect,
 } from 'react';
 import _ from 'lodash';
 import { useDispatch, useSelector } from 'react-redux';
@@ -9,9 +9,8 @@ import {
 import PropTypes from 'prop-types';
 import { QuestionCircleOutlined } from '@ant-design/icons';
 
-import { updateFilterSettings, saveProcessingSettings } from 'redux/actions/experimentSettings';
+import { updateFilterSettings } from 'redux/actions/experimentSettings';
 
-import { runCellSetsClustering } from 'redux/actions/cellSets';
 import PreloadContent from '../../PreloadContent';
 
 import SliderWithInput from '../../SliderWithInput';
@@ -32,7 +31,7 @@ const EMBEDD_METHOD_TEXT = 'Reducing the dimensionality does lose some informati
   + 't-SNE and UMAP are stochastic and very much dependent on choice of parameters (t-SNE even more than UMAP) and can yield very different results in different runs. ';
 
 const CalculationConfig = (props) => {
-  const { experimentId, onConfigChange, disabled } = props;
+  const { onConfigChange, disabled } = props;
   const FILTER_UUID = 'configureEmbedding';
   const dispatch = useDispatch();
 
@@ -46,21 +45,7 @@ const CalculationConfig = (props) => {
   const { umap: umapSettings, tsne: tsneSettings } = data?.embeddingSettings.methodSettings || {};
   const { louvain: louvainSettings } = data?.clusteringSettings.methodSettings || {};
 
-  const debouncedClustering = useCallback(
-    _.debounce((resolution) => {
-      dispatch(runCellSetsClustering(experimentId, resolution));
-    }, 1500),
-    [],
-  );
-
-  const [resolution, setResolution] = useState(null);
   const [minDistance, setMinDistance] = useState(null);
-
-  useEffect(() => {
-    if (!resolution && louvainSettings) {
-      setResolution(louvainSettings.resolution);
-    }
-  }, [louvainSettings]);
 
   useEffect(() => {
     if (!minDistance && umapSettings) {
@@ -68,19 +53,8 @@ const CalculationConfig = (props) => {
     }
   }, [umapSettings]);
 
-  const dispatchDebounce = useCallback(_.debounce((f) => {
-    dispatch(f);
-  }, 1500), []);
-
   const updateSettings = (diff) => {
-    if (diff.embeddingSettings) {
-      // If this is an embedding change, indicate to user that their changes are not
-      // applied until they hit Run.
-      onConfigChange();
-    } else {
-      // If it's a clustering change, debounce the save process at 1.5s.
-      dispatchDebounce(saveProcessingSettings(experimentId, FILTER_UUID));
-    }
+    onConfigChange(diff);
 
     dispatch(updateFilterSettings(
       FILTER_UUID,
@@ -394,21 +368,14 @@ const CalculationConfig = (props) => {
               max={10}
               step={0.1}
               disabled={disabled}
-              value={resolution}
-              onUpdate={(value) => {
-                if (value === resolution) { return; }
-
-                setResolution(value);
-                updateSettings({
-                  clusteringSettings: {
-                    methodSettings: {
-                      louvain: { resolution: value },
-                    },
+              value={louvainSettings.resolution}
+              onUpdate={(value) => updateSettings({
+                clusteringSettings: {
+                  methodSettings: {
+                    louvain: { resolution: value },
                   },
-                });
-
-                debouncedClustering(value);
-              }}
+                },
+              })}
             />
           </Form.Item>
         </Form>
