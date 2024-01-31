@@ -136,9 +136,8 @@ const DataProcessingPage = ({ experimentId, experimentData }) => {
     return stepAppearances.length > 0;
   };
 
-  const onConfigChange = useCallback((key, diff) => {
+  const onConfigChange = useCallback((key) => {
     dispatch(addChangedQCFilter(key));
-    setConfigDiff(diff);
   });
 
   const prefixSampleName = (name) => {
@@ -192,7 +191,7 @@ const DataProcessingPage = ({ experimentId, experimentData }) => {
               key={key}
               sampleId={sample.key}
               sampleIds={sampleKeys}
-              onConfigChange={(diff) => onConfigChange(key, diff)}
+              onConfigChange={() => onConfigChange(key)}
               stepDisabled={!checkIfSampleIsEnabled(key)}
               stepHadErrors={getStepHadErrors(key)}
             />
@@ -216,7 +215,7 @@ const DataProcessingPage = ({ experimentId, experimentData }) => {
               key={key}
               sampleId={sample.key}
               sampleIds={sampleKeys}
-              onConfigChange={(diff) => onConfigChange(key, diff)}
+              onConfigChange={() => onConfigChange(key)}
               stepDisabled={!checkIfSampleIsEnabled(key)}
               stepHadErrors={getStepHadErrors(key)}
             />
@@ -240,7 +239,7 @@ const DataProcessingPage = ({ experimentId, experimentData }) => {
               key={key}
               sampleId={sample.key}
               sampleIds={sampleKeys}
-              onConfigChange={(diff) => onConfigChange(key, diff)}
+              onConfigChange={() => onConfigChange(key)}
               stepDisabled={!checkIfSampleIsEnabled(key)}
               stepHadErrors={getStepHadErrors(key)}
             />
@@ -264,7 +263,7 @@ const DataProcessingPage = ({ experimentId, experimentData }) => {
               key={key}
               sampleId={sample.key}
               sampleIds={sampleKeys}
-              onConfigChange={(diff) => onConfigChange(key, diff)}
+              onConfigChange={() => onConfigChange(key)}
               stepDisabled={!checkIfSampleIsEnabled(key)}
               onQCRunClick={() => setRunQCModalVisible(true)}
               stepHadErrors={getStepHadErrors(key)}
@@ -301,7 +300,7 @@ const DataProcessingPage = ({ experimentId, experimentData }) => {
               key={key}
               sampleId={sample.key}
               sampleIds={sampleKeys}
-              onConfigChange={(diff) => onConfigChange(key, diff)}
+              onConfigChange={() => onConfigChange(key)}
               stepDisabled={!checkIfSampleIsEnabled(key)}
               stepHadErrors={getStepHadErrors(key)}
             />
@@ -317,7 +316,7 @@ const DataProcessingPage = ({ experimentId, experimentData }) => {
         <DataIntegration
           experimentId={expId}
           key={key}
-          onConfigChange={(diff) => onConfigChange(key, diff)}
+          onConfigChange={() => onConfigChange(key)}
           disableDataIntegration={sampleKeys && sampleKeys.length === 1}
           stepHadErrors={getStepHadErrors(key)}
         />
@@ -332,7 +331,7 @@ const DataProcessingPage = ({ experimentId, experimentData }) => {
         <ConfigureEmbedding
           experimentId={expId}
           key={key}
-          onConfigChange={(diff) => onConfigChange(key, diff)}
+          onConfigChange={(settingType) => onConfigChange(settingType)}
           stepHadErrors={getStepHadErrors(key)}
         />
       ),
@@ -409,14 +408,13 @@ const DataProcessingPage = ({ experimentId, experimentData }) => {
   // Called when the pipeline is triggered to be run by the user.
   const onPipelineRun = () => {
     setRunQCModalVisible(false);
-
-    if (configDiff.clusteringSettings) {
-      const { resolution } = configDiff.clusteringSettings.methodSettings.louvain;
-      dispatch(saveProcessingSettings(experimentId, 'configureEmbedding'));
-      dispatch(runCellSetsClustering(experimentId, resolution));
-    }
-
     dispatch(runQC(experimentId));
+
+    // if (configDiff?.clusteringSettings) {
+    //   const { resolution } = configDiff.clusteringSettings.methodSettings.louvain;
+    //   dispatch(saveProcessingSettings(experimentId, 'configureEmbedding'));
+    //   dispatch(runCellSetsClustering(experimentId, resolution));
+    // }
   };
 
   const renderTitle = () => {

@@ -54,7 +54,10 @@ const CalculationConfig = (props) => {
   }, [umapSettings]);
 
   const updateSettings = (diff) => {
-    onConfigChange(diff);
+    // updates to configure embedding run on worker if they are the only changes
+    // need to know if change was to embedding or clustering settings
+    const settingType = Object.keys(diff)[0];
+    onConfigChange(settingType);
 
     dispatch(updateFilterSettings(
       FILTER_UUID,
@@ -72,8 +75,6 @@ const CalculationConfig = (props) => {
         },
       },
     });
-
-    onConfigChange();
   };
   const setDistanceMetric = (value) => {
     updateSettings({
@@ -85,8 +86,6 @@ const CalculationConfig = (props) => {
         },
       },
     });
-
-    onConfigChange();
   };
 
   const setLearningRate = (value) => {
@@ -99,8 +98,6 @@ const CalculationConfig = (props) => {
         },
       },
     });
-
-    onConfigChange();
   };
   const setPerplexity = (value) => {
     updateSettings({
@@ -112,8 +109,6 @@ const CalculationConfig = (props) => {
         },
       },
     });
-
-    onConfigChange();
   };
 
   const renderUMAPSettings = () => (
