@@ -54,7 +54,7 @@ import StatusIndicator from 'components/data-processing/StatusIndicator';
 import _ from 'lodash';
 import { getBackendStatus } from 'redux/selectors';
 
-import { loadCellSets, runCellSetsClustering } from 'redux/actions/cellSets';
+import { loadCellSets } from 'redux/actions/cellSets';
 import { loadSamples } from 'redux/actions/samples';
 import { runQC } from 'redux/actions/pipeline';
 
@@ -105,8 +105,6 @@ const DataProcessingPage = ({ experimentId, experimentData }) => {
   const [stepIdx, setStepIdx] = useState(0);
   const [runQCModalVisible, setRunQCModalVisible] = useState(false);
   const [inputsList, setInputsList] = useState([]);
-
-  const [configDiff, setConfigDiff] = useState(null);
 
   useEffect(() => {
     // If processingConfig is not loaded then reload
@@ -409,12 +407,6 @@ const DataProcessingPage = ({ experimentId, experimentData }) => {
   const onPipelineRun = () => {
     setRunQCModalVisible(false);
     dispatch(runQC(experimentId));
-
-    // if (configDiff?.clusteringSettings) {
-    //   const { resolution } = configDiff.clusteringSettings.methodSettings.louvain;
-    //   dispatch(saveProcessingSettings(experimentId, 'configureEmbedding'));
-    //   dispatch(runCellSetsClustering(experimentId, resolution));
-    // }
   };
 
   const renderTitle = () => {
