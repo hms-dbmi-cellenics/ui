@@ -412,7 +412,7 @@ const DataProcessingPage = ({ experimentId, experimentData }) => {
 
     if (configDiff.clusteringSettings) {
       const { resolution } = configDiff.clusteringSettings.methodSettings.louvain;
-      dispatch(saveProcessingSettings(experimentId, currentStep.key));
+      dispatch(saveProcessingSettings(experimentId, 'configureEmbedding'));
       dispatch(runCellSetsClustering(experimentId, resolution));
     }
 
