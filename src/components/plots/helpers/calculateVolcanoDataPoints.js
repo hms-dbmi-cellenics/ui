@@ -33,18 +33,15 @@ const calculateVolcanoDataPoints = (config, data) => {
       const { logFC } = datum;
       const p_val_adj = parseFloat(datum.p_val_adj);
 
-      const pvalueThreshold = (
-        10
-        ** (-1 * config.negLogpValueThreshold)
-      ).toExponential(3);
+      const { adjPvalueThreshold } = config;
 
       if (
-        p_val_adj <= pvalueThreshold
+        p_val_adj <= adjPvalueThreshold
         && logFC >= config.logFoldChangeThreshold
       ) {
         status = 'Upregulated';
       } else if (
-        p_val_adj <= pvalueThreshold
+        p_val_adj <= adjPvalueThreshold
         && logFC <= config.logFoldChangeThreshold * -1
       ) {
         status = 'Downregulated';
