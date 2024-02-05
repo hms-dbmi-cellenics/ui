@@ -32,7 +32,7 @@ const getTrajectoryPlotPseudoTime = (
     },
     clustering: {
       method: clusteringSettings.method,
-      resolution: clusteringSettings.methodSettings[clusteringSettings.method].resolution,
+      resolution: clusteringSettings.methodSettings.louvain.resolution,
     },
     cellSets: selectedCellSets,
     rootNodes,
