@@ -327,16 +327,17 @@ const CalculationConfig = (props) => {
             <Select
               value={clusteringMethod}
               disabled={disabled}
-              onChange={(value) => updateSettings(
-                { clusteringSettings: { method: value } },
-              )}
+              onChange={(value) => {
+                updateSettings({
+                  clusteringSettings: {
+                    method: value,
+                  },
+                });
+                dispatch(runCellSetsClustering(experimentId, resolution));
+              }}
             >
               <Option value='louvain'>Louvain</Option>
-              <Option value='leiden' disabled>
-                <Tooltip title='Leiden metric is going to be supported on a future version of the platform.'>
-                  Leiden
-                </Tooltip>
-              </Option>
+              <Option value='leiden'>Leiden</Option>
               <Option value='slm' disabled>
                 <Tooltip title='SLM metric is going to be supported on a future version of the platform.'>
                   SLM
