@@ -287,7 +287,7 @@ const generateSpec = (configSrc, plotData) => {
           enter: {
             y: {
               scale: 'y',
-              value: config.negLogpValueThreshold,
+              value: -Math.log10(config.adjPvalueThreshold),
               round: true,
             },
             x: 0,

@@ -73,7 +73,7 @@ const ThresholdsGuidesEditor = (props) => {
         <Form.Item
           label={(
             <span>
-              -log10(pvalue)
+              Adjusted p-value
             </span>
           )}
         >
@@ -81,10 +81,10 @@ const ThresholdsGuidesEditor = (props) => {
             <Space>
               <InputNumber
                 min={0}
-                value={config.negLogpValueThreshold}
+                value={config.adjPvalueThreshold}
                 step={1}
                 type='number'
-                onChange={(val) => debouncedUpdate({ negLogpValueThreshold: val })}
+                onChange={(val) => debouncedUpdate({ adjPvalueThreshold: val })}
               />
               <Checkbox
                 checked={config.showpvalueThresholdGuides}
@@ -96,9 +96,9 @@ const ThresholdsGuidesEditor = (props) => {
               </Checkbox>
             </Space>
             <Text type='secondary'>
-              Equivalent to p &lt;
+              -log10(adj p-value) =
               {' '}
-              {(10 ** (-1 * config.negLogpValueThreshold)).toExponential(3)}
+              {-Math.log10(config.adjPvalueThreshold).toPrecision(3)}
             </Text>
           </Space>
         </Form.Item>
