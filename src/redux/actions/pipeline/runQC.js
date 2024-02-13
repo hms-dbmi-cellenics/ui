@@ -12,6 +12,7 @@ import { loadEmbedding } from 'redux/actions/embedding';
 import { runCellSetsClustering } from 'redux/actions/cellSets';
 
 const runOnlyConfigureEmbedding = async (experimentId, embeddingMethod, dispatch) => {
+  await dispatch(saveProcessingSettings(experimentId, 'configureEmbedding'));
   dispatch({
     type: EXPERIMENT_SETTINGS_DISCARD_CHANGED_QC_FILTERS,
     payload: {},
@@ -28,6 +29,7 @@ const runOnlyConfigureEmbedding = async (experimentId, embeddingMethod, dispatch
 };
 
 const runOnlyClustering = async (experimentId, resolution, dispatch) => {
+  await dispatch(saveProcessingSettings(experimentId, 'configureEmbedding'));
   dispatch({
     type: EXPERIMENT_SETTINGS_DISCARD_CHANGED_QC_FILTERS,
     payload: {},
@@ -62,7 +64,6 @@ const runQC = (experimentId) => async (dispatch, getState) => {
 
   // if only embedding or clustering changed
   if (!otherChanged) {
-    await dispatch(saveProcessingSettings(experimentId, 'configureEmbedding'));
     if (embeddingChanged) {
       runOnlyConfigureEmbedding(
         experimentId,
