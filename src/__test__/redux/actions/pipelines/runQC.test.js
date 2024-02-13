@@ -13,6 +13,8 @@ import {
   EXPERIMENT_SETTINGS_DISCARD_CHANGED_QC_FILTERS,
 } from 'redux/actionTypes/experimentSettings';
 
+import { CELL_SETS_CLUSTERING_UPDATING } from 'redux/actionTypes/cellSets';
+
 import { EMBEDDINGS_LOADING } from 'redux/actionTypes/embeddings';
 
 import { runQC } from 'redux/actions/pipeline';
@@ -46,6 +48,7 @@ const initialState = {
       },
     },
   },
+  cellSets: {},
   backendStatus: {
     [experimentId]: {
       status: {
@@ -102,15 +105,15 @@ describe('runQC action', () => {
     expect(actions).toMatchSnapshot();
   });
 
-  it('Runs only the embedding if only changed filter was configureEmbedding', async () => {
+  it('Runs only the embedding if only changed filter was embeddingSettings', async () => {
     fetchMock.resetMocks();
 
     saveProcessingSettings.mockImplementation(() => () => Promise.resolve());
 
-    const onlyConfigureEmbeddingChangedState = _.cloneDeep(initialState);
-    onlyConfigureEmbeddingChangedState.experimentSettings.processing.meta.changedQCFilters = new Set(['configureEmbedding']);
+    const onlyEmbeddingSettingsChangedState = _.cloneDeep(initialState);
+    onlyEmbeddingSettingsChangedState.experimentSettings.processing.meta.changedQCFilters = new Set(['embeddingSettings']);
 
-    const store = mockStore(onlyConfigureEmbeddingChangedState);
+    const store = mockStore(onlyEmbeddingSettingsChangedState);
     await store.dispatch(runQC(experimentId));
 
     await waitForActions(
@@ -122,6 +125,30 @@ describe('runQC action', () => {
 
     expect(actions[0].type).toEqual(EXPERIMENT_SETTINGS_DISCARD_CHANGED_QC_FILTERS);
     expect(actions[1].type).toEqual(EMBEDDINGS_LOADING);
+
+    expect(actions).toMatchSnapshot();
+  });
+
+  it('Runs only clustering if only changed filter was clusteringSettings', async () => {
+    fetchMock.resetMocks();
+
+    saveProcessingSettings.mockImplementation(() => () => Promise.resolve());
+
+    const onlyClusteringSettingsChangedState = _.cloneDeep(initialState);
+    onlyClusteringSettingsChangedState.experimentSettings.processing.meta.changedQCFilters = new Set(['clusteringSettings']);
+
+    const store = mockStore(onlyClusteringSettingsChangedState);
+    await store.dispatch(runQC(experimentId));
+
+    await waitForActions(
+      store,
+      [EXPERIMENT_SETTINGS_DISCARD_CHANGED_QC_FILTERS, CELL_SETS_CLUSTERING_UPDATING],
+    );
+
+    const actions = store.getActions();
+
+    expect(actions[0].type).toEqual(EXPERIMENT_SETTINGS_DISCARD_CHANGED_QC_FILTERS);
+    expect(actions[1].type).toEqual(CELL_SETS_CLUSTERING_UPDATING);
 
     expect(actions).toMatchSnapshot();
   });

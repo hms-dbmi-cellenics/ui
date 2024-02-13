@@ -24,7 +24,19 @@ exports[`runQC action Dispatches events properly 2`] = `
 
 exports[`runQC action Dispatches status error if loading fails 1`] = `[]`;
 
-exports[`runQC action Runs only the embedding if only changed filter was configureEmbedding 1`] = `
+exports[`runQC action Runs only clustering if only changed filter was clusteringSettings 1`] = `
+[
+  {
+    "payload": {},
+    "type": "experimentSettings/discardChangedQCFilters",
+  },
+  {
+    "type": "cellSets/clusteringUpdating",
+  },
+]
+`;
+
+exports[`runQC action Runs only the embedding if only changed filter was embeddingSettings 1`] = `
 [
   {
     "payload": {},
