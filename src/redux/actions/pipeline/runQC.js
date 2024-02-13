@@ -9,10 +9,10 @@ import {
 import { saveProcessingSettings } from 'redux/actions/experimentSettings';
 import { loadBackendStatus } from 'redux/actions/backendStatus';
 import { loadEmbedding } from 'redux/actions/embedding';
+import { runCellSetsClustering } from 'redux/actions/cellSets';
 
 const runOnlyConfigureEmbedding = async (experimentId, embeddingMethod, dispatch) => {
   await dispatch(saveProcessingSettings(experimentId, 'configureEmbedding'));
-
   dispatch({
     type: EXPERIMENT_SETTINGS_DISCARD_CHANGED_QC_FILTERS,
     payload: {},
@@ -24,6 +24,22 @@ const runOnlyConfigureEmbedding = async (experimentId, embeddingMethod, dispatch
       experimentId,
       embeddingMethod,
       true,
+    ),
+  );
+};
+
+const runOnlyClustering = async (experimentId, resolution, dispatch) => {
+  await dispatch(saveProcessingSettings(experimentId, 'configureEmbedding'));
+  dispatch({
+    type: EXPERIMENT_SETTINGS_DISCARD_CHANGED_QC_FILTERS,
+    payload: {},
+  });
+
+  // Only configure embedding was changed so we run loadEmbedding
+  dispatch(
+    runCellSetsClustering(
+      experimentId,
+      resolution,
     ),
   );
 };
@@ -42,12 +58,26 @@ const runQC = (experimentId) => async (dispatch, getState) => {
   const { processing } = getState().experimentSettings;
   const { changedQCFilters } = processing.meta;
 
-  if (changedQCFilters.size === 1 && changedQCFilters.has('configureEmbedding')) {
-    runOnlyConfigureEmbedding(
-      experimentId,
-      processing.configureEmbedding.embeddingSettings.method,
-      dispatch,
-    );
+  const embeddingChanged = changedQCFilters.has('embeddingSettings');
+  const clusteringChanged = changedQCFilters.has('clusteringSettings');
+  const otherChanged = [...changedQCFilters].some((value) => value !== 'embeddingSettings' && value !== 'clusteringSettings');
+
+  // if only embedding or clustering changed
+  if (!otherChanged) {
+    if (embeddingChanged) {
+      runOnlyConfigureEmbedding(
+        experimentId,
+        processing.configureEmbedding.embeddingSettings.method,
+        dispatch,
+      );
+    }
+    if (clusteringChanged) {
+      runOnlyClustering(
+        experimentId,
+        processing.configureEmbedding.clusteringSettings.methodSettings.louvain.resolution,
+        dispatch,
+      );
+    }
 
     return;
   }
@@ -57,7 +87,6 @@ const runQC = (experimentId) => async (dispatch, getState) => {
     const stepConfig = processing[stepKey];
     processingConfigDiff[stepKey] = stepConfig;
   });
-
   try {
     // We are only sending the configuration that we know changed
     // with respect to the one that is already persisted in dynamodb
