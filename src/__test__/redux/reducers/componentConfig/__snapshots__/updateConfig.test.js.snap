@@ -82,6 +82,7 @@ exports[`updateConfig Checking if fields changed 1`] = `
 {
   "volcanoPlotMain": {
     "config": {
+      "adjPvalueThreshold": 0.05,
       "axes": {
         "domainWidth": 2,
         "gridOpacity": 5,
@@ -125,7 +126,7 @@ exports[`updateConfig Checking if fields changed 1`] = `
       "legend": {
         "colour": "#000000",
         "enabled": true,
-        "position": "bottom-right",
+        "position": "top-right",
         "showAlert": false,
       },
       "logFoldChangeDomain": 1,
@@ -139,7 +140,6 @@ exports[`updateConfig Checking if fields changed 1`] = `
         "size": 32,
       },
       "maxNegativeLogpValueDomain": 50,
-      "negLogpValueThreshold": 4,
       "negativeLogpValueTickCount": 5,
       "noDifferenceColor": "#aaaaaa",
       "pvalueThresholdColor": "#ff0000",
