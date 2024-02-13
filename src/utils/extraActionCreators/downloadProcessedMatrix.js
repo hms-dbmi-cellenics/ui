@@ -15,12 +15,13 @@ const downloadProcessedMatrix = (experimentId) => async (dispatch, getState) => 
     const {
       method: embeddingMethod,
       // embedding is saved in R object if downloading from project created by Seurat object upload
-      useSaved: isSeurat,
+      useSaved,
     } = getState().experimentSettings.processing.configureEmbedding.embeddingSettings;
 
     await dispatch(loadEmbedding(experimentId, embeddingMethod, true));
 
     const taskName = 'DownloadAnnotSeuratObject';
+    const isSeurat = useSaved || false;
 
     // the request needs the embeddingETag to merge that data with the rds
     // the embeddingETag is added by the API to this body
