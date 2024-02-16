@@ -695,10 +695,15 @@ const DataProcessingPage = ({ experimentId, experimentData }) => {
                   Your navigation within Cellenics will be restricted during this time.
                   Do you want to start?
                 </p>
-                <Alert
-                  message='Note that you will lose all of your annotated cell sets.'
-                  type='warning'
-                />
+                {
+                  !(changedQCFilters.size === 1 && changedQCFilters.has('embeddingSettings'))
+                && (
+                  <Alert
+                    message='Note that you will lose your previous Louvain or Leiden clusters.'
+                    type='warning'
+                  />
+                )
+                }
               </Modal>
             )
         )}
