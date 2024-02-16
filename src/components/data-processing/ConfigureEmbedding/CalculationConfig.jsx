@@ -11,6 +11,7 @@ import { QuestionCircleOutlined } from '@ant-design/icons';
 
 import { updateFilterSettings } from 'redux/actions/experimentSettings';
 
+import { runCellSetsClustering } from 'redux/actions/cellSets';
 import PreloadContent from '../../PreloadContent';
 
 import SliderWithInput from '../../SliderWithInput';
@@ -31,7 +32,7 @@ const EMBEDD_METHOD_TEXT = 'Reducing the dimensionality does lose some informati
   + 't-SNE and UMAP are stochastic and very much dependent on choice of parameters (t-SNE even more than UMAP) and can yield very different results in different runs. ';
 
 const CalculationConfig = (props) => {
-  const { onConfigChange, disabled } = props;
+  const { experimentId, onConfigChange, disabled } = props;
   const FILTER_UUID = 'configureEmbedding';
   const dispatch = useDispatch();
 
@@ -45,7 +46,14 @@ const CalculationConfig = (props) => {
   const { umap: umapSettings, tsne: tsneSettings } = data?.embeddingSettings.methodSettings || {};
   const { louvain: louvainSettings } = data?.clusteringSettings.methodSettings || {};
 
+  const [resolution, setResolution] = useState(null);
   const [minDistance, setMinDistance] = useState(null);
+
+  useEffect(() => {
+    if (!resolution && louvainSettings) {
+      setResolution(louvainSettings.resolution);
+    }
+  }, [louvainSettings]);
 
   useEffect(() => {
     if (!minDistance && umapSettings) {
@@ -182,10 +190,10 @@ const CalculationConfig = (props) => {
         <span>
           Perplexity &nbsp;
           <Tooltip title='Determines how to much emphasis should be on local or global aspects of your data.
-          The parameter is, in a sense, a guess about the number of close neighbors each cell has.
-          In most implementations, perplexity defaults to 30. This focuses the attention of t-SNE on preserving the
-          distances to its 30 nearest neighbors and puts virtually no weight on preserving distances to the remaining points.
-          The perplexity value has a complex effect on the resulting pictures.'
+            The parameter is, in a sense, a guess about the number of close neighbors each cell has.
+            In most implementations, perplexity defaults to 30. This focuses the attention of t-SNE on preserving the
+            distances to its 30 nearest neighbors and puts virtually no weight on preserving distances to the remaining points.
+            The perplexity value has a complex effect on the resulting pictures.'
           >
             <QuestionCircleOutlined />
           </Tooltip>
@@ -207,7 +215,7 @@ const CalculationConfig = (props) => {
           <span>
             Learning Rate &nbsp;
             <Tooltip title='If the learning rate is too high, the data may look like a "ball" with any point approximately equidistant from its nearest neighbours.
-          If the learning rate is too low, most points may look compressed in a dense cloud with few outliers. usually in the range [10.0, 1000.0]'
+            If the learning rate is too low, most points may look compressed in a dense cloud with few outliers. usually in the range [10.0, 1000.0]'
             >
               <QuestionCircleOutlined />
             </Tooltip>
@@ -364,14 +372,19 @@ const CalculationConfig = (props) => {
               max={10}
               step={0.1}
               disabled={disabled}
-              value={louvainSettings.resolution}
-              onUpdate={(value) => updateSettings({
-                clusteringSettings: {
-                  methodSettings: {
-                    louvain: { resolution: value },
+              value={resolution}
+              onUpdate={(value) => {
+                if (value === resolution) { return; }
+
+                setResolution(value);
+                updateSettings({
+                  clusteringSettings: {
+                    methodSettings: {
+                      louvain: { resolution: value },
+                    },
                   },
-                },
-              })}
+                });
+              }}
             />
           </Form.Item>
         </Form>
