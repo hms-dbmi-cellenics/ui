@@ -15,6 +15,7 @@ import fileUploadUtils from 'utils/upload/fileUploadUtils';
 import processMultipartUpload from 'utils/upload/processMultipartUpload';
 import endUserMessages from 'utils/endUserMessages';
 import pushNotificationMessage from 'utils/pushNotificationMessage';
+import streamLoadAndCompressIfNecessary from './streamLoadAndCompressIfNecessary';
 
 const prepareAndUploadFileToS3 = async (
   file, uploadUrlParams, type, abortController, onStatusUpdate = () => { },
@@ -91,11 +92,18 @@ const createAndUploadSampleFile = async (
 
   if (!file.compressed) {
     try {
-      file.fileObject = await loadAndCompressIfNecessary(file, () => {
+      // if (file.path.endsWith('count_matrix.mtx') || file.path.endsWith('DGE.mtx')) {
+      file.fileObject = await streamLoadAndCompressIfNecessary(file, () => {
         dispatch(updateSampleFileUpload(
           experimentId, sampleId, sampleFileId, fileType, UploadStatus.COMPRESSING,
         ));
       });
+
+      // file.fileObject = await loadAndCompressIfNecessary(file, () => {
+      //   dispatch(updateSampleFileUpload(
+      //     experimentId, sampleId, sampleFileId, fileType, UploadStatus.COMPRESSING,
+      //   ));
+      // });
 
       file.size = Buffer.byteLength(file.fileObject);
     } catch (e) {
