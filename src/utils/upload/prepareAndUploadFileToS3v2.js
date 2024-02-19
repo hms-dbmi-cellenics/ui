@@ -53,7 +53,7 @@ const prepareAndUploadFileToS3v2 = async (
 const processMultipartUploadv2 = async (
   file, uploadParams, createOnUploadProgressForPart, abortController,
 ) => {
-  const responsesPromises = [];
+  const parts = [];
 
   await streamLoadAndCompressIfNecessary(
     file,
@@ -69,14 +69,20 @@ const processMultipartUploadv2 = async (
         0,
       );
 
-      responsesPromises.push({ ETag: partResponse.headers.etag, PartNumber: partNumber });
+      parts.push({ ETag: partResponse.headers.etag, PartNumber: partNumber });
     },
     () => {
       // On progress
     },
   );
 
-  return responsesPromises;
+  parts.sort(({ PartNumber: PartNumber1 }, { PartNumber: PartNumber2 }) => {
+    if (PartNumber1 === PartNumber2) throw new Error('Non-unique partNumbers found, they should be unique');
+
+    return PartNumber1 > PartNumber2 ? 1 : -1;
+  });
+
+  return parts;
 };
 
 // const processMultipartUploadv2 = async (
