@@ -6,7 +6,7 @@ import {
 } from 'redux/actions/samples';
 
 import UploadStatus from 'utils/upload/UploadStatus';
-import loadAndCompressIfNecessary from 'utils/upload/loadAndCompressIfNecessary';
+// import loadAndCompressIfNecessary from 'utils/upload/loadAndCompressIfNecessary';
 import { inspectFile, Verdict } from 'utils/upload/fileInspector';
 import fetchAPI from 'utils/http/fetchAPI';
 
@@ -15,7 +15,7 @@ import fileUploadUtils from 'utils/upload/fileUploadUtils';
 import processMultipartUpload from 'utils/upload/processMultipartUpload';
 import endUserMessages from 'utils/endUserMessages';
 import pushNotificationMessage from 'utils/pushNotificationMessage';
-import streamLoadAndCompressIfNecessary from './streamLoadAndCompressIfNecessary';
+import prepareAndUploadFileToS3v2 from 'utils/upload/prepareAndUploadFileToS3v2';
 
 const prepareAndUploadFileToS3 = async (
   file, uploadUrlParams, type, abortController, onStatusUpdate = () => { },
@@ -90,36 +90,38 @@ const createAndUploadSampleFile = async (
   // instead of the fileReader metadata object that it is now
   const fileName = file.fileObject.name;
 
-  if (!file.compressed) {
-    try {
-      // if (file.path.endsWith('count_matrix.mtx') || file.path.endsWith('DGE.mtx')) {
-      file.fileObject = await streamLoadAndCompressIfNecessary(file, () => {
-        dispatch(updateSampleFileUpload(
-          experimentId, sampleId, sampleFileId, fileType, UploadStatus.COMPRESSING,
-        ));
-      });
+  // if (!file.compressed) {
+  //   try {
+  //     // if (file.path.endsWith('count_matrix.mtx') || file.path.endsWith('DGE.mtx')) {
+  //     file.fileObject = await streamLoadAndCompressIfNecessary(file, () => {
+  //       dispatch(updateSampleFileUpload(
+  //         experimentId, sampleId, sampleFileId, fileType, UploadStatus.COMPRESSING,
+  //       ));
+  //     });
 
-      // file.fileObject = await loadAndCompressIfNecessary(file, () => {
-      //   dispatch(updateSampleFileUpload(
-      //     experimentId, sampleId, sampleFileId, fileType, UploadStatus.COMPRESSING,
-      //   ));
-      // });
+  //     // file.fileObject = await loadAndCompressIfNecessary(file, () => {
+  //     //   dispatch(updateSampleFileUpload(
+  //     //     experimentId, sampleId, sampleFileId, fileType, UploadStatus.COMPRESSING,
+  //     //   ));
+  //     // });
 
-      file.size = Buffer.byteLength(file.fileObject);
-    } catch (e) {
-      const fileErrorStatus = e.message === 'aborted'
-        ? UploadStatus.FILE_READ_ABORTED
-        : UploadStatus.FILE_READ_ERROR;
+  //     file.size = Buffer.byteLength(file.fileObject);
+  //   } catch (e) {
+  //     const fileErrorStatus = e.message === 'aborted'
+  //       ? UploadStatus.FILE_READ_ABORTED
+  //       : UploadStatus.FILE_READ_ERROR;
 
-      dispatch(updateSampleFileUpload(
-        experimentId, sampleId, sampleFileId, fileType, fileErrorStatus,
-      ));
-      return;
-    }
-  }
+  //     dispatch(updateSampleFileUpload(
+  //       experimentId, sampleId, sampleFileId, fileType, fileErrorStatus,
+  //     ));
+  //     return;
+  //   }
+  // }
 
   try {
-    const { signedUrls, uploadId } = await beginSampleFileUpload(
+    const {
+      signedUrls, uploadId, bucket, key,
+    } = await beginSampleFileUpload(
       experimentId,
       sampleFileId,
       file.size,
@@ -132,8 +134,18 @@ const createAndUploadSampleFile = async (
       ),
     );
 
-    const uploadUrlParams = { signedUrls, uploadId, fileId: sampleFileId };
-    await prepareAndUploadFileToS3(file, uploadUrlParams, 'sample', abortController, updateSampleFileUploadProgress);
+    const uploadUrlParams = {
+      uploadId, fileId: sampleFileId, bucket, key,
+    };
+
+    await prepareAndUploadFileToS3v2(
+      experimentId,
+      file,
+      uploadUrlParams,
+      'sample',
+      abortController,
+      updateSampleFileUploadProgress,
+    );
   } catch (e) {
     dispatch(updateSampleFileUpload(
       experimentId, sampleId, sampleFileId, fileType, UploadStatus.UPLOAD_ERROR,

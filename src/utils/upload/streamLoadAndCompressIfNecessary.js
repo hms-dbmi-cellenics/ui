@@ -15,35 +15,22 @@ import fileReaderStream from 'filereader-stream';
 const GB = 1024 * 1024 * 1024;
 
 // eslint-disable-next-line arrow-body-style
-const streamLoadAndCompressIfNecessary = async (file, onCompression = () => ({})) => {
-  onCompression();
-  console.log('IMHERE11');
+const streamLoadAndCompressIfNecessary = async (file, chunkCallback, onProgress = () => { }) => {
   return new Promise((resolve, reject) => {
     try {
-      console.log('IMHERE');
-
-      const compressedChunks = [];
-
       // 2GB is the limit to read at once, chrome fails with files bigger than that
       const readStream = fileReaderStream(file?.fileObject || file, { chunkSize: 0.5 * GB });
 
       const gzipStream = new AsyncGzip({ level: 1, consume: false });
+      let index = 1;
 
-      gzipStream.ondata = (err, chunk, isLast) => {
-        compressedChunks.push(chunk);
-        console.log('compressedChunksDebug');
-        console.log(compressedChunks);
-        // console.log('chunkDebug', chunk);
-        console.log('isLastDebug', isLast);
-        console.log('errDebug');
-        console.log(err);
+      gzipStream.ondata = async (err, chunk, isLast) => {
+        await chunkCallback(chunk, index);
+
+        index += 1;
 
         if (isLast) {
-          console.log('finishingDebug');
-          // resolve();
-          resolve(Buffer.concat(compressedChunks));
-
-          console.log('finishedDebug');
+          resolve();
         }
       };
 
@@ -57,8 +44,7 @@ const streamLoadAndCompressIfNecessary = async (file, onCompression = () => ({})
 
       readStream.on('end', () => { gzipStream.push(previousReadChunk, true); });
     } catch (e) {
-      console.log('eDebug');
-      console.log(e);
+      reject(e);
     }
   });
 };
