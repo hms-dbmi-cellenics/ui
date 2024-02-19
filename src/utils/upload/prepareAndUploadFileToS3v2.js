@@ -80,37 +80,7 @@ const processMultipartUploadv2 = async (
   return responses;
 };
 
-// const processMultipartUploadv2 = async (
-//   file, signedUrls, createOnUploadProgressForPart, abortController,
-// ) => {
-//   signedUrls.forEach((signedUrl, index) => {
-//     const start = index * FILE_CHUNK_SIZE;
-//     const end = (index + 1) * FILE_CHUNK_SIZE;
-//     const blob = index < signedUrls.length
-//       ? file.fileObject.slice(start, end)
-//       : file.fileObject.slice(start);
-
-//     const req = putPartInS3v2(
-//       blob,
-//       signedUrl,
-//       createOnUploadProgressForPart(index),
-//       abortController,
-//       0,
-//     );
-
-//     promises.push(req);
-//   });
-
-//   const resParts = await Promise.all(promises);
-
-//   return resParts.map((part, index) => ({
-//     ETag: part.headers.etag,
-//     PartNumber: index + 1,
-//   }));
-// };
-
-// const MAX_RETRIES = 3;
-const MAX_RETRIES = 0;
+const MAX_RETRIES = 3;
 
 const getSignedUrlForPart = async (uploadParams, partNumber) => {
   const {
