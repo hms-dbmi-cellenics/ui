@@ -30,8 +30,7 @@ const ClassifierConfig = (props) => {
                 {' '}
                 function
               </a>
-              . This
-              distinguishes between droplets containing cells and ambient RNA. The FDR range is
+              . This distinguishes between real cells and background (ambient RNA). The FDR range is
               [0-1]. The default FDR value is 0.01, where only barcodes with FDR &lt; 0.01
               are retained.
             </span>

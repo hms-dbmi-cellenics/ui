@@ -648,8 +648,8 @@ const classifierKneePlot = {
   },
   axes: {
     ...axesBaseState,
-    xAxisText: 'Droplet Rank',
-    yAxisText: 'Droplet #UMIs',
+    xAxisText: 'Barcode Rank',
+    yAxisText: 'Barcode #UMIs',
   },
   axesRanges: {
     ...axesRangesBaseState,
