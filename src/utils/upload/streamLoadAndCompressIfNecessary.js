@@ -17,13 +17,16 @@ import fetchAPI from 'utils/http/fetchAPI';
 // });
 
 const GB = 1024 * 1024 * 1024;
+const chunkSize = 0.5 * GB;
 
 // eslint-disable-next-line arrow-body-style
 const streamLoadAndCompressIfNecessary = async (file, chunkCallback, onProgress = () => { }) => {
   return new Promise((resolve, reject) => {
     try {
       // 2GB is the limit to read at once, chrome fails with files bigger than that
-      const readStream = fileReaderStream(file?.fileObject || file, { chunkSize: 0.5 * GB });
+      const readStream = fileReaderStream(file?.fileObject || file, { chunkSize });
+
+      let partsLeftToFinish = Math.ceil(file.size / chunkSize);
 
       const gzipStream = new AsyncGzip({ level: 1, consume: false });
       let index = 0;
@@ -32,7 +35,11 @@ const streamLoadAndCompressIfNecessary = async (file, chunkCallback, onProgress 
         index += 1;
         await chunkCallback(chunk, index);
 
-        if (isLast) {
+        partsLeftToFinish -= 1;
+
+        console.log('partsLeftToFinishDebug');
+        console.log(partsLeftToFinish);
+        if (partsLeftToFinish === 0) {
           resolve();
         }
       };

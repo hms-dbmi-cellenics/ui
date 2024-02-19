@@ -53,7 +53,7 @@ const prepareAndUploadFileToS3v2 = async (
 const processMultipartUploadv2 = async (
   file, uploadParams, createOnUploadProgressForPart, abortController,
 ) => {
-  const responses = [];
+  const responsesPromises = [];
 
   await streamLoadAndCompressIfNecessary(
     file,
@@ -69,14 +69,14 @@ const processMultipartUploadv2 = async (
         0,
       );
 
-      responses.push({ ETag: partResponse.headers.etag, PartNumber: partNumber });
+      responsesPromises.push({ ETag: partResponse.headers.etag, PartNumber: partNumber });
     },
     () => {
       // On progress
     },
   );
 
-  return responses;
+  return responsesPromises;
 };
 
 // const processMultipartUploadv2 = async (
