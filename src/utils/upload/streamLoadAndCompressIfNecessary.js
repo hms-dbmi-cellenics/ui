@@ -1,7 +1,11 @@
 // import { gzip } from 'fflate';
+import axios from 'axios';
 import { AsyncGzip } from 'fflate';
 // import readFileToBuffer from 'utils/upload/readFileToBuffer';
 import fileReaderStream from 'filereader-stream';
+
+import { Transform } from 'stream';
+import fetchAPI from 'utils/http/fetchAPI';
 
 // const compress = (buffer) => new Promise((resolve, reject) => {
 //   gzip(buffer, {}, (error, compressed) => {
@@ -22,12 +26,11 @@ const streamLoadAndCompressIfNecessary = async (file, chunkCallback, onProgress 
       const readStream = fileReaderStream(file?.fileObject || file, { chunkSize: 0.5 * GB });
 
       const gzipStream = new AsyncGzip({ level: 1, consume: false });
-      let index = 1;
+      let index = 0;
 
       gzipStream.ondata = async (err, chunk, isLast) => {
-        await chunkCallback(chunk, index);
-
         index += 1;
+        await chunkCallback(chunk, index);
 
         if (isLast) {
           resolve();
