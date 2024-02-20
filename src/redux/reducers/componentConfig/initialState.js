@@ -558,8 +558,8 @@ const cellSizeDistributionKneePlot = {
   },
   axes: {
     ...axesBaseState,
-    xAxisText: 'Cell rank',
-    yAxisText: '#UMIs in cell',
+    xAxisText: 'Cell Rank',
+    yAxisText: 'Cell #UMIs',
   },
   axesRanges: {
     ...axesRangesBaseState,
@@ -648,8 +648,8 @@ const classifierKneePlot = {
   },
   axes: {
     ...axesBaseState,
-    xAxisText: 'Barcode Rank',
-    yAxisText: 'Barcode #UMIs',
+    xAxisText: 'Cell Rank',
+    yAxisText: 'Cell #UMIs',
   },
   axesRanges: {
     ...axesRangesBaseState,
