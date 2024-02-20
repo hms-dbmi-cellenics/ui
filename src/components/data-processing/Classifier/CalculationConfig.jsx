@@ -19,7 +19,7 @@ const ClassifierConfig = (props) => {
         <Space direction='horizontal'>
           <Tooltip overlay={(
             <span>
-              False discovery rate (FDR) is calculated for each barcode by using the
+              A false discovery rate (FDR) is calculated for each cell barcode by using the
               {' '}
               <a
                 href='https://rdrr.io/github/MarioniLab/DropletUtils/man/emptyDrops.html'
