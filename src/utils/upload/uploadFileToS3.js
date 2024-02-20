@@ -1,9 +1,8 @@
 import _ from 'lodash';
 
 import fetchAPI from 'utils/http/fetchAPI';
-import axios from 'axios';
 import UploadStatus from './UploadStatus';
-import loadFileInStream from './loadFileInStream';
+import FileUploader from './FileUploader';
 
 const MB = 1024 * 1024;
 const chunkSize = 128 * MB;
@@ -41,15 +40,15 @@ const uploadFileToS3 = async (
 
     onStatusUpdate(UploadStatus.UPLOADED, 100);
   } catch (e) {
-    onStatusUpdate(UploadStatus.UPLOAD_ERROR);
+    console.log('eDebug');
+    console.log(e);
+    onStatusUpdate(UploadStatus.UPLOAD_ERROR, 100);
   }
 };
 
 const processMultipartUpload = async (
   file, compress, uploadParams, abortController, onStatusUpdate,
 ) => {
-  const parts = [];
-
   const totalChunks = Math.ceil(file.size / chunkSize);
 
   const uploadedPartPercentages = new Array(totalChunks).fill(0);
@@ -62,22 +61,25 @@ const processMultipartUpload = async (
     onStatusUpdate(UploadStatus.UPLOADING, Math.floor(percentage));
   };
 
-  await loadFileInStream(
-    file,
-    compress,
-    chunkSize,
-    async (compressedPart, partNumber) => {
-      const partResponse = await putPartInS3(
-        compressedPart,
-        uploadParams,
-        partNumber,
-        abortController,
-        createOnUploadProgress(partNumber),
-      );
+  let parts;
 
-      parts.push({ ETag: partResponse.headers.etag, PartNumber: partNumber });
-    },
-  );
+  try {
+    const fileUploader = new FileUploader(
+      file,
+      compress,
+      chunkSize,
+      uploadParams,
+      abortController,
+      createOnUploadProgress,
+      onStatusUpdate,
+    );
+
+    parts = await fileUploader.upload();
+  } catch (e) {
+    // Status updates are already handled within FileUploader
+
+    return;
+  }
 
   parts.sort(({ PartNumber: PartNumber1 }, { PartNumber: PartNumber2 }) => {
     if (PartNumber1 === PartNumber2) throw new Error('Non-unique partNumbers found, each number should be unique');
@@ -86,46 +88,6 @@ const processMultipartUpload = async (
   });
 
   return parts;
-};
-
-const MAX_RETRIES = 3;
-
-const getSignedUrlForPart = async (uploadParams, partNumber) => {
-  const {
-    experimentId, uploadId, bucket, key,
-  } = uploadParams;
-
-  const queryParams = new URLSearchParams({ bucket, key });
-  const url = `/v2/experiments/${experimentId}/upload/${uploadId}/part/${partNumber}/signedUrl?${queryParams}`;
-
-  return await fetchAPI(url, { method: 'GET' });
-};
-
-const putPartInS3 = async (
-  blob, uploadParams, partNumber, abortController, onUploadProgress, currentRetry = 0,
-) => {
-  try {
-    const signedUrl = await getSignedUrlForPart(uploadParams, partNumber);
-
-    return await axios.request({
-      method: 'put',
-      data: blob,
-      url: signedUrl,
-      signal: abortController.signal,
-      headers: {
-        'Content-Type': 'application/octet-stream',
-      },
-      onUploadProgress,
-    });
-  } catch (e) {
-    if (currentRetry < MAX_RETRIES) {
-      return await putPartInS3(
-        blob, uploadParams, partNumber, abortController, onUploadProgress, currentRetry + 1,
-      );
-    }
-
-    throw e;
-  }
 };
 
 const completeMultipartUpload = async (parts, uploadId, fileId, type) => {
