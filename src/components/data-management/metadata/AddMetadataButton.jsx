@@ -17,6 +17,8 @@ import {
 import { prepareAndUploadFileToS3 } from 'utils/upload/processUpload';
 import pushNotificationMessage from 'utils/pushNotificationMessage';
 import loadAndCompressIfNecessary from 'utils/upload/loadAndCompressIfNecessary';
+import streamLoadAndCompressIfNecessary from 'utils/upload/streamLoadAndCompressIfNecessary';
+import prepareAndUploadFileToS3v2 from 'utils/upload/prepareAndUploadFileToS3v2';
 import MetadataUploadModal from './MetadataUploadModal';
 import CellLevelUploadModal from './CellLevelUploadModal';
 
@@ -52,14 +54,16 @@ const AddMetadataButton = ({ samplesTableRef }) => {
       createCellLevelMetadata(activeExperimentId, getSignedURLsParams),
     );
 
-    if (!file.fileObject) {
-      file.fileObject = await loadAndCompressIfNecessary(
-        file, () => onUpdateUploadStatus(UploadStatus.COMPRESSING),
-      );
-    }
-
     try {
-      await prepareAndUploadFileToS3(file, uploadUrlParams, 'cellLevelMeta', new AbortController(), onUpdateUploadStatus);
+      await prepareAndUploadFileToS3v2(
+        activeExperimentId,
+        file,
+        !file.compressed,
+        uploadUrlParams,
+        'cellLevelMeta',
+        new AbortController(),
+        onUpdateUploadStatus,
+      );
     } catch (e) {
       pushNotificationMessage('error', 'Something went wrong while uploading your metadata file.');
       console.log(e);
