@@ -1,7 +1,12 @@
+import _ from 'lodash';
+
 import fetchAPI from 'utils/http/fetchAPI';
 import axios from 'axios';
 import UploadStatus from './UploadStatus';
 import loadFileInStream from './loadFileInStream';
+
+const MB = 1024 * 1024;
+const chunkSize = 128 * MB;
 
 const uploadFileToS3 = async (
   experimentId,
@@ -45,22 +50,33 @@ const processMultipartUpload = async (
 ) => {
   const parts = [];
 
-  const partUploader = async (compressedPart, partNumber) => {
-    const partResponse = await putPartInS3(
-      compressedPart,
-      uploadParams,
-      partNumber,
-      abortController,
-    );
+  const totalChunks = Math.ceil(file.size / chunkSize);
 
-    parts.push({ ETag: partResponse.headers.etag, PartNumber: partNumber });
+  const uploadedPartPercentages = new Array(totalChunks).fill(0);
+
+  const createOnUploadProgress = (partNumber) => (progress) => {
+    // partNumbers are 1-indexed, so we need to subtract 1 for the array index
+    uploadedPartPercentages[partNumber - 1] = progress.progress;
+
+    const percentage = _.mean(uploadedPartPercentages) * 100;
+    onStatusUpdate(UploadStatus.UPLOADING, Math.floor(percentage));
   };
 
   await loadFileInStream(
     file,
     compress,
-    partUploader,
-    (progress) => onStatusUpdate(UploadStatus.UPLOADING, progress),
+    chunkSize,
+    async (compressedPart, partNumber) => {
+      const partResponse = await putPartInS3(
+        compressedPart,
+        uploadParams,
+        partNumber,
+        abortController,
+        createOnUploadProgress(partNumber),
+      );
+
+      parts.push({ ETag: partResponse.headers.etag, PartNumber: partNumber });
+    },
   );
 
   parts.sort(({ PartNumber: PartNumber1 }, { PartNumber: PartNumber2 }) => {
@@ -86,7 +102,7 @@ const getSignedUrlForPart = async (uploadParams, partNumber) => {
 };
 
 const putPartInS3 = async (
-  blob, uploadParams, partNumber, abortController, currentRetry = 0,
+  blob, uploadParams, partNumber, abortController, onUploadProgress, currentRetry = 0,
 ) => {
   try {
     const signedUrl = await getSignedUrlForPart(uploadParams, partNumber);
@@ -99,11 +115,12 @@ const putPartInS3 = async (
       headers: {
         'Content-Type': 'application/octet-stream',
       },
+      onUploadProgress,
     });
   } catch (e) {
     if (currentRetry < MAX_RETRIES) {
       return await putPartInS3(
-        blob, uploadParams, partNumber, abortController, currentRetry + 1,
+        blob, uploadParams, partNumber, abortController, onUploadProgress, currentRetry + 1,
       );
     }
 
