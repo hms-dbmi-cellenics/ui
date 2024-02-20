@@ -12,23 +12,11 @@ const prepareAndUploadFileToS3v2 = async (
   onStatusUpdate = () => { },
 ) => {
   const {
-    // signedUrls,
     uploadId, fileId, bucket, key,
   } = uploadUrlParams;
 
   // eslint-disable-next-line no-unused-vars
   const createOnUploadProgressForPart = (partIndex) => (progress) => { };
-
-  // const uploadedPartSizes = new Array(signedUrls.length).fill(0);
-  // const totalSize = file.size;
-
-  // const createOnUploadProgressForPart = (partIndex) => (progress) => {
-  //   uploadedPartSizes[partIndex] = progress.loaded;
-  //   const totalUploaded = _.sum(uploadedPartSizes);
-  //   const percentProgress = Math.floor((totalUploaded * 100) / totalSize);
-
-  //   onStatusUpdate(UploadStatus.UPLOADING, percentProgress);
-  // };
 
   try {
     const uploadParams = {
