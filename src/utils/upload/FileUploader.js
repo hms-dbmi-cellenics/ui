@@ -117,6 +117,8 @@ class FileUploader {
   #cancelExecution = (status, e) => {
     this.readStream.destroy();
     this.gzipStream.terminate();
+    // eslint-disable-next-line no-unused-expressions
+    this.abortController?.abort();
 
     this.onStatusUpdate(status);
 
