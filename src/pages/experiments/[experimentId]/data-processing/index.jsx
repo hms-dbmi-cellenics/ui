@@ -200,7 +200,7 @@ const DataProcessingPage = ({ experimentId, experimentData }) => {
     {
       key: 'cellSizeDistribution',
       name: getUserFriendlyQCStepName('cellSizeDistribution'),
-      description: 'The number of unique molecular identifiers (#UMIs) per cell distinguishes cells (high #UMIs per cell) from background (low #UMIs per cell). This filter is used to detect background and fine-tunes the Classifier filter. In some datasets this filter might be used instead of the Classifier filter.',
+      description: 'The number of unique molecular identifiers (#UMIs) per cell barcode distinguishes between cells (high #UMIs) and  background medium or cellular fragments (low #UMIs). This filter can be used in addition to the Classifier filter to  further remove cell barcodes with low #UMIs. In some datasets this filter might be used instead of the Classifier filter.',
       multiSample: true,
       render: (key) => (
         <SingleComponentMultipleDataContainer
