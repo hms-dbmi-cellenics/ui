@@ -6,7 +6,6 @@ import {
 } from 'redux/actions/samples';
 
 import UploadStatus from 'utils/upload/UploadStatus';
-// import loadAndCompressIfNecessary from 'utils/upload/loadAndCompressIfNecessary';
 import { inspectFile, Verdict } from 'utils/upload/fileInspector';
 import fetchAPI from 'utils/http/fetchAPI';
 

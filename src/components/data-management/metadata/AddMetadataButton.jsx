@@ -6,7 +6,6 @@ import {
 import PropTypes from 'prop-types';
 
 import { useSelector, useDispatch } from 'react-redux';
-import UploadStatus from 'utils/upload/UploadStatus';
 
 import uploadMetadataFile from 'redux/actions/experiments/uploadMetadataFile';
 import { sampleTech } from 'utils/constants';
@@ -14,10 +13,7 @@ import {
   createCellLevelMetadata,
   updateCellLevelMetadataFileUpload,
 } from 'redux/actions/experiments';
-import { prepareAndUploadFileToS3 } from 'utils/upload/processUpload';
 import pushNotificationMessage from 'utils/pushNotificationMessage';
-import loadAndCompressIfNecessary from 'utils/upload/loadAndCompressIfNecessary';
-import streamLoadAndCompressIfNecessary from 'utils/upload/streamLoadAndCompressIfNecessary';
 import prepareAndUploadFileToS3v2 from 'utils/upload/prepareAndUploadFileToS3v2';
 import MetadataUploadModal from './MetadataUploadModal';
 import CellLevelUploadModal from './CellLevelUploadModal';
@@ -110,7 +106,11 @@ const AddMetadataButton = ({ samplesTableRef }) => {
         }}
         trigger={['click']}
         placement='bottomRight'
-        disabled={activeExperiment.sampleIds?.length === 0 || isSubsetted || selectedTech === sampleTech.SEURAT}
+        disabled={
+          activeExperiment.sampleIds?.length === 0
+          || isSubsetted
+          || selectedTech === sampleTech.SEURAT
+        }
       >
         <Button>
           Metadata
