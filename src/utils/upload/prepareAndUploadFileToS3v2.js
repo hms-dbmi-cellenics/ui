@@ -16,6 +16,10 @@ const prepareAndUploadFileToS3v2 = async (
     uploadId, fileId, bucket, key,
   } = uploadUrlParams;
 
+  if (!uploadId || !fileId || !bucket || !key) {
+    throw new Error('uploadUrlParams must contain uploadId, fileId, bucket, and key');
+  }
+
   // eslint-disable-next-line no-unused-vars
   const createOnUploadProgressForPart = (partIndex) => (progress) => { };
 
