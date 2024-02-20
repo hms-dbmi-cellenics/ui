@@ -31,7 +31,7 @@ const uploadFileToS3 = async (
       key,
     };
 
-    const responses = await processMultipartUploadv2(
+    const responses = await processMultipartUpload(
       file, compress, uploadParams, createOnUploadProgressForPart, abortController, onStatusUpdate,
     );
 
@@ -43,13 +43,13 @@ const uploadFileToS3 = async (
   }
 };
 
-const processMultipartUploadv2 = async (
+const processMultipartUpload = async (
   file, compress, uploadParams, createOnUploadProgressForPart, abortController,
 ) => {
   const parts = [];
 
   const partUploader = async (compressedPart, partNumber) => {
-    const partResponse = await putPartInS3v2(
+    const partResponse = await putPartInS3(
       compressedPart,
       uploadParams,
       partNumber,
@@ -91,7 +91,7 @@ const getSignedUrlForPart = async (uploadParams, partNumber) => {
   return await fetchAPI(url, { method: 'GET' });
 };
 
-const putPartInS3v2 = async (
+const putPartInS3 = async (
   blob, uploadParams, partNumber, onUploadProgress, abortController, currentRetry = 0,
 ) => {
   try {
@@ -112,7 +112,7 @@ const putPartInS3v2 = async (
     });
   } catch (e) {
     if (currentRetry < MAX_RETRIES) {
-      return await putPartInS3v2(
+      return await putPartInS3(
         blob, uploadParams, partNumber, onUploadProgress, abortController, currentRetry + 1,
       );
     }
