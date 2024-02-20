@@ -47,18 +47,6 @@ const uploadFileToS3 = async (
 const processMultipartUpload = async (
   file, compress, uploadParams, abortController, onStatusUpdate,
 ) => {
-  const totalChunks = Math.ceil(file.size / chunkSize);
-
-  const uploadedPartPercentages = new Array(totalChunks).fill(0);
-
-  const createOnUploadProgress = (partNumber) => (progress) => {
-    // partNumbers are 1-indexed, so we need to subtract 1 for the array index
-    uploadedPartPercentages[partNumber - 1] = progress.progress;
-
-    const percentage = _.mean(uploadedPartPercentages) * 100;
-    onStatusUpdate(UploadStatus.UPLOADING, Math.floor(percentage));
-  };
-
   let parts;
 
   try {
@@ -68,17 +56,16 @@ const processMultipartUpload = async (
       chunkSize,
       uploadParams,
       abortController,
-      createOnUploadProgress,
       onStatusUpdate,
     );
 
     parts = await fileUploader.upload();
   } catch (e) {
-    // Status updates are already handled within FileUploader
-
+    // Status updates are already handled within FileUploader, just return
     return;
   }
 
+  // S3 expects parts to be sorted by number
   parts.sort(({ PartNumber: PartNumber1 }, { PartNumber: PartNumber2 }) => {
     if (PartNumber1 === PartNumber2) throw new Error('Non-unique partNumbers found, each number should be unique');
 

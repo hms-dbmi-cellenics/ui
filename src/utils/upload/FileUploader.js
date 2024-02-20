@@ -1,3 +1,5 @@
+import _ from 'lodash';
+
 import { AsyncGzip } from 'fflate';
 import filereaderStream from 'filereader-stream';
 
@@ -11,15 +13,12 @@ class FileUploader {
     chunkSize,
     uploadParams,
     abortController,
-    createOnUploadProgress,
     onStatusUpdate,
   ) {
-    if (
-      !file
+    if (!file
       || !chunkSize
       || !uploadParams
       || !abortController
-      || !createOnUploadProgress
       || !onStatusUpdate
     ) {
       throw new Error('FileUploader: Missing required parameters');
@@ -33,15 +32,17 @@ class FileUploader {
     // Upload related callbacks and handling
     this.onStatusUpdate = onStatusUpdate;
     this.abortController = abortController;
-    this.createOnUploadProgress = createOnUploadProgress;
 
     // Stream handling
-    this.partNumberIt = 0;
-    this.pendingChunks = Math.ceil(file.size / chunkSize);
+    this.totalChunks = Math.ceil(file.size / chunkSize);
+    this.pendingChunks = this.totalChunks;
 
     // This is necessary to connect the streams between read and compress.
     // They handle stream ends in different ways
     this.previousReadChunk = null;
+
+    // Used to assign partNumbers to each chunk
+    this.partNumberIt = 0;
 
     this.readStream = null;
     this.gzipStream = null;
@@ -50,6 +51,9 @@ class FileUploader {
 
     this.resolve = null;
     this.reject = null;
+
+    // To track upload progress
+    this.uploadedPartPercentages = new Array(this.totalChunks).fill(0);
   }
 
   async upload() {
@@ -76,11 +80,19 @@ class FileUploader {
       this.uploadParams,
       partNumber,
       this.abortController,
-      this.createOnUploadProgress(partNumber),
+      this.#createOnUploadProgress(partNumber),
     );
 
     this.uploadedParts.push({ ETag: partResponse.headers.etag, PartNumber: partNumber });
   }
+
+  #createOnUploadProgress = (partNumber) => (progress) => {
+    // partNumbers are 1-indexed, so we need to subtract 1 for the array index
+    this.uploadedPartPercentages[partNumber - 1] = progress.progress;
+
+    const percentage = _.mean(this.uploadedPartPercentages) * 100;
+    this.onStatusUpdate(UploadStatus.UPLOADING, Math.floor(percentage));
+  };
 
   #setupGzipStreamHandlers = () => {
     this.gzipStream.ondata = async (err, chunk) => {
