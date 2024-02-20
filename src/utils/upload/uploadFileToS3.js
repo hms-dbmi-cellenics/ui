@@ -97,9 +97,6 @@ const putPartInS3 = async (
   try {
     const signedUrl = await getSignedUrlForPart(uploadParams, partNumber);
 
-    console.log('signedUrlDebug');
-    console.log(signedUrl);
-
     return await axios.request({
       method: 'put',
       data: blob,
