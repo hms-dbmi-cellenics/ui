@@ -16,11 +16,10 @@ const streamLoadAndCompressIfNecessary = async (
 
     const gzipStream = new AsyncGzip({ level: 1, consume: false });
 
-    // Necessary to order the parts, required to complete a multipart upload
+    // PartNumbers are necessary to complete a multipart upload
     let partNumber = 0;
 
-    // eslint-disable-next-line no-unused-vars
-    gzipStream.ondata = async (err, chunk, isLast) => {
+    const handleChunkFinished = async (chunk) => {
       partNumber += 1;
       await onChunkFinished(chunk, partNumber);
 
@@ -31,15 +30,29 @@ const streamLoadAndCompressIfNecessary = async (
       }
     };
 
+    // eslint-disable-next-line no-unused-vars
+    gzipStream.ondata = async (err, chunk, isLast) => {
+      await handleChunkFinished(chunk);
+    };
+
     let previousReadChunk = null;
 
-    readStream.on('data', (chunk) => {
+    readStream.on('data', async (chunk) => {
+      if (!compress) {
+        await handleChunkFinished(chunk);
+        return;
+      }
+
       if (previousReadChunk !== null) gzipStream.push(previousReadChunk);
 
       previousReadChunk = chunk;
     });
 
-    readStream.on('end', () => { gzipStream.push(previousReadChunk, true); });
+    readStream.on('end', () => {
+      if (!compress) return;
+
+      gzipStream.push(previousReadChunk, true);
+    });
   } catch (e) {
     reject(e);
   }
