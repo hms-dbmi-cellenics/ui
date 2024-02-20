@@ -1,7 +1,7 @@
 import fetchAPI from 'utils/http/fetchAPI';
 import axios from 'axios';
 import UploadStatus from './UploadStatus';
-import streamLoadAndCompressIfNecessary from './streamLoadAndCompressIfNecessary';
+import loadFileInStream from './loadFileInStream';
 
 const prepareAndUploadFileToS3v2 = async (
   experimentId,
@@ -61,7 +61,7 @@ const processMultipartUploadv2 = async (
     parts.push({ ETag: partResponse.headers.etag, PartNumber: partNumber });
   };
 
-  await streamLoadAndCompressIfNecessary(
+  await loadFileInStream(
     file,
     compress,
     partUploader,

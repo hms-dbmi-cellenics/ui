@@ -5,7 +5,7 @@ const GB = 1024 * 1024 * 1024;
 const chunkSize = 0.5 * GB;
 
 // eslint-disable-next-line arrow-body-style
-const streamLoadAndCompressIfNecessary = async (
+const loadFileInStream = async (
   file, compress, onChunkFinished, onProgress = () => { },
 ) => new Promise((resolve, reject) => {
   try {
@@ -58,4 +58,4 @@ const streamLoadAndCompressIfNecessary = async (
   }
 });
 
-export default streamLoadAndCompressIfNecessary;
+export default loadFileInStream;
