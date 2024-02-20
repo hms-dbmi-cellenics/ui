@@ -20,9 +20,6 @@ const uploadFileToS3 = async (
     throw new Error('uploadUrlParams must contain uploadId, fileId, bucket, and key');
   }
 
-  // eslint-disable-next-line no-unused-vars
-  const createOnUploadProgressForPart = (partIndex) => (progress) => { };
-
   try {
     const uploadParams = {
       experimentId,
@@ -32,7 +29,7 @@ const uploadFileToS3 = async (
     };
 
     const responses = await processMultipartUpload(
-      file, compress, uploadParams, createOnUploadProgressForPart, abortController, onStatusUpdate,
+      file, compress, uploadParams, abortController, onStatusUpdate,
     );
 
     await completeMultipartUpload(responses, uploadId, fileId, type);
@@ -44,7 +41,7 @@ const uploadFileToS3 = async (
 };
 
 const processMultipartUpload = async (
-  file, compress, uploadParams, createOnUploadProgressForPart, abortController,
+  file, compress, uploadParams, abortController, onStatusUpdate,
 ) => {
   const parts = [];
 
@@ -53,7 +50,6 @@ const processMultipartUpload = async (
       compressedPart,
       uploadParams,
       partNumber,
-      createOnUploadProgressForPart(partNumber),
       abortController,
     );
 
@@ -64,9 +60,7 @@ const processMultipartUpload = async (
     file,
     compress,
     partUploader,
-    () => {
-      // On progress
-    },
+    (progress) => onStatusUpdate(UploadStatus.UPLOADING, progress),
   );
 
   parts.sort(({ PartNumber: PartNumber1 }, { PartNumber: PartNumber2 }) => {
@@ -92,7 +86,7 @@ const getSignedUrlForPart = async (uploadParams, partNumber) => {
 };
 
 const putPartInS3 = async (
-  blob, uploadParams, partNumber, onUploadProgress, abortController, currentRetry = 0,
+  blob, uploadParams, partNumber, abortController, currentRetry = 0,
 ) => {
   try {
     const signedUrl = await getSignedUrlForPart(uploadParams, partNumber);
@@ -105,12 +99,11 @@ const putPartInS3 = async (
       headers: {
         'Content-Type': 'application/octet-stream',
       },
-      onUploadProgress,
     });
   } catch (e) {
     if (currentRetry < MAX_RETRIES) {
       return await putPartInS3(
-        blob, uploadParams, partNumber, onUploadProgress, abortController, currentRetry + 1,
+        blob, uploadParams, partNumber, abortController, currentRetry + 1,
       );
     }
 

@@ -6,13 +6,14 @@ const chunkSize = 128 * MB;
 
 // eslint-disable-next-line arrow-body-style
 const loadFileInStream = async (
-  file, compress, onChunkFinished, onProgress = () => { },
+  file, compress, finishChunk, onProgress = () => { },
 ) => new Promise((resolve, reject) => {
   try {
     // 2GB is the limit to read at once, chrome fails with files bigger than that
     const readStream = fileReaderStream(file?.fileObject || file, { chunkSize });
 
-    let pendingChunks = Math.ceil(file.size / chunkSize);
+    const totalChunks = Math.ceil(file.size / chunkSize);
+    let pendingChunks = totalChunks;
 
     const gzipStream = new AsyncGzip({ level: 1, consume: false });
 
@@ -21,9 +22,13 @@ const loadFileInStream = async (
 
     const handleChunkFinished = async (chunk) => {
       partNumber += 1;
-      await onChunkFinished(chunk, partNumber);
+
+      await finishChunk(chunk, partNumber);
 
       pendingChunks -= 1;
+
+      const progressPercentage = ((totalChunks - pendingChunks) / totalChunks) * 100;
+      onProgress(progressPercentage.toFixed(2));
 
       if (pendingChunks === 0) {
         resolve();
