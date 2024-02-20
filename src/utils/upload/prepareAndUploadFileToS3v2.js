@@ -77,7 +77,7 @@ const processMultipartUploadv2 = async (
   );
 
   parts.sort(({ PartNumber: PartNumber1 }, { PartNumber: PartNumber2 }) => {
-    if (PartNumber1 === PartNumber2) throw new Error('Non-unique partNumbers found, they should be unique');
+    if (PartNumber1 === PartNumber2) throw new Error('Non-unique partNumbers found, each number should be unique');
 
     return PartNumber1 > PartNumber2 ? 1 : -1;
   });
