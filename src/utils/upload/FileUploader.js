@@ -14,6 +14,17 @@ class FileUploader {
     createOnUploadProgress,
     onStatusUpdate,
   ) {
+    if (
+      !file
+      || !chunkSize
+      || !uploadParams
+      || !abortController
+      || !createOnUploadProgress
+      || !onStatusUpdate
+    ) {
+      throw new Error('FileUploader: Missing required parameters');
+    }
+
     this.file = file;
     this.compress = compress;
     this.chunkSize = chunkSize;
