@@ -50,16 +50,16 @@ class FileUploader {
         this.file?.fileObject || this.file, { chunkSize: this.chunkSize },
       );
 
-      this.setupReadStreamHandlers();
+      this.#setupReadStreamHandlers();
 
       if (this.compress) {
         this.gzipStream = new AsyncGzip({ level: 1, consume: false });
-        this.setupGzipStreamHandlers();
+        this.#setupGzipStreamHandlers();
       }
     });
   }
 
-  async uploadChunk(compressedPart, partNumber) {
+  #uploadChunk = async (compressedPart, partNumber) => {
     const partResponse = await putPartInS3(
       compressedPart,
       this.uploadParams,
@@ -71,23 +71,23 @@ class FileUploader {
     this.uploadedParts.push({ ETag: partResponse.headers.etag, PartNumber: partNumber });
   }
 
-  setupGzipStreamHandlers() {
+  #setupGzipStreamHandlers = () => {
     this.gzipStream.ondata = async (err, chunk) => {
       try {
         if (err) throw new Error(err);
 
-        await this.handleChunkReadFinished(chunk);
+        await this.#handleChunkReadFinished(chunk);
       } catch (e) {
-        this.cancelExecution(UploadStatus.FILE_READ_ERROR, e);
+        this.#cancelExecution(UploadStatus.FILE_READ_ERROR, e);
       }
     };
   }
 
-  setupReadStreamHandlers() {
+  #setupReadStreamHandlers = () => {
     this.readStream.on('data', async (chunk) => {
       try {
         if (!this.compress) {
-          await this.handleChunkReadFinished(chunk);
+          await this.#handleChunkReadFinished(chunk);
           return;
         }
 
@@ -95,12 +95,12 @@ class FileUploader {
 
         this.previousReadChunk = chunk;
       } catch (e) {
-        this.cancelExecution(UploadStatus.FILE_READ_ERROR, e);
+        this.#cancelExecution(UploadStatus.FILE_READ_ERROR, e);
       }
     });
 
     this.readStream.on('error', (e) => {
-      this.cancelExecution(UploadStatus.FILE_READ_ERROR, e);
+      this.#cancelExecution(UploadStatus.FILE_READ_ERROR, e);
     });
 
     this.readStream.on('end', () => {
@@ -109,12 +109,12 @@ class FileUploader {
 
         this.gzipStream.push(this.previousReadChunk, true);
       } catch (e) {
-        this.cancelExecution(UploadStatus.FILE_READ_ERROR, e);
+        this.#cancelExecution(UploadStatus.FILE_READ_ERROR, e);
       }
     });
   }
 
-  cancelExecution(status, e) {
+  #cancelExecution = (status, e) => {
     this.readStream.destroy();
     this.gzipStream.terminate();
 
@@ -124,13 +124,13 @@ class FileUploader {
     console.err(e);
   }
 
-  async handleChunkReadFinished(chunk) {
+  #handleChunkReadFinished = async (chunk) => {
     this.partNumberIt += 1;
 
     try {
-      await this.uploadChunk(chunk, this.partNumberIt);
+      await this.#uploadChunk(chunk, this.partNumberIt);
     } catch (e) {
-      this.cancelExecution(UploadStatus.UPLOAD_ERROR, e);
+      this.#cancelExecution(UploadStatus.UPLOAD_ERROR, e);
     }
 
     this.pendingChunks -= 1;
