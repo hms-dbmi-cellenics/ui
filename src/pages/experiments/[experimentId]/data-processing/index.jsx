@@ -175,7 +175,7 @@ const DataProcessingPage = ({ experimentId, experimentData }) => {
     {
       key: 'classifier',
       name: getUserFriendlyQCStepName('classifier'),
-      description: 'The Classifier filter is based on the �emptyDrops� method which distinguishes between real cells and background (ambient RNA). Barcodes are filtered based on the False Discovery Rate (FDR) value - the red line on the density plot. In the knee plot, the �mixed� population shown in grey contains some cells that are filtered out and some that remain and can be filtered further in the next filter.',
+      description: 'The Classifier filter is based on the "emptyDrops" method which distinguishes between real cells and background (ambient RNA). Barcodes are filtered based on the False Discovery Rate (FDR) value - the red line on the density plot. In the knee plot, the "mixed" population shown in grey contains some cells that are filtered out and some that remain and can be filtered further in the next filter.',
       multiSample: true,
       render: (key) => (
         <SingleComponentMultipleDataContainer
@@ -277,9 +277,9 @@ const DataProcessingPage = ({ experimentId, experimentData }) => {
         <span>
           A single barcode might correspond to more than one cell.
           In such cases, it is not possible to distinguish which reads came from which cell.
-          Such “cells” cause problems in the downstream analysis as they appear as an intermediate type.
-          “Cells” with a high probability of being a doublet should be excluded.
-          The probability of being a doublet is calculated using ‘scDblFinder’.
+          Such â€œcellsâ€ cause problems in the downstream analysis as they appear as an intermediate type.
+          â€œCellsâ€ with a high probability of being a doublet should be excluded.
+          The probability of being a doublet is calculated using â€˜scDblFinderâ€™.
           For each sample, the default threshold tries to minimize both the deviation in the
           expected number of doublets and the error of a trained classifier. For more details see
           {' '}
