@@ -31,6 +31,7 @@ const streamLoadAndCompressIfNecessary = async (file, chunkCallback, onProgress 
       const gzipStream = new AsyncGzip({ level: 1, consume: false });
       let index = 0;
 
+      // eslint-disable-next-line no-unused-vars
       gzipStream.ondata = async (err, chunk, isLast) => {
         index += 1;
         await chunkCallback(chunk, index);
