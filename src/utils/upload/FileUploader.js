@@ -121,7 +121,7 @@ class FileUploader {
     this.onStatusUpdate(status);
 
     this.reject(e);
-    console.err(e);
+    console.error(e);
   }
 
   #handleChunkReadFinished = async (chunk) => {
