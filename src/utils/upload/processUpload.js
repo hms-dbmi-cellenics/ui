@@ -90,34 +90,6 @@ const createAndUploadSampleFile = async (
   // instead of the fileReader metadata object that it is now
   const fileName = file.fileObject.name;
 
-  // if (!file.compressed) {
-  //   try {
-  //     // if (file.path.endsWith('count_matrix.mtx') || file.path.endsWith('DGE.mtx')) {
-  //     file.fileObject = await streamLoadAndCompressIfNecessary(file, () => {
-  //       dispatch(updateSampleFileUpload(
-  //         experimentId, sampleId, sampleFileId, fileType, UploadStatus.COMPRESSING,
-  //       ));
-  //     });
-
-  //     // file.fileObject = await loadAndCompressIfNecessary(file, () => {
-  //     //   dispatch(updateSampleFileUpload(
-  //     //     experimentId, sampleId, sampleFileId, fileType, UploadStatus.COMPRESSING,
-  //     //   ));
-  //     // });
-
-  //     file.size = Buffer.byteLength(file.fileObject);
-  //   } catch (e) {
-  //     const fileErrorStatus = e.message === 'aborted'
-  //       ? UploadStatus.FILE_READ_ABORTED
-  //       : UploadStatus.FILE_READ_ERROR;
-
-  //     dispatch(updateSampleFileUpload(
-  //       experimentId, sampleId, sampleFileId, fileType, fileErrorStatus,
-  //     ));
-  //     return;
-  //   }
-  // }
-
   try {
     const {
       signedUrls, uploadId, bucket, key,
