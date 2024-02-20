@@ -40,9 +40,7 @@ const uploadFileToS3 = async (
 
     onStatusUpdate(UploadStatus.UPLOADED, 100);
   } catch (e) {
-    console.log('eDebug');
-    console.log(e);
-    onStatusUpdate(UploadStatus.UPLOAD_ERROR, 100);
+    onStatusUpdate(UploadStatus.UPLOAD_ERROR);
   }
 };
 
