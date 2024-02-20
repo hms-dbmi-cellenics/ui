@@ -79,8 +79,7 @@ const processMultipartUploadv2 = async (
   return parts;
 };
 
-// const MAX_RETRIES = 3;
-const MAX_RETRIES = 0;
+const MAX_RETRIES = 3;
 
 const getSignedUrlForPart = async (uploadParams, partNumber) => {
   const {
