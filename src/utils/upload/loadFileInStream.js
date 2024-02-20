@@ -1,8 +1,8 @@
 import { AsyncGzip } from 'fflate';
 import fileReaderStream from 'filereader-stream';
 
-const GB = 1024 * 1024 * 1024;
-const chunkSize = 0.5 * GB;
+const MB = 1024 * 1024;
+const chunkSize = 128 * MB;
 
 // eslint-disable-next-line arrow-body-style
 const loadFileInStream = async (

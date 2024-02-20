@@ -55,7 +55,6 @@ const processMultipartUploadv2 = async (
       partNumber,
       createOnUploadProgressForPart(partNumber),
       abortController,
-      0,
     );
 
     parts.push({ ETag: partResponse.headers.etag, PartNumber: partNumber });
