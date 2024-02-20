@@ -26,7 +26,7 @@ const streamLoadAndCompressIfNecessary = async (file, chunkCallback, onProgress 
       // 2GB is the limit to read at once, chrome fails with files bigger than that
       const readStream = fileReaderStream(file?.fileObject || file, { chunkSize });
 
-      let partsLeftToFinish = Math.ceil(file.size / chunkSize);
+      let pendingChunks = Math.ceil(file.size / chunkSize);
 
       const gzipStream = new AsyncGzip({ level: 1, consume: false });
       let index = 0;
@@ -35,11 +35,9 @@ const streamLoadAndCompressIfNecessary = async (file, chunkCallback, onProgress 
         index += 1;
         await chunkCallback(chunk, index);
 
-        partsLeftToFinish -= 1;
+        pendingChunks -= 1;
 
-        console.log('partsLeftToFinishDebug');
-        console.log(partsLeftToFinish);
-        if (partsLeftToFinish === 0) {
+        if (pendingChunks === 0) {
           resolve();
         }
       };
