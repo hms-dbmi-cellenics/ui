@@ -6,7 +6,7 @@ const chunkSize = 0.5 * GB;
 
 // eslint-disable-next-line arrow-body-style
 const streamLoadAndCompressIfNecessary = async (
-  file, compress, chunkCallback, onProgress = () => { },
+  file, compress, onChunkFinished, onProgress = () => { },
 ) => new Promise((resolve, reject) => {
   try {
     // 2GB is the limit to read at once, chrome fails with files bigger than that
@@ -22,7 +22,7 @@ const streamLoadAndCompressIfNecessary = async (
     // eslint-disable-next-line no-unused-vars
     gzipStream.ondata = async (err, chunk, isLast) => {
       partNumber += 1;
-      await chunkCallback(chunk, partNumber);
+      await onChunkFinished(chunk, partNumber);
 
       pendingChunks -= 1;
 
