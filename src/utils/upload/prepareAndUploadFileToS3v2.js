@@ -55,22 +55,22 @@ const processMultipartUploadv2 = async (
 ) => {
   const parts = [];
 
+  const partUploader = async (compressedPart, partNumber) => {
+    const partResponse = await putPartInS3v2(
+      compressedPart,
+      uploadParams,
+      partNumber,
+      createOnUploadProgressForPart(partNumber),
+      abortController,
+      0,
+    );
+
+    parts.push({ ETag: partResponse.headers.etag, PartNumber: partNumber });
+  };
+
   await streamLoadAndCompressIfNecessary(
     file,
-    async (compressedChunk, index) => {
-      const partNumber = index;
-
-      const partResponse = await putPartInS3v2(
-        compressedChunk,
-        uploadParams,
-        partNumber,
-        createOnUploadProgressForPart(partNumber),
-        abortController,
-        0,
-      );
-
-      parts.push({ ETag: partResponse.headers.etag, PartNumber: partNumber });
-    },
+    partUploader,
     () => {
       // On progress
     },
