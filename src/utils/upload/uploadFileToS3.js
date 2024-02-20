@@ -38,7 +38,7 @@ const uploadFileToS3 = async (
 
     await completeMultipartUpload(responses, uploadId, fileId, type);
 
-    onStatusUpdate(UploadStatus.UPLOADED, 100);
+    onStatusUpdate(UploadStatus.UPLOADED);
   } catch (e) {
     onStatusUpdate(UploadStatus.UPLOAD_ERROR);
   }
