@@ -91,12 +91,9 @@ const createAndUploadSampleFile = async (
   const fileName = file.fileObject.name;
 
   try {
-    const {
-      signedUrls, uploadId, bucket, key,
-    } = await beginSampleFileUpload(
+    const { uploadId, bucket, key } = await beginSampleFileUpload(
       experimentId,
       sampleFileId,
-      file.size,
       getMetadata(fileName, selectedTech),
     );
 
@@ -125,14 +122,14 @@ const createAndUploadSampleFile = async (
   }
 };
 
-const beginSampleFileUpload = async (experimentId, sampleFileId, size, metadata) => await fetchAPI(
+const beginSampleFileUpload = async (experimentId, sampleFileId, metadata) => await fetchAPI(
   `/v2/experiments/${experimentId}/sampleFiles/${sampleFileId}/beginUpload`,
   {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify({ size, metadata }),
+    body: JSON.stringify({ metadata }),
   },
 );
 
