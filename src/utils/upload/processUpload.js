@@ -107,9 +107,12 @@ const createAndUploadSampleFile = async (
       uploadId, fileId: sampleFileId, bucket, key,
     };
 
+    const compress = !file.compressed;
+
     await prepareAndUploadFileToS3v2(
       experimentId,
       file,
+      compress,
       uploadUrlParams,
       'sample',
       abortController,

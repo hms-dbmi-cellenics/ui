@@ -6,6 +6,7 @@ import streamLoadAndCompressIfNecessary from './streamLoadAndCompressIfNecessary
 const prepareAndUploadFileToS3v2 = async (
   experimentId,
   file,
+  compress,
   uploadUrlParams,
   type,
   abortController,
@@ -27,7 +28,7 @@ const prepareAndUploadFileToS3v2 = async (
     };
 
     const responses = await processMultipartUploadv2(
-      file, uploadParams, createOnUploadProgressForPart, abortController, onStatusUpdate,
+      file, compress, uploadParams, createOnUploadProgressForPart, abortController, onStatusUpdate,
     );
 
     await completeMultipartUpload(responses, uploadId, fileId, type);
@@ -39,7 +40,7 @@ const prepareAndUploadFileToS3v2 = async (
 };
 
 const processMultipartUploadv2 = async (
-  file, uploadParams, createOnUploadProgressForPart, abortController,
+  file, compress, uploadParams, createOnUploadProgressForPart, abortController,
 ) => {
   const parts = [];
 
@@ -58,6 +59,7 @@ const processMultipartUploadv2 = async (
 
   await streamLoadAndCompressIfNecessary(
     file,
+    compress,
     partUploader,
     () => {
       // On progress
