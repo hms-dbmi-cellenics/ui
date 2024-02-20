@@ -175,7 +175,7 @@ const DataProcessingPage = ({ experimentId, experimentData }) => {
     {
       key: 'classifier',
       name: getUserFriendlyQCStepName('classifier'),
-      description: 'The Classifier filter is based on the "emptyDrops" method which distinguishes between cells and background (ambient RNA). Cell barcodes are filtered based on the False Discovery Rate (FDR) value - the red line on the density plot. In the knee plot, the "mixed" population shown in grey contains some cells that are filtered out and some that remain and can be filtered further in the next filter.',
+      description: 'The Classifier filter is based on the "emptyDrops" method which identifies cell barcodes arising from the background medium (contains ambient RNA). Cell barcodes are filtered based on the false discovery rate (FDR) - the red line on the density plot. In the knee plot, the "mixed" population shown in grey contains some cells that are filtered out and some that remain and can be filtered further in the next filter.',
       multiSample: true,
       render: (key) => (
         <SingleComponentMultipleDataContainer
