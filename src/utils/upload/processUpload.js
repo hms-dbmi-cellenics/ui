@@ -13,7 +13,7 @@ import { sampleTech } from 'utils/constants';
 import fileUploadUtils from 'utils/upload/fileUploadUtils';
 import endUserMessages from 'utils/endUserMessages';
 import pushNotificationMessage from 'utils/pushNotificationMessage';
-import prepareAndUploadFileToS3v2 from 'utils/upload/prepareAndUploadFileToS3v2';
+import uploadFileToS3 from 'utils/upload/uploadFileToS3';
 
 const createAndUploadSampleFile = async (
   file, fileType, experimentId, sampleId, dispatch, selectedTech,
@@ -59,7 +59,7 @@ const createAndUploadSampleFile = async (
       uploadId, fileId: sampleFileId, bucket, key,
     };
 
-    await prepareAndUploadFileToS3v2(
+    await uploadFileToS3(
       experimentId,
       file,
       !file.compressed,

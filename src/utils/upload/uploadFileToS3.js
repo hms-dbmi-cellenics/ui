@@ -3,7 +3,7 @@ import axios from 'axios';
 import UploadStatus from './UploadStatus';
 import loadFileInStream from './loadFileInStream';
 
-const prepareAndUploadFileToS3v2 = async (
+const uploadFileToS3 = async (
   experimentId,
   file,
   compress,
@@ -139,4 +139,4 @@ const completeMultipartUpload = async (parts, uploadId, fileId, type) => {
     });
 };
 
-export default prepareAndUploadFileToS3v2;
+export default uploadFileToS3;

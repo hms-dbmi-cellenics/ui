@@ -14,7 +14,7 @@ import {
   updateCellLevelMetadataFileUpload,
 } from 'redux/actions/experiments';
 import pushNotificationMessage from 'utils/pushNotificationMessage';
-import prepareAndUploadFileToS3v2 from 'utils/upload/prepareAndUploadFileToS3v2';
+import uploadFileToS3 from 'utils/upload/uploadFileToS3';
 import MetadataUploadModal from './MetadataUploadModal';
 import CellLevelUploadModal from './CellLevelUploadModal';
 
@@ -51,7 +51,7 @@ const AddMetadataButton = ({ samplesTableRef }) => {
     );
 
     try {
-      await prepareAndUploadFileToS3v2(
+      await uploadFileToS3(
         activeExperimentId,
         file,
         !file.compressed,
