@@ -1,20 +1,5 @@
-// import { gzip } from 'fflate';
-import axios from 'axios';
 import { AsyncGzip } from 'fflate';
-// import readFileToBuffer from 'utils/upload/readFileToBuffer';
 import fileReaderStream from 'filereader-stream';
-
-import { Transform } from 'stream';
-import fetchAPI from 'utils/http/fetchAPI';
-
-// const compress = (buffer) => new Promise((resolve, reject) => {
-//   gzip(buffer, {}, (error, compressed) => {
-//     if (error) {
-//       reject(new Error('error'));
-//     }
-//     resolve(Buffer.from((compressed)));
-//   });
-// });
 
 const GB = 1024 * 1024 * 1024;
 const chunkSize = 0.5 * GB;
@@ -29,12 +14,14 @@ const streamLoadAndCompressIfNecessary = async (file, chunkCallback, onProgress 
       let pendingChunks = Math.ceil(file.size / chunkSize);
 
       const gzipStream = new AsyncGzip({ level: 1, consume: false });
-      let index = 0;
+
+      // Necessary to order the parts, required to complete a multipart upload
+      let partNumber = 0;
 
       // eslint-disable-next-line no-unused-vars
       gzipStream.ondata = async (err, chunk, isLast) => {
-        index += 1;
-        await chunkCallback(chunk, index);
+        partNumber += 1;
+        await chunkCallback(chunk, partNumber);
 
         pendingChunks -= 1;
 
