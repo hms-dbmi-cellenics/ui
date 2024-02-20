@@ -11,56 +11,9 @@ import fetchAPI from 'utils/http/fetchAPI';
 
 import { sampleTech } from 'utils/constants';
 import fileUploadUtils from 'utils/upload/fileUploadUtils';
-import processMultipartUpload from 'utils/upload/processMultipartUpload';
 import endUserMessages from 'utils/endUserMessages';
 import pushNotificationMessage from 'utils/pushNotificationMessage';
 import prepareAndUploadFileToS3v2 from 'utils/upload/prepareAndUploadFileToS3v2';
-
-const prepareAndUploadFileToS3 = async (
-  file, uploadUrlParams, type, abortController, onStatusUpdate = () => { },
-) => {
-  let parts = null;
-  const { signedUrls, uploadId, fileId } = uploadUrlParams;
-
-  const uploadedPartSizes = new Array(signedUrls.length).fill(0);
-  const totalSize = file.size;
-
-  const createOnUploadProgressForPart = (partIndex) => (progress) => {
-    uploadedPartSizes[partIndex] = progress.loaded;
-    const totalUploaded = _.sum(uploadedPartSizes);
-    const percentProgress = Math.floor((totalUploaded * 100) / totalSize);
-
-    onStatusUpdate(UploadStatus.UPLOADING, percentProgress);
-  };
-  try {
-    parts = await processMultipartUpload(
-      file, signedUrls, createOnUploadProgressForPart, abortController,
-    );
-  } catch (e) {
-    onStatusUpdate(UploadStatus.UPLOAD_ERROR);
-    return;
-  }
-
-  const requestUrl = '/v2/completeMultipartUpload';
-  const body = {
-    parts,
-    uploadId,
-    fileId,
-    type,
-  };
-
-  await fetchAPI(requestUrl,
-    {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(body),
-    });
-
-  onStatusUpdate(UploadStatus.UPLOADED, 100);
-  return parts;
-};
 
 const createAndUploadSampleFile = async (
   file, fileType, experimentId, sampleId, dispatch, selectedTech,
@@ -256,7 +209,6 @@ const fileObjectToFileRecord = async (fileObject, technology) => {
 export {
   fileObjectToFileRecord,
   createAndUploadSampleFile,
-  prepareAndUploadFileToS3,
 };
 
 export default processUpload;
