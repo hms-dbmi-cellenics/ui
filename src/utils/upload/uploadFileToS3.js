@@ -24,19 +24,19 @@ const uploadFileToS3 = async (
     throw new Error('uploadUrlParams must contain uploadId, fileId, bucket, and key');
   }
 
-  try {
-    const uploadParams = {
-      experimentId,
-      uploadId,
-      bucket,
-      key,
-    };
+  const uploadParams = {
+    experimentId,
+    uploadId,
+    bucket,
+    key,
+  };
 
-    const responses = await processMultipartUpload(
+  try {
+    const parts = await processMultipartUpload(
       file, compress, uploadParams, abortController, onStatusUpdate,
     );
 
-    await completeMultipartUpload(responses, uploadId, fileId, type);
+    await completeMultipartUpload(parts, uploadId, fileId, type);
 
     onStatusUpdate(UploadStatus.UPLOADED);
   } catch (e) {
