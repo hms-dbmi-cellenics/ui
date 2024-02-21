@@ -3,6 +3,7 @@ import _ from 'lodash';
 import { AsyncGzip } from 'fflate';
 import filereaderStream from 'filereader-stream';
 
+import fetchAPI from 'utils/http/fetchAPI';
 import putPartInS3 from './putPartInS3';
 import UploadStatus from './UploadStatus';
 
@@ -73,16 +74,28 @@ class FileUploader {
   }
 
   #uploadChunk = async (compressedPart, partNumber) => {
+    const signedUrl = await this.#getSignedUrlForPart(partNumber);
+
     const partResponse = await putPartInS3(
       compressedPart,
-      this.uploadParams,
-      partNumber,
+      signedUrl,
       this.abortController,
       this.#createOnUploadProgress(partNumber),
     );
 
     this.uploadedParts.push({ ETag: partResponse.headers.etag, PartNumber: partNumber });
   }
+
+  #getSignedUrlForPart = async (partNumber) => {
+    const {
+      experimentId, uploadId, bucket, key,
+    } = this.uploadParams;
+
+    const queryParams = new URLSearchParams({ bucket, key });
+    const url = `/v2/experiments/${experimentId}/upload/${uploadId}/part/${partNumber}/signedUrl?${queryParams}`;
+
+    return await fetchAPI(url, { method: 'GET' });
+  };
 
   #createOnUploadProgress = (partNumber) => (progress) => {
     // partNumbers are 1-indexed, so we need to subtract 1 for the array index
