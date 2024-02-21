@@ -51,8 +51,6 @@ class FileUploader {
     // To track upload progress
     this.uploadedPartPercentages = new Array(this.totalChunks).fill(0);
 
-    // This is necessary to connect the streams between read and compress.
-    // They handle stream ending in different ways
     this.currentChunk = null;
   }
 
