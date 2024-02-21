@@ -4,7 +4,7 @@ import { sampleTech } from 'utils/constants';
 import endUserMessages from 'utils/endUserMessages';
 import handleError from 'utils/http/handleError';
 import sampleFileType from 'utils/sampleFileType';
-import { fileObjectToFileRecord } from 'utils/upload/processUpload';
+import { fileObjectToFileRecord } from 'utils/upload/processSampleUpload';
 
 const techNamesToDisplay = {
   [sampleTech['10X']]: '10X Chromium',

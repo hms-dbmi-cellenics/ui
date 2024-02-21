@@ -14,7 +14,7 @@ import initialExperimentState, { experimentTemplate } from 'redux/reducers/exper
 
 import UploadStatus from 'utils/upload/UploadStatus';
 
-import processUpload from 'utils/upload/processUpload';
+import processSampleUpload from 'utils/upload/processSampleUpload';
 
 import validate10x from 'utils/upload/validate10x';
 import validateParse from 'utils/upload/validateParse';
@@ -222,7 +222,7 @@ describe.each([
       .mockImplementationOnce(uploadSuccess)
       .mockImplementationOnce(uploadSuccess);
 
-    await processUpload(
+    await processSampleUpload(
       filesList,
       selectedSampleTech,
       store.getState().samples,
@@ -300,7 +300,7 @@ describe.each([
       .mockImplementationOnce(uploadError)
       .mockImplementationOnce(uploadError);
 
-    await processUpload(
+    await processSampleUpload(
       getValidFiles(selectedSampleTech, { cellrangerVersion }),
       selectedSampleTech,
       store.getState().samples,
@@ -349,7 +349,7 @@ describe.each([
   it('Should not upload files if there are errors creating samples in the api', async () => {
     fetchMock.mockReject(new Error('Error'));
 
-    await processUpload(
+    await processSampleUpload(
       getValidFiles(selectedSampleTech, { cellrangerVersion }),
       selectedSampleTech,
       store.getState().samples,
@@ -389,7 +389,7 @@ describe.each([
       return Promise.resolve(result);
     });
 
-    await processUpload(
+    await processSampleUpload(
       getValidFiles(selectedSampleTech, { cellrangerVersion }),
       selectedSampleTech,
       store.getState().samples,
@@ -421,7 +421,7 @@ describe.each([
       () => { throw new Error('Some file error'); },
     );
 
-    await processUpload(
+    await processSampleUpload(
       getValidFiles(selectedSampleTech, { cellrangerVersion }),
       selectedSampleTech,
       store.getState().samples,
@@ -454,7 +454,7 @@ describe.each([
 
     const filesList = getValidFiles(selectedSampleTech, { cellrangerVersion, compressed: false });
 
-    processUpload(
+    processSampleUpload(
       filesList,
       selectedSampleTech,
       store.getState().samples,

@@ -12,7 +12,7 @@ import initialExperimentState, { experimentTemplate } from 'redux/reducers/exper
 
 import UploadStatus from 'utils/upload/UploadStatus';
 
-import processUpload from 'utils/upload/processUpload';
+import processSampleUpload from 'utils/upload/processSampleUpload';
 
 import validate from 'utils/upload/validateSeurat';
 import pushNotificationMessage from 'utils/pushNotificationMessage';
@@ -105,7 +105,7 @@ describe('processUpload', () => {
 
     axios.request.mockImplementation(uploadSuccess);
 
-    await processUpload(
+    await processSampleUpload(
       getValidFiles(),
       sampleType,
       store.getState().samples,
@@ -173,7 +173,7 @@ describe('processUpload', () => {
 
     axios.request.mockImplementation(uploadError);
 
-    await processUpload(
+    await processSampleUpload(
       getValidFiles(),
       sampleType,
       store.getState().samples,
@@ -220,7 +220,7 @@ describe('processUpload', () => {
   it('Should not upload files if there are errors creating samples in the api', async () => {
     fetchMock.mockReject(new Error('Error'));
 
-    await processUpload(
+    await processSampleUpload(
       getValidFiles(),
       sampleType,
       store.getState().samples,
@@ -247,7 +247,7 @@ describe('processUpload', () => {
       () => (['Some file error']),
     );
 
-    await processUpload(
+    await processSampleUpload(
       getValidFiles(),
       sampleType,
       store.getState().samples,
