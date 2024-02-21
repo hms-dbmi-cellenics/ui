@@ -144,7 +144,7 @@ const createSamples = (
       },
     });
 
-    // throw again the error so `processUpload` won't upload the sample
+    // throw again the error so `processSampleUpload` won't upload the sample
     throw new Error(errorMessage);
   }
 };

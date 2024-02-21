@@ -99,7 +99,7 @@ const getMetadata = (fileName, selectedTech) => {
   return metadata;
 };
 
-const processUpload = async (filesList, technology, samples, experimentId, dispatch) => {
+const processSampleUpload = async (filesList, technology, samples, experimentId, dispatch) => {
   // First use map to make it easy to add files in the already existing sample entry
   const samplesMap = filesList.reduce((acc, file) => {
     const { sample: sampleName, name } = fileUploadUtils[technology].getFileSampleAndName(file.fileObject.path.replace(/[\s]{2,}/ig, ' '));
@@ -209,4 +209,4 @@ export {
   createAndUploadSampleFile,
 };
 
-export default processUpload;
+export default processSampleUpload;
