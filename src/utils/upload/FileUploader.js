@@ -37,10 +37,6 @@ class FileUploader {
     this.totalChunks = Math.ceil(file.size / chunkSize);
     this.pendingChunks = this.totalChunks;
 
-    // This is necessary to connect the streams between read and compress.
-    // They handle stream ending in different ways
-    this.previousReadChunk = null;
-
     // Used to assign partNumbers to each chunk
     this.partNumberIt = 0;
 
@@ -54,6 +50,10 @@ class FileUploader {
 
     // To track upload progress
     this.uploadedPartPercentages = new Array(this.totalChunks).fill(0);
+
+    // This is necessary to connect the streams between read and compress.
+    // They handle stream ending in different ways
+    this.currentChunk = null;
   }
 
   async upload() {
@@ -115,9 +115,13 @@ class FileUploader {
           return;
         }
 
-        if (this.previousReadChunk !== null) this.gzipStream.push(this.previousReadChunk);
+        // This is necessary to connect the streams between read and compress.
+        // gzipStream needs to know which is the last chunk when it is being pushed
+        // but normal streams don't have a way of knowing that in the 'data' event
+        // So we need to push the last chunk in the 'end' event.
+        if (this.currentChunk !== null) this.gzipStream.push(this.currentChunk);
 
-        this.previousReadChunk = chunk;
+        this.currentChunk = chunk;
       } catch (e) {
         this.#cancelExecution(UploadStatus.FILE_READ_ERROR, e);
       }
@@ -131,7 +135,7 @@ class FileUploader {
       try {
         if (!this.compress) return;
 
-        this.gzipStream.push(this.previousReadChunk, true);
+        this.gzipStream.push(this.currentChunk, true);
       } catch (e) {
         this.#cancelExecution(UploadStatus.FILE_READ_ERROR, e);
       }
