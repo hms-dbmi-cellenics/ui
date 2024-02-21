@@ -26,7 +26,7 @@ const CellSizeDistributionConfig = (props) => {
 
       <Form.Item disabled label='Minimum #UMIs per cell'>
         <Space>
-          <Tooltip title='The cut-off is automatically calculated as the inflection point of the knee plot. The inflection point estimates the boundary between empty drops and droplets that contain cells. The number of UMIs per cell varies depending on cell type. The typical minimum threshold range approx. 500-2000.'>
+          <Tooltip title='The cut-off is automatically calculated as the inflection point of the knee plot. The inflection point is used to differentiate cell barcodes originating from intact cells and those arising from the background medium (contains ambient RNA). The number of UMIs per cell varies depending on cell type. The typical minimum threshold range approx. 500-2000.'>
             <InfoCircleOutlined />
           </Tooltip>
           <InputNumber

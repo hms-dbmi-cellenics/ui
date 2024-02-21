@@ -19,7 +19,7 @@ const ClassifierConfig = (props) => {
         <Space direction='horizontal'>
           <Tooltip overlay={(
             <span>
-              False discovery rate (FDR) is calculated for each barcode by using the
+              A false discovery rate (FDR) is calculated for each cell barcode by using the
               {' '}
               <a
                 href='https://rdrr.io/github/MarioniLab/DropletUtils/man/emptyDrops.html'
@@ -30,8 +30,7 @@ const ClassifierConfig = (props) => {
                 {' '}
                 function
               </a>
-              . This
-              distinguishes between droplets containing cells and ambient RNA. The FDR range is
+              . This distinguishes between cells and background (ambient RNA). The FDR range is
               [0-1]. The default FDR value is 0.01, where only barcodes with FDR &lt; 0.01
               are retained.
             </span>
