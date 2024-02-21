@@ -38,7 +38,7 @@ class FileUploader {
     this.pendingChunks = this.totalChunks;
 
     // This is necessary to connect the streams between read and compress.
-    // They handle stream ends in different ways
+    // They handle stream ending in different ways
     this.previousReadChunk = null;
 
     // Used to assign partNumbers to each chunk
@@ -99,7 +99,7 @@ class FileUploader {
       try {
         if (err) throw new Error(err);
 
-        await this.#handleChunkReadFinished(chunk);
+        await this.#handleChunkLoadFinished(chunk);
       } catch (e) {
         this.#cancelExecution(UploadStatus.FILE_READ_ERROR, e);
       }
@@ -110,7 +110,8 @@ class FileUploader {
     this.readStream.on('data', async (chunk) => {
       try {
         if (!this.compress) {
-          await this.#handleChunkReadFinished(chunk);
+          // If not compressing, the load finishes as soon as the chunk is read
+          await this.#handleChunkLoadFinished(chunk);
           return;
         }
 
@@ -149,7 +150,9 @@ class FileUploader {
     console.error(e);
   }
 
-  #handleChunkReadFinished = async (chunk) => {
+  #handleChunkLoadFinished = async (chunk) => {
+    // This assigns a part number to each chunk that arrives
+    // They are read in order, so it should be safe
     this.partNumberIt += 1;
 
     try {
@@ -158,6 +161,7 @@ class FileUploader {
       this.#cancelExecution(UploadStatus.UPLOAD_ERROR, e);
     }
 
+    // To track when all chunks have been uploaded
     this.pendingChunks -= 1;
 
     if (this.pendingChunks === 0) {
