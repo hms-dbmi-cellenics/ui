@@ -1,5 +1,3 @@
-import _ from 'lodash';
-
 import fetchAPI from 'utils/http/fetchAPI';
 import UploadStatus from './UploadStatus';
 import FileUploader from './FileUploader';

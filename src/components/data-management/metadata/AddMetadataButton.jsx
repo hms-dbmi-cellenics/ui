@@ -14,7 +14,7 @@ import {
   updateCellLevelMetadataFileUpload,
 } from 'redux/actions/experiments';
 import pushNotificationMessage from 'utils/pushNotificationMessage';
-import uploadFileToS3 from 'utils/upload/uploadFileToS3';
+import uploadFileToS3 from 'utils/upload/multipartUpload';
 import MetadataUploadModal from './MetadataUploadModal';
 import CellLevelUploadModal from './CellLevelUploadModal';
 

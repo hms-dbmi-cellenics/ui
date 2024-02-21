@@ -4,8 +4,8 @@ import { AsyncGzip } from 'fflate';
 import filereaderStream from 'filereader-stream';
 
 import fetchAPI from 'utils/http/fetchAPI';
-import putPartInS3 from './putPartInS3';
-import UploadStatus from './UploadStatus';
+import putInS3 from 'utils/upload/putInS3';
+import UploadStatus from 'utils/upload/UploadStatus';
 
 class FileUploader {
   constructor(
@@ -76,7 +76,7 @@ class FileUploader {
   #uploadChunk = async (compressedPart, partNumber) => {
     const signedUrl = await this.#getSignedUrlForPart(partNumber);
 
-    const partResponse = await putPartInS3(
+    const partResponse = await putInS3(
       compressedPart,
       signedUrl,
       this.abortController,
