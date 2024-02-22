@@ -228,7 +228,6 @@ exports[`processUpload 10x, v2 Updates redux correctly when there are file uploa
 exports[`processUpload 10x, v2 Uploads and updates redux correctly when there are no errors 1`] = `
 [
   {
-    "data": Blob {},
     "headers": {
       "Content-Type": "application/octet-stream",
     },
@@ -238,7 +237,6 @@ exports[`processUpload 10x, v2 Uploads and updates redux correctly when there ar
     "url": "theSignedUrl",
   },
   {
-    "data": Blob {},
     "headers": {
       "Content-Type": "application/octet-stream",
     },
@@ -248,7 +246,6 @@ exports[`processUpload 10x, v2 Uploads and updates redux correctly when there ar
     "url": "theSignedUrl",
   },
   {
-    "data": Blob {},
     "headers": {
       "Content-Type": "application/octet-stream",
     },
@@ -623,7 +620,6 @@ exports[`processUpload 10x, v3 Updates redux correctly when there are file uploa
 exports[`processUpload 10x, v3 Uploads and updates redux correctly when there are no errors 1`] = `
 [
   {
-    "data": Blob {},
     "headers": {
       "Content-Type": "application/octet-stream",
     },
@@ -633,7 +629,6 @@ exports[`processUpload 10x, v3 Uploads and updates redux correctly when there ar
     "url": "theSignedUrl",
   },
   {
-    "data": Blob {},
     "headers": {
       "Content-Type": "application/octet-stream",
     },
@@ -643,7 +638,6 @@ exports[`processUpload 10x, v3 Uploads and updates redux correctly when there ar
     "url": "theSignedUrl",
   },
   {
-    "data": Blob {},
     "headers": {
       "Content-Type": "application/octet-stream",
     },
@@ -1018,7 +1012,6 @@ exports[`processUpload parse, null Updates redux correctly when there are file u
 exports[`processUpload parse, null Uploads and updates redux correctly when there are no errors 1`] = `
 [
   {
-    "data": Blob {},
     "headers": {
       "Content-Type": "application/octet-stream",
     },
@@ -1028,7 +1021,6 @@ exports[`processUpload parse, null Uploads and updates redux correctly when ther
     "url": "theSignedUrl",
   },
   {
-    "data": Blob {},
     "headers": {
       "Content-Type": "application/octet-stream",
     },
@@ -1038,7 +1030,6 @@ exports[`processUpload parse, null Uploads and updates redux correctly when ther
     "url": "theSignedUrl",
   },
   {
-    "data": Blob {},
     "headers": {
       "Content-Type": "application/octet-stream",
     },
