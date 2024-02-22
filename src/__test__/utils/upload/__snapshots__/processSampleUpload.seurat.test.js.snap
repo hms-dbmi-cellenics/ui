@@ -3,24 +3,13 @@
 exports[`processUpload Uploads and updates redux correctly when there are no errors 1`] = `
 [
   {
-    "data": Blob {},
     "headers": {
       "Content-Type": "application/octet-stream",
     },
     "method": "put",
     "onUploadProgress": [Function],
     "signal": AbortSignal {},
-    "url": "theSignedUrl1",
-  },
-  {
-    "data": Blob {},
-    "headers": {
-      "Content-Type": "application/octet-stream",
-    },
-    "method": "put",
-    "onUploadProgress": [Function],
-    "signal": AbortSignal {},
-    "url": "theSignedUrl2",
+    "url": "theSignedUrl",
   },
 ]
 `;

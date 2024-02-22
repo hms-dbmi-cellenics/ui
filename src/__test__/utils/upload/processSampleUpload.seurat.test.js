@@ -1,3 +1,5 @@
+import _ from 'lodash';
+
 import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import waitForActions from 'redux-mock-store-await-actions';
@@ -18,7 +20,9 @@ import validate from 'utils/upload/validateSeurat';
 import pushNotificationMessage from 'utils/pushNotificationMessage';
 import mockFile from '__test__/test-utils/mockFile';
 
-const FILE_SIZE = 1024 * 1024 * 15;
+const MB = 1024 * 1024;
+// Should fit in 1 part
+const FILE_SIZE = 1 * MB;
 
 enableFetchMocks();
 
@@ -84,14 +88,53 @@ describe('processUpload', () => {
   beforeEach(() => {
     jest.clearAllMocks();
 
+    const uploadId = 'some_id';
+    const bucket = 'biomage-originals-test-accountId';
+    const mockSampleFileId = 'mockSampleFileId';
+
     const mockUploadUrlParams = {
-      signedUrls: ['theSignedUrl1', 'theSignedUrl2'],
-      uploadId: 'some_id',
+      uploadId,
+      bucket,
+      key: mockSampleFileId,
     };
 
     fetchMock.resetMocks();
     fetchMock.doMock();
-    fetchMock.mockResponse(JSON.stringify(mockUploadUrlParams), { status: 200 });
+    fetchMock.mockIf(/.*/, ({ url }) => {
+      let result;
+
+      if (url.endsWith(`/v2/experiments/${mockExperimentId}/samples`)) {
+        result = {
+          status: 200,
+          body: JSON.stringify([]),
+        };
+      }
+
+      // Create sample file
+      if (new RegExp(`/v2/experiments/${mockExperimentId}/samples/.*/sampleFiles/.*`).test(url)) {
+        result = { status: 200, body: JSON.stringify({}) };
+      }
+
+      // Update sample file status
+      if (new RegExp(`/v2/experiments/${mockExperimentId}/sampleFiles/.*`).test(url)) {
+        result = { status: 200, body: JSON.stringify({}) };
+      }
+
+      if (url.endsWith(`/v2/experiments/${mockExperimentId}/sampleFiles/${mockSampleUuid}/beginUpload`)) {
+        result = { status: 200, body: JSON.stringify(mockUploadUrlParams) };
+      }
+
+      const queryParams = new URLSearchParams({ bucket, key: mockSampleFileId });
+      if (url.endsWith(`/v2/experiments/${mockExperimentId}/upload/${uploadId}/part/1/signedUrl?${queryParams}`)) {
+        result = { status: 200, body: JSON.stringify('theSignedUrl') };
+      }
+
+      if (url.endsWith('/v2/completeMultipartUpload')) {
+        result = { status: 200, body: JSON.stringify({}) };
+      }
+
+      return Promise.resolve(result);
+    });
 
     store = mockStore(initialState);
   });
@@ -124,10 +167,9 @@ describe('processUpload', () => {
     );
 
     // Two axios put calls are made (one for each presigned url)
-    expect(mockAxiosCalls.length).toBe(2);
+    expect(mockAxiosCalls.length).toBe(1);
     // Each put call is made with the correct information
-    expect(mockAxiosCalls[0].url).toBe('theSignedUrl1');
-    expect(mockAxiosCalls[1].url).toBe('theSignedUrl2');
+    expect(mockAxiosCalls[0].url).toBe('theSignedUrl');
 
     const fileUpdateActions = store.getActions().filter(
       (action) => action.type === SAMPLES_FILE_UPDATE,
@@ -146,18 +188,17 @@ describe('processUpload', () => {
     expect(uploadedStatusProperties.length).toEqual(1);
 
     // axios request calls are correct
-    expect(axios.request.mock.calls.map((call) => call[0])).toMatchSnapshot();
+    expect(axios.request.mock.calls.map((call) => _.omit(call[0], 'data'))).toMatchSnapshot();
 
     // If we trigger axios onUploadProgress for the two presigned urls,
     // it updates the progress correctly
-    axios.request.mock.calls[0][0].onUploadProgress({ loaded: FILE_SIZE / 4 });
-    axios.request.mock.calls[1][0].onUploadProgress({ loaded: FILE_SIZE / 4 });
+    axios.request.mock.calls[0][0].onUploadProgress({ progress: 0.25 });
 
     await waitForActions(
       store,
       [{
         type: SAMPLES_FILE_UPDATE,
-        payload: { fileDiff: { upload: { status: UploadStatus.UPLOADING, progress: 50 } } },
+        payload: { fileDiff: { upload: { status: UploadStatus.UPLOADING, progress: 25 } } },
       }],
       { matcher: waitForActions.matchers.containing },
     );
@@ -259,7 +300,9 @@ describe('processUpload', () => {
     await waitFor(() => {
       expect();
       expect(pushNotificationMessage).toHaveBeenCalledTimes(0);
-      expect(axios.request).toHaveBeenCalledTimes(2);
+
+      // 1 part
+      expect(axios.request).toHaveBeenCalledTimes(1);
       expect(validate).toHaveBeenCalledTimes(1);
     });
   });
