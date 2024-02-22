@@ -2,7 +2,7 @@ import axios from 'axios';
 
 const MAX_RETRIES = 3;
 
-const putPartInS3 = async (
+const putInS3 = async (
   blob, signedUrl, abortController, onUploadProgress, currentRetry = 0,
 ) => {
   try {
@@ -18,7 +18,7 @@ const putPartInS3 = async (
     });
   } catch (e) {
     if (currentRetry < MAX_RETRIES) {
-      return await putPartInS3(
+      return await putInS3(
         blob, signedUrl, abortController, onUploadProgress, currentRetry + 1,
       );
     }
@@ -27,4 +27,4 @@ const putPartInS3 = async (
   }
 };
 
-export default putPartInS3;
+export default putInS3;
