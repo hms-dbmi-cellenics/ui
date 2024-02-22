@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-expressions */
 import _ from 'lodash';
 
 import { AsyncGzip } from 'fflate';
@@ -155,8 +156,8 @@ class FileUploader {
 
   #cancelExecution = (status, e) => {
     this.readStream.destroy();
-    this.gzipStream.terminate();
-    // eslint-disable-next-line no-unused-expressions
+
+    this.gzipStream?.terminate();
     this.abortController?.abort();
 
     this.onStatusUpdate(status);
