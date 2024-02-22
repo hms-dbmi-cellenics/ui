@@ -146,10 +146,11 @@ let store = null;
 const mockProcessUploadCalls = () => {
   const sampleId = 'mockSampleId';
 
-  const mockUploadUrlParams = {
-    signedUrls: ['theSignedUrl'],
-    uploadId: 'some_id',
-  };
+  const uploadId = 'some_id';
+  const bucket = 'biomage-originals-test-accountId';
+  const key = sampleFileId;
+
+  const mockUploadUrlParams = { uploadId, bucket, key };
 
   fetchMock.mockIf(/.*/, ({ url }) => {
     let result;
@@ -170,6 +171,11 @@ const mockProcessUploadCalls = () => {
 
     if (url.endsWith(`/v2/experiments/${mockExperimentId}/sampleFiles/${sampleFileId}/beginUpload`)) {
       result = { status: 200, body: JSON.stringify(mockUploadUrlParams) };
+    }
+
+    const queryParams = new URLSearchParams({ bucket, key });
+    if (url.endsWith(`/v2/experiments/${mockExperimentId}/upload/${uploadId}/part/1/signedUrl?${queryParams}`)) {
+      result = { status: 200, body: JSON.stringify('theSignedUrl') };
     }
 
     if (url.endsWith('/v2/completeMultipartUpload')) {
@@ -204,7 +210,7 @@ describe.each([
     const mockAxiosCalls = [];
     const uploadSuccess = (params) => {
       mockAxiosCalls.push(params);
-      return Promise.resolve({ headers: { etag: 'etag-blah' } });
+      return Promise.resolve({ headers: { etag: 'etag-blah' }, PartNumber: 1 });
     };
 
     axios.request.mockImplementationOnce(uploadSuccess)
@@ -224,17 +230,19 @@ describe.each([
       store,
       new Array(3).fill({
         type: SAMPLES_FILE_UPDATE,
-        payload: { fileDiff: { upload: { status: UploadStatus.UPLOADED } } },
       }),
       { matcher: waitForActions.matchers.containing },
     );
 
-    // Three axios put calls are made
-    expect(mockAxiosCalls.length).toBe(3);
-    // Each put call is made with the correct information
-    expect(mockAxiosCalls[0].data).toBeInstanceOf(Blob);
-    expect(mockAxiosCalls[1].data).toBeInstanceOf(Blob);
-    expect(mockAxiosCalls[2].data).toBeInstanceOf(Blob);
+    // Wait for uploads to be made
+    await waitForActions(
+      store,
+      new Array(3).fill({
+        type: SAMPLES_FILE_UPDATE,
+        payload: { fileDiff: { upload: { status: UploadStatus.UPLOADED } } },
+      }),
+      { matcher: waitForActions.matchers.containing },
+    );
 
     const fileUpdateActions = store.getActions().filter(
       (action) => action.type === SAMPLES_FILE_UPDATE,
@@ -259,17 +267,34 @@ describe.each([
     // There are 3 files actions with status uploaded
     expect(uploadedStatusProperties.length).toEqual(3);
 
+    // Three axios put calls are made, one single part for each
+    // because the files fit in a single chunk
+    expect(mockAxiosCalls.length).toBe(3);
+    // Each put call is made with the correct information
+    expect(mockAxiosCalls[0].data).toBeInstanceOf(Buffer);
+    expect(mockAxiosCalls[1].data).toBeInstanceOf(Buffer);
+    expect(mockAxiosCalls[2].data).toBeInstanceOf(Buffer);
+
     // axios request calls are correct
-    expect(axios.request.mock.calls.map((call) => call[0])).toMatchSnapshot();
+    expect(axios.request.mock.calls.map((call) => _.omit(call[0], 'data'))).toMatchSnapshot();
 
     // If we trigger axios onUploadProgress it updates the progress correctly
-    axios.request.mock.calls[0][0].onUploadProgress({ loaded: filesList[0].fileObject.size / 2 });
+    axios.request.mock.calls[0][0].onUploadProgress({ progress: 0.5 });
 
     await waitForActions(
       store,
       [{
         type: SAMPLES_FILE_UPDATE,
         payload: { fileDiff: { upload: { status: UploadStatus.UPLOADING, progress: 50 } } },
+      }],
+      { matcher: waitForActions.matchers.containing },
+    );
+
+    await waitForActions(
+      store,
+      [{
+        type: SAMPLES_FILE_UPDATE,
+        payload: { fileDiff: { upload: { status: UploadStatus.UPLOADED } } },
       }],
       { matcher: waitForActions.matchers.containing },
     );
@@ -285,9 +310,7 @@ describe.each([
       return Promise.reject(new Error('Error'));
     };
 
-    axios.request.mockImplementationOnce(uploadError)
-      .mockImplementationOnce(uploadError)
-      .mockImplementationOnce(uploadError);
+    axios.request.mockImplementation(uploadError);
 
     await processSampleUpload(
       getValidFiles(selectedSampleTech, { cellrangerVersion }),
