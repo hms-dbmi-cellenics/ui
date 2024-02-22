@@ -49,11 +49,13 @@ const createAndUploadSampleFile = async (
       getMetadata(fileName, selectedTech),
     );
 
-    const updateSampleFileUploadProgress = (status, percentProgress = 0) => dispatch(
-      updateSampleFileUpload(
-        experimentId, sampleId, sampleFileId, fileType, status, percentProgress,
-      ),
-    );
+    const updateSampleFileUploadProgress = (status, percentProgress = 0) => {
+      dispatch(
+        updateSampleFileUpload(
+          experimentId, sampleId, sampleFileId, fileType, status, percentProgress,
+        ),
+      );
+    };
 
     const uploadUrlParams = {
       uploadId, fileId: sampleFileId, bucket, key,

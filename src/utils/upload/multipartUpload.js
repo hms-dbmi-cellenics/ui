@@ -29,11 +29,17 @@ const uploadFileToS3 = async (
     key,
   };
 
+  let parts;
   try {
-    const parts = await processMultipartUpload(
+    parts = await processMultipartUpload(
       file, compress, partUploadParams, abortController, onStatusUpdate,
     );
+  } catch (e) {
+    // Return silently, the error is handled in the onStatusUpdate callback
+    return;
+  }
 
+  try {
     await completeMultipartUpload(parts, uploadId, fileId, type);
 
     onStatusUpdate(UploadStatus.UPLOADED);
@@ -45,23 +51,16 @@ const uploadFileToS3 = async (
 const processMultipartUpload = async (
   file, compress, uploadParams, abortController, onStatusUpdate,
 ) => {
-  let parts;
+  const fileUploader = new FileUploader(
+    file,
+    compress,
+    chunkSize,
+    uploadParams,
+    abortController,
+    onStatusUpdate,
+  );
 
-  try {
-    const fileUploader = new FileUploader(
-      file,
-      compress,
-      chunkSize,
-      uploadParams,
-      abortController,
-      onStatusUpdate,
-    );
-
-    parts = await fileUploader.upload();
-  } catch (e) {
-    // Status updates are already handled within FileUploader, just return
-    return;
-  }
+  const parts = await fileUploader.upload();
 
   // S3 expects parts to be sorted by number
   parts.sort(({ PartNumber: PartNumber1 }, { PartNumber: PartNumber2 }) => {
