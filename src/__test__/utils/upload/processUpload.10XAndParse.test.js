@@ -21,7 +21,6 @@ import validateParse from 'utils/upload/validateParse';
 import pushNotificationMessage from 'utils/pushNotificationMessage';
 import { sampleTech } from 'utils/constants';
 import mockFile from '__test__/test-utils/mockFile';
-import loadAndCompressIfNecessary from 'utils/upload/loadAndCompressIfNecessary';
 
 enableFetchMocks();
 
@@ -126,16 +125,6 @@ const initialState = {
 };
 
 const mockStore = configureMockStore([thunk]);
-
-jest.mock('utils/upload/loadAndCompressIfNecessary',
-  () => jest.fn().mockImplementation(
-    (file) => {
-      if (!file.valid) {
-        return Promise.reject(new Error('error'));
-      }
-      return Promise.resolve('loadedGzippedFile');
-    },
-  ));
 
 const sampleFileId = 'mockSampleFileId';
 
@@ -433,69 +422,6 @@ describe.each([
     await waitFor(() => {
       expect(pushNotificationMessage).toHaveBeenCalledTimes(1);
       expect(axios.request).not.toHaveBeenCalled();
-    });
-  });
-
-  it('Works correctly with files that need to be compressed', async () => {
-    const mockAxiosCalls = [];
-    const uploadSuccess = (params) => {
-      mockAxiosCalls.push(params);
-      return Promise.resolve({ headers: { etag: 'etag-blah' } });
-    };
-
-    axios.request.mockImplementationOnce(uploadSuccess)
-      .mockImplementationOnce(uploadSuccess)
-      .mockImplementationOnce(uploadSuccess);
-
-    let finishCompression;
-    loadAndCompressIfNecessary.mockReturnValue(new Promise((resolve) => {
-      finishCompression = resolve;
-    }));
-
-    const filesList = getValidFiles(selectedSampleTech, { cellrangerVersion, compressed: false });
-
-    processSampleUpload(
-      filesList,
-      selectedSampleTech,
-      store.getState().samples,
-      mockExperimentId,
-      store.dispatch,
-    );
-
-    const actionsUpToFileCreation = [
-      ...Array(2).fill(SAMPLES_VALIDATING_UPDATED),
-      SAMPLES_SAVING, SAMPLES_CREATED, SAMPLES_SAVED,
-      ...Array(3).fill(SAMPLES_FILE_UPDATE),
-    ];
-
-    // Compression is paused by the test, but the sample files have been created anyways
-    // because the order is respected:
-    // First: Create sample files
-    // After: Compress or begin the actual upload
-    await waitFor(() => {
-      expect(_.map(store.getActions(), 'type')).toEqual(actionsUpToFileCreation);
-    });
-
-    // Upload hasn't begun because compression hasn't finished
-    expect(axios.request).not.toHaveBeenCalled();
-
-    // Now we trigger compress
-    finishCompression('loadedGzippedFile');
-
-    // After compression, the upload has begun so
-    //  new SAMPLES_FILE_UPDATE show up and
-    //  axios was called for each file
-    await waitFor(() => {
-      expect(_.map(store.getActions(), 'type')).toEqual([
-        ...actionsUpToFileCreation,
-        ...Array(3).fill(SAMPLES_FILE_UPDATE),
-      ]);
-
-      expect(mockAxiosCalls.length).toBe(3);
-      // Each put call is made with the correct information
-      expect(mockAxiosCalls[0].data).toEqual('loadedGzippedFile');
-      expect(mockAxiosCalls[1].data).toEqual('loadedGzippedFile');
-      expect(mockAxiosCalls[2].data).toEqual('loadedGzippedFile');
     });
   });
 });
