@@ -267,14 +267,28 @@ const fileUploadUtils = {
       )));
     },
     getFilePathToDisplay: (filePath) => {
-      const [sample, filteredState, name] = _.takeRight(_.trim(filePath, '/').split('/'), 3);
+      const { sample, filteredState, name } = fileUploadUtils[sampleTech.PARSE].getFileSampleAndName(filePath);
 
-      return [sample, filteredState, name].join('/');
+      if (filteredState) {
+        return [sample, filteredState, name].join('/');
+      }
+
+      return [sample, name].join('/');
     },
     getFileSampleAndName: (filePath) => {
-      const [sample, , name] = _.takeRight(filePath.split('/'), 3);
+      const splitFilePath = _.takeRight(_.trim(filePath, '/').split('/'), 3);
 
-      return { sample, name };
+      let sample;
+      let filteredState;
+      let name;
+
+      if (['DGE_unfiltered', 'DGE_filtered'].includes(splitFilePath[1])) {
+        [sample, filteredState, name] = splitFilePath;
+      } else {
+        [, sample, name] = splitFilePath;
+      }
+
+      return { sample, filteredState, name };
     },
   },
 };
