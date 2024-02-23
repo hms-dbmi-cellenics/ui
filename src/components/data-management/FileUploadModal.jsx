@@ -22,7 +22,7 @@ import config from 'config';
 import { sampleTech } from 'utils/constants';
 import fileUploadUtils, { techNamesToDisplay } from 'utils/upload/fileUploadUtils';
 import handleError from 'utils/http/handleError';
-import { fileObjectToFileRecord } from 'utils/upload/processUpload';
+import { fileObjectToFileRecord } from 'utils/upload/processSampleUpload';
 import integrationTestConstants from 'utils/integrationTestConstants';
 import endUserMessages from 'utils/endUserMessages';
 

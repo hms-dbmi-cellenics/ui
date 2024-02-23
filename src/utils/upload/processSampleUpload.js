@@ -6,61 +6,14 @@ import {
 } from 'redux/actions/samples';
 
 import UploadStatus from 'utils/upload/UploadStatus';
-import loadAndCompressIfNecessary from 'utils/upload/loadAndCompressIfNecessary';
 import { inspectFile, Verdict } from 'utils/upload/fileInspector';
 import fetchAPI from 'utils/http/fetchAPI';
 
 import { sampleTech } from 'utils/constants';
 import fileUploadUtils from 'utils/upload/fileUploadUtils';
-import processMultipartUpload from 'utils/upload/processMultipartUpload';
 import endUserMessages from 'utils/endUserMessages';
 import pushNotificationMessage from 'utils/pushNotificationMessage';
-
-const prepareAndUploadFileToS3 = async (
-  file, uploadUrlParams, type, abortController, onStatusUpdate = () => { },
-) => {
-  let parts = null;
-  const { signedUrls, uploadId, fileId } = uploadUrlParams;
-
-  const uploadedPartSizes = new Array(signedUrls.length).fill(0);
-  const totalSize = file.size;
-
-  const createOnUploadProgressForPart = (partIndex) => (progress) => {
-    uploadedPartSizes[partIndex] = progress.loaded;
-    const totalUploaded = _.sum(uploadedPartSizes);
-    const percentProgress = Math.floor((totalUploaded * 100) / totalSize);
-
-    onStatusUpdate(UploadStatus.UPLOADING, percentProgress);
-  };
-  try {
-    parts = await processMultipartUpload(
-      file, signedUrls, createOnUploadProgressForPart, abortController,
-    );
-  } catch (e) {
-    onStatusUpdate(UploadStatus.UPLOAD_ERROR);
-    return;
-  }
-
-  const requestUrl = '/v2/completeMultipartUpload';
-  const body = {
-    parts,
-    uploadId,
-    fileId,
-    type,
-  };
-
-  await fetchAPI(requestUrl,
-    {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(body),
-    });
-
-  onStatusUpdate(UploadStatus.UPLOADED, 100);
-  return parts;
-};
+import uploadFileToS3 from 'utils/upload/multipartUpload';
 
 const createAndUploadSampleFile = async (
   file, fileType, experimentId, sampleId, dispatch, selectedTech,
@@ -89,43 +42,34 @@ const createAndUploadSampleFile = async (
   // instead of the fileReader metadata object that it is now
   const fileName = file.fileObject.name;
 
-  if (!file.compressed) {
-    try {
-      file.fileObject = await loadAndCompressIfNecessary(file, () => {
-        dispatch(updateSampleFileUpload(
-          experimentId, sampleId, sampleFileId, fileType, UploadStatus.COMPRESSING,
-        ));
-      });
-
-      file.size = Buffer.byteLength(file.fileObject);
-    } catch (e) {
-      const fileErrorStatus = e.message === 'aborted'
-        ? UploadStatus.FILE_READ_ABORTED
-        : UploadStatus.FILE_READ_ERROR;
-
-      dispatch(updateSampleFileUpload(
-        experimentId, sampleId, sampleFileId, fileType, fileErrorStatus,
-      ));
-      return;
-    }
-  }
-
   try {
-    const { signedUrls, uploadId } = await beginSampleFileUpload(
+    const { uploadId, bucket, key } = await beginSampleFileUpload(
       experimentId,
       sampleFileId,
-      file.size,
       getMetadata(fileName, selectedTech),
     );
 
-    const updateSampleFileUploadProgress = (status, percentProgress = 0) => dispatch(
-      updateSampleFileUpload(
-        experimentId, sampleId, sampleFileId, fileType, status, percentProgress,
-      ),
-    );
+    const updateSampleFileUploadProgress = (status, percentProgress = 0) => {
+      dispatch(
+        updateSampleFileUpload(
+          experimentId, sampleId, sampleFileId, fileType, status, percentProgress,
+        ),
+      );
+    };
 
-    const uploadUrlParams = { signedUrls, uploadId, fileId: sampleFileId };
-    await prepareAndUploadFileToS3(file, uploadUrlParams, 'sample', abortController, updateSampleFileUploadProgress);
+    const uploadUrlParams = {
+      uploadId, fileId: sampleFileId, bucket, key,
+    };
+
+    await uploadFileToS3(
+      experimentId,
+      file,
+      !file.compressed,
+      uploadUrlParams,
+      'sample',
+      abortController,
+      updateSampleFileUploadProgress,
+    );
   } catch (e) {
     dispatch(updateSampleFileUpload(
       experimentId, sampleId, sampleFileId, fileType, UploadStatus.UPLOAD_ERROR,
@@ -133,14 +77,14 @@ const createAndUploadSampleFile = async (
   }
 };
 
-const beginSampleFileUpload = async (experimentId, sampleFileId, size, metadata) => await fetchAPI(
+const beginSampleFileUpload = async (experimentId, sampleFileId, metadata) => await fetchAPI(
   `/v2/experiments/${experimentId}/sampleFiles/${sampleFileId}/beginUpload`,
   {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify({ size, metadata }),
+    body: JSON.stringify({ metadata }),
   },
 );
 
@@ -157,7 +101,7 @@ const getMetadata = (fileName, selectedTech) => {
   return metadata;
 };
 
-const processUpload = async (filesList, technology, samples, experimentId, dispatch) => {
+const processSampleUpload = async (filesList, technology, samples, experimentId, dispatch) => {
   // First use map to make it easy to add files in the already existing sample entry
   const samplesMap = filesList.reduce((acc, file) => {
     const { sample: sampleName, name } = fileUploadUtils[technology].getFileSampleAndName(file.fileObject.path.replace(/[\s]{2,}/ig, ' '));
@@ -265,7 +209,6 @@ const fileObjectToFileRecord = async (fileObject, technology) => {
 export {
   fileObjectToFileRecord,
   createAndUploadSampleFile,
-  prepareAndUploadFileToS3,
 };
 
-export default processUpload;
+export default processSampleUpload;

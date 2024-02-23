@@ -5,7 +5,7 @@ import {
 } from 'antd';
 
 import integrationTestConstants from 'utils/integrationTestConstants';
-import processUpload from 'utils/upload/processUpload';
+import processSampleUpload from 'utils/upload/processSampleUpload';
 import DownloadDataButton from 'components/data-management/DownloadDataButton';
 import LaunchAnalysisButton from 'components/data-management/LaunchAnalysisButton';
 import FileUploadModal from 'components/data-management/FileUploadModal';
@@ -23,7 +23,7 @@ const ProjectMenu = () => {
   const selectedTech = samples[activeExperiment?.sampleIds[0]]?.type;
 
   const uploadFiles = (filesList, sampleType) => {
-    processUpload(filesList, sampleType, samples, activeExperimentId, dispatch);
+    processSampleUpload(filesList, sampleType, samples, activeExperimentId, dispatch);
     setUploadModalVisible(false);
   };
 

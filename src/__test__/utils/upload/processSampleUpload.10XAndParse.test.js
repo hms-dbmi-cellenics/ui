@@ -14,14 +14,13 @@ import initialExperimentState, { experimentTemplate } from 'redux/reducers/exper
 
 import UploadStatus from 'utils/upload/UploadStatus';
 
-import processUpload from 'utils/upload/processUpload';
+import processSampleUpload from 'utils/upload/processSampleUpload';
 
 import validate10x from 'utils/upload/validate10x';
 import validateParse from 'utils/upload/validateParse';
 import pushNotificationMessage from 'utils/pushNotificationMessage';
 import { sampleTech } from 'utils/constants';
 import mockFile from '__test__/test-utils/mockFile';
-import loadAndCompressIfNecessary from 'utils/upload/loadAndCompressIfNecessary';
 
 enableFetchMocks();
 
@@ -127,16 +126,6 @@ const initialState = {
 
 const mockStore = configureMockStore([thunk]);
 
-jest.mock('utils/upload/loadAndCompressIfNecessary',
-  () => jest.fn().mockImplementation(
-    (file) => {
-      if (!file.valid) {
-        return Promise.reject(new Error('error'));
-      }
-      return Promise.resolve('loadedGzippedFile');
-    },
-  ));
-
 const sampleFileId = 'mockSampleFileId';
 
 jest.mock('uuid', () => ({
@@ -157,10 +146,11 @@ let store = null;
 const mockProcessUploadCalls = () => {
   const sampleId = 'mockSampleId';
 
-  const mockUploadUrlParams = {
-    signedUrls: ['theSignedUrl'],
-    uploadId: 'some_id',
-  };
+  const uploadId = 'some_id';
+  const bucket = 'biomage-originals-test-accountId';
+  const key = sampleFileId;
+
+  const mockUploadUrlParams = { uploadId, bucket, key };
 
   fetchMock.mockIf(/.*/, ({ url }) => {
     let result;
@@ -181,6 +171,11 @@ const mockProcessUploadCalls = () => {
 
     if (url.endsWith(`/v2/experiments/${mockExperimentId}/sampleFiles/${sampleFileId}/beginUpload`)) {
       result = { status: 200, body: JSON.stringify(mockUploadUrlParams) };
+    }
+
+    const queryParams = new URLSearchParams({ bucket, key });
+    if (url.endsWith(`/v2/experiments/${mockExperimentId}/upload/${uploadId}/part/1/signedUrl?${queryParams}`)) {
+      result = { status: 200, body: JSON.stringify('theSignedUrl') };
     }
 
     if (url.endsWith('/v2/completeMultipartUpload')) {
@@ -215,14 +210,14 @@ describe.each([
     const mockAxiosCalls = [];
     const uploadSuccess = (params) => {
       mockAxiosCalls.push(params);
-      return Promise.resolve({ headers: { etag: 'etag-blah' } });
+      return Promise.resolve({ headers: { etag: 'etag-blah' }, PartNumber: 1 });
     };
 
     axios.request.mockImplementationOnce(uploadSuccess)
       .mockImplementationOnce(uploadSuccess)
       .mockImplementationOnce(uploadSuccess);
 
-    await processUpload(
+    await processSampleUpload(
       filesList,
       selectedSampleTech,
       store.getState().samples,
@@ -235,17 +230,19 @@ describe.each([
       store,
       new Array(3).fill({
         type: SAMPLES_FILE_UPDATE,
-        payload: { fileDiff: { upload: { status: UploadStatus.UPLOADED } } },
       }),
       { matcher: waitForActions.matchers.containing },
     );
 
-    // Three axios put calls are made
-    expect(mockAxiosCalls.length).toBe(3);
-    // Each put call is made with the correct information
-    expect(mockAxiosCalls[0].data).toBeInstanceOf(Blob);
-    expect(mockAxiosCalls[1].data).toBeInstanceOf(Blob);
-    expect(mockAxiosCalls[2].data).toBeInstanceOf(Blob);
+    // Wait for uploads to be made
+    await waitForActions(
+      store,
+      new Array(3).fill({
+        type: SAMPLES_FILE_UPDATE,
+        payload: { fileDiff: { upload: { status: UploadStatus.UPLOADED } } },
+      }),
+      { matcher: waitForActions.matchers.containing },
+    );
 
     const fileUpdateActions = store.getActions().filter(
       (action) => action.type === SAMPLES_FILE_UPDATE,
@@ -270,17 +267,34 @@ describe.each([
     // There are 3 files actions with status uploaded
     expect(uploadedStatusProperties.length).toEqual(3);
 
+    // Three axios put calls are made, one single part for each
+    // because the files fit in a single chunk
+    expect(mockAxiosCalls.length).toBe(3);
+    // Each put call is made with the correct information
+    expect(mockAxiosCalls[0].data).toBeInstanceOf(Buffer);
+    expect(mockAxiosCalls[1].data).toBeInstanceOf(Buffer);
+    expect(mockAxiosCalls[2].data).toBeInstanceOf(Buffer);
+
     // axios request calls are correct
-    expect(axios.request.mock.calls.map((call) => call[0])).toMatchSnapshot();
+    expect(axios.request.mock.calls.map((call) => _.omit(call[0], 'data'))).toMatchSnapshot();
 
     // If we trigger axios onUploadProgress it updates the progress correctly
-    axios.request.mock.calls[0][0].onUploadProgress({ loaded: filesList[0].fileObject.size / 2 });
+    axios.request.mock.calls[0][0].onUploadProgress({ progress: 0.5 });
 
     await waitForActions(
       store,
       [{
         type: SAMPLES_FILE_UPDATE,
         payload: { fileDiff: { upload: { status: UploadStatus.UPLOADING, progress: 50 } } },
+      }],
+      { matcher: waitForActions.matchers.containing },
+    );
+
+    await waitForActions(
+      store,
+      [{
+        type: SAMPLES_FILE_UPDATE,
+        payload: { fileDiff: { upload: { status: UploadStatus.UPLOADED } } },
       }],
       { matcher: waitForActions.matchers.containing },
     );
@@ -296,11 +310,9 @@ describe.each([
       return Promise.reject(new Error('Error'));
     };
 
-    axios.request.mockImplementationOnce(uploadError)
-      .mockImplementationOnce(uploadError)
-      .mockImplementationOnce(uploadError);
+    axios.request.mockImplementation(uploadError);
 
-    await processUpload(
+    await processSampleUpload(
       getValidFiles(selectedSampleTech, { cellrangerVersion }),
       selectedSampleTech,
       store.getState().samples,
@@ -349,7 +361,7 @@ describe.each([
   it('Should not upload files if there are errors creating samples in the api', async () => {
     fetchMock.mockReject(new Error('Error'));
 
-    await processUpload(
+    await processSampleUpload(
       getValidFiles(selectedSampleTech, { cellrangerVersion }),
       selectedSampleTech,
       store.getState().samples,
@@ -389,7 +401,7 @@ describe.each([
       return Promise.resolve(result);
     });
 
-    await processUpload(
+    await processSampleUpload(
       getValidFiles(selectedSampleTech, { cellrangerVersion }),
       selectedSampleTech,
       store.getState().samples,
@@ -421,7 +433,7 @@ describe.each([
       () => { throw new Error('Some file error'); },
     );
 
-    await processUpload(
+    await processSampleUpload(
       getValidFiles(selectedSampleTech, { cellrangerVersion }),
       selectedSampleTech,
       store.getState().samples,
@@ -433,69 +445,6 @@ describe.each([
     await waitFor(() => {
       expect(pushNotificationMessage).toHaveBeenCalledTimes(1);
       expect(axios.request).not.toHaveBeenCalled();
-    });
-  });
-
-  it('Works correctly with files that need to be compressed', async () => {
-    const mockAxiosCalls = [];
-    const uploadSuccess = (params) => {
-      mockAxiosCalls.push(params);
-      return Promise.resolve({ headers: { etag: 'etag-blah' } });
-    };
-
-    axios.request.mockImplementationOnce(uploadSuccess)
-      .mockImplementationOnce(uploadSuccess)
-      .mockImplementationOnce(uploadSuccess);
-
-    let finishCompression;
-    loadAndCompressIfNecessary.mockReturnValue(new Promise((resolve) => {
-      finishCompression = resolve;
-    }));
-
-    const filesList = getValidFiles(selectedSampleTech, { cellrangerVersion, compressed: false });
-
-    processUpload(
-      filesList,
-      selectedSampleTech,
-      store.getState().samples,
-      mockExperimentId,
-      store.dispatch,
-    );
-
-    const actionsUpToFileCreation = [
-      ...Array(2).fill(SAMPLES_VALIDATING_UPDATED),
-      SAMPLES_SAVING, SAMPLES_CREATED, SAMPLES_SAVED,
-      ...Array(3).fill(SAMPLES_FILE_UPDATE),
-    ];
-
-    // Compression is paused by the test, but the sample files have been created anyways
-    // because the order is respected:
-    // First: Create sample files
-    // After: Compress or begin the actual upload
-    await waitFor(() => {
-      expect(_.map(store.getActions(), 'type')).toEqual(actionsUpToFileCreation);
-    });
-
-    // Upload hasn't begun because compression hasn't finished
-    expect(axios.request).not.toHaveBeenCalled();
-
-    // Now we trigger compress
-    finishCompression('loadedGzippedFile');
-
-    // After compression, the upload has begun so
-    //  new SAMPLES_FILE_UPDATE show up and
-    //  axios was called for each file
-    await waitFor(() => {
-      expect(_.map(store.getActions(), 'type')).toEqual([
-        ...actionsUpToFileCreation,
-        ...Array(3).fill(SAMPLES_FILE_UPDATE),
-      ]);
-
-      expect(mockAxiosCalls.length).toBe(3);
-      // Each put call is made with the correct information
-      expect(mockAxiosCalls[0].data).toEqual('loadedGzippedFile');
-      expect(mockAxiosCalls[1].data).toEqual('loadedGzippedFile');
-      expect(mockAxiosCalls[2].data).toEqual('loadedGzippedFile');
     });
   });
 });

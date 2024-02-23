@@ -17,7 +17,7 @@ import integrationTestConstants from 'utils/integrationTestConstants';
 import UploadStatus, { messageForStatus } from 'utils/upload/UploadStatus';
 import styles from 'components/data-management/SamplesTableCells.module.css';
 import downloadSampleFile from 'utils/data-management/downloadSampleFile';
-import { createAndUploadSampleFile } from 'utils/upload/processUpload';
+import { createAndUploadSampleFile } from 'utils/upload/processSampleUpload';
 import { fileTypeToDisplay } from 'utils/sampleFileType';
 import EditableField from '../EditableField';
 import UploadDetailsModal from './UploadDetailsModal';
