@@ -21,19 +21,20 @@ import pushNotificationMessage from 'utils/pushNotificationMessage';
 import mockFile from '__test__/test-utils/mockFile';
 
 const MB = 1024 * 1024;
-// Should fit in 1 part
-const FILE_SIZE = 1 * MB;
+jest.mock('../../../utils/upload/fileUploadConfig', () => ({
+  chunkSize: 1 * MB,
+}));
 
 enableFetchMocks();
 
-const getValidFiles = (compressed = true) => {
+const getValidFiles = (fileSize = 1 * MB) => {
   const seuratFiles = [{
     name: 'r.rds',
-    fileObject: mockFile('r.rds', '', FILE_SIZE),
-    size: FILE_SIZE,
+    fileObject: mockFile('r.rds', '', fileSize),
+    size: fileSize,
     upload: { status: UploadStatus.UPLOADING },
     errors: '',
-    compressed,
+    compressed: true,
     valid: true,
   }];
 
@@ -127,6 +128,10 @@ describe('processUpload', () => {
       const queryParams = new URLSearchParams({ bucket, key: mockSampleFileId });
       if (url.endsWith(`/v2/experiments/${mockExperimentId}/upload/${uploadId}/part/1/signedUrl?${queryParams}`)) {
         result = { status: 200, body: JSON.stringify('theSignedUrl') };
+      }
+
+      if (url.endsWith(`/v2/experiments/${mockExperimentId}/upload/${uploadId}/part/2/signedUrl?${queryParams}`)) {
+        result = { status: 200, body: JSON.stringify('theSignedUrl2') };
       }
 
       if (url.endsWith('/v2/completeMultipartUpload')) {
@@ -303,6 +308,33 @@ describe('processUpload', () => {
 
       // 1 part
       expect(axios.request).toHaveBeenCalledTimes(1);
+      expect(validate).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  it('Should be able to upload files that require 2 parts', async () => {
+    const mockAxiosCalls = [];
+    const uploadSuccess = (params) => {
+      mockAxiosCalls.push(params);
+      return Promise.resolve({ headers: { etag: 'etag-blah' } });
+    };
+
+    axios.request.mockImplementation(uploadSuccess);
+
+    await processSampleUpload(
+      getValidFiles(2 * MB),
+      sampleType,
+      store.getState().samples,
+      mockExperimentId,
+      store.dispatch,
+    );
+
+    // We expect uploads to happen
+    await waitFor(() => {
+      expect(pushNotificationMessage).toHaveBeenCalledTimes(0);
+
+      // 2 parts
+      expect(axios.request).toHaveBeenCalledTimes(2);
       expect(validate).toHaveBeenCalledTimes(1);
     });
   });

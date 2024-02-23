@@ -1,9 +1,7 @@
 import fetchAPI from 'utils/http/fetchAPI';
+import fileUploadConfig from 'utils/upload/fileUploadConfig';
 import UploadStatus from './UploadStatus';
 import FileUploader from './FileUploader';
-
-const MB = 1024 * 1024;
-const chunkSize = 128 * MB;
 
 const uploadFileToS3 = async (
   experimentId,
@@ -54,7 +52,7 @@ const processMultipartUpload = async (
   const fileUploader = new FileUploader(
     file,
     compress,
-    chunkSize,
+    fileUploadConfig.chunkSize,
     uploadParams,
     abortController,
     onStatusUpdate,
