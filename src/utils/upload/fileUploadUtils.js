@@ -217,12 +217,12 @@ const fileUploadUtils = {
       // Returns the same list of files
       //  The valid ones are in a dictionary ordered by their sample names
       //  The invalid ones are in a list
-      const getFilesMatching = (dirNameDGE, filesToFilter) => {
+      const getFilesMatching = (middlePath, filesToFilter) => {
         const validFiles = {};
         const invalidFiles = [];
 
         const regexes = Array.from(parseUtils.acceptedFiles).map((validFileName) => (
-          new RegExp(`${sampleNameMatcher}/${dirNameDGE}/${validFileName}$`)
+          new RegExp(`${sampleNameMatcher}/${middlePath}${validFileName}$`)
         ));
 
         filesToFilter.forEach((fileObject) => {
@@ -247,15 +247,19 @@ const fileUploadUtils = {
         return { valid: validFiles, invalid: invalidFiles };
       };
 
-      const { valid: DGEUnfilteredFiles, invalid } = getFilesMatching('DGE_unfiltered', files);
-      const { valid: DGEFilteredFiles } = getFilesMatching('DGE_filtered', invalid);
+      const dgeUnfilteredFiles = getFilesMatching('DGE_unfiltered/', files);
+      const dgeFilteredFiles = getFilesMatching('DGE_filtered/', dgeUnfilteredFiles.invalid);
+      const noMiddlePathFiles = getFilesMatching('', dgeFilteredFiles.invalid);
 
-      const filesToUpload = _.uniq([...Object.keys(DGEFilteredFiles), ...Object.keys(DGEUnfilteredFiles)])
+      const filesToUpload = _.uniq([
+        ...Object.keys(dgeFilteredFiles.valid),
+        ...Object.keys(dgeUnfilteredFiles.valid),
+        ...Object.keys(noMiddlePathFiles.valid)])
         // Only allow sample-specific files, not all samples in one files
         .filter((sampleName) => !['all-sample', 'all-well', 'All Wells'].includes(sampleName))
         // if unfiltered files are present, pick them. Otherwise, pick the filtered files
         .flatMap((sampleName) => (
-          DGEUnfilteredFiles[sampleName] ?? DGEFilteredFiles[sampleName]
+          dgeUnfilteredFiles.valid[sampleName] ?? dgeFilteredFiles.valid[sampleName] ?? noMiddlePathFiles.valid[sampleName]
         ));
 
       return await Promise.all(filesToUpload.map((file) => (
