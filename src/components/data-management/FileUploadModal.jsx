@@ -14,7 +14,9 @@ import {
   List,
   Tooltip,
 } from 'antd';
-import { CheckCircleTwoTone, CloseCircleTwoTone, DeleteOutlined } from '@ant-design/icons';
+import {
+  CheckCircleTwoTone, CloseCircleTwoTone, DeleteOutlined, WarningOutlined,
+} from '@ant-design/icons';
 import Dropzone from 'react-dropzone';
 import { useSelector } from 'react-redux';
 
@@ -25,6 +27,7 @@ import handleError from 'utils/http/handleError';
 import { fileObjectToFileRecord } from 'utils/upload/processSampleUpload';
 import integrationTestConstants from 'utils/integrationTestConstants';
 import endUserMessages from 'utils/endUserMessages';
+import Expandable from 'components/Expandable';
 
 const { Text, Title, Paragraph } = Typography;
 const { Option } = Select;
@@ -314,22 +317,47 @@ const FileUploadModal = (props) => {
             </>
           ) : ''}
           {files.invalid.length > 0 && (
-            <>
-              <Divider orientation='center' style={{ color: 'red' }}>Ignored files</Divider>
-              <List
-                dataSource={files.invalid}
-                size='small'
-                itemLayout='horizontal'
-                grid='{column: 4}'
-                renderItem={(file) => {
-                  console.log('fileDebug');
-                  console.log(file);
-                  return (
-                    <List.Item key={file.path}>{file.name}</List.Item>
-                  );
-                }}
+            <center>
+              <Expandable
+                style={{ width: '100%' }}
+                expandedContent={(
+                  <>
+                    <Divider orientation='center' style={{ color: 'red' }}>Ignored files</Divider>
+                    <List
+                      dataSource={files.invalid}
+                      size='small'
+                      itemLayout='horizontal'
+                      grid='{column: 4}'
+                      renderItem={(file) => {
+                        console.log('fileDebug');
+                        console.log(file);
+                        return (
+                          <List.Item key={file.path}>
+                            <Space>
+                              <CloseCircleTwoTone twoToneColor='#f5222d' />
+                              {file.name}
+                            </Space>
+                          </List.Item>
+                        );
+                      }}
+                    />
+                  </>
+                )}
+                collapsedContent={(
+                  <>
+                    <Divider orientation='center' style={{ color: 'red' }} />
+                    <Text type='danger'>
+                      {' '}
+                      <WarningOutlined />
+                      {' '}
+                    </Text>
+                    <Text>
+                      Some files were ignored, click to display
+                    </Text>
+                  </>
+                )}
               />
-            </>
+            </center>
           )}
         </Col>
       </Row>
