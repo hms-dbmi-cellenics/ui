@@ -106,7 +106,10 @@ const FileUploadModal = (props) => {
 
       setFilesList([seuratFile]);
     } else {
-      const newFiles = await fileUploadUtils[selectedTech].filterFiles(filteredFiles);
+      const {
+        valid: newFiles,
+        invalid,
+      } = await fileUploadUtils[selectedTech].filterFiles(filteredFiles);
 
       setFilesList([...filesList, ...newFiles]);
     }

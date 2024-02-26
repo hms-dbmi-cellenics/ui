@@ -41,9 +41,14 @@ const filterFilesDefaultConstructor = (selectedTech) => async (files) => {
     handleError('error', endUserMessages.ERROR_FILES_FOLDER);
   }
 
-  return await Promise.all(filteredFiles.map((file) => (
-    fileObjectToFileRecord(file, selectedTech)
-  )));
+  const invalidFiles = _.difference(files, filteredFiles);
+
+  return await {
+    valid: Promise.all(filteredFiles.map((file) => (
+      fileObjectToFileRecord(file, selectedTech)
+    ))),
+    invalid: [invalidFiles],
+  };
 };
 
 const getFilePathToDisplayDefaultConstructor = (selectedTech) => (filePath) => (
@@ -251,6 +256,9 @@ const fileUploadUtils = {
       const dgeFilteredFiles = getFilesMatching('DGE_filtered/', dgeUnfilteredFiles.invalid);
       const noMiddlePathFiles = getFilesMatching('', dgeFilteredFiles.invalid);
 
+      // These are the ones that didn't match any of the 3 accepted shapes
+      const invalidFiles = noMiddlePathFiles.invalid;
+
       const filesToUpload = _.uniq([
         ...Object.keys(dgeFilteredFiles.valid),
         ...Object.keys(dgeUnfilteredFiles.valid),
@@ -262,9 +270,12 @@ const fileUploadUtils = {
           dgeUnfilteredFiles.valid[sampleName] ?? dgeFilteredFiles.valid[sampleName] ?? noMiddlePathFiles.valid[sampleName]
         ));
 
-      return await Promise.all(filesToUpload.map((file) => (
-        fileObjectToFileRecord(file, sampleTech.PARSE)
-      )));
+      return {
+        valid: await Promise.all(filesToUpload.map((file) => (
+          fileObjectToFileRecord(file, sampleTech.PARSE)
+        ))),
+        invalid: invalidFiles,
+      };
     },
     getFilePathToDisplay: (filePath) => {
       const { sample, filteredState, name } = fileUploadUtils[sampleTech.PARSE].getFileSampleAndName(filePath);
