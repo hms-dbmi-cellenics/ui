@@ -317,47 +317,47 @@ const FileUploadModal = (props) => {
             </>
           ) : ''}
           {files.invalid.length > 0 && (
-            <center>
-              <Expandable
-                style={{ width: '100%' }}
-                expandedContent={(
-                  <>
-                    <Divider orientation='center' style={{ color: 'red' }}>Ignored files</Divider>
-                    <List
-                      dataSource={files.invalid}
-                      size='small'
-                      itemLayout='horizontal'
-                      grid='{column: 4}'
-                      renderItem={(file) => {
-                        console.log('fileDebug');
-                        console.log(file);
-                        return (
-                          <List.Item key={file.path}>
-                            <Space>
-                              <CloseCircleTwoTone twoToneColor='#f5222d' />
-                              {file.name}
-                            </Space>
-                          </List.Item>
-                        );
-                      }}
-                    />
-                  </>
-                )}
-                collapsedContent={(
-                  <>
-                    <Divider orientation='center' style={{ color: 'red' }} />
-                    <Text type='danger'>
-                      {' '}
-                      <WarningOutlined />
-                      {' '}
-                    </Text>
-                    <Text>
-                      Some files were ignored, click to display
-                    </Text>
-                  </>
-                )}
-              />
-            </center>
+            <Expandable
+              style={{ width: '100%' }}
+              expandedContent={(
+                <>
+                  <Divider orientation='center' style={{ color: 'red', marginBottom: '0' }}>Ignored files</Divider>
+                  <List
+                    dataSource={files.invalid}
+                    size='small'
+                    itemLayout='horizontal'
+                    renderItem={(file) => (
+                      <List.Item key={file.path} style={{ height: '100%', width: '100%' }}>
+                        <Space style={{ width: 200, justifyContent: 'center' }}>
+                          <CloseCircleTwoTone twoToneColor='#f5222d' />
+                          <div style={{ width: 200 }}>
+                            <Text
+                              ellipsis={{ tooltip: file.path }}
+                            >
+                              {file.path}
+                            </Text>
+                          </div>
+                        </Space>
+                        <Text style={{ width: '100%', marginLeft: '50px' }}>{file.rejectReason}</Text>
+                      </List.Item>
+                    )}
+                  />
+                </>
+              )}
+              collapsedContent={(
+                <center>
+                  <Divider orientation='center' style={{ color: 'red' }} />
+                  <Text type='danger'>
+                    {' '}
+                    <WarningOutlined />
+                    {' '}
+                  </Text>
+                  <Text>
+                    Some files were ignored, click to display
+                  </Text>
+                </center>
+              )}
+            />
           )}
         </Col>
       </Row>

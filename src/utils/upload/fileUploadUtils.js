@@ -257,15 +257,31 @@ const fileUploadUtils = {
       const noMiddlePathFiles = getFilesMatching('', dgeFilteredFiles.invalid);
 
       // These are the ones that didn't match any of the 3 accepted shapes
-      const invalidFiles = noMiddlePathFiles.invalid;
+      const invalidFiles = noMiddlePathFiles.invalid.map((file) => ({
+        path: file.path,
+        rejectReason: 'Invalid file path. It should be in the form "sample/DGE_unfiltered/file", "sample/DGE_filtered/file" or "sample/file".',
+      }));
 
       const filesToUpload = _.uniq([
-        ...Object.keys(dgeFilteredFiles.valid),
-        ...Object.keys(dgeUnfilteredFiles.valid),
-        ...Object.keys(noMiddlePathFiles.valid)])
+        ...Object.entries(dgeFilteredFiles.valid),
+        ...Object.entries(dgeUnfilteredFiles.valid),
+        ...Object.entries(noMiddlePathFiles.valid)])
         // Only allow sample-specific files, not all samples in one files
-        .filter((sampleName) => !['all-sample', 'all-well', 'All Wells'].includes(sampleName))
-        .flatMap((sampleName) => (
+        .filter(([sampleName, sampleFiles]) => {
+          const accepted = !['all-sample', 'all-well', 'All Wells'].includes(sampleName);
+
+          if (!accepted) {
+            invalidFiles.push(
+              ...sampleFiles.map((file) => ({
+                path: file.path,
+                rejectReason: 'Uploading files in "all-sample", "all-well" and "All Wells" is not supported currently.',
+              })),
+            );
+          }
+
+          return accepted;
+        })
+        .flatMap(([sampleName]) => (
           // By order of priority
           dgeUnfilteredFiles.valid[sampleName] ?? dgeFilteredFiles.valid[sampleName] ?? noMiddlePathFiles.valid[sampleName]
         ));
