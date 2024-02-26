@@ -53,6 +53,8 @@ const extraHelpText = {
   [sampleTech.PARSE]: () => <></>,
 };
 
+const emptyFilesList = { valid: [], invalid: [] };
+
 const FileUploadModal = (props) => {
   const { onUpload, onCancel, currentSelectedTech } = props;
 
@@ -65,14 +67,14 @@ const FileUploadModal = (props) => {
 
   const [selectedTech, setSelectedTech] = useState(currentSelectedTech ?? sampleTech['10X']);
   const [canUpload, setCanUpload] = useState(false);
-  const [filesList, setFilesList] = useState([]);
+  const [filesList, setFilesList] = useState(emptyFilesList);
 
   useEffect(() => {
-    setCanUpload(filesList.length && filesList.every((file) => !file.errors));
+    setCanUpload(filesList.valid.length && filesList.valid.every((file) => !file.errors));
   }, [filesList]);
 
   useEffect(() => {
-    setFilesList([]);
+    setFilesList(emptyFilesList);
   }, [selectedTech]);
 
   // Handle on Drop
@@ -93,7 +95,7 @@ const FileUploadModal = (props) => {
         return;
       }
 
-      const allFiles = [...filesList, ...newFiles];
+      const allFiles = [...filesList.valid, ...newFiles];
       if (allFiles.length > 1) {
         handleError('error', endUserMessages.ERROR_SEURAT_MULTIPLE_FILES);
       }
@@ -104,23 +106,26 @@ const FileUploadModal = (props) => {
         return;
       }
 
-      setFilesList([seuratFile]);
+      setFilesList({ valid: [seuratFile], invalid: [] });
     } else {
       const {
         valid: newFiles,
         invalid,
       } = await fileUploadUtils[selectedTech].filterFiles(filteredFiles);
 
-      setFilesList([...filesList, ...newFiles]);
+      setFilesList({
+        valid: [...filesList.valid, ...newFiles],
+        invalid: [...filesList.invalid, ...invalid],
+      });
     }
   };
 
   const removeFile = (fileName) => {
-    const newArray = _.cloneDeep(filesList);
+    const newArray = _.cloneDeep(filesList.valid);
 
     const fileIdx = newArray.findIndex((file) => file.name === fileName);
     newArray.splice(fileIdx, 1);
-    setFilesList(newArray);
+    setFilesList({ valid: newArray, invalid: filesList.invalid });
   };
 
   const { fileUploadParagraphs, dropzoneText, webkitdirectory } = fileUploadUtils[selectedTech];
@@ -169,8 +174,8 @@ const FileUploadModal = (props) => {
           block
           disabled={!canUpload}
           onClick={() => {
-            onUpload(filesList, selectedTech);
-            setFilesList([]);
+            onUpload(filesList.valid, selectedTech);
+            setFilesList(emptyFilesList);
           }}
         >
           Upload
@@ -271,12 +276,11 @@ const FileUploadModal = (props) => {
       <Row>
         <Col span={24}>
           {/* eslint-enable react/jsx-props-no-spreading */}
-
-          {filesList.length ? (
+          {filesList.valid.length ? (
             <>
               <Divider orientation='center'>To upload</Divider>
               <List
-                dataSource={filesList}
+                dataSource={filesList.valid}
                 size='small'
                 itemLayout='horizontal'
                 grid='{column: 4}'
