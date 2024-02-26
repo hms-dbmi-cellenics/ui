@@ -313,6 +313,24 @@ const FileUploadModal = (props) => {
               />
             </>
           ) : ''}
+          {files.invalid.length > 0 && (
+            <>
+              <Divider orientation='center' style={{ color: 'red' }}>Ignored files</Divider>
+              <List
+                dataSource={files.invalid}
+                size='small'
+                itemLayout='horizontal'
+                grid='{column: 4}'
+                renderItem={(file) => {
+                  console.log('fileDebug');
+                  console.log(file);
+                  return (
+                    <List.Item key={file.path}>{file.name}</List.Item>
+                  );
+                }}
+              />
+            </>
+          )}
         </Col>
       </Row>
     </Modal>
