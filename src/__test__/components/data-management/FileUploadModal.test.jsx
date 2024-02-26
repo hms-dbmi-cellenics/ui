@@ -429,7 +429,7 @@ describe('FileUploadModal', () => {
     expect(uploadButton).not.toBeDisabled();
   });
 
-  it.only('drag and drop works with Parse file, invalid files are shown in warning', async () => {
+  it('drag and drop works with Parse file, invalid files are shown in warning', async () => {
     await renderFileUploadModal(initialStore);
 
     // Switch file upload to Parse
@@ -461,9 +461,6 @@ describe('FileUploadModal', () => {
       fireEvent.drop(uploadInput);
     });
 
-    console.log('screendebugDebug');
-    screen.debug();
-
     // Valid files show up
     expect(await screen.findByText(/To upload/)).toBeInTheDocument();
     expect(await screen.findAllByText('WT13/DGE_unfiltered/all_genes.csv.gz')).toHaveLength(2);
@@ -488,6 +485,18 @@ describe('FileUploadModal', () => {
 
     // Now warning shows plural version
     expect(screen.getByText(/2 files were ignored, click to display/i)).toBeInTheDocument();
+
+    // But invalid files don't show up yet
+    expect(screen.queryByText('all-sample/all_genes.csv.gz')).not.toBeInTheDocument();
+    expect(screen.queryByText('KO/DGE_unfiltered/invalidName.csv.gz')).not.toBeInTheDocument();
+
+    await act(() => {
+      fireEvent.click(screen.getByText(/2 files were ignored, click to display/i));
+    });
+
+    // All invalid files are shown here
+    expect(screen.getByText('all-sample/all_genes.csv.gz')).toBeInTheDocument();
+    expect(screen.getByText('KO/DGE_unfiltered/invalidName.csv.gz')).toBeInTheDocument();
 
     const uploadButtonText = screen.getAllByText(/Upload/i).pop();
     const uploadButton = uploadButtonText.closest('button');
