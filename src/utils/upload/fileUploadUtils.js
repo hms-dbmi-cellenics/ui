@@ -265,8 +265,8 @@ const fileUploadUtils = {
         ...Object.keys(noMiddlePathFiles.valid)])
         // Only allow sample-specific files, not all samples in one files
         .filter((sampleName) => !['all-sample', 'all-well', 'All Wells'].includes(sampleName))
-        // if unfiltered files are present, pick them. Otherwise, pick the filtered files
         .flatMap((sampleName) => (
+          // By order of priority
           dgeUnfilteredFiles.valid[sampleName] ?? dgeFilteredFiles.valid[sampleName] ?? noMiddlePathFiles.valid[sampleName]
         ));
 
