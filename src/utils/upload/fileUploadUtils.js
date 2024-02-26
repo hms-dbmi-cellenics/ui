@@ -310,7 +310,7 @@ const fileUploadUtils = {
       let filteredState;
       let name;
 
-      // Path can take one of two acceptable shapes:
+      // Path can take one of two accepted shapes:
       // - sample/<DGE_unfiltered or DGE_filtered>/file
       // - sample/file
       if (['DGE_unfiltered', 'DGE_filtered'].includes(splitFilePath[1])) {
