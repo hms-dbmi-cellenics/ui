@@ -299,7 +299,8 @@ const fileUploadUtils = {
       if (['DGE_unfiltered', 'DGE_filtered'].includes(splitFilePath[1])) {
         [sample, filteredState, name] = splitFilePath;
       } else {
-        [, sample, name] = splitFilePath;
+        // splitFilePath might be length 2 or 3, so use takeRight
+        [sample, name] = _.takeRight(splitFilePath, 2);
       }
 
       return { sample, filteredState, name };
