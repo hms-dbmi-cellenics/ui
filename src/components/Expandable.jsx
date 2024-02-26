@@ -10,7 +10,9 @@ const Expandable = (props) => {
     // eslint-disable-next-line jsx-a11y/click-events-have-key-events
     <span
       onClick={() => {
-        setIsExpanded(!isExpanded);
+        if (!isExpanded) {
+          setIsExpanded(true);
+        }
       }}
     >
       {!isExpanded ? collapsedContent
