@@ -41,13 +41,14 @@ const filterFilesDefaultConstructor = (selectedTech) => async (files) => {
     handleError('error', endUserMessages.ERROR_FILES_FOLDER);
   }
 
-  const invalidFiles = _.difference(files, filteredFiles);
+  const invalidFiles = _.difference(files, filteredFiles)
+    .map((file) => ({ path: file.path, rejectReason: 'Invalid file path. Check the instructions in the modal for more information' }));
 
-  return await {
-    valid: Promise.all(filteredFiles.map((file) => (
+  return {
+    valid: await Promise.all(filteredFiles.map((file) => (
       fileObjectToFileRecord(file, selectedTech)
     ))),
-    invalid: [invalidFiles],
+    invalid: invalidFiles,
   };
 };
 
