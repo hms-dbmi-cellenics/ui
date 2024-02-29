@@ -347,7 +347,7 @@ const FileUploadModal = (props) => {
                 </>
               )}
               collapsedContent={(
-                <center>
+                <center style={{ cursor: 'pointer' }}>
                   <Divider orientation='center' style={{ color: 'red' }} />
                   <Text type='danger'>
                     {' '}
