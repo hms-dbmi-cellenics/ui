@@ -428,4 +428,80 @@ describe('FileUploadModal', () => {
     // Upload is enabled because the file is considered valid
     expect(uploadButton).not.toBeDisabled();
   });
+
+  it('drag and drop works with Parse file, invalid files are shown in warning', async () => {
+    await renderFileUploadModal(initialStore);
+
+    // Switch file upload to Parse
+    selectTech(sampleTech.PARSE);
+
+    const uploadInput = document.querySelector(
+      `[data-test-id="${integrationTestConstants.ids.FILE_UPLOAD_INPUT}"]`,
+    );
+
+    // create an all genes file (features)
+    const files = [
+      // 4 valid files
+      mockFile('all_genes.csv.gz', '/WT13/DGE_unfiltered'),
+      mockFile('all_genes.csv.gz', '/WT14/DGE_filtered'),
+      mockFile('all_genes.csv.gz', '/WT15'),
+      // This one should be ignored, /WT13/DGE_unfiltered takes precedence
+      mockFile('all_genes.csv.gz', '/WT13/DGE_filtered'),
+      // 1 invalid file
+      mockFile('all_genes.csv.gz', '/all-sample'),
+    ];
+
+    //  drop it into drop-zone
+    await act(async () => {
+      Object.defineProperty(uploadInput, 'files', {
+        value: files,
+        configurable: true,
+      });
+
+      fireEvent.drop(uploadInput);
+    });
+
+    // Valid files show up
+    expect(await screen.findByText(/To upload/)).toBeInTheDocument();
+    expect(await screen.findAllByText('WT13/DGE_unfiltered/all_genes.csv.gz')).toHaveLength(2);
+    expect(await screen.findByText('WT14/DGE_filtered/all_genes.csv.gz')).toBeInTheDocument();
+    expect(await screen.findByText('WT15/all_genes.csv.gz')).toBeInTheDocument();
+
+    // WT13/DGE_filtered doesn't because it is valid but superseded by WT13/DGE_unfiltered
+    expect(screen.queryByText('WT13/DGE_filtered/all_genes.csv.gz')).not.toBeInTheDocument();
+
+    // Warning shows up with offer to expand
+    expect(screen.getByText(/1 file was ignored, click to display/i)).toBeInTheDocument();
+
+    // Add a new invalid file
+    await act(async () => {
+      Object.defineProperty(uploadInput, 'files', {
+        value: [mockFile('invalidName.csv.gz', 'KO/DGE_unfiltered')],
+        configurable: true,
+      });
+
+      fireEvent.drop(uploadInput);
+    });
+
+    // Now warning shows plural version
+    expect(screen.getByText(/2 files were ignored, click to display/i)).toBeInTheDocument();
+
+    // But invalid files don't show up yet
+    expect(screen.queryByText('all-sample/all_genes.csv.gz')).not.toBeInTheDocument();
+    expect(screen.queryByText('KO/DGE_unfiltered/invalidName.csv.gz')).not.toBeInTheDocument();
+
+    await act(() => {
+      fireEvent.click(screen.getByText(/2 files were ignored, click to display/i));
+    });
+
+    // All invalid files are shown here
+    expect(screen.getByText('all-sample/all_genes.csv.gz')).toBeInTheDocument();
+    expect(screen.getByText('KO/DGE_unfiltered/invalidName.csv.gz')).toBeInTheDocument();
+
+    const uploadButtonText = screen.getAllByText(/Upload/i).pop();
+    const uploadButton = uploadButtonText.closest('button');
+
+    // Upload is enabled because the file is considered valid
+    expect(uploadButton).not.toBeDisabled();
+  });
 });
