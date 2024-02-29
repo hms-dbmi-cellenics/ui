@@ -327,6 +327,7 @@ const FileUploadModal = (props) => {
                     dataSource={files.invalid}
                     size='small'
                     itemLayout='horizontal'
+                    pagination
                     renderItem={(file) => (
                       <List.Item key={file.path} style={{ height: '100%', width: '100%' }}>
                         <Space style={{ width: 200, justifyContent: 'center' }}>
