@@ -21,6 +21,7 @@ import config from 'config';
 import handleError from 'utils/http/handleError';
 import endUserMessages from 'utils/endUserMessages';
 import readFileToString from 'utils/upload/readFileToString';
+import getDomainSpecificContent from 'utils/getDomainSpecificContent';
 
 const { Text, Title, Paragraph } = Typography;
 
@@ -160,9 +161,9 @@ const MetadataUploadModal = (props) => {
         <Col span={24}>
           <Paragraph type='secondary'>
             <i>
-              Don’t have the data in the accepted format? Email us for help with file conversion:
+              Don’t have the data in an accepted format?
               {' '}
-              <a href={`mailto:${config.supportEmail}`}>{config.supportEmail}</a>
+              {getDomainSpecificContent('helpMessage')}
             </i>
           </Paragraph>
         </Col>
