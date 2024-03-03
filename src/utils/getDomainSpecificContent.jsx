@@ -105,8 +105,6 @@ const domainSpecificContent = {
     HelpButton: (
       <>
         {reusedContent.HelpButton.BiomageUserGuide}
-        <br />
-        {reusedContent.HelpButton.OneToOneSupport}
       </>
     ),
     ExtraLogoText: reusedContent.ExtraLogoText,
