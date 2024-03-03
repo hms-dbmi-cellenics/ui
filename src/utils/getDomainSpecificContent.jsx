@@ -61,6 +61,14 @@ const domainSpecificContent = {
     HelpButton: reusedContent.HelpButton.OneToOneSupport,
     matomoName: 'cellenics',
     guidanceFileLink: 'https://drive.google.com/file/d/1VPaB-yofuExinY2pXyGEEx-w39_OPubO/view',
+    helpMessage: () => (
+      <>
+        Email us to find out if we can support your data:
+        <a href={`mailto:${config.supportEmail}`}>
+          {config.supportEmail}
+        </a>
+      </>
+    ),
   },
   BIOMAGE: {
     containerIds: biomageContainerIds,
@@ -86,18 +94,26 @@ const domainSpecificContent = {
     matomoName: 'biomage',
     ExtraLogoText: reusedContent.ExtraLogoText,
     guidanceFileLink: 'https://www.biomage.net/user-guide',
+    helpMessage: (
+      <>
+        Reach out to us using the feedback button at the top of the page.
+      </>
+    ),
   },
   BIOMAGE_PRIVATE: {
     containerIds: biomageContainerIds,
     HelpButton: (
       <>
         {reusedContent.HelpButton.BiomageUserGuide}
-        <br />
-        {reusedContent.HelpButton.OneToOneSupport}
       </>
     ),
     ExtraLogoText: reusedContent.ExtraLogoText,
     guidanceFileLink: 'https://www.biomage.net/user-guide',
+    helpMessage: (
+      <>
+        Reach out to us using the feedback button at the top of the page.
+      </>
+    ),
   },
 };
 

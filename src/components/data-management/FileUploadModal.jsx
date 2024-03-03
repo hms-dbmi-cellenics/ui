@@ -221,11 +221,9 @@ const FileUploadModal = (props) => {
             </Space>
             <Text type='secondary'>
               <i>
-                Is your dataset generated using another single cell RNA-seq technology (e.g. Nadia, inDrop, etc.)? Email us to find out if we can support your data:
-                <a href={`mailto:${config.supportEmail}`}>
-                  {' '}
-                  {config.supportEmail}
-                </a>
+                Don't have data in an accepted format?
+                {' '}
+                {getDomainSpecificContent('helpMessage')}
               </i>
             </Text>
           </Space>
@@ -239,23 +237,6 @@ const FileUploadModal = (props) => {
             <span style={{ color: 'red', marginRight: '2em' }}>*</span>
           </Title>
           {selectedTech && renderHelpText(selectedTech)}
-        </Col>
-      </Row>
-
-      <Row>
-        <Col span={24}>
-          <Paragraph type='secondary'>
-            <i>
-              Don’t have the data in the accepted format? Email us for help with file conversion (e.g. from Fastq or H5 file):
-              <a href={`mailto:${config.supportEmail}`}>{config.supportEmail}</a>
-            </i>
-            <span style={{ display: 'block', height: '0.6rem' }} />
-            <i>
-              More guidance on supported file types and formats is available
-              <a rel='noreferrer' target='_blank' href={getDomainSpecificContent('guidanceFileLink')}> here</a>
-              .
-            </i>
-          </Paragraph>
         </Col>
       </Row>
 
