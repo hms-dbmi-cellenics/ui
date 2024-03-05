@@ -41,9 +41,15 @@ const filterFilesDefaultConstructor = (selectedTech) => async (files) => {
     handleError('error', endUserMessages.ERROR_FILES_FOLDER);
   }
 
-  return await Promise.all(filteredFiles.map((file) => (
-    fileObjectToFileRecord(file, selectedTech)
-  )));
+  const invalidFiles = _.difference(files, filteredFiles)
+    .map((file) => ({ path: file.path, rejectReason: 'Invalid file path. Check the instructions in the modal for more information' }));
+
+  return {
+    valid: await Promise.all(filteredFiles.map((file) => (
+      fileObjectToFileRecord(file, selectedTech)
+    ))),
+    invalid: invalidFiles,
+  };
 };
 
 const getFilePathToDisplayDefaultConstructor = (selectedTech) => (filePath) => (
@@ -217,12 +223,12 @@ const fileUploadUtils = {
       // Returns the same list of files
       //  The valid ones are in a dictionary ordered by their sample names
       //  The invalid ones are in a list
-      const getFilesMatching = (dirNameDGE, filesToFilter) => {
+      const getFilesMatching = (middlePath, filesToFilter) => {
         const validFiles = {};
         const invalidFiles = [];
 
         const regexes = Array.from(parseUtils.acceptedFiles).map((validFileName) => (
-          new RegExp(`${sampleNameMatcher}/${dirNameDGE}/${validFileName}$`)
+          new RegExp(`${sampleNameMatcher}/${middlePath}${validFileName}$`)
         ));
 
         filesToFilter.forEach((fileObject) => {
@@ -247,30 +253,74 @@ const fileUploadUtils = {
         return { valid: validFiles, invalid: invalidFiles };
       };
 
-      const { valid: DGEUnfilteredFiles, invalid } = getFilesMatching('DGE_unfiltered', files);
-      const { valid: DGEFilteredFiles } = getFilesMatching('DGE_filtered', invalid);
+      const dgeUnfilteredFiles = getFilesMatching('DGE_unfiltered/', files);
+      const dgeFilteredFiles = getFilesMatching('DGE_filtered/', dgeUnfilteredFiles.invalid);
+      const noMiddlePathFiles = getFilesMatching('', dgeFilteredFiles.invalid);
 
-      const filesToUpload = _.uniq([...Object.keys(DGEFilteredFiles), ...Object.keys(DGEUnfilteredFiles)])
+      // These are the ones that didn't match any of the 3 accepted shapes
+      const invalidFiles = noMiddlePathFiles.invalid.map((file) => ({
+        path: file.path,
+        rejectReason: 'Invalid file path. It should be in the form "sample/DGE_unfiltered/file", "sample/DGE_filtered/file" or "sample/file".',
+      }));
+
+      const filesToUpload = _.uniq([
+        ...Object.entries(dgeFilteredFiles.valid),
+        ...Object.entries(dgeUnfilteredFiles.valid),
+        ...Object.entries(noMiddlePathFiles.valid)])
         // Only allow sample-specific files, not all samples in one files
-        .filter((sampleName) => !['all-sample', 'all-well', 'All Wells'].includes(sampleName))
-        // if unfiltered files are present, pick them. Otherwise, pick the filtered files
-        .flatMap((sampleName) => (
-          DGEUnfilteredFiles[sampleName] ?? DGEFilteredFiles[sampleName]
+        .filter(([sampleName, sampleFiles]) => {
+          const accepted = !['all-sample', 'all-well', 'All Wells'].includes(sampleName);
+
+          if (!accepted) {
+            invalidFiles.push(
+              ...sampleFiles.map((file) => ({
+                path: file.path,
+                rejectReason: 'Uploading files in "all-sample", "all-well" and "All Wells" is not supported currently.',
+              })),
+            );
+          }
+
+          return accepted;
+        })
+        .flatMap(([sampleName]) => (
+          // By order of priority
+          dgeUnfilteredFiles.valid[sampleName] ?? dgeFilteredFiles.valid[sampleName] ?? noMiddlePathFiles.valid[sampleName]
         ));
 
-      return await Promise.all(filesToUpload.map((file) => (
-        fileObjectToFileRecord(file, sampleTech.PARSE)
-      )));
+      return {
+        valid: await Promise.all(filesToUpload.map((file) => (
+          fileObjectToFileRecord(file, sampleTech.PARSE)
+        ))),
+        invalid: invalidFiles,
+      };
     },
     getFilePathToDisplay: (filePath) => {
-      const [sample, filteredState, name] = _.takeRight(_.trim(filePath, '/').split('/'), 3);
+      const { sample, filteredState, name } = fileUploadUtils[sampleTech.PARSE].getFileSampleAndName(filePath);
 
-      return [sample, filteredState, name].join('/');
+      if (filteredState) {
+        return [sample, filteredState, name].join('/');
+      }
+
+      return [sample, name].join('/');
     },
     getFileSampleAndName: (filePath) => {
-      const [sample, , name] = _.takeRight(filePath.split('/'), 3);
+      const splitFilePath = _.takeRight(_.trim(filePath, '/').split('/'), 3);
 
-      return { sample, name };
+      let sample;
+      let filteredState;
+      let name;
+
+      // Path can take one of two accepted shapes:
+      // - sample/<DGE_unfiltered or DGE_filtered>/file
+      // - sample/file
+      if (['DGE_unfiltered', 'DGE_filtered'].includes(splitFilePath[1])) {
+        [sample, filteredState, name] = splitFilePath;
+      } else {
+        // splitFilePath might be length 2 or 3, so use takeRight
+        [sample, name] = _.takeRight(splitFilePath, 2);
+      }
+
+      return { sample, filteredState, name };
     },
   },
 };
