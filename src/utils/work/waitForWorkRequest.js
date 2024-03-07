@@ -71,17 +71,18 @@ const waitForWorkRequest = async (
     // the worker is alive and was working on another request of our experiment
     io.on(`Heartbeat-${experimentId}`, (message) => {
       const newTimeoutDate = getTimeoutDate(timeout);
-      if (newTimeoutDate < workerTimeoutDate) {
-        const status = {
-          worker: {
-            statusCode: message.status_code,
-            userMessage: message.user_message,
-          },
-        };
-        dispatch(updateBackendStatus(experimentId, status));
 
+      if (newTimeoutDate < workerTimeoutDate) {
         setOrRefreshTimeout(request, timeout, reject, ETag);
       }
+
+      const status = {
+        worker: {
+          statusCode: message.status_code,
+          userMessage: message.user_message,
+        },
+      };
+      dispatch(updateBackendStatus(experimentId, status));
     });
   });
 
