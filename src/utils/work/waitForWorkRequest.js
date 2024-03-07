@@ -72,10 +72,6 @@ const waitForWorkRequest = async (
     io.on(`Heartbeat-${experimentId}`, (message) => {
       const newTimeoutDate = getTimeoutDate(timeout);
 
-      // Log the newTimeoutDate and workerTimeoutDate
-      console.log('newTimeoutDate:', newTimeoutDate);
-      console.log('workerTimeoutDate:', workerTimeoutDate);
-
       if (newTimeoutDate < workerTimeoutDate) {
         setOrRefreshTimeout(request, timeout, reject, ETag);
       }
