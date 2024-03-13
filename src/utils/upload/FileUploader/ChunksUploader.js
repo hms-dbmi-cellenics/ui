@@ -5,7 +5,7 @@ import putInS3 from 'utils/upload/putInS3';
 
 const fiveMB = 5 * 1024 * 1024;
 
-class PartsUploader {
+class ChunksUploader {
   constructor(uploadParams, abortController, createOnUploadProgress) {
     this.#uploadParams = uploadParams;
     this.#abortController = abortController;
@@ -81,4 +81,4 @@ class PartsUploader {
   };
 }
 
-export default PartsUploader;
+export default ChunksUploader;

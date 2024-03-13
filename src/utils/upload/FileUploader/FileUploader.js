@@ -5,7 +5,7 @@ import { AsyncGzip } from 'fflate';
 import filereaderStream from 'filereader-stream';
 
 import UploadStatus from 'utils/upload/UploadStatus';
-import PartsUploader from 'utils/upload/FileUploader/PartsUploader';
+import ChunksUploader from 'utils/upload/FileUploader/ChunksUploader';
 
 class FileUploader {
   constructor(
@@ -56,7 +56,7 @@ class FileUploader {
       this.onStatusUpdate(UploadStatus.UPLOADING, Math.floor(percentage));
     };
 
-    this.partsUploader = new PartsUploader(uploadParams, abortController, createOnUploadProgress);
+    this.partsUploader = new ChunksUploader(uploadParams, abortController, createOnUploadProgress);
   }
 
   async upload() {
