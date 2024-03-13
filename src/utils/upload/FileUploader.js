@@ -8,6 +8,8 @@ import fetchAPI from 'utils/http/fetchAPI';
 import putInS3 from 'utils/upload/putInS3';
 import UploadStatus from 'utils/upload/UploadStatus';
 
+const fiveMB = 5 * 1024 * 1024;
+
 class FileUploader {
   constructor(
     file,
@@ -54,6 +56,8 @@ class FileUploader {
     this.uploadedPartPercentages = new Array(this.totalChunks).fill(0);
 
     this.currentChunk = null;
+
+    this.accumulatedChunks = [];
   }
 
   async upload() {
@@ -74,16 +78,35 @@ class FileUploader {
     });
   }
 
-  #uploadChunk = async (compressedPart, partNumber) => {
+  #uploadChunk = async (chunk) => {
+    this.accumulatedChunks.push(chunk);
+
+    const uploadSize = _.sum(_.map(this.accumulatedChunks, 'length'));
+    // Upload if we have accumulated 5MB of size or if it's the last chunk (where this restriction doesn't exist)
+    const canUpload = uploadSize > fiveMB || this.pendingChunks === 1;
+
+    if (!canUpload) return;
+
+    this.partNumberIt += 1;
+    const partNumber = this.partNumberIt;
+
     const signedUrl = await this.#getSignedUrlForPart(partNumber);
 
+    const mergedChunks = new Uint8Array(uploadSize);
+    this.accumulatedChunks.reduce((offset, chunk) => {
+      mergedChunks.set(chunk, offset);
+
+      return offset + chunk.length;
+    }, 0);
+
     const partResponse = await putInS3(
-      compressedPart,
+      mergedChunks,
       signedUrl,
       this.abortController,
       this.#createOnUploadProgress(partNumber),
     );
 
+    this.accumulatedChunks = [];
     this.uploadedParts.push({ ETag: partResponse.headers.etag, PartNumber: partNumber });
   }
 
@@ -167,12 +190,8 @@ class FileUploader {
   }
 
   #handleChunkLoadFinished = async (chunk) => {
-    // This assigns a part number to each chunk that arrives
-    // They are read in order, so it should be safe
-    this.partNumberIt += 1;
-
     try {
-      await this.#uploadChunk(chunk, this.partNumberIt);
+      await this.#uploadChunk(chunk);
     } catch (e) {
       this.#cancelExecution(UploadStatus.UPLOAD_ERROR, e);
     }

@@ -200,7 +200,6 @@ const fileObjectToFileRecord = async (fileObject, technology) => {
       status: UploadStatus.UPLOADING,
       progress: 0,
     },
-
     errors: error,
     compressed: verdict === Verdict.VALID_ZIPPED,
   };
