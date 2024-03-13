@@ -4,11 +4,8 @@ import _ from 'lodash';
 import { AsyncGzip } from 'fflate';
 import filereaderStream from 'filereader-stream';
 
-import fetchAPI from 'utils/http/fetchAPI';
-import putInS3 from 'utils/upload/putInS3';
 import UploadStatus from 'utils/upload/UploadStatus';
-
-const fiveMB = 5 * 1024 * 1024;
+import PartsUploader from 'utils/upload/FileUploader/PartsUploader';
 
 class FileUploader {
   constructor(
@@ -31,7 +28,6 @@ class FileUploader {
     this.file = file;
     this.compress = compress;
     this.chunkSize = chunkSize;
-    this.uploadParams = uploadParams;
 
     // Upload related callbacks and handling
     this.onStatusUpdate = onStatusUpdate;
@@ -41,13 +37,8 @@ class FileUploader {
     this.totalChunks = Math.ceil(file.size / chunkSize);
     this.pendingChunks = this.totalChunks;
 
-    // Used to assign partNumbers to each chunk
-    this.partNumberIt = 0;
-
     this.readStream = null;
     this.gzipStream = null;
-
-    this.uploadedParts = [];
 
     this.resolve = null;
     this.reject = null;
@@ -57,7 +48,15 @@ class FileUploader {
 
     this.currentChunk = null;
 
-    this.accumulatedChunks = [];
+    const createOnUploadProgress = (partNumber) => (progress) => {
+      // partNumbers are 1-indexed, so we need to subtract 1 for the array index
+      this.uploadedPartPercentages[partNumber - 1] = progress.progress;
+
+      const percentage = _.mean(this.uploadedPartPercentages) * 100;
+      this.onStatusUpdate(UploadStatus.UPLOADING, Math.floor(percentage));
+    };
+
+    this.partsUploader = new PartsUploader(uploadParams, abortController, createOnUploadProgress);
   }
 
   async upload() {
@@ -77,57 +76,6 @@ class FileUploader {
       }
     });
   }
-
-  #uploadChunk = async (chunk) => {
-    this.accumulatedChunks.push(chunk);
-
-    const uploadSize = _.sum(_.map(this.accumulatedChunks, 'length'));
-    // Upload if we have accumulated 5MB of size or if it's the last chunk (where this restriction doesn't exist)
-    const canUpload = uploadSize > fiveMB || this.pendingChunks === 1;
-
-    if (!canUpload) return;
-
-    this.partNumberIt += 1;
-    const partNumber = this.partNumberIt;
-
-    const signedUrl = await this.#getSignedUrlForPart(partNumber);
-
-    const mergedChunks = new Uint8Array(uploadSize);
-    this.accumulatedChunks.reduce((offset, chunk) => {
-      mergedChunks.set(chunk, offset);
-
-      return offset + chunk.length;
-    }, 0);
-
-    const partResponse = await putInS3(
-      mergedChunks,
-      signedUrl,
-      this.abortController,
-      this.#createOnUploadProgress(partNumber),
-    );
-
-    this.accumulatedChunks = [];
-    this.uploadedParts.push({ ETag: partResponse.headers.etag, PartNumber: partNumber });
-  }
-
-  #getSignedUrlForPart = async (partNumber) => {
-    const {
-      experimentId, uploadId, bucket, key,
-    } = this.uploadParams;
-
-    const queryParams = new URLSearchParams({ bucket, key });
-    const url = `/v2/experiments/${experimentId}/upload/${uploadId}/part/${partNumber}/signedUrl?${queryParams}`;
-
-    return await fetchAPI(url, { method: 'GET' });
-  };
-
-  #createOnUploadProgress = (partNumber) => (progress) => {
-    // partNumbers are 1-indexed, so we need to subtract 1 for the array index
-    this.uploadedPartPercentages[partNumber - 1] = progress.progress;
-
-    const percentage = _.mean(this.uploadedPartPercentages) * 100;
-    this.onStatusUpdate(UploadStatus.UPLOADING, Math.floor(percentage));
-  };
 
   #setupGzipStreamHandlers = () => {
     this.gzipStream.ondata = async (err, chunk) => {
@@ -181,7 +129,7 @@ class FileUploader {
     this.readStream.destroy();
 
     this.gzipStream?.terminate();
-    this.abortController?.abort();
+    this.partsUploader.abort();
 
     this.onStatusUpdate(status);
 
@@ -191,7 +139,7 @@ class FileUploader {
 
   #handleChunkLoadFinished = async (chunk) => {
     try {
-      await this.#uploadChunk(chunk);
+      await this.partsUploader.uploadChunk(chunk);
     } catch (e) {
       this.#cancelExecution(UploadStatus.UPLOAD_ERROR, e);
     }
@@ -200,7 +148,9 @@ class FileUploader {
     this.pendingChunks -= 1;
 
     if (this.pendingChunks === 0) {
-      this.resolve(this.uploadedParts);
+      const uploadedParts = await this.partsUploader.finishUpload();
+
+      this.resolve(uploadedParts);
     }
   }
 }
