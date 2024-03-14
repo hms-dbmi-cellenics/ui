@@ -48,15 +48,7 @@ class FileUploader {
 
     this.currentChunk = null;
 
-    const createOnUploadProgress = (partNumber) => (progress) => {
-      // partNumbers are 1-indexed, so we need to subtract 1 for the array index
-      this.uploadedPartPercentages[partNumber - 1] = progress.progress;
-
-      const percentage = _.mean(this.uploadedPartPercentages) * 100;
-      this.onStatusUpdate(UploadStatus.UPLOADING, Math.floor(percentage));
-    };
-
-    this.partsUploader = new ChunksUploader(uploadParams, abortController, createOnUploadProgress);
+    this.partsUploader = new ChunksUploader(uploadParams, abortController);
   }
 
   async upload() {
@@ -139,7 +131,8 @@ class FileUploader {
 
   #handleChunkLoadFinished = async (chunk) => {
     try {
-      await this.partsUploader.uploadChunk(chunk);
+      const onUploadProgress = this.#createOnUploadProgress(this.pendingChunks);
+      await this.partsUploader.uploadChunk(chunk, onUploadProgress);
     } catch (e) {
       this.#cancelExecution(UploadStatus.UPLOAD_ERROR, e);
     }
@@ -153,6 +146,14 @@ class FileUploader {
       this.resolve(uploadedParts);
     }
   }
+
+  #createOnUploadProgress = (chunkNumber) => (progress) => {
+    // partNumbers are 1-indexed, so we need to subtract 1 for the array index
+    this.uploadedPartPercentages[chunkNumber - 1] = progress.progress;
+
+    const percentage = _.mean(this.uploadedPartPercentages) * 100;
+    this.onStatusUpdate(UploadStatus.UPLOADING, Math.floor(percentage));
+  };
 }
 
 export default FileUploader;

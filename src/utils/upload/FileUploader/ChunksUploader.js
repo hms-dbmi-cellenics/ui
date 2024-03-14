@@ -6,15 +6,12 @@ import putInS3 from 'utils/upload/putInS3';
 const fiveMB = 5 * 1024 * 1024;
 
 class ChunksUploader {
-  constructor(uploadParams, abortController, createOnUploadProgress) {
+  constructor(uploadParams, abortController) {
     this.#uploadParams = uploadParams;
     this.#abortController = abortController;
-    this.#createOnUploadProgress = createOnUploadProgress;
   }
 
   #uploadParams;
-
-  #createOnUploadProgress;
 
   #abortController;
 
@@ -25,8 +22,8 @@ class ChunksUploader {
 
   #uploadedParts = [];
 
-  uploadChunk = async (chunk) => {
-    this.#accumulatedChunks.push(chunk);
+  uploadChunk = async (chunk, onUploadProgress) => {
+    this.#accumulatedChunks.push({ chunk, onUploadProgress });
 
     // Upload if we have accumulated 5MB of size
     const canUpload = this.#getAccumulatedUploadSize() > fiveMB;
@@ -60,7 +57,7 @@ class ChunksUploader {
       mergedChunks,
       signedUrl,
       this.#abortController,
-      this.#createOnUploadProgress(partNumber),
+      // this.#createOnUploadProgress(partNumber),
     );
 
     this.#accumulatedChunks = [];
