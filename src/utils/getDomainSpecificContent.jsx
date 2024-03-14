@@ -69,6 +69,7 @@ const domainSpecificContent = {
         </a>
       </>
     ),
+  },
   BIOMAGE: {
     containerIds: biomageContainerIds,
     HelpButton: (
