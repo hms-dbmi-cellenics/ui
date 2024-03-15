@@ -1,7 +1,7 @@
 import fetchAPI from 'utils/http/fetchAPI';
 import fileUploadConfig from 'utils/upload/fileUploadConfig';
 import UploadStatus from './UploadStatus';
-import FileUploader from './FileUploader';
+import FileUploader from './FileUploader/FileUploader';
 
 const uploadFileToS3 = async (
   experimentId,
