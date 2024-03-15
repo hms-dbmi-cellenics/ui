@@ -61,7 +61,7 @@ const domainSpecificContent = {
     HelpButton: reusedContent.HelpButton.OneToOneSupport,
     matomoName: 'cellenics',
     guidanceFileLink: 'https://drive.google.com/file/d/1VPaB-yofuExinY2pXyGEEx-w39_OPubO/view',
-    helpMessage: () => (
+    helpMessage: (
       <>
         Email us to find out if we can support your data:
         <a href={`mailto:${config.supportEmail}`}>
