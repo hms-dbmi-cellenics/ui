@@ -4,6 +4,7 @@ import {
 
 import getTimeoutForWorkerTask from 'utils/getTimeoutForWorkerTask';
 import fetchWork from 'utils/work/fetchWork';
+import handleError from 'utils/http/handleError';
 
 const runCellSetsAnnotation = (experimentId, species, tissue) => async (dispatch, getState) => {
   const { error, updatingClustering, loading } = getState().cellSets;
@@ -34,13 +35,16 @@ const runCellSetsAnnotation = (experimentId, species, tissue) => async (dispatch
       },
     );
   } catch (e) {
+    const errorMessage = handleError(e, endUserMessages.ERROR_CELL_SETS_ANNOTATION_FAILED);
     dispatch({
       type: CELL_SETS_ERROR,
       payload: {
         experimentId,
-        error: e,
+        error: errorMessage,
       },
     });
+    // To set the clustering status back to false
+    dispatch(updateCellSetsClustering(experimentId));
   }
 };
 
