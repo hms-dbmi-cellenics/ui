@@ -5,6 +5,7 @@ import {
 import getTimeoutForWorkerTask from 'utils/getTimeoutForWorkerTask';
 import fetchWork from 'utils/work/fetchWork';
 import handleError from 'utils/http/handleError';
+import endUserMessages from 'utils/endUserMessages';
 
 const runCellSetsAnnotation = (experimentId, species, tissue) => async (dispatch, getState) => {
   const { error, updatingClustering, loading } = getState().cellSets;
