@@ -342,6 +342,7 @@ const HeatmapPlot = (props) => {
         cellColorLabels={heatmapData.metadataTracks.labels}
         hideObservationLabels
         transpose
+        useDevicePixels=2
         viewState={viewState}
         setViewState={setViewState}
         setCellHighlight={setCellHighlight}
