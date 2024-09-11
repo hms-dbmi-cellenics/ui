@@ -5,7 +5,7 @@ metadata:
   labels:
     sandboxId: FILLED_IN_BY_CI
 ---
-apiVersion: source.toolkit.fluxcd.io/v1beta2
+apiVersion: source.toolkit.fluxcd.io/v1
 kind: GitRepository
 metadata:
   name: FILLED_IN_BY_CI
