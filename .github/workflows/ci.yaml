@@ -193,6 +193,7 @@ jobs:
           path: |
             .next/
             !.next/cache
+          include-hidden-files: true
 
       - id: download-build-out
         name: Download Next.js build output
