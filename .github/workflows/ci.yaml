@@ -193,10 +193,11 @@ jobs:
           path: |
             .next/
             !.next/cache
+          include-hidden-files: true
 
       - id: download-build-out
         name: Download Next.js build output
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v4
         with:
           name: next-build-out
           path: .next/
