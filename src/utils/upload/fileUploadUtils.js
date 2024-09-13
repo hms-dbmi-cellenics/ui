@@ -116,8 +116,8 @@ const fileUploadUtils = {
     inputInfo: [
       ['<code>scdata$samples</code>: sample assignment. If absent, treated as unisample.'],
       ['<code>scdata[[\'RNA\']]@counts</code>: raw feature counts.'],
-      ['<code>scdata@reductions</code>: contains the embeddings for <code>pca</code>, as well as either <code>umap</code> or <code>tsne</code>.'],
-      ['<strong>Important notes on dimensionality reductions:</strong> ensure the default dimensionality reduction in your Seurat object is named exactly <code>umap</code> or <code>tsne</code>. If the default reduction name includes <code>umap</code> or <code>tsne</code> (e.g., <code>ref.umap</code>), it will be automatically renamed. If the default reduction is different and does not contain these names, the upload will not be successful.'],
+      ['<code>scdata@reductions</code>: includes a <code>pca</code> reduction.'],
+      ['<code>DefaultDimReduc(scdata)</code>: includes either <code>umap</code> or <code>tsne</code> (e.g. <code>ref.umap</code> will work).'],
       ['\uD83D\uDCA1cluster metadata in <code>scdata@meta.data</code> is auto-detected.'],
       ['\uD83D\uDCA1sample level metadata in <code>scdata@meta.data</code> that groups samples in <code>scdata$samples</code> is auto-detected for downstream analysis.'],
       ['\uD83D\uDCA1if file size is over 15GB, try removing any assays not indicated above.'],
