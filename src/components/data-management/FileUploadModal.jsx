@@ -24,7 +24,7 @@ import config from 'config';
 
 import Expandable from 'components/Expandable';
 
-import { sampleTech } from 'utils/constants';
+import { sampleTech, obj2sTechs } from 'utils/constants';
 import fileUploadUtils, { techNamesToDisplay } from 'utils/upload/fileUploadUtils';
 import handleError from 'utils/http/handleError';
 import { fileObjectToFileRecord } from 'utils/upload/processSampleUpload';
@@ -36,11 +36,12 @@ const { Text, Title, Paragraph } = Typography;
 const { Option } = Select;
 
 // allow at most 15 GiB .rds object uploads
-const SEURAT_MAX_FILE_SIZE = 15 * 1024 * 1024 * 1024;
+const OBJ2S_MAX_FILE_SIZE = 15 * 1024 * 1024 * 1024;
 
 const extraHelpText = {
   [sampleTech['10X']]: () => <></>,
   [sampleTech.SEURAT]: () => <></>,
+  [sampleTech.SINGLE_CELL_EXPERIMENT]: () => <></>,
   [sampleTech.H5]: () => <></>,
   [sampleTech.RHAPSODY]: () => (
     <Paragraph>
@@ -87,30 +88,30 @@ const FileUploadModal = (props) => {
     const filteredFiles = acceptedFiles
       .filter((file) => !file.name.startsWith('.') && !file.name.startsWith('__MACOSX'));
 
-    if (selectedTech === sampleTech.SEURAT) {
-      // TODO1 this needs to be further refactored before it is moved into
+    if (obj2sTechs.includes(selectedTech)) {
+      // TODO this needs to be further refactored before it is moved into
       // fileUploadUtils as a filterFiles call, right now it's a bit unnecessarily complicated
       const newFiles = await Promise.all(filteredFiles.map((file) => (
         fileObjectToFileRecord(file, selectedTech)
       )));
 
       if (previouslyUploadedSamples.length) {
-        handleError('error', endUserMessages.ERROR_SEURAT_EXISTING_FILE);
+        handleError('error', endUserMessages.ERROR_OBJ2S_EXISTING_FILE);
         return;
       }
 
       const allFiles = [...files.valid, ...newFiles];
       if (allFiles.length > 1) {
-        handleError('error', endUserMessages.ERROR_SEURAT_MULTIPLE_FILES);
+        handleError('error', endUserMessages.ERROR_OBJ2S_MULTIPLE_FILES);
       }
 
-      const seuratFile = allFiles[0];
-      if (seuratFile.size > SEURAT_MAX_FILE_SIZE) {
-        handleError('error', endUserMessages.ERROR_SEURAT_MAX_FILE_SIZE);
+      const obj2sFile = allFiles[0];
+      if (obj2sFile.size > OBJ2S_MAX_FILE_SIZE) {
+        handleError('error', endUserMessages.ERROR_OBJ2S_MAX_FILE_SIZE);
         return;
       }
 
-      setFiles({ valid: [seuratFile], invalid: [] });
+      setFiles({ valid: [obj2sFile], invalid: [] });
     } else {
       const {
         valid: newFiles,

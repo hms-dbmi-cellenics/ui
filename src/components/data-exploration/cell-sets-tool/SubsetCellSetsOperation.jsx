@@ -7,7 +7,7 @@ import { Tooltip, Button } from 'antd';
 import { PieChartOutlined } from '@ant-design/icons';
 
 import SubsetCellSetsModal from 'components/data-exploration/cell-sets-tool/SubsetCellSetsModal';
-import { sampleTech } from 'utils/constants';
+import { obj2sTechs } from 'utils/constants';
 
 const SubsetCellSetsOperation = (props) => {
   const { onCreate } = props;
@@ -23,7 +23,7 @@ const SubsetCellSetsOperation = (props) => {
       <Tooltip placement='top' title='Subset selected cell sets to a new project.'>
         <Button
           type='dashed'
-          disabled={experimentType === sampleTech.SEURAT}
+          disabled={obj2sTechs.includes(experimentType)}
           aria-label='Create new experiment from selected cellsets'
           size='small'
           icon={<PieChartOutlined />}

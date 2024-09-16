@@ -8,7 +8,7 @@ import { act } from 'react-dom/test-utils';
 import {
   screen, render, waitFor, fireEvent,
 } from '@testing-library/react';
-import { runGem2s, runSeurat } from 'redux/actions/pipeline';
+import { runGem2s, runObj2s } from 'redux/actions/pipeline';
 
 import PipelineStatus from 'utils/pipelineStatusValues';
 import { sampleTech } from 'utils/constants';
@@ -25,7 +25,7 @@ import '__test__/test-utils/setupTests';
 jest.mock('redux/actions/experimentSettings/updateExperimentInfo', () => jest.fn().mockReturnValue({ type: 'UPDATE_EXPERIMENT_INFO' }));
 jest.mock('redux/actions/pipeline', () => ({
   runGem2s: jest.fn().mockReturnValue({ type: 'RUN_GEM2S' }),
-  runSeurat: jest.fn().mockReturnValue({ type: 'RUN_SEURAT' }),
+  runObj2s: jest.fn().mockReturnValue({ type: 'RUN_OBJ2S' }),
 }));
 
 const mockNavigateTo = jest.fn();
@@ -495,7 +495,7 @@ describe('LaunchAnalysisButton', () => {
     expect(mockNavigateTo).toHaveBeenCalled();
   });
 
-  it('Does dispatch a request to runSeurat for an unprocessed experiment', async () => {
+  it('Does dispatch a request to runObj2s for an unprocessed experiment', async () => {
     calculateGem2sRerunStatus.mockReturnValue(rerunState);
     calculateQCRerunStatus.mockReturnValue(notRerunState);
 
@@ -529,6 +529,6 @@ describe('LaunchAnalysisButton', () => {
     fireEvent.click(screen.getByText('Yes'));
 
     expect(runGem2s).not.toHaveBeenCalled();
-    expect(runSeurat).toHaveBeenCalled();
+    expect(runObj2s).toHaveBeenCalled();
   });
 });

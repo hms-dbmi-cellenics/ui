@@ -10,6 +10,7 @@ const techNamesToDisplay = {
   [sampleTech['10X']]: '10X Chromium',
   [sampleTech.RHAPSODY]: 'BD Rhapsody',
   [sampleTech.SEURAT]: 'Seurat',
+  [sampleTech.SINGLE_CELL_EXPERIMENT]: 'SingleCellExperiment',
   [sampleTech.H5]: '10X Chromium - H5',
   [sampleTech.PARSE]: 'Parse Evercode WT',
 };
@@ -139,6 +140,36 @@ const fileUploadUtils = {
     // For more information on this one check the TODO1 at FileUploadModal
     filterFiles: () => { throw new Error('Not Implemented'); },
     getFilePathToDisplay: getFilePathToDisplayDefaultConstructor(sampleTech.SEURAT),
+    getFileSampleAndName: getFileSampleAndNameDefault,
+  },
+  [sampleTech.SINGLE_CELL_EXPERIMENT]: {
+    validExtensionTypes: ['.rds'],
+    inputInfo: [
+      ['<code>scdata$samples</code>: sample assignment. If absent, treated as unisample.'],
+      ['<code>scdata[[\'RNA\']]@counts</code>: raw feature counts.'],
+      ['<code>scdata@reductions</code>: includes a <code>pca</code> reduction.'],
+      ['<code>DefaultDimReduc(scdata)</code>: includes either <code>umap</code> or <code>tsne</code> (e.g. <code>ref.umap</code> will work).'],
+      ['\uD83D\uDCA1cluster metadata in <code>scdata@meta.data</code> is auto-detected.'],
+      ['\uD83D\uDCA1sample level metadata in <code>scdata@meta.data</code> that groups samples in <code>scdata$samples</code> is auto-detected for downstream analysis.'],
+      ['\uD83D\uDCA1if file size is over 15GB, try removing any assays not indicated above.'],
+    ],
+    requiredFiles: ['single_cell_experiment'],
+    fileUploadParagraphs: [
+      '<p>For your dataset, upload a single <code>*.rds</code> file with the SingleCellExperiment object (max 15GB).</p>',
+      '<p>The SingleCellExperiment object must contain the following slots and metadata:</p>',
+    ],
+    dropzoneText: 'Drag and drop *.rds file here or click to browse.',
+    // setting to null allows file upload on dropzone click
+    webkitdirectory: null,
+    isNameValid(fileName) {
+      return this.validExtensionTypes.some(
+        (validExtension) => fileName.endsWith(validExtension),
+      );
+    },
+    getCorrespondingType: () => 'single_cell_experiment',
+    // For more information on this one check the TODO1 at FileUploadModal
+    filterFiles: () => { throw new Error('Not Implemented'); },
+    getFilePathToDisplay: getFilePathToDisplayDefaultConstructor(sampleTech.SINGLE_CELL_EXPERIMENT),
     getFileSampleAndName: getFileSampleAndNameDefault,
   },
   [sampleTech.RHAPSODY]: {

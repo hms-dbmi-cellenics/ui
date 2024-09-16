@@ -3,7 +3,7 @@ import handleError from 'utils/http/handleError';
 import endUserMessages from 'utils/endUserMessages';
 import loadBackendStatus from 'redux/actions/backendStatus/loadBackendStatus';
 
-const runSeurat = (experimentId) => async (dispatch) => {
+const runObj2s = (experimentId) => async (dispatch) => {
   try {
     await fetchAPI(
       `/v2/experiments/${experimentId}/seurat`,
@@ -29,4 +29,4 @@ const runSeurat = (experimentId) => async (dispatch) => {
   }
 };
 
-export default runSeurat;
+export default runObj2s;

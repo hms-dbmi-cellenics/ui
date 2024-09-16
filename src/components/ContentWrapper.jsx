@@ -33,7 +33,7 @@ import { loadUser } from 'redux/actions/user';
 import { loadBackendStatus } from 'redux/actions/backendStatus';
 
 import { isBrowser, privacyPolicyIsNotAccepted } from 'utils/deploymentInfo';
-import { modules } from 'utils/constants';
+import { modules, obj2sTechs } from 'utils/constants';
 import { useAppRouter } from 'utils/AppRouteProvider';
 import experimentUpdatesHandler from 'utils/experimentUpdatesHandler';
 import integrationTestConstants from 'utils/integrationTestConstants';
@@ -105,15 +105,15 @@ const ContentWrapper = (props) => {
   const gem2sRunning = gem2sStatusKey === 'RUNNING';
   const gem2sRunningError = backendErrors.includes(gem2sStatusKey);
   const completedGem2sSteps = backendStatus?.gem2s?.completedSteps;
-  const seuratStatusKey = backendStatus?.seurat?.status;
+  const obj2sStatusKey = backendStatus?.seurat?.status;
 
-  const isSeurat = seuratStatusKey && selectedTechnology === 'seurat';
+  const isObj2s = obj2sStatusKey && obj2sTechs.includes(selectedTechnology);
 
   const [pipelinesRerunStatus, setPipelinesRerunStatus] = useState(null);
-  const seuratRunning = seuratStatusKey === 'RUNNING' && isSeurat;
-  const seuratRunningError = backendErrors.includes(seuratStatusKey) && isSeurat;
-  const completedSeuratSteps = backendStatus?.seurat?.completedSteps;
-  const seuratComplete = (seuratStatusKey === pipelineStatusValues.SUCCEEDED) && isSeurat;
+  const obj2sRunning = obj2sStatusKey === 'RUNNING' && isObj2s;
+  const obj2sRunningError = backendErrors.includes(obj2sStatusKey) && isObj2s;
+  const completedObj2sSteps = backendStatus?.seurat?.completedSteps;
+  const obj2sComplete = (obj2sStatusKey === pipelineStatusValues.SUCCEEDED) && isObj2s;
   const waitingForQcToLaunch = gem2sStatusKey === pipelineStatusValues.SUCCEEDED
     && qcStatusKey === pipelineStatusValues.NOT_CREATED;
   // This is used to prevent a race condition where the page would start loading immediately
@@ -154,7 +154,7 @@ const ContentWrapper = (props) => {
     if (!experiment || !backendStatus) return;
 
     // The value of backend status is null for new experiments that have never run
-    const setupPipeline = isSeurat ? 'seurat' : 'gem2s';
+    const setupPipeline = isObj2s ? 'seurat' : 'gem2s';
     const {
       pipeline: qcBackendStatus, [setupPipeline]: setupBackendStatus,
     } = backendStatus ?? {};
@@ -169,7 +169,7 @@ const ContentWrapper = (props) => {
         setupBackendStatus,
         qcBackendStatus,
         experiment,
-        isSeurat,
+        isObj2s,
       ),
     );
   }, [backendStatus, experiment, samples]);
@@ -187,16 +187,16 @@ const ContentWrapper = (props) => {
   });
 
   const gem2sNotCreated = checkEveryIsValue(
-    [gem2sStatusKey, seuratStatusKey], pipelineStatusValues.NOT_CREATED,
+    [gem2sStatusKey, obj2sStatusKey], pipelineStatusValues.NOT_CREATED,
   );
 
-  const getSeuratStatus = () => {
-    if (seuratRunningError) {
+  const getObj2sStatus = () => {
+    if (obj2sRunningError) {
       const errorMessage = pipelineErrorUserMessages[backendStatus?.seurat?.error?.error];
-      return getStatusObject('seurat', 'error', errorMessage);
+      return getStatusObject('obj2s', 'error', errorMessage);
     }
-    if (seuratRunning) {
-      return getStatusObject('seurat', 'running', null, completedSeuratSteps);
+    if (obj2sRunning) {
+      return getStatusObject('obj2s', 'running', null, completedObj2sSteps);
     }
     return null;
   };
@@ -225,8 +225,8 @@ const ContentWrapper = (props) => {
   };
 
   const getCurrentStatusScreen = () => {
-    if (isSeurat) {
-      return getSeuratStatus();
+    if (isObj2s) {
+      return getObj2sStatus();
     }
     return getGem2sStatus() || getQcStatus();
   };
@@ -309,7 +309,7 @@ const ContentWrapper = (props) => {
       name: 'Data Management',
       disableIfNoExperiment: false,
       disabledByPipelineStatus: true,
-      disabledIfSeuratComplete: false,
+      disabledIfObj2sComplete: false,
     },
     {
       module: modules.DATA_PROCESSING,
@@ -317,7 +317,7 @@ const ContentWrapper = (props) => {
       name: 'Data Processing',
       disableIfNoExperiment: true,
       disabledByPipelineStatus: false,
-      disabledIfSeuratComplete: true,
+      disabledIfObj2sComplete: true,
     },
     {
       module: modules.DATA_EXPLORATION,
@@ -325,7 +325,7 @@ const ContentWrapper = (props) => {
       name: 'Data Exploration',
       disableIfNoExperiment: true,
       disabledByPipelineStatus: true,
-      disabledIfSeuratComplete: false,
+      disabledIfObj2sComplete: false,
     },
     {
       module: modules.PLOTS_AND_TABLES,
@@ -333,7 +333,7 @@ const ContentWrapper = (props) => {
       name: 'Plots and Tables',
       disableIfNoExperiment: true,
       disabledByPipelineStatus: true,
-      disabledIfSeuratComplete: false,
+      disabledIfObj2sComplete: false,
     },
   ];
 
@@ -363,7 +363,7 @@ const ContentWrapper = (props) => {
         );
       }
 
-      if (seuratComplete && currentModule === modules.DATA_PROCESSING) {
+      if (obj2sComplete && currentModule === modules.DATA_PROCESSING) {
         navigateTo(modules.DATA_EXPLORATION, { experimentId: routeExperimentId });
         return <></>;
       }
@@ -377,7 +377,7 @@ const ContentWrapper = (props) => {
   };
 
   const menuItemRender = ({
-    module, icon, name, disableIfNoExperiment, disabledByPipelineStatus, disabledIfSeuratComplete,
+    module, icon, name, disableIfNoExperiment, disabledByPipelineStatus, disabledIfObj2sComplete,
   }) => {
     const needRerunPipeline = pipelinesRerunStatus === null || pipelinesRerunStatus.rerun;
 
@@ -387,7 +387,7 @@ const ContentWrapper = (props) => {
     const pipelineStatusDisable = disabledByPipelineStatus && (
       backendError || gem2sRunning || gem2sRunningError
       || waitingForQcToLaunch || qcRunning || qcRunningError
-      || seuratRunning || seuratRunningError
+      || obj2sRunning || obj2sRunningError
     );
 
     const {
@@ -398,14 +398,14 @@ const ContentWrapper = (props) => {
     const nonExperimentModule = ![DATA_EXPLORATION,
       DATA_MANAGEMENT, DATA_PROCESSING, PLOTS_AND_TABLES]
       .includes(currentModule) && disableIfNoExperiment;
-    const seuratCompleteDisable = disabledIfSeuratComplete && seuratComplete;
+    const obj2sCompleteDisable = disabledIfObj2sComplete && obj2sComplete;
 
     return {
       key: module,
       icon,
       label: name,
       disabled: notProcessedExperimentDisable || pipelineStatusDisable
-      || seuratCompleteDisable || nonExperimentModule,
+      || obj2sCompleteDisable || nonExperimentModule,
       onClick: () => navigateTo(
         module,
         { experimentId: currentExperimentId },

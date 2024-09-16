@@ -19,9 +19,12 @@ const sampleTech = {
   '10X': '10x',
   RHAPSODY: 'rhapsody',
   SEURAT: 'seurat',
+  SINGLE_CELL_EXPERIMENT: 'single_cell_experiment',
   H5: '10x_h5',
   PARSE: 'parse',
 };
+
+const obj2sTechs = [sampleTech.SEURAT, sampleTech.SINGLE_CELL_EXPERIMENT];
 
 const plotTypes = {
   CONTINUOUS_EMBEDDING: 'embeddingContinuous',
@@ -82,6 +85,7 @@ export {
   api,
   modules,
   sampleTech,
+  obj2sTechs,
   plotTypes,
   plotUuids,
   plotNames,

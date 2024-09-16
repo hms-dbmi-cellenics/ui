@@ -94,8 +94,8 @@ const mockWorkResponseUpdate = {
   },
 };
 
-const mockSeuratUpdate = {
-  type: updateTypes.SEURAT,
+const mockObj2sUpdate = {
+  type: updateTypes.OBJ2S,
   item: {
     processingConfig: {
       mockProcessingConfig: 'mockProcessingConfig',
@@ -131,8 +131,8 @@ describe('ExperimentUpdatesHandler', () => {
     expect(pushNotificationMessage).not.toHaveBeenCalled();
   });
 
-  it('Triggers properly for SEURAT updates ', () => {
-    const mockUpdate = mockSeuratUpdate;
+  it('Triggers properly for OBJ2S updates ', () => {
+    const mockUpdate = mockObj2sUpdate;
 
     triggerExperimentUpdate(mockUpdate);
 
@@ -145,8 +145,8 @@ describe('ExperimentUpdatesHandler', () => {
     expect(pushNotificationMessage).not.toHaveBeenCalled();
   });
 
-  it('Triggers properly for SEURAT updates ', () => {
-    const mockUpdate = mockSeuratUpdate;
+  it('Triggers properly for OBJ2S updates ', () => {
+    const mockUpdate = mockObj2sUpdate;
 
     triggerExperimentUpdate(mockUpdate);
 
@@ -160,7 +160,7 @@ describe('ExperimentUpdatesHandler', () => {
 
   it('Loads cell sets if Seurat pipeline completes ', () => {
     const mockUpdate = {
-      ...mockSeuratUpdate,
+      ...mockObj2sUpdate,
       status: {
         seurat: {
           status: 'SUCCEEDED',
