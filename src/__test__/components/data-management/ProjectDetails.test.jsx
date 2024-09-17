@@ -93,7 +93,7 @@ const noDataState = {
         pipeline: {
           status: PipelineStatus.NOT_CREATED,
         },
-        seurat: {
+        obj2s: {
           status: PipelineStatus.NOT_CREATED,
         },
       },
@@ -154,7 +154,7 @@ const withDataState = {
         pipeline: {
           status: PipelineStatus.SUCCEEDED,
         },
-        seurat: {
+        obj2s: {
           status: PipelineStatus.NOT_CREATED,
         },
       },
@@ -162,7 +162,7 @@ const withDataState = {
   },
 };
 
-const withSeuratDataState = {
+const withObj2sDataState = {
   ...noDataState,
   experiments: {
     ...noDataState.experiments,
@@ -195,7 +195,7 @@ const withSeuratDataState = {
         pipeline: {
           status: PipelineStatus.NOT_CREATED,
         },
-        seurat: {
+        obj2s: {
           paramsHash: 'old-params-hash',
           status: PipelineStatus.SUCCEEDED,
         },
@@ -288,9 +288,9 @@ describe('ProjectDetails', () => {
     expect(metadataButton).not.toBeDisabled();
   });
 
-  it('metadata button is disabled if it is Seurat', () => {
+  it('metadata button is disabled if it is Obj2s', () => {
     render(
-      <Provider store={mockStore(withSeuratDataState)}>
+      <Provider store={mockStore(withObj2sDataState)}>
         {projectDetailsFactory()}
       </Provider>,
     );

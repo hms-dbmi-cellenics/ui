@@ -35,15 +35,15 @@
     "executionArn": "arn:aws:states:eu-east-1:000000000000:execution:biomage-gem2s-test-test9cd23b9138d3d5b6141835c85101495a92cd:fb047b29-a9fb-4e36-a0fc-b792e243test",
     "stateMachineArn": "arn:aws:states:eu-east-1:000000000000:stateMachine:biomage-gem2s-test-test9cd23b9138d3d5b6141835c85101495atest"
   },
-  "seurat": {
+  "obj2s": {
     "startDate": "2021-10-20T12:49:06.414Z",
     "stopDate": "2021-10-20T12:51:44.081Z",
     "status": "NOT_CREATED",
     "error": false,
     "completedSteps": [],
     "paramsHash": "2a0a9cdca259ce91207cbe62574ba6f4851cfake", 
-    "executionArn": "arn:aws:states:eu-east-1:000000000000:execution:biomage-seurat-test-test9cd23b9138d3d5b6141835c85101495a92cd:fb047b29-a9fb-4e36-a0fc-b792e243test",
-    "stateMachineArn": "arn:aws:states:eu-east-1:000000000000:stateMachine:biomage-seurat-test-test9cd23b9138d3d5b6141835c85101495atest"
+    "executionArn": "arn:aws:states:eu-east-1:000000000000:execution:biomage-obj2s-test-test9cd23b9138d3d5b6141835c85101495a92cd:fb047b29-a9fb-4e36-a0fc-b792e243test",
+    "stateMachineArn": "arn:aws:states:eu-east-1:000000000000:stateMachine:biomage-obj2s-test-test9cd23b9138d3d5b6141835c85101495atest"
   },
   "worker": {
     "status": "Running",

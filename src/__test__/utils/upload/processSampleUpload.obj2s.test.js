@@ -16,7 +16,7 @@ import UploadStatus from 'utils/upload/UploadStatus';
 
 import processSampleUpload from 'utils/upload/processSampleUpload';
 
-import validate from 'utils/upload/validateSeurat';
+import validate from 'utils/upload/validateObj2s';
 import pushNotificationMessage from 'utils/pushNotificationMessage';
 import mockFile from '__test__/test-utils/mockFile';
 
@@ -28,7 +28,7 @@ jest.mock('../../../utils/upload/fileUploadConfig', () => ({
 enableFetchMocks();
 
 const getValidFiles = (fileSize = 1 * MB) => {
-  const seuratFiles = [{
+  const obj2sFiles = [{
     name: 'r.rds',
     fileObject: mockFile('r.rds', '', fileSize),
     size: fileSize,
@@ -38,7 +38,7 @@ const getValidFiles = (fileSize = 1 * MB) => {
     valid: true,
   }];
 
-  return seuratFiles;
+  return obj2sFiles;
 };
 
 const sampleType = sampleTech.SEURAT;
@@ -81,7 +81,7 @@ jest.mock('axios', () => ({
 }));
 
 jest.mock('utils/pushNotificationMessage');
-jest.mock('utils/upload/validateSeurat');
+jest.mock('utils/upload/validateObj2s');
 
 let store = null;
 

@@ -14,7 +14,8 @@ const downloadProcessedMatrix = (experimentId) => async (dispatch, getState) => 
 
     const {
       method: embeddingMethod,
-      // embedding is saved in R object if downloading from project created by Seurat/SingleCellExperiment object upload
+      // embedding is saved in R object if downloading from project created by
+      // Seurat/SingleCellExperiment object upload
       useSaved,
     } = getState().experimentSettings.processing.configureEmbedding.embeddingSettings;
 

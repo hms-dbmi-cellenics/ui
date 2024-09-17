@@ -128,10 +128,10 @@ exports[`switch experiment  Then updates the experiment info 1`] = `
           "shouldRerun": null,
           "stateMachineArn": "arn:aws:states:eu-west-1:000000000000:stateMachine:biomage-qc-development-mock997586f1bae0a6d5c5beed65663ec151test",
         },
-        "seurat": {
-          "executionArn": "arn:aws:states:eu-west-1:000000000000:execution:biomage-seurat-development-mock997586f1bae0a6d5c5beed65663ec1519de4:5f273383-f093-4112-95b0-d76db896test",
+        "obj2s": {
+          "executionArn": "arn:aws:states:eu-west-1:000000000000:execution:biomage-obj2s-development-mock997586f1bae0a6d5c5beed65663ec1519de4:5f273383-f093-4112-95b0-d76db896test",
           "paramsHash": "mock57f90e94eeaa82ee6fb7627110828f2etest",
-          "stateMachineArn": "arn:aws:states:eu-west-1:000000000000:stateMachine:biomage-seurat-development-mock997586f1bae0a6d5c5beed65663ec151test",
+          "stateMachineArn": "arn:aws:states:eu-west-1:000000000000:stateMachine:biomage-obj2s-development-mock997586f1bae0a6d5c5beed65663ec151test",
         },
       },
       "sampleIds": [
@@ -160,10 +160,10 @@ exports[`switch experiment  Then updates the experiment info 1`] = `
           "shouldRerun": null,
           "stateMachineArn": "arn:aws:states:eu-west-1:000000000000:stateMachine:biomage-qc-development-mock997586f1bae0a6d5c5beed65663ec151test",
         },
-        "seurat": {
-          "executionArn": "arn:aws:states:eu-west-1:000000000000:execution:biomage-seurat-development-mock997586f1bae0a6d5c5beed65663ec1519de4:5f273383-f093-4112-95b0-d76db896test",
+        "obj2s": {
+          "executionArn": "arn:aws:states:eu-west-1:000000000000:execution:biomage-obj2s-development-mock997586f1bae0a6d5c5beed65663ec1519de4:5f273383-f093-4112-95b0-d76db896test",
           "paramsHash": "mock57f90e94eeaa82ee6fb7627110828f2etest",
-          "stateMachineArn": "arn:aws:states:eu-west-1:000000000000:stateMachine:biomage-seurat-development-mock997586f1bae0a6d5c5beed65663ec151test",
+          "stateMachineArn": "arn:aws:states:eu-west-1:000000000000:stateMachine:biomage-obj2s-development-mock997586f1bae0a6d5c5beed65663ec151test",
         },
       },
       "sampleIds": [],
@@ -559,10 +559,10 @@ exports[`switch experiment  switches the experiment to its initial values 1`] = 
           "shouldRerun": null,
           "stateMachineArn": "arn:aws:states:eu-west-1:000000000000:stateMachine:biomage-qc-development-mock997586f1bae0a6d5c5beed65663ec151test",
         },
-        "seurat": {
-          "executionArn": "arn:aws:states:eu-west-1:000000000000:execution:biomage-seurat-development-mock997586f1bae0a6d5c5beed65663ec1519de4:5f273383-f093-4112-95b0-d76db896test",
+        "obj2s": {
+          "executionArn": "arn:aws:states:eu-west-1:000000000000:execution:biomage-obj2s-development-mock997586f1bae0a6d5c5beed65663ec1519de4:5f273383-f093-4112-95b0-d76db896test",
           "paramsHash": "mock57f90e94eeaa82ee6fb7627110828f2etest",
-          "stateMachineArn": "arn:aws:states:eu-west-1:000000000000:stateMachine:biomage-seurat-development-mock997586f1bae0a6d5c5beed65663ec151test",
+          "stateMachineArn": "arn:aws:states:eu-west-1:000000000000:stateMachine:biomage-obj2s-development-mock997586f1bae0a6d5c5beed65663ec151test",
         },
       },
       "sampleIds": [
@@ -591,10 +591,10 @@ exports[`switch experiment  switches the experiment to its initial values 1`] = 
           "shouldRerun": null,
           "stateMachineArn": "arn:aws:states:eu-west-1:000000000000:stateMachine:biomage-qc-development-mock997586f1bae0a6d5c5beed65663ec151test",
         },
-        "seurat": {
-          "executionArn": "arn:aws:states:eu-west-1:000000000000:execution:biomage-seurat-development-mock997586f1bae0a6d5c5beed65663ec1519de4:5f273383-f093-4112-95b0-d76db896test",
+        "obj2s": {
+          "executionArn": "arn:aws:states:eu-west-1:000000000000:execution:biomage-obj2s-development-mock997586f1bae0a6d5c5beed65663ec1519de4:5f273383-f093-4112-95b0-d76db896test",
           "paramsHash": "mock57f90e94eeaa82ee6fb7627110828f2etest",
-          "stateMachineArn": "arn:aws:states:eu-west-1:000000000000:stateMachine:biomage-seurat-development-mock997586f1bae0a6d5c5beed65663ec151test",
+          "stateMachineArn": "arn:aws:states:eu-west-1:000000000000:stateMachine:biomage-obj2s-development-mock997586f1bae0a6d5c5beed65663ec151test",
         },
       },
       "sampleIds": [],

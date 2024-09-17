@@ -12,7 +12,7 @@ import endUserMessages from 'utils/endUserMessages';
 const updateTypes = {
   QC: 'qc',
   GEM2S: 'gem2s',
-  OBJ2S: 'seurat',
+  OBJ2S: 'obj2s',
   WORK_RESPONSE: 'WorkResponse',
   PLOT_CONFIG_REFRESH: 'PlotConfigRefresh',
 };
@@ -118,7 +118,7 @@ const onPlotConfigRefresh = (update, dispatch) => {
 
 const onObj2sUpdate = (update, dispatch, experimentId) => {
   // If the pipeline finished we have a new clustering, so fetch it
-  if (update.status.seurat.status === 'SUCCEEDED') {
+  if (update.status.obj2s.status === 'SUCCEEDED') {
     dispatch(loadCellSets(experimentId, true));
   }
 };

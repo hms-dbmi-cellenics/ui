@@ -45,7 +45,7 @@ const DownloadDataButton = () => {
   useEffect(() => {
     setPipelineHasRun(
       activeExperimentId && (backendStatuses?.pipeline?.status === pipelineStatus.SUCCEEDED
-        || backendStatuses?.seurat?.status === pipelineStatus.SUCCEEDED),
+        || backendStatuses?.obj2s?.status === pipelineStatus.SUCCEEDED),
     );
   }, [backendStatuses]);
 

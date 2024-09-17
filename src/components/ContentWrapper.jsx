@@ -105,14 +105,14 @@ const ContentWrapper = (props) => {
   const gem2sRunning = gem2sStatusKey === 'RUNNING';
   const gem2sRunningError = backendErrors.includes(gem2sStatusKey);
   const completedGem2sSteps = backendStatus?.gem2s?.completedSteps;
-  const obj2sStatusKey = backendStatus?.seurat?.status;
+  const obj2sStatusKey = backendStatus?.obj2s?.status;
 
   const isObj2s = obj2sStatusKey && obj2sTechs.includes(selectedTechnology);
 
   const [pipelinesRerunStatus, setPipelinesRerunStatus] = useState(null);
   const obj2sRunning = obj2sStatusKey === 'RUNNING' && isObj2s;
   const obj2sRunningError = backendErrors.includes(obj2sStatusKey) && isObj2s;
-  const completedObj2sSteps = backendStatus?.seurat?.completedSteps;
+  const completedObj2sSteps = backendStatus?.obj2s?.completedSteps;
   const obj2sComplete = (obj2sStatusKey === pipelineStatusValues.SUCCEEDED) && isObj2s;
   const waitingForQcToLaunch = gem2sStatusKey === pipelineStatusValues.SUCCEEDED
     && qcStatusKey === pipelineStatusValues.NOT_CREATED;
@@ -154,7 +154,7 @@ const ContentWrapper = (props) => {
     if (!experiment || !backendStatus) return;
 
     // The value of backend status is null for new experiments that have never run
-    const setupPipeline = isObj2s ? 'seurat' : 'gem2s';
+    const setupPipeline = isObj2s ? 'obj2s' : 'gem2s';
     const {
       pipeline: qcBackendStatus, [setupPipeline]: setupBackendStatus,
     } = backendStatus ?? {};
@@ -192,7 +192,7 @@ const ContentWrapper = (props) => {
 
   const getObj2sStatus = () => {
     if (obj2sRunningError) {
-      const errorMessage = pipelineErrorUserMessages[backendStatus?.seurat?.error?.error];
+      const errorMessage = pipelineErrorUserMessages[backendStatus?.obj2s?.error?.error];
       return getStatusObject('obj2s', 'error', errorMessage);
     }
     if (obj2sRunning) {

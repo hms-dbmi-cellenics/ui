@@ -6,7 +6,7 @@ import loadBackendStatus from 'redux/actions/backendStatus/loadBackendStatus';
 const runObj2s = (experimentId) => async (dispatch) => {
   try {
     await fetchAPI(
-      `/v2/experiments/${experimentId}/seurat`,
+      `/v2/experiments/${experimentId}/obj2s`,
       {
         method: 'POST',
         headers: {

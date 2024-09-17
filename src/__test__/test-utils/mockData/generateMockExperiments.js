@@ -19,10 +19,10 @@ const experimentFromTemplate = (idx) => (
         stateMachineArn: 'arn:aws:states:eu-west-1:000000000000:stateMachine:biomage-gem2s-development-mock997586f1bae0a6d5c5beed65663ec151test',
         executionArn: 'arn:aws:states:eu-west-1:000000000000:execution:biomage-gem2s-development-mock997586f1bae0a6d5c5beed65663ec1519de4:5f273383-f093-4112-95b0-d76db896test',
       },
-      seurat: {
+      obj2s: {
         paramsHash: 'mock57f90e94eeaa82ee6fb7627110828f2etest',
-        stateMachineArn: 'arn:aws:states:eu-west-1:000000000000:stateMachine:biomage-seurat-development-mock997586f1bae0a6d5c5beed65663ec151test',
-        executionArn: 'arn:aws:states:eu-west-1:000000000000:execution:biomage-seurat-development-mock997586f1bae0a6d5c5beed65663ec1519de4:5f273383-f093-4112-95b0-d76db896test',
+        stateMachineArn: 'arn:aws:states:eu-west-1:000000000000:stateMachine:biomage-obj2s-development-mock997586f1bae0a6d5c5beed65663ec151test',
+        executionArn: 'arn:aws:states:eu-west-1:000000000000:execution:biomage-obj2s-development-mock997586f1bae0a6d5c5beed65663ec1519de4:5f273383-f093-4112-95b0-d76db896test',
       },
     },
     notifyByEmail: true,

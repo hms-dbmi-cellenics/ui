@@ -48,7 +48,7 @@ const LaunchAnalysisButton = () => {
 
   useEffect(() => {
     // The value of backend status is null for new experiments that have never run
-    const setupPipeline = isObj2s ? 'seurat' : 'gem2s';
+    const setupPipeline = isObj2s ? 'obj2s' : 'gem2s';
     const {
       pipeline: qcBackendStatus, [setupPipeline]: setupBackendStatus,
     } = backendStatus[activeExperimentId]?.status ?? {};
