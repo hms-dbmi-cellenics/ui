@@ -360,7 +360,7 @@ describe('FileUploadModal', () => {
     expect(uploadButton).toBeDisabled();
 
     // error message was displayed to user
-    expect(handleError).toHaveBeenCalledWith('error', endUserMessages.ERROR_SEURAT_EXISTING_FILE);
+    expect(handleError).toHaveBeenCalledWith('error', endUserMessages.ERROR_OBJ2S_EXISTING_FILE);
   });
 
   it('Shows what files can be uploaded for Rhapsody samples', async () => {
