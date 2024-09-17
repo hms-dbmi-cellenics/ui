@@ -18,13 +18,13 @@ const modules = {
 const sampleTech = {
   '10X': '10x',
   RHAPSODY: 'rhapsody',
-  SEURAT: 'seurat',
-  SINGLE_CELL_EXPERIMENT: 'single_cell_experiment',
+  SEURAT_OBJECT: 'seurat_object',
+  SCE_OBJECT: 'sce_object',
   H5: '10x_h5',
   PARSE: 'parse',
 };
 
-const obj2sTechs = [sampleTech.SEURAT, sampleTech.SINGLE_CELL_EXPERIMENT];
+const obj2sTechs = [sampleTech.SEURAT_OBJECT, sampleTech.SCE_OBJECT];
 
 const plotTypes = {
   CONTINUOUS_EMBEDDING: 'embeddingContinuous',

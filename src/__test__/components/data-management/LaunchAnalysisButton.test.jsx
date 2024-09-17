@@ -169,7 +169,7 @@ const withObj2sDataState = {
       name: sample1Name,
       experimentId: experiment1id,
       uuid: sample1Uuid,
-      type: sampleTech.SEURAT,
+      type: sampleTech.SEURAT_OBJECT,
       fileNames: ['r.rds'],
       files: {
         'r.rds': { valid: true, upload: { status: UploadStatus.UPLOADED } },

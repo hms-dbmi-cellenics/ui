@@ -9,8 +9,8 @@ import { fileObjectToFileRecord } from 'utils/upload/processSampleUpload';
 const techNamesToDisplay = {
   [sampleTech['10X']]: '10X Chromium',
   [sampleTech.RHAPSODY]: 'BD Rhapsody',
-  [sampleTech.SEURAT]: 'Seurat',
-  [sampleTech.SINGLE_CELL_EXPERIMENT]: 'SingleCellExperiment',
+  [sampleTech.SEURAT_OBJECT]: 'Seurat',
+  [sampleTech.SCE_OBJECT]: 'SingleCellExperiment',
   [sampleTech.H5]: '10X Chromium - H5',
   [sampleTech.PARSE]: 'Parse Evercode WT',
 };
@@ -112,7 +112,7 @@ const fileUploadUtils = {
     getFileSampleAndName: getFileSampleAndNameDefault,
     getFilePathToDisplay: getFilePathToDisplayDefaultConstructor(sampleTech['10X']),
   },
-  [sampleTech.SEURAT]: {
+  [sampleTech.SEURAT_OBJECT]: {
     validExtensionTypes: ['.rds'],
     inputInfo: [
       ['<code>scdata$samples</code>: sample assignment. If absent, treated as unisample.'],
@@ -123,7 +123,7 @@ const fileUploadUtils = {
       ['\uD83D\uDCA1sample level metadata in <code>scdata@meta.data</code> that groups samples in <code>scdata$samples</code> is auto-detected for downstream analysis.'],
       ['\uD83D\uDCA1if file size is over 15GB, try removing any assays not indicated above.'],
     ],
-    requiredFiles: ['seurat'],
+    requiredFiles: [sampleFileType.SEURAT_OBJECT],
     fileUploadParagraphs: [
       '<p>For your dataset, upload a single <code>*.rds</code> file with the Seurat object (max 15GB).</p>',
       '<p>The Seurat object must contain the following slots and metadata:</p>',
@@ -136,13 +136,13 @@ const fileUploadUtils = {
         (validExtension) => fileName.endsWith(validExtension),
       );
     },
-    getCorrespondingType: () => 'seurat',
+    getCorrespondingType: () => sampleFileType.SEURAT_OBJECT,
     // For more information on this one check the TODO1 at FileUploadModal
     filterFiles: () => { throw new Error('Not Implemented'); },
-    getFilePathToDisplay: getFilePathToDisplayDefaultConstructor(sampleTech.SEURAT),
+    getFilePathToDisplay: getFilePathToDisplayDefaultConstructor(sampleTech.SEURAT_OBJECT),
     getFileSampleAndName: getFileSampleAndNameDefault,
   },
-  [sampleTech.SINGLE_CELL_EXPERIMENT]: {
+  [sampleTech.SCE_OBJECT]: {
     validExtensionTypes: ['.rds'],
     inputInfo: [
       ['<code>scdata$samples</code>: sample assignment. If absent, treated as unisample.'],
@@ -153,7 +153,7 @@ const fileUploadUtils = {
       ['\uD83D\uDCA1sample level metadata in <code>scdata@meta.data</code> that groups samples in <code>scdata$samples</code> is auto-detected for downstream analysis.'],
       ['\uD83D\uDCA1if file size is over 15GB, try removing any assays not indicated above.'],
     ],
-    requiredFiles: ['single_cell_experiment'],
+    requiredFiles: [sampleFileType.SCE_OBJECT],
     fileUploadParagraphs: [
       '<p>For your dataset, upload a single <code>*.rds</code> file with the SingleCellExperiment object (max 15GB).</p>',
       '<p>The SingleCellExperiment object must contain the following slots and metadata:</p>',
@@ -166,10 +166,10 @@ const fileUploadUtils = {
         (validExtension) => fileName.endsWith(validExtension),
       );
     },
-    getCorrespondingType: () => 'single_cell_experiment',
+    getCorrespondingType: () => sampleFileType.SCE_OBJECT,
     // For more information on this one check the TODO1 at FileUploadModal
     filterFiles: () => { throw new Error('Not Implemented'); },
-    getFilePathToDisplay: getFilePathToDisplayDefaultConstructor(sampleTech.SINGLE_CELL_EXPERIMENT),
+    getFilePathToDisplay: getFilePathToDisplayDefaultConstructor(sampleTech.SCE_OBJECT),
     getFileSampleAndName: getFileSampleAndNameDefault,
   },
   [sampleTech.RHAPSODY]: {

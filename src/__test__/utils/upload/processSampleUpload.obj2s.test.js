@@ -41,7 +41,7 @@ const getValidFiles = (fileSize = 1 * MB) => {
   return obj2sFiles;
 };
 
-const sampleType = sampleTech.SEURAT;
+const sampleType = sampleTech.SEURAT_OBJECT;
 const mockSampleUuid = 'sample-uuid';
 const mockExperimentId = 'project-uuid';
 const sampleName = 'mockSampleName';

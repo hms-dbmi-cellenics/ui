@@ -40,8 +40,8 @@ const OBJ2S_MAX_FILE_SIZE = 15 * 1024 * 1024 * 1024;
 
 const extraHelpText = {
   [sampleTech['10X']]: () => <></>,
-  [sampleTech.SEURAT]: () => <></>,
-  [sampleTech.SINGLE_CELL_EXPERIMENT]: () => <></>,
+  [sampleTech.SEURAT_OBJECT]: () => <></>,
+  [sampleTech.SCE_OBJECT]: () => <></>,
   [sampleTech.H5]: () => <></>,
   [sampleTech.RHAPSODY]: () => (
     <Paragraph>

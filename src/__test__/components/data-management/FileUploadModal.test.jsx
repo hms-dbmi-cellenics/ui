@@ -64,7 +64,7 @@ const renderFileUploadModal = async (store, currentSelectedTech = null) => {
   )));
 };
 
-const seuratTech = techNamesToDisplay[sampleTech.SEURAT];
+const seuratTech = techNamesToDisplay[sampleTech.SEURAT_OBJECT];
 
 const selectTech = (selectedTech) => {
   const displayedName = techNamesToDisplay[selectedTech];
@@ -126,7 +126,7 @@ describe('FileUploadModal', () => {
     expect(screen.queryAllByText(techNamesToDisplay[sampleTech['10X']]).length).toBe(1);
     expect(screen.queryAllByText(seuratTech).length).toBe(0);
 
-    selectTech(sampleTech.SEURAT);
+    selectTech(sampleTech.SEURAT_OBJECT);
 
     // Lists the requirements of the Seurat object
     expect(screen.getByText(/The Seurat object must contain the following slots and metadata:/i)).toBeInTheDocument();
@@ -203,7 +203,7 @@ describe('FileUploadModal', () => {
   it('drag and drop works with valid Seurat file', async () => {
     await renderFileUploadModal(initialStore);
 
-    selectTech(sampleTech.SEURAT);
+    selectTech(sampleTech.SEURAT_OBJECT);
 
     expect(await screen.queryByText(/To upload/)).not.toBeInTheDocument();
 
@@ -240,7 +240,7 @@ describe('FileUploadModal', () => {
   it('drag and drop works with valid Seurat file when different experiment has valid uploaded Seurat object', async () => {
     await renderFileUploadModal(prevUpDiffExpStore);
 
-    selectTech(sampleTech.SEURAT);
+    selectTech(sampleTech.SEURAT_OBJECT);
 
     expect(await screen.queryByText(/To upload/)).not.toBeInTheDocument();
 
@@ -284,7 +284,7 @@ describe('FileUploadModal', () => {
 
     expect(techInput).toBeEnabled();
 
-    selectTech(sampleTech.SEURAT);
+    selectTech(sampleTech.SEURAT_OBJECT);
 
     expect(await screen.queryByText(/To upload/)).not.toBeInTheDocument();
 
@@ -317,7 +317,7 @@ describe('FileUploadModal', () => {
   });
 
   it('drag and drop fails with valid Seurat file when pre-existing Seurat file exists for experiment', async () => {
-    await renderFileUploadModal(prevUpStore, sampleTech.SEURAT);
+    await renderFileUploadModal(prevUpStore, sampleTech.SEURAT_OBJECT);
 
     // Seurat info should show up as their is previous Seurat data uploaded
     await waitFor(() => expect(

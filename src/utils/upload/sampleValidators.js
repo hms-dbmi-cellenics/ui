@@ -9,8 +9,8 @@ import validateParse from 'utils/upload/validateParse';
 const sampleValidators = {
   [sampleTech['10X']]: validate10x,
   [sampleTech.RHAPSODY]: validateRhapsody,
-  [sampleTech.SEURAT]: validateObj2s,
-  [sampleTech.SINGLE_CELL_EXPERIMENT]: validateObj2s,
+  [sampleTech.SEURAT_OBJECT]: validateObj2s,
+  [sampleTech.SCE_OBJECT]: validateObj2s,
   [sampleTech.H5]: validateH5,
   [sampleTech.PARSE]: validateParse,
 };
