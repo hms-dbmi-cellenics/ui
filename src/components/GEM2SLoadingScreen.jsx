@@ -20,9 +20,9 @@ const pipelineStepsInfoByType = {
     'Uploading completed data',
   ],
 
-  seurat: [
-    'Downloading RDS file',
-    'Processing Seurat object',
+  obj2s: [
+    'Downloading project data',
+    'Processing object',
     'Uploading completed data',
   ],
 };
@@ -168,7 +168,7 @@ const GEM2SLoadingScreen = (props) => {
 
 GEM2SLoadingScreen.propTypes = {
   pipelineStatus: PropTypes.oneOf(['error', 'running', 'toBeRun', 'subsetting']).isRequired,
-  pipelineType: PropTypes.oneOf(['gem2s', 'seurat']).isRequired,
+  pipelineType: PropTypes.oneOf(['gem2s', 'obj2s']).isRequired,
   completedSteps: PropTypes.array,
   experimentId: PropTypes.string,
   experimentName: PropTypes.string,

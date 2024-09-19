@@ -14,21 +14,22 @@ const downloadProcessedMatrix = (experimentId) => async (dispatch, getState) => 
 
     const {
       method: embeddingMethod,
-      // embedding is saved in R object if downloading from project created by Seurat object upload
+      // embedding is saved in R object if downloading from project created by
+      // Seurat/SingleCellExperiment object upload
       useSaved,
     } = getState().experimentSettings.processing.configureEmbedding.embeddingSettings;
 
     await dispatch(loadEmbedding(experimentId, embeddingMethod, true));
 
     const taskName = 'DownloadAnnotSeuratObject';
-    const isSeurat = useSaved || false;
+    const isObj2s = useSaved || false;
 
     // the request needs the embeddingETag to merge that data with the rds
     // the embeddingETag is added by the API to this body
     const body = {
       name: taskName,
       embeddingMethod,
-      isSeurat,
+      isObj2s,
     };
 
     const timeout = getTimeoutForWorkerTask(getState(), taskName);
@@ -39,7 +40,7 @@ const downloadProcessedMatrix = (experimentId) => async (dispatch, getState) => 
 
     downloadFromUrl(writeToFileURL(data), `${experimentId}_processed_matrix.rds`);
   } catch (e) {
-    handleError(e, endUserMessages.ERROR_DOWNLOADING_SEURAT_OBJECT);
+    handleError(e, endUserMessages.ERROR_DOWNLOADING_OBJ2S);
   }
 };
 

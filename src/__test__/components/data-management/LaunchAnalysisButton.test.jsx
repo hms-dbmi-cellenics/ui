@@ -8,7 +8,7 @@ import { act } from 'react-dom/test-utils';
 import {
   screen, render, waitFor, fireEvent,
 } from '@testing-library/react';
-import { runGem2s, runSeurat } from 'redux/actions/pipeline';
+import { runGem2s, runObj2s } from 'redux/actions/pipeline';
 
 import PipelineStatus from 'utils/pipelineStatusValues';
 import { sampleTech } from 'utils/constants';
@@ -25,7 +25,7 @@ import '__test__/test-utils/setupTests';
 jest.mock('redux/actions/experimentSettings/updateExperimentInfo', () => jest.fn().mockReturnValue({ type: 'UPDATE_EXPERIMENT_INFO' }));
 jest.mock('redux/actions/pipeline', () => ({
   runGem2s: jest.fn().mockReturnValue({ type: 'RUN_GEM2S' }),
-  runSeurat: jest.fn().mockReturnValue({ type: 'RUN_SEURAT' }),
+  runObj2s: jest.fn().mockReturnValue({ type: 'RUN_OBJ2S' }),
 }));
 
 const mockNavigateTo = jest.fn();
@@ -80,7 +80,7 @@ const noDataState = {
           shouldRerun: null,
           status: PipelineStatus.NOT_CREATED,
         },
-        seurat: {
+        obj2s: {
           shouldRerun: null,
           status: PipelineStatus.NOT_CREATED,
         },
@@ -143,7 +143,7 @@ const withDataState = {
           shouldRerun: null,
           status: PipelineStatus.SUCCEEDED,
         },
-        seurat: {
+        obj2s: {
           shouldRerun: null,
           status: PipelineStatus.NOT_CREATED,
         },
@@ -152,7 +152,7 @@ const withDataState = {
   },
 };
 
-const withSeuratDataState = {
+const withObj2sDataState = {
   ...noDataState,
   experiments: {
     ...noDataState.experiments,
@@ -169,7 +169,7 @@ const withSeuratDataState = {
       name: sample1Name,
       experimentId: experiment1id,
       uuid: sample1Uuid,
-      type: sampleTech.SEURAT,
+      type: sampleTech.SEURAT_OBJECT,
       fileNames: ['r.rds'],
       files: {
         'r.rds': { valid: true, upload: { status: UploadStatus.UPLOADED } },
@@ -188,7 +188,7 @@ const withSeuratDataState = {
           shouldRerun: null,
           status: PipelineStatus.NOT_CREATED,
         },
-        seurat: {
+        obj2s: {
           shouldRerun: false,
           status: PipelineStatus.SUCCEEDED,
         },
@@ -308,15 +308,15 @@ describe('LaunchAnalysisButton', () => {
     expect(button).toBeDisabled();
   });
 
-  it('Process project button is disabled if not all Seurat data is uploaded', async () => {
-    const notAllSeuratDataUploaded = {
-      ...withSeuratDataState,
+  it('Process project button is disabled if not all Obj2s data is uploaded', async () => {
+    const notAllObj2sDataUploaded = {
+      ...withObj2sDataState,
       samples: {
-        ...withSeuratDataState.samples,
+        ...withObj2sDataState.samples,
         [sample1Uuid]: {
-          ...withSeuratDataState.samples[sample1Uuid],
+          ...withObj2sDataState.samples[sample1Uuid],
           files: {
-            ...withSeuratDataState.samples[sample1Uuid].files,
+            ...withObj2sDataState.samples[sample1Uuid].files,
             'r.rds': { valid: true, upload: { status: UploadStatus.UPLOADING } },
           },
         },
@@ -325,7 +325,7 @@ describe('LaunchAnalysisButton', () => {
 
     await act(async () => {
       render(
-        <Provider store={mockStore(notAllSeuratDataUploaded)}>
+        <Provider store={mockStore(notAllObj2sDataUploaded)}>
           <LaunchAnalysisButton />
         </Provider>,
       );
@@ -353,10 +353,10 @@ describe('LaunchAnalysisButton', () => {
     expect(button).not.toBeDisabled();
   });
 
-  it('Process project button is enabled if all Seurat data is uploaded', async () => {
+  it('Process project button is enabled if all Obj2s data is uploaded', async () => {
     await act(async () => {
       render(
-        <Provider store={mockStore(withSeuratDataState)}>
+        <Provider store={mockStore(withObj2sDataState)}>
           <LaunchAnalysisButton />
         </Provider>,
       );
@@ -384,13 +384,13 @@ describe('LaunchAnalysisButton', () => {
     });
   });
 
-  it('Shows Go to Data Exploration if there are no changes to the Seurat experiment (same hash)', async () => {
+  it('Shows Go to Data Exploration if there are no changes to the Obj2s experiment (same hash)', async () => {
     calculateGem2sRerunStatus.mockReturnValue(notRerunState);
     calculateQCRerunStatus.mockReturnValue(notRerunState);
 
     await act(async () => {
       render(
-        <Provider store={mockStore(withSeuratDataState)}>
+        <Provider store={mockStore(withObj2sDataState)}>
           <LaunchAnalysisButton />
         </Provider>,
       );
@@ -418,13 +418,13 @@ describe('LaunchAnalysisButton', () => {
     });
   });
 
-  it('Shows Process project if there are changes to the Seurat experiment (shouldRerun = true)', async () => {
+  it('Shows Process project if there are changes to the Obj2s experiment (shouldRerun = true)', async () => {
     calculateGem2sRerunStatus.mockReturnValue(rerunState);
     calculateQCRerunStatus.mockReturnValue(notRerunState);
 
     await act(async () => {
       render(
-        <Provider store={mockStore(withSeuratDataState)}>
+        <Provider store={mockStore(withObj2sDataState)}>
           <LaunchAnalysisButton />
         </Provider>,
       );
@@ -495,15 +495,15 @@ describe('LaunchAnalysisButton', () => {
     expect(mockNavigateTo).toHaveBeenCalled();
   });
 
-  it('Does dispatch a request to runSeurat for an unprocessed experiment', async () => {
+  it('Does dispatch a request to runObj2s for an unprocessed experiment', async () => {
     calculateGem2sRerunStatus.mockReturnValue(rerunState);
     calculateQCRerunStatus.mockReturnValue(notRerunState);
 
-    const notProcessedSeuratDataState = {
-      ...withSeuratDataState,
+    const notProcessedObj2sDataState = {
+      ...withObj2sDataState,
       backendStatus: {
         ...noDataState.backendStatus,
-        seurat: {
+        obj2s: {
           status: PipelineStatus.NOT_CREATED,
           shouldRerun: true,
         },
@@ -512,7 +512,7 @@ describe('LaunchAnalysisButton', () => {
 
     await act(async () => {
       render(
-        <Provider store={mockStore(notProcessedSeuratDataState)}>
+        <Provider store={mockStore(notProcessedObj2sDataState)}>
           <LaunchAnalysisButton />
         </Provider>,
       );
@@ -529,6 +529,6 @@ describe('LaunchAnalysisButton', () => {
     fireEvent.click(screen.getByText('Yes'));
 
     expect(runGem2s).not.toHaveBeenCalled();
-    expect(runSeurat).toHaveBeenCalled();
+    expect(runObj2s).toHaveBeenCalled();
   });
 });

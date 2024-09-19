@@ -12,7 +12,7 @@ import handleError from 'utils/http/handleError';
 import endUserMessages from 'utils/endUserMessages';
 
 import techOptions, { techNamesToDisplay } from 'utils/upload/fileUploadUtils';
-import { sampleTech } from 'utils/constants';
+import { sampleTech, obj2sTechs } from 'utils/constants';
 
 import mockFile from '__test__/test-utils/mockFile';
 import FileUploadModal from 'components/data-management/FileUploadModal';
@@ -64,7 +64,7 @@ const renderFileUploadModal = async (store, currentSelectedTech = null) => {
   )));
 };
 
-const seuratTech = techNamesToDisplay[sampleTech.SEURAT];
+const seuratTech = techNamesToDisplay[sampleTech.SEURAT_OBJECT];
 
 const selectTech = (selectedTech) => {
   const displayedName = techNamesToDisplay[selectedTech];
@@ -119,14 +119,14 @@ describe('FileUploadModal', () => {
     expect(uploadInput.getAttribute('webkitdirectory')).toBe('');
   });
 
-  it('contains required components for Seurat', async () => {
+  it('contains required components for Seurat object uploads', async () => {
     await renderFileUploadModal(initialStore);
 
     // It has default 10x selected
     expect(screen.queryAllByText(techNamesToDisplay[sampleTech['10X']]).length).toBe(1);
     expect(screen.queryAllByText(seuratTech).length).toBe(0);
 
-    selectTech(sampleTech.SEURAT);
+    selectTech(sampleTech.SEURAT_OBJECT);
 
     // Lists the requirements of the Seurat object
     expect(screen.getByText(/The Seurat object must contain the following slots and metadata:/i)).toBeInTheDocument();
@@ -139,6 +139,50 @@ describe('FileUploadModal', () => {
 
     // reductions
     expect(screen.getByText(/scdata@reductions/i)).toBeInTheDocument();
+
+    // inform users that cluster metadata is auto-detected
+    expect(screen.getByText(/cluster metadata .+ is auto-detected/i)).toBeInTheDocument();
+
+    // inform users that sample level metadata is auto-detected
+    expect(screen.getByText(/sample level metadata .+ is auto-detected/i)).toBeInTheDocument();
+
+    // told to drag and drop rds file
+    expect(screen.getByText(/Drag and drop \*\.rds file here or click to browse\./i)).toBeInTheDocument();
+
+    // if click to browse will be able to upload file instead of folder
+    const uploadInput = document.querySelector(
+      `[data-test-id="${integrationTestConstants.ids.FILE_UPLOAD_INPUT}"]`,
+    );
+
+    expect(uploadInput.getAttribute('webkitdirectory')).toBe(null);
+
+    // It has a disabled upload button if there are no uploaded files
+    // Upload button is the last "Upload" text in the document
+    const uploadButtonText = screen.getAllByText(/Upload/i).pop();
+    const uploadButton = uploadButtonText.closest('button');
+
+    expect(uploadButton).toBeDisabled();
+  });
+
+  it('contains required components for SingleCellExperiment object uploads', async () => {
+    await renderFileUploadModal(initialStore);
+
+    // It has default 10x selected
+    expect(screen.queryAllByText(techNamesToDisplay[sampleTech['10X']]).length).toBe(1);
+
+    selectTech(sampleTech.SCE_OBJECT);
+
+    // Lists the requirements of the Seurat object
+    expect(screen.getByText(/The SingleCellExperiment object must contain the following slots and metadata:/i)).toBeInTheDocument();
+
+    // samples
+    expect(screen.getAllByText(/sce\$samples/i).length).toBe(2);
+
+    // counts
+    expect(screen.getByText(/counts\(sce\)/i)).toBeInTheDocument();
+
+    // reductions
+    expect(screen.getByText(/reducedDimNames\(sce\)/i)).toBeInTheDocument();
 
     // inform users that cluster metadata is auto-detected
     expect(screen.getByText(/cluster metadata .+ is auto-detected/i)).toBeInTheDocument();
@@ -200,10 +244,10 @@ describe('FileUploadModal', () => {
     expect(uploadButton).not.toBeDisabled();
   });
 
-  it('drag and drop works with valid Seurat file', async () => {
+  test.each(obj2sTechs)('drag and drop works with valid Obj2s files for tech %s', async (obj2sTech) => {
     await renderFileUploadModal(initialStore);
 
-    selectTech(sampleTech.SEURAT);
+    selectTech(obj2sTech);
 
     expect(await screen.queryByText(/To upload/)).not.toBeInTheDocument();
 
@@ -212,10 +256,10 @@ describe('FileUploadModal', () => {
       `[data-test-id="${integrationTestConstants.ids.FILE_UPLOAD_INPUT}"]`,
     );
 
-    // create a seurat file
+    // create a file specific to each tech if needed
     const file = mockFile('scdata.rds');
 
-    //  drop it into drop-zone
+    // drop it into drop-zone
     await act(async () => {
       Object.defineProperty(uploadInput, 'files', {
         value: [file],
@@ -224,23 +268,56 @@ describe('FileUploadModal', () => {
       fireEvent.drop(uploadInput);
     });
 
-    //  it was valid and shows up
+    // it was valid and shows up
     expect(await screen.findByText(/To upload/)).toBeInTheDocument();
     expect(await screen.findByText('scdata.rds')).toBeInTheDocument();
 
     // upload is enabled
-    // It has a disabled upload button if there are no uploaded files
-    // Upload button is the last "Upload" text in the document
     const uploadButtonText = screen.getAllByText(/Upload/i).pop();
     const uploadButton = uploadButtonText.closest('button');
 
     expect(uploadButton).not.toBeDisabled();
   });
 
-  it('drag and drop works with valid Seurat file when different experiment has valid uploaded Seurat object', async () => {
+  test.each(obj2sTechs)('drag and drop works with valid Obj2s files for tech %s', async (obj2sTech) => {
+    await renderFileUploadModal(initialStore);
+
+    selectTech(obj2sTech);
+
+    expect(await screen.queryByText(/To upload/)).not.toBeInTheDocument();
+
+    // get the dropzone input
+    const uploadInput = document.querySelector(
+      `[data-test-id="${integrationTestConstants.ids.FILE_UPLOAD_INPUT}"]`,
+    );
+
+    // create a mock file with a fixed name 'scdata.rds'
+    const file = mockFile('scdata.rds');
+
+    // drop the file into the drop-zone
+    await act(async () => {
+      Object.defineProperty(uploadInput, 'files', {
+        value: [file],
+      });
+
+      fireEvent.drop(uploadInput);
+    });
+
+    // expect the file to appear as uploaded
+    expect(await screen.findByText(/To upload/)).toBeInTheDocument();
+    expect(await screen.findByText('scdata.rds')).toBeInTheDocument();
+
+    // check that the upload button is enabled
+    const uploadButtonText = screen.getAllByText(/Upload/i).pop();
+    const uploadButton = uploadButtonText.closest('button');
+
+    expect(uploadButton).not.toBeDisabled();
+  });
+
+  test.each(obj2sTechs)('drag and drop works with valid Seurat file when different experiment has valid uploaded Obj2s file for tech %s', async (obj2sTech) => {
     await renderFileUploadModal(prevUpDiffExpStore);
 
-    selectTech(sampleTech.SEURAT);
+    selectTech(obj2sTech);
 
     expect(await screen.queryByText(/To upload/)).not.toBeInTheDocument();
 
@@ -249,10 +326,10 @@ describe('FileUploadModal', () => {
       `[data-test-id="${integrationTestConstants.ids.FILE_UPLOAD_INPUT}"]`,
     );
 
-    // create a seurat file
+    // create a mock file with a fixed name 'scdata.rds'
     const file = mockFile('scdata.rds');
 
-    //  drop it into drop-zone
+    // drop the file into the drop-zone
     await act(async () => {
       Object.defineProperty(uploadInput, 'files', {
         value: [file],
@@ -261,20 +338,18 @@ describe('FileUploadModal', () => {
       fireEvent.drop(uploadInput);
     });
 
-    //  it was valid and shows up
+    // expect the file to appear as uploaded
     expect(await screen.findByText(/To upload/)).toBeInTheDocument();
     expect(await screen.findByText('scdata.rds')).toBeInTheDocument();
 
-    // upload is enabled
-    // It has a disabled upload button if there are no uploaded files
-    // Upload button is the last "Upload" text in the document
+    // check that the upload button is enabled
     const uploadButtonText = screen.getAllByText(/Upload/i).pop();
     const uploadButton = uploadButtonText.closest('button');
 
     expect(uploadButton).not.toBeDisabled();
   });
 
-  it('drag and drop does not work with invalid Seurat file', async () => {
+  test.each(obj2sTechs)('drag and drop does not work with invalid Obj2s file for tech %s', async (obj2sTech) => {
     await renderFileUploadModal(initialStore);
 
     // technology input should be enabled because there is no previously uploaded data
@@ -284,7 +359,7 @@ describe('FileUploadModal', () => {
 
     expect(techInput).toBeEnabled();
 
-    selectTech(sampleTech.SEURAT);
+    selectTech(obj2sTech);
 
     expect(await screen.queryByText(/To upload/)).not.toBeInTheDocument();
 
@@ -293,10 +368,10 @@ describe('FileUploadModal', () => {
       `[data-test-id="${integrationTestConstants.ids.FILE_UPLOAD_INPUT}"]`,
     );
 
-    // create a seurat file
+    // create an invalid file
     const file = mockFile('scdata.txt');
 
-    //  drop it into drop-zone
+    // drop the invalid file into the drop-zone
     await act(async () => {
       Object.defineProperty(uploadInput, 'files', {
         value: [file],
@@ -305,26 +380,26 @@ describe('FileUploadModal', () => {
       fireEvent.drop(uploadInput);
     });
 
-    //  it shows up
+    // expect the invalid file to show up
     expect(await screen.findByText(/To upload/)).toBeInTheDocument();
     expect(await screen.findByText('scdata.txt')).toBeInTheDocument();
 
-    // upload is disabled as the file was invalid
+    // check that the upload button is disabled as the file is invalid
     const uploadButtonText = screen.getAllByText(/Upload/i).pop();
     const uploadButton = uploadButtonText.closest('button');
 
     expect(uploadButton).toBeDisabled();
   });
 
-  it('drag and drop fails with valid Seurat file when pre-existing Seurat file exists for experiment', async () => {
-    await renderFileUploadModal(prevUpStore, sampleTech.SEURAT);
+  test.each(obj2sTechs)('drag and drop fails with valid Obj2s file when pre-existing Obj2s file exists for experiment for tech %s', async (obj2sTech) => {
+    await renderFileUploadModal(prevUpStore, obj2sTech);
 
-    // Seurat info should show up as their is previous Seurat data uploaded
+    // relevant tech info should show up as there is previously uploaded data
     await waitFor(() => expect(
-      screen.getByText(/Seurat object \(max 15GB\)/),
+      screen.getByText(/object must contain the following slots and metadata/),
     ).toBeInTheDocument());
 
-    // technology input should be disable because we have existing data
+    // technology input should be disabled because we have existing data
     const techInput = document.querySelector(
       '[data-testid="uploadTechSelect"] input',
     );
@@ -338,10 +413,10 @@ describe('FileUploadModal', () => {
       `[data-test-id="${integrationTestConstants.ids.FILE_UPLOAD_INPUT}"]`,
     );
 
-    // create a seurat file
+    // create a valid file
     const file = mockFile('scdata.rds');
 
-    //  drop it into drop-zone
+    // drop the valid file into the drop-zone
     await act(async () => {
       Object.defineProperty(uploadInput, 'files', {
         value: [file],
@@ -350,17 +425,17 @@ describe('FileUploadModal', () => {
       fireEvent.drop(uploadInput);
     });
 
-    //  it was not valid and doesn't shows up
+    // expect that the file does not show up due to pre-existing file
     expect(await screen.queryByText('scdata.rds')).not.toBeInTheDocument();
 
-    // upload is disabled as there is pre-existing file for experiment
+    // upload should be disabled as a pre-existing file exists for the experiment
     const uploadButtonText = screen.getAllByText(/Upload/i).pop();
     const uploadButton = uploadButtonText.closest('button');
 
     expect(uploadButton).toBeDisabled();
 
-    // error message was displayed to user
-    expect(handleError).toHaveBeenCalledWith('error', endUserMessages.ERROR_SEURAT_EXISTING_FILE);
+    // expect an error message to be displayed to the user
+    expect(handleError).toHaveBeenCalledWith('error', endUserMessages.ERROR_OBJ2S_EXISTING_FILE);
   });
 
   it('Shows what files can be uploaded for Rhapsody samples', async () => {

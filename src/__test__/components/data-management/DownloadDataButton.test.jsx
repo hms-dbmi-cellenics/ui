@@ -230,7 +230,7 @@ describe('DownloadDataButton', () => {
     });
 
     expect(pushNotificationMessage).toHaveBeenCalledTimes(1);
-    expect(pushNotificationMessage).toHaveBeenCalledWith('error', endUserMessages.ERROR_DOWNLOADING_SEURAT_OBJECT);
+    expect(pushNotificationMessage).toHaveBeenCalledWith('error', endUserMessages.ERROR_DOWNLOADING_OBJ2S);
   });
 
   it('Has options disabled if backend status is still loading', async () => {

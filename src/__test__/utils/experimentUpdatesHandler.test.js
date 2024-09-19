@@ -94,15 +94,15 @@ const mockWorkResponseUpdate = {
   },
 };
 
-const mockSeuratUpdate = {
-  type: updateTypes.SEURAT,
+const mockObj2sUpdate = {
+  type: updateTypes.OBJ2S,
   item: {
     processingConfig: {
       mockProcessingConfig: 'mockProcessingConfig',
     },
   },
   status: {
-    seurat: {
+    obj2s: {
       status: 'RUNNING',
     },
   },
@@ -131,8 +131,8 @@ describe('ExperimentUpdatesHandler', () => {
     expect(pushNotificationMessage).not.toHaveBeenCalled();
   });
 
-  it('Triggers properly for SEURAT updates ', () => {
-    const mockUpdate = mockSeuratUpdate;
+  it('Triggers properly for OBJ2S updates ', () => {
+    const mockUpdate = mockObj2sUpdate;
 
     triggerExperimentUpdate(mockUpdate);
 
@@ -145,8 +145,8 @@ describe('ExperimentUpdatesHandler', () => {
     expect(pushNotificationMessage).not.toHaveBeenCalled();
   });
 
-  it('Triggers properly for SEURAT updates ', () => {
-    const mockUpdate = mockSeuratUpdate;
+  it('Triggers properly for OBJ2S updates ', () => {
+    const mockUpdate = mockObj2sUpdate;
 
     triggerExperimentUpdate(mockUpdate);
 
@@ -158,11 +158,11 @@ describe('ExperimentUpdatesHandler', () => {
     expect(mockDispatch).toHaveBeenCalledTimes(1);
   });
 
-  it('Loads cell sets if Seurat pipeline completes ', () => {
+  it('Loads cell sets if Obj2s pipeline completes ', () => {
     const mockUpdate = {
-      ...mockSeuratUpdate,
+      ...mockObj2sUpdate,
       status: {
-        seurat: {
+        obj2s: {
           status: 'SUCCEEDED',
         },
       },
@@ -175,7 +175,7 @@ describe('ExperimentUpdatesHandler', () => {
     const backendStatus = updateBackendStatus.mock.calls[0];
     expect(backendStatus).toMatchSnapshot();
 
-    // Dispatch 2 - load cellsets on seurat finish
+    // Dispatch 2 - load cellsets on obj2s finish
     expect(loadCellSets).toHaveBeenCalledTimes(1);
     const loadCellSetsParams = loadCellSets.mock.calls[0];
     expect(loadCellSetsParams).toMatchSnapshot();

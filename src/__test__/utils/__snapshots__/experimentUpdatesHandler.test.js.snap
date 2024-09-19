@@ -111,18 +111,18 @@ exports[`ExperimentUpdatesHandler Loads cell sets if QC pipeline completes  4`] 
 ]
 `;
 
-exports[`ExperimentUpdatesHandler Loads cell sets if Seurat pipeline completes  1`] = `
+exports[`ExperimentUpdatesHandler Loads cell sets if Obj2s pipeline completes  1`] = `
 [
   "testae48e318dab9a1bd0bexperiment",
   {
-    "seurat": {
+    "obj2s": {
       "status": "SUCCEEDED",
     },
   },
 ]
 `;
 
-exports[`ExperimentUpdatesHandler Loads cell sets if Seurat pipeline completes  2`] = `
+exports[`ExperimentUpdatesHandler Loads cell sets if Obj2s pipeline completes  2`] = `
 [
   "testae48e318dab9a1bd0bexperiment",
   true,
@@ -182,22 +182,22 @@ exports[`ExperimentUpdatesHandler Triggers properly for QC updates  4`] = `
 ]
 `;
 
-exports[`ExperimentUpdatesHandler Triggers properly for SEURAT updates  1`] = `
+exports[`ExperimentUpdatesHandler Triggers properly for OBJ2S updates  1`] = `
 [
   "testae48e318dab9a1bd0bexperiment",
   {
-    "seurat": {
+    "obj2s": {
       "status": "RUNNING",
     },
   },
 ]
 `;
 
-exports[`ExperimentUpdatesHandler Triggers properly for SEURAT updates  2`] = `
+exports[`ExperimentUpdatesHandler Triggers properly for OBJ2S updates  2`] = `
 [
   "testae48e318dab9a1bd0bexperiment",
   {
-    "seurat": {
+    "obj2s": {
       "status": "RUNNING",
     },
   },

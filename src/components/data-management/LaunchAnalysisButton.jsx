@@ -5,7 +5,7 @@ import {
 } from 'antd';
 import _ from 'lodash';
 
-import { modules, sampleTech } from 'utils/constants';
+import { modules, sampleTech, obj2sTechs } from 'utils/constants';
 
 import UploadStatus from 'utils/upload/UploadStatus';
 import integrationTestConstants from 'utils/integrationTestConstants';
@@ -27,7 +27,7 @@ const LaunchAnalysisButton = () => {
   const { activeExperimentId } = experiments.meta;
   const activeExperiment = experiments[activeExperimentId];
   const selectedTech = samples[activeExperiment?.sampleIds[0]]?.type;
-  const isTechSeurat = selectedTech === sampleTech.SEURAT;
+  const isObj2s = obj2sTechs.includes(selectedTech);
 
   const [pipelinesRerunStatus, setPipelinesRerunStatus] = useState({
     runPipeline: null, rerun: true, reasons: [], complete: false,
@@ -40,7 +40,7 @@ const LaunchAnalysisButton = () => {
     }
 
     if (shouldNavigate) {
-      const moduleName = isTechSeurat && pipelinesRerunStatus.complete
+      const moduleName = isObj2s && pipelinesRerunStatus.complete
         ? modules.DATA_EXPLORATION : modules.DATA_PROCESSING;
       navigateTo(moduleName, { experimentId: activeExperimentId });
     }
@@ -48,7 +48,7 @@ const LaunchAnalysisButton = () => {
 
   useEffect(() => {
     // The value of backend status is null for new experiments that have never run
-    const setupPipeline = isTechSeurat ? 'seurat' : 'gem2s';
+    const setupPipeline = isObj2s ? 'obj2s' : 'gem2s';
     const {
       pipeline: qcBackendStatus, [setupPipeline]: setupBackendStatus,
     } = backendStatus[activeExperimentId]?.status ?? {};
@@ -63,7 +63,7 @@ const LaunchAnalysisButton = () => {
         setupBackendStatus,
         qcBackendStatus,
         activeExperiment,
-        isTechSeurat,
+        isObj2s,
       ),
     );
   }, [backendStatus, activeExperimentId, samples, activeExperiment]);
@@ -167,7 +167,7 @@ const LaunchAnalysisButton = () => {
 
     if (pipelinesRerunStatus.rerun) {
       buttonText = 'Process project';
-    } else if (isTechSeurat && pipelinesRerunStatus.complete) {
+    } else if (isObj2s && pipelinesRerunStatus.complete) {
       buttonText = 'Go to Data Exploration';
     } else {
       buttonText = 'Go to Data Processing';

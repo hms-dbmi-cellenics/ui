@@ -1,6 +1,6 @@
 import { Gunzip } from 'fflate';
 
-import { sampleTech } from 'utils/constants';
+import { sampleTech, obj2sTechs } from 'utils/constants';
 import techOptions from 'utils/upload/fileUploadUtils';
 import readFileToBuffer from 'utils/upload/readFileToBuffer';
 
@@ -30,7 +30,7 @@ const inspectFile = async (file, technology) => {
   // Validate a file requested for upload to the platform.
   if (technology === sampleTech['10X']) {
     return inspect10XFile(file);
-  } if (technology === sampleTech.SEURAT) {
+  } if (obj2sTechs.includes(technology)) {
     // only extension is checked
     return Verdict.VALID_ZIPPED;
   } if (technology === sampleTech.RHAPSODY) {

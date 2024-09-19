@@ -220,7 +220,7 @@ describe('ContentWrapper', () => {
           status: 'SUCCEEDED',
           shouldRerun: false,
         },
-        seurat: {
+        obj2s: {
           status: 'NOT_CREATED',
         },
       },

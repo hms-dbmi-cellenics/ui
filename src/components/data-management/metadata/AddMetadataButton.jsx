@@ -8,7 +8,7 @@ import PropTypes from 'prop-types';
 import { useSelector, useDispatch } from 'react-redux';
 
 import uploadMetadataFile from 'redux/actions/experiments/uploadMetadataFile';
-import { sampleTech } from 'utils/constants';
+import { obj2sTechs } from 'utils/constants';
 import {
   createCellLevelMetadata,
   updateCellLevelMetadataFileUpload,
@@ -109,7 +109,7 @@ const AddMetadataButton = ({ samplesTableRef }) => {
         disabled={
           activeExperiment.sampleIds?.length === 0
           || isSubsetted
-          || selectedTech === sampleTech.SEURAT
+          || obj2sTechs.includes(selectedTech)
         }
       >
         <Button>

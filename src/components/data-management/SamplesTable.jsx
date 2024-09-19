@@ -37,7 +37,7 @@ import { metadataNameToKey, metadataKeyToName, temporaryMetadataKey } from 'util
 import integrationTestConstants from 'utils/integrationTestConstants';
 import useConditionalEffect from 'utils/customHooks/useConditionalEffect';
 import fileUploadUtils from 'utils/upload/fileUploadUtils';
-import { sampleTech } from 'utils/constants';
+import { obj2sTechs } from 'utils/constants';
 import { fileTypeToDisplay } from 'utils/sampleFileType';
 
 const { Text } = Typography;
@@ -79,7 +79,7 @@ const SamplesTable = forwardRef((props, ref) => {
           title: <center>{fileTypeToDisplay[requiredFile]}</center>,
           key: requiredFile,
           dataIndex: requiredFile,
-          width: 170,
+          width: 210,
           onCell: () => ({ style: { margin: '0px', padding: '0px' } }),
           render: (tableCellData) => tableCellData && (
             <UploadCell
@@ -104,7 +104,7 @@ const SamplesTable = forwardRef((props, ref) => {
         className: `${integrationTestConstants.classes.SAMPLE_CELL}`,
         index: 1,
         key: 'sample',
-        title: selectedTech === sampleTech.SEURAT ? 'File' : 'Sample',
+        title: obj2sTechs.includes(selectedTech) ? 'File' : 'Sample',
         dataIndex: 'name',
         fixed: 'left',
         render: (text, record, indx) => (
