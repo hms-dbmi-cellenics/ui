@@ -20,11 +20,12 @@ const sampleTech = {
   RHAPSODY: 'rhapsody',
   SEURAT_OBJECT: 'seurat_object',
   SCE_OBJECT: 'sce_object',
+  ANNDATA_OBJECT: 'anndata_object',
   H5: '10x_h5',
   PARSE: 'parse',
 };
 
-const obj2sTechs = [sampleTech.SEURAT_OBJECT, sampleTech.SCE_OBJECT];
+const obj2sTechs = [sampleTech.SEURAT_OBJECT, sampleTech.SCE_OBJECT, sampleTech.ANNDATA_OBJECT];
 
 const plotTypes = {
   CONTINUOUS_EMBEDDING: 'embeddingContinuous',

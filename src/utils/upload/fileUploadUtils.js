@@ -11,6 +11,7 @@ const techNamesToDisplay = {
   [sampleTech.RHAPSODY]: 'BD Rhapsody',
   [sampleTech.SEURAT_OBJECT]: 'Seurat',
   [sampleTech.SCE_OBJECT]: 'SingleCellExperiment',
+  [sampleTech.ANNDATA_OBJECT]: 'AnnData',
   [sampleTech.H5]: '10X Chromium - H5',
   [sampleTech.PARSE]: 'Parse Evercode WT',
 };
@@ -170,6 +171,36 @@ const fileUploadUtils = {
     // For more information on this one check the TODO1 at FileUploadModal
     filterFiles: () => { throw new Error('Not Implemented'); },
     getFilePathToDisplay: getFilePathToDisplayDefaultConstructor(sampleTech.SCE_OBJECT),
+    getFileSampleAndName: getFileSampleAndNameDefault,
+  },
+  [sampleTech.ANNDATA_OBJECT]: {
+    validExtensionTypes: ['.h5ad'],
+    inputInfo: [
+      ["<code>adata.obs['samples']</code>: sample assignment. If absent, treated as unisample."],
+      ['<code>adata.raw.X</code> or <code>adata.X</code>: raw feature counts. If both are present, <code>adata.raw.X</code> should be raw counts.'],
+      ["<code>adata.obsm['X_pca']</code>: contains a <code>pca</code> reduction."],
+      ["<code>adata.obsm</code>: includes either a <code>'X_umap'</code> or <code>'X_tsne'</code> reduction."],
+      ['\uD83D\uDCA1cluster metadata in <code>adata.obs</code> is auto-detected.'],
+      ["\uD83D\uDCA1sample level metadata in <code>adata.obs</code> that groups samples in <code>adata.obs['samples']</code> is auto-detected for downstream analysis."],
+      ['\uD83D\uDCA1if file size is over 15GB, try removing any slots not indicated above.'],
+    ],
+    requiredFiles: [sampleFileType.ANNDATA_OBJECT],
+    fileUploadParagraphs: [
+      '<p>For your dataset, upload a single <code>*.h5ad</code> file with the AnnData object (max 15GB).</p>',
+      '<p>The AnnData object must contain the following fields and metadata:</p>',
+    ],
+    dropzoneText: 'Drag and drop *.h5ad file here or click to browse.',
+    // setting to null allows file upload on dropzone click
+    webkitdirectory: null,
+    isNameValid(fileName) {
+      return this.validExtensionTypes.some(
+        (validExtension) => fileName.endsWith(validExtension),
+      );
+    },
+    getCorrespondingType: () => sampleFileType.ANNDATA_OBJECT,
+    // For more information on this one check the TODO1 at FileUploadModal
+    filterFiles: () => { throw new Error('Not Implemented'); },
+    getFilePathToDisplay: getFilePathToDisplayDefaultConstructor(sampleTech.ANNDATA_OBJECT),
     getFileSampleAndName: getFileSampleAndNameDefault,
   },
   [sampleTech.RHAPSODY]: {
