@@ -24,7 +24,7 @@ const loadEmbedding = (
 
   if (!embeddingState) return null;
 
-  const { methodSettings, useSaved } = embeddingState;
+  const { methodSettings, useSaved = false } = embeddingState;
 
   // Set up loading state.
   dispatch({
