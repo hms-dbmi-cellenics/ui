@@ -118,7 +118,6 @@ const fileUploadUtils = {
     inputInfo: [
       ['<code>scdata$samples</code>: sample assignment. If absent, treated as unisample.'],
       ['<code>scdata[[\'RNA\']]@counts</code>: raw feature counts.'],
-      ['<code>scdata@reductions</code>: includes a <code>pca</code> reduction.'],
       ['<code>DefaultDimReduc(scdata)</code>: is either <code>umap</code>, <code>tsne</code>, or a close match (e.g. <code>ref.umap</code>).'],
       ['\uD83D\uDCA1cluster metadata in <code>scdata@meta.data</code> is auto-detected.'],
       ['\uD83D\uDCA1sample level metadata in <code>scdata@meta.data</code> that groups samples in <code>scdata$samples</code> is auto-detected for downstream analysis.'],
@@ -148,7 +147,6 @@ const fileUploadUtils = {
     inputInfo: [
       ['<code>sce$samples</code>: sample assignment. If absent, treated as unisample.'],
       ['<code>counts(sce)</code>: raw feature counts.'],
-      ['<code>reducedDims(sce)</code>: includes a <code>PCA</code> reduction.'],
       ['<code>reducedDimNames(sce)</code>: includes either <code>UMAP</code>, <code>TSNE</code>, or a close match (e.g. <code>REF.UMAP</code>).'],
       ['\uD83D\uDCA1cluster metadata in <code>sce@colData</code> is auto-detected.'],
       ['\uD83D\uDCA1sample level metadata in <code>sce@colData</code> that groups samples in <code>sce$samples</code> is auto-detected for downstream analysis.'],
@@ -178,7 +176,6 @@ const fileUploadUtils = {
     inputInfo: [
       ["<code>adata.obs['samples']</code>: sample assignment. If absent, treated as unisample."],
       ['<code>adata.raw.X</code> or <code>adata.X</code>: raw feature counts. If both are present, <code>adata.raw.X</code> should be raw counts.'],
-      ["<code>adata.obsm['X_pca']</code>: contains a <code>pca</code> reduction."],
       ["<code>adata.obsm</code>: includes either a <code>'X_umap'</code> or <code>'X_tsne'</code> reduction."],
       ['\uD83D\uDCA1cluster metadata in <code>adata.obs</code> is auto-detected.'],
       ["\uD83D\uDCA1sample level metadata in <code>adata.obs</code> that groups samples in <code>adata.obs['samples']</code> is auto-detected for downstream analysis."],
