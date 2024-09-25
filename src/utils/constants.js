@@ -15,13 +15,14 @@ const modules = {
   DEFAULT: '',
 };
 
+// this controls order of technology dropdown
 const sampleTech = {
   '10X': '10x',
-  RHAPSODY: 'rhapsody',
+  H5: '10x_h5',
   SEURAT_OBJECT: 'seurat_object',
   SCE_OBJECT: 'sce_object',
   ANNDATA_OBJECT: 'anndata_object',
-  H5: '10x_h5',
+  RHAPSODY: 'rhapsody',
   PARSE: 'parse',
 };
 
