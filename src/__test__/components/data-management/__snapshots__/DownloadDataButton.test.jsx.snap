@@ -11,7 +11,7 @@ exports[`DownloadDataButton Downloads processed matrix properly 1`] = `
       },
       "name": "GetEmbedding",
       "type": "umap",
-      "useSaved": undefined,
+      "useSaved": false,
     },
     [Function],
     [Function],
