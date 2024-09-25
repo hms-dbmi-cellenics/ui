@@ -42,6 +42,7 @@ const extraHelpText = {
   [sampleTech['10X']]: () => <></>,
   [sampleTech.SEURAT_OBJECT]: () => <></>,
   [sampleTech.SCE_OBJECT]: () => <></>,
+  [sampleTech.ANNDATA_OBJECT]: () => <></>,
   [sampleTech.H5]: () => <></>,
   [sampleTech.RHAPSODY]: () => (
     <Paragraph>

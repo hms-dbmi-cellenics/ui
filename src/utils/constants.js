@@ -15,16 +15,18 @@ const modules = {
   DEFAULT: '',
 };
 
+// this controls order of technology dropdown
 const sampleTech = {
   '10X': '10x',
-  RHAPSODY: 'rhapsody',
+  H5: '10x_h5',
   SEURAT_OBJECT: 'seurat_object',
   SCE_OBJECT: 'sce_object',
-  H5: '10x_h5',
+  ANNDATA_OBJECT: 'anndata_object',
+  RHAPSODY: 'rhapsody',
   PARSE: 'parse',
 };
 
-const obj2sTechs = [sampleTech.SEURAT_OBJECT, sampleTech.SCE_OBJECT];
+const obj2sTechs = [sampleTech.SEURAT_OBJECT, sampleTech.SCE_OBJECT, sampleTech.ANNDATA_OBJECT];
 
 const plotTypes = {
   CONTINUOUS_EMBEDDING: 'embeddingContinuous',

@@ -11,6 +11,7 @@ const sampleValidators = {
   [sampleTech.RHAPSODY]: validateRhapsody,
   [sampleTech.SEURAT_OBJECT]: validateObj2s,
   [sampleTech.SCE_OBJECT]: validateObj2s,
+  [sampleTech.ANNDATA_OBJECT]: validateObj2s,
   [sampleTech.H5]: validateH5,
   [sampleTech.PARSE]: validateParse,
 };

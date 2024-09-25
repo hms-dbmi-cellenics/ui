@@ -66,6 +66,12 @@ const renderFileUploadModal = async (store, currentSelectedTech = null) => {
 
 const seuratTech = techNamesToDisplay[sampleTech.SEURAT_OBJECT];
 
+const obj2sTechFiles = {
+  anndata_object: 'adata.h5ad',
+  seurat_object: 'seurat.rds',
+  sce_object: 'sce.rds',
+};
+
 const selectTech = (selectedTech) => {
   const displayedName = techNamesToDisplay[selectedTech];
 
@@ -138,7 +144,7 @@ describe('FileUploadModal', () => {
     expect(screen.getByText(/scdata\[\['RNA'\]\]@counts/i)).toBeInTheDocument();
 
     // reductions
-    expect(screen.getByText(/scdata@reductions/i)).toBeInTheDocument();
+    expect(screen.getByText(/DefaultDimReduc\(scdata\)/i)).toBeInTheDocument();
 
     // inform users that cluster metadata is auto-detected
     expect(screen.getByText(/cluster metadata .+ is auto-detected/i)).toBeInTheDocument();
@@ -257,7 +263,8 @@ describe('FileUploadModal', () => {
     );
 
     // create a file specific to each tech if needed
-    const file = mockFile('scdata.rds');
+    const fileName = obj2sTechFiles[obj2sTech];
+    const file = mockFile(fileName);
 
     // drop it into drop-zone
     await act(async () => {
@@ -270,7 +277,7 @@ describe('FileUploadModal', () => {
 
     // it was valid and shows up
     expect(await screen.findByText(/To upload/)).toBeInTheDocument();
-    expect(await screen.findByText('scdata.rds')).toBeInTheDocument();
+    expect(await screen.findByText(fileName)).toBeInTheDocument();
 
     // upload is enabled
     const uploadButtonText = screen.getAllByText(/Upload/i).pop();
@@ -291,8 +298,9 @@ describe('FileUploadModal', () => {
       `[data-test-id="${integrationTestConstants.ids.FILE_UPLOAD_INPUT}"]`,
     );
 
-    // create a mock file with a fixed name 'scdata.rds'
-    const file = mockFile('scdata.rds');
+    // create a mock file with a fixed name
+    const fileName = obj2sTechFiles[obj2sTech];
+    const file = mockFile(fileName);
 
     // drop the file into the drop-zone
     await act(async () => {
@@ -305,7 +313,7 @@ describe('FileUploadModal', () => {
 
     // expect the file to appear as uploaded
     expect(await screen.findByText(/To upload/)).toBeInTheDocument();
-    expect(await screen.findByText('scdata.rds')).toBeInTheDocument();
+    expect(await screen.findByText(fileName)).toBeInTheDocument();
 
     // check that the upload button is enabled
     const uploadButtonText = screen.getAllByText(/Upload/i).pop();
@@ -326,8 +334,9 @@ describe('FileUploadModal', () => {
       `[data-test-id="${integrationTestConstants.ids.FILE_UPLOAD_INPUT}"]`,
     );
 
-    // create a mock file with a fixed name 'scdata.rds'
-    const file = mockFile('scdata.rds');
+    // create a mock file with a fixed name
+    const fileName = obj2sTechFiles[obj2sTech];
+    const file = mockFile(fileName);
 
     // drop the file into the drop-zone
     await act(async () => {
@@ -340,7 +349,7 @@ describe('FileUploadModal', () => {
 
     // expect the file to appear as uploaded
     expect(await screen.findByText(/To upload/)).toBeInTheDocument();
-    expect(await screen.findByText('scdata.rds')).toBeInTheDocument();
+    expect(await screen.findByText(fileName)).toBeInTheDocument();
 
     // check that the upload button is enabled
     const uploadButtonText = screen.getAllByText(/Upload/i).pop();
@@ -396,7 +405,7 @@ describe('FileUploadModal', () => {
 
     // relevant tech info should show up as there is previously uploaded data
     await waitFor(() => expect(
-      screen.getByText(/object must contain the following slots and metadata/),
+      screen.getByText(/object must contain the following/),
     ).toBeInTheDocument());
 
     // technology input should be disabled because we have existing data
@@ -413,8 +422,9 @@ describe('FileUploadModal', () => {
       `[data-test-id="${integrationTestConstants.ids.FILE_UPLOAD_INPUT}"]`,
     );
 
-    // create a valid file
-    const file = mockFile('scdata.rds');
+    // create a file specific to each tech if needed
+    const fileName = obj2sTechFiles[obj2sTech];
+    const file = mockFile(fileName);
 
     // drop the valid file into the drop-zone
     await act(async () => {
@@ -426,7 +436,7 @@ describe('FileUploadModal', () => {
     });
 
     // expect that the file does not show up due to pre-existing file
-    expect(await screen.queryByText('scdata.rds')).not.toBeInTheDocument();
+    expect(await screen.queryByText(fileName)).not.toBeInTheDocument();
 
     // upload should be disabled as a pre-existing file exists for the experiment
     const uploadButtonText = screen.getAllByText(/Upload/i).pop();
