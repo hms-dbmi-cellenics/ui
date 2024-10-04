@@ -12,7 +12,7 @@ import CellSetsTool from 'components/data-exploration/cell-sets-tool/CellSetsToo
 import GeneListTool from 'components/data-exploration/gene-list-tool/GeneListTool';
 import DiffExprManager from 'components/data-exploration/differential-expression-tool/DiffExprManager';
 import Embedding from 'components/data-exploration/embedding/Embedding';
-import Spatial from 'components/data-exploration/spatial/Spatial';
+import SpatialViewer from 'components/data-exploration/spatial/SpatialViewer';
 import HeatmapPlot, { COMPONENT_TYPE } from 'components/data-exploration/heatmap/HeatmapPlot';
 import HeatmapSettings from 'components/data-exploration/heatmap/HeatmapSettings';
 import MosaicCloseButton from 'components/MosaicCloseButton';
@@ -85,10 +85,11 @@ const ExplorationViewPage = ({
     Spatial: {
       toolbarControls: <MosaicCloseButton key='remove-button-spatial' />,
       component: (width, height) => (
-        <Spatial
+        <SpatialViewer
           experimentId={experimentId}
           width={width}
           height={height}
+          omeTiffUrl='http://127.0.0.1:8080/exemplar-001.pyramid.ome.tif'
         />
       ),
     },
