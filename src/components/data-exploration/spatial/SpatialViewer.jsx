@@ -1,77 +1,89 @@
 import React, { useEffect, useState } from 'react';
-import { OmeTiffLoader } from '@hms-dbmi/viv';
 import PropTypes from 'prop-types';
 
-import dynamic from 'next/dynamic';
+import {
+  getChannelStats,
+  loadOmeTiff,
+  PictureInPictureViewer,
+} from '@hms-dbmi/viv';
 
-const Spatial = dynamic(
-  () => import('../DynamicVitessceWrappers').then((mod) => mod.Spatial),
-  { ssr: false },
-);
+// import dynamic from 'next/dynamic';
+// const Spatial = dynamic(
+//   () => import('../DynamicVitessceWrappers').then((mod) => mod.Spatial),
+//   { ssr: false },
+// );
+
+// Hardcoded rendering properties.
+const propsOther = {
+  selections: [
+    { z: 0, t: 0, c: 0 },
+    { z: 0, t: 0, c: 1 },
+    { z: 0, t: 0, c: 2 },
+  ],
+  colors: [
+    [0, 0, 255],
+    [0, 255, 0],
+    [255, 0, 0],
+  ],
+  contrastLimits: [
+    [0, 255],
+    [0, 255],
+    [0, 255],
+  ],
+  channelsVisible: [true, true, true],
+};
 
 const SpatialViewer = (props) => {
   const {
     experimentId, height, width, omeTiffUrl,
   } = props;
 
-  const [imageLayerLoaders, setImageLayerLoaders] = useState(null);
-  const [imageLayers, setImageLayers] = useState([]);
+  const [loader, setLoader] = useState(null);
+  const [autoProps, setAutoProps] = useState(null);
 
   useEffect(() => {
-    // Function to load OME-TIFF using Viv's loader
-    const loadOMEImage = async () => {
-      try {
-        const loader = await OmeTiffLoader.create(omeTiffUrl);
+    loadOmeTiff(omeTiffUrl).then(setLoader);
+  }, []);
 
-        console.log(loader);
-        console.log('loader!!!!');
+  async function computeProps(loaderArg) {
+    if (!loaderArg) return null;
+    // Use lowest level of the image pyramid for calculating stats.
+    const source = loaderArg.data[loaderArg.data.length - 1];
+    const stats = await Promise.all(propsOther.selections.map(async (selection) => {
+      const raster = await source.getRaster({ selection });
+      return getChannelStats(raster.data);
+    }));
+    // These are calculated bounds for the contrastLimits
+    // that could be used for display purposes.
+    // domains = stats.map(stat => stat.domain);
 
-        // Assign the loader to a specific raster layer index (e.g., index 0)
-        const loaders = {
-          0: loader,
-        };
-
-        // Define the image layer configuration
-        const layers = [
-          {
-            name: 'OME-TIFF Image',
-            type: 'raster',
-            channels: [
-              { selection: [0], color: [255, 0, 0], visible: true }, // Red for channel 0
-              { selection: [1], color: [0, 255, 0], visible: true }, // Green for channel 1
-              { selection: [2], color: [0, 0, 255], visible: true }, // Blue for channel 2
-            ],
-            domainType: 'MinMax', // Can adjust to 'Percentile' if needed
-          },
-        ];
-
-        // Set state for loaders and layers
-        setImageLayerLoaders(loaders); // Avoid redeclaring, directly update state
-        setImageLayers(layers);
-      } catch (error) {
-        console.error('Error loading OME-TIFF:', error);
-      }
-    };
-
-    loadOMEImage();
-  }, [omeTiffUrl]);
-
-  if (!imageLayerLoaders) {
-    return <div>Loading image...</div>;
+    // These are precalculated settings for the contrastLimits that
+    // should render a good, "in focus" image initially.
+    const contrastLimits = stats.map((stat) => stat.contrastLimits);
+    const newProps = { ...propsOther, contrastLimits };
+    return newProps;
   }
 
+  useEffect(() => {
+    computeProps(loader).then(setAutoProps);
+  }, [loader]);
+
+  console.log('omeTiffUrl!!!');
+  console.log(omeTiffUrl);
+
+  if (!loader || !autoProps) return null;
   return (
-    <div style={{ width: '100%', height: '100%' }}>
-      <Spatial
-        imageLayerLoaders={imageLayerLoaders} // Use the state variable directly
-        imageLayers={imageLayers} // Pass the image layer configuration
-        height={height}
-        width={width}
-        uuid={`spatial-${experimentId}`}
-        theme='light'
-        viewState={{ zoom: -3, target: [0, 0, 0] }}
-      />
-    </div>
+    <PictureInPictureViewer
+      loader={loader.data}
+      contrastLimits={autoProps.contrastLimits}
+      // Default extension is ColorPaletteExtension so no need to specify it if
+      // that is the desired rendering, using the `colors` prop.
+      colors={autoProps.colors}
+      channelsVisible={autoProps.channelsVisible}
+      selections={autoProps.selections}
+      height={height}
+      width={width}
+    />
   );
 };
 
