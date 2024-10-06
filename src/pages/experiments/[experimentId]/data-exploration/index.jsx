@@ -89,7 +89,7 @@ const ExplorationViewPage = ({
           experimentId={experimentId}
           width={width}
           height={height}
-          omeTiffUrl='http://127.0.0.1:8080/exemplar-001.pyramid.ome.tif'
+          omeZarrUrl='http://localhost:8000/human-lymph-node-10x-visium/data/processed/human_lymph_node_10x_visium.ome.zarr'
         />
       ),
     },

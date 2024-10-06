@@ -1,88 +1,113 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
+import dynamic from 'next/dynamic';
+import { root as zarrRoot, FetchStore } from 'zarrita';
+import { loadOmeZarr } from './loadOmeZarr';
 
-import {
-  getChannelStats,
-  loadOmeTiff,
-  PictureInPictureViewer,
-} from '@hms-dbmi/viv';
+const Spatial = dynamic(
+  () => import('../DynamicVitessceWrappers').then((mod) => mod.Spatial),
+  { ssr: false },
+);
 
-// import dynamic from 'next/dynamic';
-// const Spatial = dynamic(
-//   () => import('../DynamicVitessceWrappers').then((mod) => mod.Spatial),
-//   { ssr: false },
-// );
-
-// Hardcoded rendering properties.
-const propsOther = {
-  selections: [
-    { z: 0, t: 0, c: 0 },
-    { z: 0, t: 0, c: 1 },
-    { z: 0, t: 0, c: 2 },
-  ],
-  colors: [
-    [0, 0, 255],
-    [0, 255, 0],
-    [255, 0, 0],
-  ],
-  contrastLimits: [
-    [0, 255],
-    [0, 255],
-    [0, 255],
-  ],
-  channelsVisible: [true, true, true],
-};
+const imageLayerDefs = [
+  {
+    channels: [
+      {
+        color: [
+          255,
+          0,
+          0,
+        ],
+        selection: {
+          c: 0,
+        },
+        slider: [
+          0,
+          255,
+        ],
+        visible: true,
+      },
+      {
+        color: [
+          0,
+          255,
+          0,
+        ],
+        selection: {
+          c: 1,
+        },
+        slider: [
+          0,
+          255,
+        ],
+        visible: true,
+      },
+      {
+        color: [
+          0,
+          0,
+          255,
+        ],
+        selection: {
+          c: 2,
+        },
+        slider: [
+          0,
+          255,
+        ],
+        visible: true,
+      },
+    ],
+    colormap: null,
+    transparentColor: null,
+    index: 0,
+    opacity: 1,
+    domainType: 'Min/Max',
+    type: 'raster',
+  },
+];
 
 const SpatialViewer = (props) => {
   const {
-    experimentId, height, width, omeTiffUrl,
+    experimentId, height, width, omeZarrUrl,
   } = props;
 
+  // const dataSource = new ZarrDataSource({ url: omeZarrUrl });
+
+  const omeZarrRoot = zarrRoot(new FetchStore(omeZarrUrl));
+
   const [loader, setLoader] = useState(null);
-  const [autoProps, setAutoProps] = useState(null);
 
   useEffect(() => {
-    loadOmeTiff(omeTiffUrl).then(setLoader);
+    loadOmeZarr(omeZarrRoot).then(setLoader);
   }, []);
 
-  async function computeProps(loaderArg) {
-    if (!loaderArg) return null;
-    // Use lowest level of the image pyramid for calculating stats.
-    const source = loaderArg.data[loaderArg.data.length - 1];
-    const stats = await Promise.all(propsOther.selections.map(async (selection) => {
-      const raster = await source.getRaster({ selection });
-      return getChannelStats(raster.data);
-    }));
-    // These are calculated bounds for the contrastLimits
-    // that could be used for display purposes.
-    // domains = stats.map(stat => stat.domain);
+  const [viewState, setViewState] = useState({
+    zoom: -2.598,
+    target: [
+      1008.88,
+      1004.69,
+      null,
+    ],
+    rotationX: 0,
+    rotationY: 0,
+    rotationZ: 0,
+    rotationOrbit: 0,
+    orbitAxis: 'Y',
+  });
 
-    // These are precalculated settings for the contrastLimits that
-    // should render a good, "in focus" image initially.
-    const contrastLimits = stats.map((stat) => stat.contrastLimits);
-    const newProps = { ...propsOther, contrastLimits };
-    return newProps;
-  }
+  if (!loader) return null;
 
-  useEffect(() => {
-    computeProps(loader).then(setAutoProps);
-  }, [loader]);
-
-  console.log('omeTiffUrl!!!');
-  console.log(omeTiffUrl);
-
-  if (!loader || !autoProps) return null;
   return (
-    <PictureInPictureViewer
-      loader={loader.data}
-      contrastLimits={autoProps.contrastLimits}
-      // Default extension is ColorPaletteExtension so no need to specify it if
-      // that is the desired rendering, using the `colors` prop.
-      colors={autoProps.colors}
-      channelsVisible={autoProps.channelsVisible}
-      selections={autoProps.selections}
-      height={height}
+    <Spatial
+      viewState={viewState}
+      setViewState={setViewState}
+      uuid='spatial-0'
       width={width}
+      height={height}
+      theme='light'
+      imageLayerLoaders={{ 0: loader }}
+      imageLayerDefs={imageLayerDefs}
     />
   );
 };
@@ -93,7 +118,7 @@ SpatialViewer.propTypes = {
   width: PropTypes.number.isRequired,
   height: PropTypes.number.isRequired,
   experimentId: PropTypes.string.isRequired,
-  omeTiffUrl: PropTypes.string.isRequired,
+  omeZarrUrl: PropTypes.string.isRequired,
 };
 
 export default SpatialViewer;
