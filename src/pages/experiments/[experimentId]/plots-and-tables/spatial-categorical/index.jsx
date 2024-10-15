@@ -17,7 +17,7 @@ import {
 import Header from 'components/Header';
 import { loadCellSets } from 'redux/actions/cellSets';
 import Loader from 'components/Loader';
-import SpatialCategoricalPlot from 'components/plots/SpatialCategoricalPlot';
+import CategoricalEmbeddingPlot from 'components/plots/CategoricalEmbeddingPlot';
 import PlotContainer from 'components/plots/PlotContainer';
 import SelectData from 'components/plots/styling/embedding-continuous/SelectData';
 import PlotLegendAlert, { MAX_LEGEND_ITEMS } from 'components/plots/helpers/PlotLegendAlert';
@@ -152,7 +152,7 @@ const SpatialCategoricalPage = ({ experimentId }) => {
     return (
       <Space direction='vertical'>
         {config?.legend?.showAlert && <PlotLegendAlert />}
-        <SpatialCategoricalPlot
+        <CategoricalEmbeddingPlot
           experimentId={experimentId}
           config={config}
           plotUuid={plotUuid}

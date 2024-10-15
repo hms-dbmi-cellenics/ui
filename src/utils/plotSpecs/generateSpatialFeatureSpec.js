@@ -2,7 +2,7 @@
 
 import { getAllCells, getSampleCells } from 'utils/cellSets';
 
-const generateSpec = (config, method, plotData) => {
+const generateSpec = (config, method, imageUrl, plotData) => {
   const xScaleDomain = config.axesRanges.xAxisAuto
     ? { data: 'plotData', field: 'x' }
     : [config.axesRanges.xMin, config.axesRanges.xMax];
@@ -28,14 +28,12 @@ const generateSpec = (config, method, plotData) => {
       }];
   }
 
-  console.log('config!!!');
-  console.log(config);
   return {
     $schema: 'https://vega.github.io/schema/vega/v5.json',
     description: 'Continuous embedding plot',
     width: config.dimensions.width,
     height: config.dimensions.height,
-    autosize: { type: 'fit', resize: false },
+    autosize: { type: 'pad', resize: true },
 
     background: config.colour.toggleInvert,
     padding: 5,
@@ -123,10 +121,10 @@ const generateSpec = (config, method, plotData) => {
         type: 'image',
         encode: {
           enter: {
-            url: { value: 'https://research.libd.org/VistoSeg/images/tissue_hires_image.png' },
-            width: { value: config.dimensions.width - 145 },
+            url: { value: imageUrl },
+            width: { value: config.dimensions.width },
             aspect: { value: false },
-            height: { value: config.dimensions.height - 75 },
+            height: { value: config.dimensions.height },
             y: { value: 0 },
             x: { value: 0 },
             opacity: { value: 1 },
