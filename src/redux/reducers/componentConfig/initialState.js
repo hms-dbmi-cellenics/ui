@@ -46,8 +46,76 @@ const embeddingCategoricalInitialConfig = {
   selectedSample: 'All',
 };
 
+// PLOTS & TABLES - Spatial Categorical Plot
+const spatialCategoricalInitialConfig = {
+  spec: '1.0.0',
+  legend: {
+    ...legendBaseState,
+  },
+  dimensions: {
+    ...dimensionsBaseState,
+    width: 700,
+    height: 550,
+  },
+  axes: {
+    ...axesBaseState,
+    xAxisText: null,
+    yAxisText: null,
+    defaultValues: ['x', 'y'],
+    offset: 0,
+  },
+  axesRanges: axesRangesBaseState,
+  title: {
+    ...titleBaseState,
+    fontSize: 20,
+  },
+  fontStyle: fontStyleBaseState,
+  colour: colourBaseState,
+  marker: markerBaseState,
+  labels: {
+    ...labelBaseState,
+    enabled: false,
+  },
+  selectedCellSet: 'louvain',
+  selectedSample: 'All',
+};
+
 // PLOTS & TABLES - Continuous Embedding
 const embeddingContinuousInitialConfig = {
+  spec: '1.0.0',
+  legend: legendBaseState,
+  dimensions: {
+    ...dimensionsBaseState,
+    width: 700,
+    height: 550,
+  },
+  axes: {
+    ...axesBaseState,
+    xAxisText: null,
+    yAxisText: null,
+    defaultValues: ['x', 'y'],
+    offset: 10,
+  },
+  axesRanges: axesRangesBaseState,
+  title: {
+    ...titleBaseState,
+    dx: 0,
+    fontSize: 20,
+  },
+  fontStyle: fontStyleBaseState,
+  colour: colourBaseState,
+  marker: markerBaseState,
+  labels: labelBaseState,
+  logEquation: 'datum.expression*1',
+  shownGene: null,
+  expressionValue: 'raw',
+  truncatedValues: true,
+  selectedSample: 'All',
+  keepValuesOnReset: ['shownGene'],
+};
+
+// PLOTS & TABLES - Spatial Feature Plot
+const spatialFeatureInitialConfig = {
   spec: '1.0.0',
   legend: legendBaseState,
   dimensions: {
@@ -889,6 +957,8 @@ const initialPlotConfigStates = {
   doubletScoreHistogram,
   embeddingCategorical: embeddingCategoricalInitialConfig,
   embeddingContinuous: embeddingContinuousInitialConfig,
+  [plotTypes.SPATIAL_FEATURE]: spatialFeatureInitialConfig,
+  [plotTypes.SPATIAL_CATEGORICAL]: spatialCategoricalInitialConfig,
   heatmap: heatmapInitialConfig,
   volcano: volcanoInitialConfig,
   markerHeatmap: markerHeatmapInitialConfig,

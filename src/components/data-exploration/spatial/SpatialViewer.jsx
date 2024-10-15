@@ -1,8 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import dynamic from 'next/dynamic';
 import { root as zarrRoot, FetchStore } from 'zarrita';
 import { loadOmeZarr } from './loadOmeZarr';
+
+import ExampleData from './ExampleData';
 
 const Spatial = dynamic(
   () => import('../DynamicVitessceWrappers').then((mod) => mod.Spatial),
@@ -72,7 +74,7 @@ const SpatialViewer = (props) => {
     experimentId, height, width, omeZarrUrl,
   } = props;
 
-  // const dataSource = new ZarrDataSource({ url: omeZarrUrl });
+  const getExpressionValue = useCallback(() => { }, []);
 
   const omeZarrRoot = zarrRoot(new FetchStore(omeZarrUrl));
 
@@ -108,6 +110,18 @@ const SpatialViewer = (props) => {
       theme='light'
       imageLayerLoaders={{ 0: loader }}
       imageLayerDefs={imageLayerDefs}
+      obsCentroids={ExampleData.obsCentroids}
+      obsCentroidsIndex={ExampleData.obsCentroidsIndex}
+      obsSegmentations={ExampleData.obsSegmentations}
+      obsSegmentationsIndex={ExampleData.obsSegmentationsIndex}
+      obsSegmentationsLayerDefs={ExampleData.obsSegmentationsLayerDefs}
+      obsSegmentationsType={ExampleData.obsSegmentationsType}
+      cellSelection={ExampleData.cellSelection}
+      cellColors={ExampleData.cellColors}
+      cellColorEncoding={ExampleData.cellColorEncoding}
+      getExpressionValue={getExpressionValue}
+      geneExpressionColormapRange={ExampleData.geneExpressionColormapRange}
+      geneExpressionColormap={ExampleData.geneExpressionColormap}
     />
   );
 };

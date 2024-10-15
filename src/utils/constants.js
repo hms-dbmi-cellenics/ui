@@ -38,6 +38,8 @@ const plotTypes = {
   DOT_PLOT: 'DotPlot',
   TRAJECTORY_ANALYSIS: 'TrajectoryAnalysis',
   NORMALIZED_EXPRESSION_MATRIX: 'NormalizedExpressionMatrix',
+  SPATIAL_CATEGORICAL: 'SpatialCategorical',
+  SPATIAL_FEATURE: 'SpatialFeature',
   MULTI_VIEW_PLOT: 'multiView',
 };
 
@@ -51,6 +53,8 @@ const plotUuids = {
   DOT_PLOT: 'DotPlotMain',
   TRAJECTORY_ANALYSIS: 'trajectoryAnalysisMain',
   NORMALIZED_EXPRESSION_MATRIX: 'normalized-matrix',
+  SPATIAL_CATEGORICAL: 'spatialCategoricalMain',
+  SPATIAL_FEATURE: 'spatialFeatureMain',
   getMultiPlotUuid: (plotType) => `${plotTypes.MULTI_VIEW_PLOT}-${plotType}`,
 };
 
@@ -65,6 +69,8 @@ const plotNames = {
   TRAJECTORY_ANALYSIS: 'Trajectory Analysis',
   NORMALIZED_EXPRESSION_MATRIX: 'Normalized Expression Matrix',
   BATCH_DIFFERENTIAL_EXPRESSION: 'Batch Differential Expression Table',
+  SPATIAL_CATEGORICAL: 'Spatial Categorical Plot',
+  SPATIAL_FEATURE: 'Spatial Feature Plot',
 };
 
 const layout = {
