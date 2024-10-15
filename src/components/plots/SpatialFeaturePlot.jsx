@@ -138,7 +138,7 @@ const SpatialFeaturePlot = (props) => {
         ),
       );
     }
-  }, [config, plotData, embeddingData, cellSets, embeddingLoading]);
+  }, [config, plotData, embeddingData, cellSets, embeddingLoading, imageUrl]);
 
   const render = () => {
     if (error) {

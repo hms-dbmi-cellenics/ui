@@ -120,8 +120,8 @@ const spatialFeatureInitialConfig = {
   legend: legendBaseState,
   dimensions: {
     ...dimensionsBaseState,
-    width: 700,
-    height: 550,
+    width: 500,
+    height: 500,
   },
   axes: {
     ...axesBaseState,

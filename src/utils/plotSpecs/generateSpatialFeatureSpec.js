@@ -154,7 +154,8 @@ const generateSpec = (config, method, imageUrl, plotData) => {
               scale: 'color',
               field: 'value',
             },
-            shape: { value: config.marker.shape },
+            // TODO: make selectable (hexagon)
+            shape: { value: 'M 1,0 L 0.5,0.866 L -0.5,0.866 L -1,0 L -0.5,-0.866 L 0.5,-0.866 Z' },
             fillOpacity: { value: config.marker.opacity / 10 },
           },
         },
