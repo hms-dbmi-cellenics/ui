@@ -20,13 +20,14 @@ const sampleTech = {
   '10X': '10x',
   H5: '10x_h5',
   SEURAT_OBJECT: 'seurat_object',
+  SEURAT_SPATIAL_OBJECT: 'seurat_spatial_object',
   SCE_OBJECT: 'sce_object',
   ANNDATA_OBJECT: 'anndata_object',
   RHAPSODY: 'rhapsody',
   PARSE: 'parse',
 };
 
-const obj2sTechs = [sampleTech.SEURAT_OBJECT, sampleTech.SCE_OBJECT, sampleTech.ANNDATA_OBJECT];
+const obj2sTechs = [sampleTech.SEURAT_OBJECT, sampleTech.SCE_OBJECT, sampleTech.ANNDATA_OBJECT, sampleTech.SEURAT_SPATIAL_OBJECT];
 
 const plotTypes = {
   CONTINUOUS_EMBEDDING: 'embeddingContinuous',
@@ -42,6 +43,8 @@ const plotTypes = {
   SPATIAL_FEATURE: 'SpatialFeature',
   MULTI_VIEW_PLOT: 'multiView',
 };
+
+const spatialPlotTypes = [plotTypes.SPATIAL_CATEGORICAL, plotTypes.SPATIAL_FEATURE];
 
 const plotUuids = {
   CONTINUOUS_EMBEDDING: 'embeddingContinuousMain',
@@ -95,6 +98,7 @@ export {
   sampleTech,
   obj2sTechs,
   plotTypes,
+  spatialPlotTypes,
   plotUuids,
   plotNames,
   layout,

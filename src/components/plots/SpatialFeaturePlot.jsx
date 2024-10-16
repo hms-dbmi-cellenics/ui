@@ -123,7 +123,8 @@ const SpatialFeaturePlot = (props) => {
       && config
       && plotData?.length > 0
       && cellSets.accessible
-      && embeddingData?.length) {
+      && embeddingData?.length
+      && imageUrl) {
       setPlotSpec(
         generateSpec(
           config,
