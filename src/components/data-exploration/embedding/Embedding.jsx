@@ -328,6 +328,7 @@ const Embedding = (props) => {
               updateViewInfo={updateViewInfo}
               obsEmbedding={convertedCellsData?.obsEmbedding}
               obsEmbeddingIndex={convertedCellsData?.obsEmbeddingIndex}
+              embeddingPointsVisible
               cellColors={cellColorsForVitessce}
               setCellSelection={setCellsSelection}
               getExpressionValue={getExpressionValue}

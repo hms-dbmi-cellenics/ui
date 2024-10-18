@@ -10,6 +10,7 @@ const techNamesToDisplay = {
   [sampleTech['10X']]: '10X Chromium',
   [sampleTech.RHAPSODY]: 'BD Rhapsody',
   [sampleTech.SEURAT_OBJECT]: 'Seurat',
+  [sampleTech.SEURAT_SPATIAL_OBJECT]: 'Seurat - Spatial',
   [sampleTech.SCE_OBJECT]: 'SingleCellExperiment',
   [sampleTech.ANNDATA_OBJECT]: 'AnnData',
   [sampleTech.H5]: '10X Chromium - H5',
@@ -140,6 +141,35 @@ const fileUploadUtils = {
     // For more information on this one check the TODO1 at FileUploadModal
     filterFiles: () => { throw new Error('Not Implemented'); },
     getFilePathToDisplay: getFilePathToDisplayDefaultConstructor(sampleTech.SEURAT_OBJECT),
+    getFileSampleAndName: getFileSampleAndNameDefault,
+  },
+  [sampleTech.SEURAT_SPATIAL_OBJECT]: {
+    validExtensionTypes: ['.rds'],
+    inputInfo: [
+      ['<code>scdata$samples</code>: sample assignment. If absent, treated as unisample.'],
+      ['<code>scdata[[\'RNA\']]@counts</code>: raw feature counts.'],
+      ['<code>DefaultDimReduc(scdata)</code>: is either <code>umap</code>, <code>tsne</code>, or a close match (e.g. <code>ref.umap</code>).'],
+      ['\uD83D\uDCA1cluster metadata in <code>scdata@meta.data</code> is auto-detected.'],
+      ['\uD83D\uDCA1sample level metadata in <code>scdata@meta.data</code> that groups samples in <code>scdata$samples</code> is auto-detected for downstream analysis.'],
+      ['\uD83D\uDCA1if file size is over 15GB, try removing any assays not indicated above.'],
+    ],
+    requiredFiles: [sampleFileType.SEURAT_SPATIAL_OBJECT],
+    fileUploadParagraphs: [
+      '<p>For your dataset, upload a single <code>*.rds</code> file with the Seurat object (max 15GB).</p>',
+      '<p>The Seurat object must contain the following slots and metadata:</p>',
+    ],
+    dropzoneText: 'Drag and drop *.rds file here or click to browse.',
+    // setting to null allows file upload on dropzone click
+    webkitdirectory: null,
+    isNameValid(fileName) {
+      return this.validExtensionTypes.some(
+        (validExtension) => fileName.endsWith(validExtension),
+      );
+    },
+    getCorrespondingType: () => sampleFileType.SEURAT_SPATIAL_OBJECT,
+    // For more information on this one check the TODO1 at FileUploadModal
+    filterFiles: () => { throw new Error('Not Implemented'); },
+    getFilePathToDisplay: getFilePathToDisplayDefaultConstructor(sampleTech.SEURAT_SPATIAL_OBJECT),
     getFileSampleAndName: getFileSampleAndNameDefault,
   },
   [sampleTech.SCE_OBJECT]: {

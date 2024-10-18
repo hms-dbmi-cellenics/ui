@@ -50,6 +50,12 @@ const plots = [
         link: 'embedding-categorical',
       },
       {
+        name: plotNames.SPATIAL_CATEGORICAL,
+        image: '/static/media/embeddingCategorical.png',
+        key: 'spatial-categorical-key',
+        link: 'spatial-categorical',
+      },
+      {
         name: 'Frequency Plot',
         image: '/static/media/frequency.png',
         key: 'frequency-key',
@@ -71,6 +77,12 @@ const plots = [
         image: '/static/media/embeddingContinuous.png',
         key: 'embedding-continuous-key',
         link: 'embedding-continuous',
+      },
+      {
+        name: plotNames.SPATIAL_FEATURE,
+        image: '/static/media/embeddingContinuous.png',
+        key: 'spatial-feature-key',
+        link: 'spatial-feature',
       },
       {
         name: plotNames.MARKER_HEATMAP,

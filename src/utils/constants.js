@@ -20,13 +20,14 @@ const sampleTech = {
   '10X': '10x',
   H5: '10x_h5',
   SEURAT_OBJECT: 'seurat_object',
+  SEURAT_SPATIAL_OBJECT: 'seurat_spatial_object',
   SCE_OBJECT: 'sce_object',
   ANNDATA_OBJECT: 'anndata_object',
   RHAPSODY: 'rhapsody',
   PARSE: 'parse',
 };
 
-const obj2sTechs = [sampleTech.SEURAT_OBJECT, sampleTech.SCE_OBJECT, sampleTech.ANNDATA_OBJECT];
+const obj2sTechs = [sampleTech.SEURAT_OBJECT, sampleTech.SCE_OBJECT, sampleTech.ANNDATA_OBJECT, sampleTech.SEURAT_SPATIAL_OBJECT];
 
 const plotTypes = {
   CONTINUOUS_EMBEDDING: 'embeddingContinuous',
@@ -38,8 +39,12 @@ const plotTypes = {
   DOT_PLOT: 'DotPlot',
   TRAJECTORY_ANALYSIS: 'TrajectoryAnalysis',
   NORMALIZED_EXPRESSION_MATRIX: 'NormalizedExpressionMatrix',
+  SPATIAL_CATEGORICAL: 'SpatialCategorical',
+  SPATIAL_FEATURE: 'SpatialFeature',
   MULTI_VIEW_PLOT: 'multiView',
 };
+
+const spatialPlotTypes = [plotTypes.SPATIAL_CATEGORICAL, plotTypes.SPATIAL_FEATURE];
 
 const plotUuids = {
   CONTINUOUS_EMBEDDING: 'embeddingContinuousMain',
@@ -51,6 +56,8 @@ const plotUuids = {
   DOT_PLOT: 'DotPlotMain',
   TRAJECTORY_ANALYSIS: 'trajectoryAnalysisMain',
   NORMALIZED_EXPRESSION_MATRIX: 'normalized-matrix',
+  SPATIAL_CATEGORICAL: 'spatialCategoricalMain',
+  SPATIAL_FEATURE: 'spatialFeatureMain',
   getMultiPlotUuid: (plotType) => `${plotTypes.MULTI_VIEW_PLOT}-${plotType}`,
 };
 
@@ -65,6 +72,8 @@ const plotNames = {
   TRAJECTORY_ANALYSIS: 'Trajectory Analysis',
   NORMALIZED_EXPRESSION_MATRIX: 'Normalized Expression Matrix',
   BATCH_DIFFERENTIAL_EXPRESSION: 'Batch Differential Expression Table',
+  SPATIAL_CATEGORICAL: 'Spatial Categorical Plot',
+  SPATIAL_FEATURE: 'Spatial Feature Plot',
 };
 
 const layout = {
@@ -89,6 +98,7 @@ export {
   sampleTech,
   obj2sTechs,
   plotTypes,
+  spatialPlotTypes,
   plotUuids,
   plotNames,
   layout,

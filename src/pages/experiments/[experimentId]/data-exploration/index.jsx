@@ -12,8 +12,10 @@ import CellSetsTool from 'components/data-exploration/cell-sets-tool/CellSetsToo
 import GeneListTool from 'components/data-exploration/gene-list-tool/GeneListTool';
 import DiffExprManager from 'components/data-exploration/differential-expression-tool/DiffExprManager';
 import Embedding from 'components/data-exploration/embedding/Embedding';
+import SpatialViewer from 'components/data-exploration/spatial/SpatialViewer';
 import HeatmapPlot, { COMPONENT_TYPE } from 'components/data-exploration/heatmap/HeatmapPlot';
 import HeatmapSettings from 'components/data-exploration/heatmap/HeatmapSettings';
+import SpatialSettings from 'components/data-exploration/spatial/SpatialSettings';
 import MosaicCloseButton from 'components/MosaicCloseButton';
 import { updateLayout, addWindow } from 'redux/actions/layout/index';
 import SearchMenu from 'components/SearchMenu';
@@ -78,6 +80,22 @@ const ExplorationViewPage = ({
           experimentId={experimentId}
           width={width}
           height={height}
+        />
+      ),
+    },
+    Spatial: {
+      toolbarControls: (
+        <>
+          <SpatialSettings componentType={COMPONENT_TYPE} key='spatial-settings' />
+          <MosaicCloseButton key='remove-button-spatial' />
+        </>
+      ),
+      component: (width, height) => (
+        <SpatialViewer
+          experimentId={experimentId}
+          width={width}
+          height={height}
+          omeZarrUrl='http://localhost:8000/human-lymph-node-10x-visium/data/processed/human_lymph_node_10x_visium.ome.zarr'
         />
       ),
     },
@@ -151,6 +169,10 @@ const ExplorationViewPage = ({
         description: `Visualize cells clustered by genetic expression using a ${embeddingTitle}.`,
       },
       {
+        key: 'Spatial',
+        description: 'Visualize spatial clustering and expression data.',
+      },
+      {
         key: 'Heatmap',
         description: 'Gain a high-level understanding of expression levels across large groups of genes and cells.',
       },
@@ -167,7 +189,7 @@ const ExplorationViewPage = ({
       options={categoryItems}
       categoryInfo={categoryInfo}
       onSelect={(key, category, belongsToGroup) => {
-        dispatch(addWindow(key, belongsToGroup));
+        dispatch(addWindow(`${key}`, belongsToGroup));
         setAddMenuVisible(false);
       }}
     />
