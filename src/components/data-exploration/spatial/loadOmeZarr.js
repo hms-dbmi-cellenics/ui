@@ -21,13 +21,7 @@ function isInterleaved(shape) {
 
 export function guessTileSize(arr) {
   const interleaved = isInterleaved(arr.shape);
-  console.log('interleaved!!!');
-  console.log(interleaved);
   const [yChunk, xChunk] = arr.chunks.slice(interleaved ? -3 : -2);
-  console.log('yChunk!!!');
-  console.log(yChunk);
-  console.log('xChunk!!');
-  console.log(xChunk);
   const size = Math.min(yChunk, xChunk);
   // deck.gl requirement for power-of-two tile size.
   return prevPowerOf2(size);
@@ -82,10 +76,6 @@ export class ZarritaPixelSource extends ZarrPixelSource {
 export async function loadOmeZarr(root) {
   const { data, rootAttrs, labels } = await loadMultiscales(root);
 
-  console.log('rootAttrs!!!');
-  console.log(rootAttrs);
-  console.log('labels!!!');
-  console.log(labels);
   const tileSize = guessTileSize(data[0]);
   const pyramid = data
     .map((arr) => new ZarritaPixelSource(
@@ -94,8 +84,6 @@ export async function loadOmeZarr(root) {
       tileSize,
     ));
 
-  console.log('pyramid!!!');
-  console.log(pyramid);
   return {
     data: pyramid,
     metadata: rootAttrs,
@@ -109,11 +97,6 @@ export async function loadOmeZarrDual(roots) {
 
   const { data: data1, rootAttrs, labels } = await loadMultiscales(firstRoot);
   const { data: data2 } = await loadMultiscales(secondRoot);
-
-  console.log('rootAttrs!!!');
-  console.log(rootAttrs);
-  console.log('labels!!!');
-  console.log(labels);
 
   const tileSize = guessTileSize(data1[0]);
 

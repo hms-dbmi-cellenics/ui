@@ -61,6 +61,9 @@ export function createZarrArrayAdapterDual(arrs) {
     get(target, prop) {
       if (prop === 'getRaw') {
         return async (selection) => {
+          let data1;
+          let data2;
+
           if (selection) {
             const shape1 = arr1.shape;
             const width1 = shape1[shape1.length - 1];
@@ -68,12 +71,17 @@ export function createZarrArrayAdapterDual(arrs) {
             // Adjust the selection for the x-axis
             const adjustedSelections = selection.map((dimSelection, i) => {
               if (typeof dimSelection === 'object' && dimSelection !== null) {
-                const axisLength = i === shape1.length - 1 ? width1 : shape1[i];
                 const [start, stop, step] = [dimSelection.start, dimSelection.stop, dimSelection.step];
 
                 if (i === shape1.length - 1) { // If it's the x-axis
-                  const firstImageSelection = slice(start < width1 ? start : 0, Math.min(stop, width1), step);
-                  const secondImageSelection = slice(Math.max(0, start - width1), Math.max(0, stop - width1), step);
+                  const firstImageStart = Math.max(0, Math.min(start, width1));
+                  const firstImageStop = Math.max(firstImageStart, Math.min(stop, width1));
+                  const secondImageStart = Math.max(0, start - width1);
+                  const secondImageStop = Math.max(secondImageStart, stop - width1);
+
+                  const firstImageSelection = slice(firstImageStart, firstImageStop, step);
+                  const secondImageSelection = slice(secondImageStart, secondImageStop, step);
+
                   return [firstImageSelection, secondImageSelection];
                 }
 
@@ -82,30 +90,37 @@ export function createZarrArrayAdapterDual(arrs) {
               return [dimSelection, dimSelection];
             });
 
-            const data1Selection = adjustedSelections.map(([s1, _s2]) => s1);
-            const data2Selection = adjustedSelections.map(([_s1, s2]) => s2);
+            const data1Selection = adjustedSelections.map(([s1, _]) => s1);
+            const data2Selection = adjustedSelections.map(([_, s2]) => s2);
 
-            console.log('data1Selection!!!!');
-            console.log(data1Selection);
-            console.log(data2Selection);
+            // Check if one of the selections is effectively empty
+            const isData1Empty = data1Selection.some((s) => s !== null && typeof s === 'object' && s.start === s.stop);
+            const isData2Empty = data2Selection.some((s) => s !== null && typeof s === 'object' && s.start === s.stop);
 
-            const data1 = await get(arr1, data1Selection);
-            const data2 = await get(arr2, data2Selection);
+            if (!isData1Empty) {
+              data1 = await get(arr1, data1Selection);
+            }
+            if (!isData2Empty) {
+              data2 = await get(arr2, data2Selection);
+            }
 
-            // Combine the data
+            // Return from the non-empty data
+            if (isData1Empty) return data2;
+            if (isData2Empty) return data1;
+
+            // Combine the data if both parts are valid
             const combinedData = combineSideBySide(data1, data2);
 
             return combinedData;
           }
+
           // Default selection to full extents if falsy
           const s1 = arr1.shape.map(() => null);
           const s2 = arr2.shape.map(() => null);
 
-          // get the data for each image
-          const data1 = await get(arr1, s1);
-          const data2 = await get(arr2, s2);
+          data1 = await get(arr1, s1);
+          data2 = await get(arr2, s2);
 
-          // Combine the data
           const combinedData = combineSideBySide(data1, data2);
           return combinedData;
         };
@@ -116,13 +131,19 @@ export function createZarrArrayAdapterDual(arrs) {
       if (prop === 'dtype') {
         return getV2DataType(target.dtype);
       }
+      if (prop === 'shape') {
+        // Calculate combined shape
+        const shape1 = arr1.shape;
+        const shape2 = arr2.shape;
+        const combinedShape = [...shape1];
+        combinedShape[combinedShape.length - 1] += shape2[shape2.length - 1];
+        return combinedShape;
+      }
       return Reflect.get(target, prop);
     },
   });
 }
 function combineSideBySide(data1, data2) {
-  console.log('data1!!!!');
-  console.log(data1);
   const shape1 = data1.shape;
   const shape2 = data2.shape;
 

@@ -94,7 +94,7 @@ const SpatialViewer = (props) => {
     zoom: -3.598,
     target: [
       1008.88,
-      1004.69,
+      2004.69,
       null,
     ],
     rotationX: 0,
@@ -105,6 +105,9 @@ const SpatialViewer = (props) => {
   });
 
   if (!loader) return null;
+
+  console.log('loader!!!!');
+  console.log(loader);
 
   return (
     <Spatial
