@@ -2,7 +2,7 @@ import React, { useEffect, useState, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import dynamic from 'next/dynamic';
 import { root as zarrRoot, FetchStore } from 'zarrita';
-import { loadOmeZarr } from './loadOmeZarr';
+import { loadOmeZarr, loadOmeZarrDual } from './loadOmeZarr';
 
 import ExampleData from './ExampleData';
 
@@ -76,16 +76,22 @@ const SpatialViewer = (props) => {
 
   const getExpressionValue = useCallback(() => { }, []);
 
-  const omeZarrRoot = zarrRoot(new FetchStore(omeZarrUrl));
-
   const [loader, setLoader] = useState(null);
 
   useEffect(() => {
-    loadOmeZarr(omeZarrRoot).then(setLoader);
+    // Create Zarr roots for each URL
+    const omeZarrRoot1 = zarrRoot(new FetchStore(omeZarrUrl));
+    const omeZarrRoot2 = zarrRoot(new FetchStore(omeZarrUrl));
+
+    // Load both datasets
+    loadOmeZarrDual([omeZarrRoot1, omeZarrRoot2]).then(setLoader);
+
+    // const omeZarrRoot = zarrRoot(new FetchStore(omeZarrUrl));
+    // loadOmeZarr(omeZarrRoot).then(setLoader);
   }, []);
 
   const [viewState, setViewState] = useState({
-    zoom: -2.598,
+    zoom: -3.598,
     target: [
       1008.88,
       1004.69,
@@ -110,18 +116,18 @@ const SpatialViewer = (props) => {
       theme='light'
       imageLayerLoaders={{ 0: loader }}
       imageLayerDefs={imageLayerDefs}
-      obsCentroids={ExampleData.obsCentroids}
-      obsCentroidsIndex={ExampleData.obsCentroidsIndex}
-      obsSegmentations={ExampleData.obsSegmentations}
-      obsSegmentationsIndex={ExampleData.obsSegmentationsIndex}
-      obsSegmentationsLayerDefs={ExampleData.obsSegmentationsLayerDefs}
-      obsSegmentationsType={ExampleData.obsSegmentationsType}
-      cellSelection={ExampleData.cellSelection}
-      cellColors={ExampleData.cellColors}
-      cellColorEncoding={ExampleData.cellColorEncoding}
-      getExpressionValue={getExpressionValue}
-      geneExpressionColormapRange={ExampleData.geneExpressionColormapRange}
-      geneExpressionColormap={ExampleData.geneExpressionColormap}
+      // obsCentroids={ExampleData.obsCentroids}
+      // obsCentroidsIndex={ExampleData.obsCentroidsIndex}
+      // obsSegmentations={ExampleData.obsSegmentations}
+      // obsSegmentationsIndex={ExampleData.obsSegmentationsIndex}
+      // obsSegmentationsLayerDefs={ExampleData.obsSegmentationsLayerDefs}
+      // obsSegmentationsType={ExampleData.obsSegmentationsType}
+      // cellSelection={ExampleData.cellSelection}
+      // cellColors={ExampleData.cellColors}
+      // cellColorEncoding={ExampleData.cellColorEncoding}
+      // getExpressionValue={getExpressionValue}
+      // geneExpressionColormapRange={ExampleData.geneExpressionColormapRange}
+      // geneExpressionColormap={ExampleData.geneExpressionColormap}
     />
   );
 };

@@ -3,7 +3,7 @@
 
 import { ZarrPixelSource } from '@hms-dbmi/viv';
 import { open as zarrOpen } from 'zarrita';
-import { createZarrArrayAdapter } from './createZarrArrayAdapter';
+import { createZarrArrayAdapter, createZarrArrayAdapterDual } from './createZarrArrayAdapter';
 
 function prevPowerOf2(x) {
   return 2 ** Math.floor(Math.log2(x));
@@ -21,7 +21,13 @@ function isInterleaved(shape) {
 
 export function guessTileSize(arr) {
   const interleaved = isInterleaved(arr.shape);
+  console.log('interleaved!!!');
+  console.log(interleaved);
   const [yChunk, xChunk] = arr.chunks.slice(interleaved ? -3 : -2);
+  console.log('yChunk!!!');
+  console.log(yChunk);
+  console.log('xChunk!!');
+  console.log(xChunk);
   const size = Math.min(yChunk, xChunk);
   // deck.gl requirement for power-of-two tile size.
   return prevPowerOf2(size);
@@ -75,6 +81,11 @@ export class ZarritaPixelSource extends ZarrPixelSource {
 // to bypass usage of zarr.js which is used in Viv's version.
 export async function loadOmeZarr(root) {
   const { data, rootAttrs, labels } = await loadMultiscales(root);
+
+  console.log('rootAttrs!!!');
+  console.log(rootAttrs);
+  console.log('labels!!!');
+  console.log(labels);
   const tileSize = guessTileSize(data[0]);
   const pyramid = data
     .map((arr) => new ZarritaPixelSource(
@@ -82,8 +93,39 @@ export async function loadOmeZarr(root) {
       labels,
       tileSize,
     ));
+
+  console.log('pyramid!!!');
+  console.log(pyramid);
   return {
     data: pyramid,
     metadata: rootAttrs,
+  };
+}
+
+export async function loadOmeZarrDual(roots) {
+  // Load data for each root
+  const firstRoot = roots[0];
+  const secondRoot = roots[1];
+
+  const { data: data1, rootAttrs, labels } = await loadMultiscales(firstRoot);
+  const { data: data2 } = await loadMultiscales(secondRoot);
+
+  console.log('rootAttrs!!!');
+  console.log(rootAttrs);
+  console.log('labels!!!');
+  console.log(labels);
+
+  const tileSize = guessTileSize(data1[0]);
+
+  // Assuming createZarrArrayAdapter is updated to handle multiple datasets
+  const pyramid = data1.map((arr1, i) => new ZarritaPixelSource(
+    createZarrArrayAdapterDual([arr1, data2[i]]), // Pass arrays for both images
+    labels,
+    tileSize,
+  ));
+
+  return {
+    data: pyramid,
+    metadata: rootAttrs, // Only using the first root's metadata
   };
 }
