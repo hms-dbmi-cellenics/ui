@@ -2,7 +2,7 @@ import React, { useEffect, useState, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import dynamic from 'next/dynamic';
 import { root as zarrRoot, FetchStore } from 'zarrita';
-import { loadOmeZarr, loadOmeZarrDual } from './loadOmeZarr';
+import { loadOmeZarr, loadOmeZarrDual, loadOmeZarrGrid } from './loadOmeZarr';
 
 import ExampleData from './ExampleData';
 
@@ -82,9 +82,11 @@ const SpatialViewer = (props) => {
     // Create Zarr roots for each URL
     const omeZarrRoot1 = zarrRoot(new FetchStore(omeZarrUrl));
     const omeZarrRoot2 = zarrRoot(new FetchStore(omeZarrUrl));
+    const omeZarrRoot3 = zarrRoot(new FetchStore(omeZarrUrl));
+    const omeZarrRoot4 = zarrRoot(new FetchStore(omeZarrUrl));
 
     // Load both datasets
-    loadOmeZarrDual([omeZarrRoot1, omeZarrRoot2]).then(setLoader);
+    loadOmeZarrGrid([omeZarrRoot1, omeZarrRoot2, omeZarrRoot3, omeZarrRoot4], [1, 4]).then(setLoader);
 
     // const omeZarrRoot = zarrRoot(new FetchStore(omeZarrUrl));
     // loadOmeZarr(omeZarrRoot).then(setLoader);
@@ -105,9 +107,6 @@ const SpatialViewer = (props) => {
   });
 
   if (!loader) return null;
-
-  console.log('loader!!!!');
-  console.log(loader);
 
   return (
     <Spatial

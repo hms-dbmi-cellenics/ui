@@ -3,7 +3,7 @@
 
 import { ZarrPixelSource } from '@hms-dbmi/viv';
 import { open as zarrOpen } from 'zarrita';
-import { createZarrArrayAdapter, createZarrArrayAdapterDual } from './createZarrArrayAdapter';
+import { createZarrArrayAdapter, createZarrArrayAdapterDual, createZarrArrayAdapterGrid } from './createZarrArrayAdapter';
 
 function prevPowerOf2(x) {
   return 2 ** Math.floor(Math.log2(x));
@@ -110,5 +110,30 @@ export async function loadOmeZarrDual(roots) {
   return {
     data: pyramid,
     metadata: rootAttrs, // Only using the first root's metadata
+  };
+}
+
+export async function loadOmeZarrGrid(roots, gridSize) {
+  const dataArrays = await Promise.all(roots.map((root) => loadMultiscales(root)));
+
+  const dataGroups = dataArrays.map(({ data }) => data);
+  const { rootAttrs } = dataArrays[0]; // Assuming all images have similar metadata
+  const { labels } = dataArrays[0]; // Assuming consistent labels across roots
+
+  const tileSize = guessTileSize(dataGroups[0][0]); // Assuming first image for tiling
+
+  // Create adapters for each image pair in the grid
+  const pyramid = dataGroups[0].map((_, resolution) => {
+    const arrs = dataGroups.map((group) => group[resolution]);
+    return new ZarritaPixelSource(
+      createZarrArrayAdapterGrid(arrs, gridSize),
+      labels,
+      tileSize,
+    );
+  });
+
+  return {
+    data: pyramid,
+    metadata: rootAttrs,
   };
 }

@@ -178,3 +178,142 @@ function combineSideBySide(data1, data2) {
     stride: newStride,
   };
 }
+
+export function createZarrArrayAdapterGrid(arrs, [n, p]) {
+  const firstArray = arrs[0];
+
+  return new Proxy(firstArray, {
+    get(target, prop) {
+      if (prop === 'getRaw') {
+        return async (selection) => {
+          const { shape } = firstArray;
+          const heightPerImage = shape[shape.length - 2];
+          const widthPerImage = shape[shape.length - 1];
+
+          if (selection) {
+            console.log('selection!!!');
+            console.log(selection);
+            // Account for full range in any dimension marked by null
+            const gridSelection = [
+              selection[0],
+              { start: 0, stop: heightPerImage * n, step: 1 },
+              { start: 0, stop: widthPerImage * p, step: 1 },
+            ];
+
+            const normalizedSelection = selection.map((s, i) => (
+              s === null ? gridSelection[i] : s
+            ));
+
+            // get x and y ranges and associated row and col value
+            console.log('normalizedSelection!!!');
+            console.log(normalizedSelection);
+            const yRanges = calculateRanges(normalizedSelection[shape.length - 2], heightPerImage, n);
+            const xRanges = calculateRanges(normalizedSelection[shape.length - 1], widthPerImage, p);
+
+            console.log('ranges!!!!');
+            console.log(yRanges);
+            console.log(xRanges);
+
+            const dataSelections = yRanges.flatMap((yRange, row) => xRanges.map((xRange, col) => ({
+              imageIndex: row * p + col,
+              row,
+              col,
+              adjustedSelection: normalizedSelection.map((dimSelection, i) => {
+                if (i === shape.length - 2) return yRange ? slice(yRange.start, yRange.stop, yRange.step) : null;
+                if (i === shape.length - 1) return xRange ? slice(xRange.start, xRange.stop, xRange.step) : null;
+                return dimSelection;
+              }),
+            }))).filter(({ adjustedSelection }) => !adjustedSelection.includes(null));
+
+            console.log('dataSelections!!!!');
+            console.log(dataSelections);
+
+            const dataPerImage = await Promise.all(
+              dataSelections.map(({
+                imageIndex, adjustedSelection, row, col,
+              }) => get(arrs[imageIndex], adjustedSelection).then((data) => ({
+                data, row, col,
+              }))),
+            );
+
+            return combineGridData(dataPerImage);
+          }
+        };
+      }
+
+      if (prop === 'dtype') {
+        return getV2DataType(target.dtype);
+      }
+
+      if (prop === 'shape') {
+        const shape = firstArray.shape.slice();
+        shape[shape.length - 2] *= n;
+        shape[shape.length - 1] *= p;
+        return shape;
+      }
+
+      return Reflect.get(target, prop);
+    },
+  });
+}
+
+function calculateRanges(dimSelection, sizePerImage, imagesPerDimension) {
+  const { start, stop, step } = dimSelection;
+
+  return Array.from({ length: imagesPerDimension }, (_, i) => {
+    const rangeStart = Math.max(0, start - i * sizePerImage);
+    const rangeStop = Math.min(stop - i * sizePerImage, sizePerImage);
+
+    return rangeStart < rangeStop ? { start: rangeStart, stop: rangeStop, step } : null;
+  });
+}
+
+function combineGridData(dataArrays) {
+  if (dataArrays.length === 1) {
+    return dataArrays[0].data; // Directly return if only one image
+  }
+
+  // Identify the grid bounds
+  const minRow = Math.min(...dataArrays.map(({ row }) => row));
+  const maxRow = Math.max(...dataArrays.map(({ row }) => row));
+  const minCol = Math.min(...dataArrays.map(({ col }) => col));
+  const maxCol = Math.max(...dataArrays.map(({ col }) => col));
+
+  // Calculate the row heights and column widths
+  const rowHeights = Array(maxRow - minRow + 1).fill(0);
+  const colWidths = Array(maxCol - minCol + 1).fill(0);
+
+  dataArrays.forEach(({ data, row, col }) => {
+    const [height, width] = data.shape;
+    rowHeights[row - minRow] = Math.max(rowHeights[row - minRow], height);
+    colWidths[col - minCol] = Math.max(colWidths[col - minCol], width);
+  });
+
+  // Compute total dimensions
+  const totalHeight = rowHeights.reduce((sum, h) => sum + h, 0);
+  const totalWidth = colWidths.reduce((sum, w) => sum + w, 0);
+
+  const combinedData = new Uint8Array(totalHeight * totalWidth);
+
+  // Calculate offsets based on row heights and column widths
+  dataArrays.forEach(({ data, row, col }) => {
+    const [height, width] = data.shape;
+
+    const offsetY = rowHeights.slice(0, row - minRow).reduce((sum, h) => sum + h, 0);
+    const offsetX = colWidths.slice(0, col - minCol).reduce((sum, w) => sum + w, 0);
+
+    for (let y = 0; y < height; y++) {
+      for (let x = 0; x < width; x++) {
+        const srcIndex = y * width + x;
+        const destIndex = (offsetY + y) * totalWidth + (offsetX + x);
+        combinedData[destIndex] = data.data[srcIndex];
+      }
+    }
+  });
+
+  return {
+    data: combinedData,
+    shape: [totalHeight, totalWidth],
+    stride: [totalWidth, 1],
+  };
+}
