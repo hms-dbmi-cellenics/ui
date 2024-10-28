@@ -3,6 +3,9 @@
 
 import { slice, get } from 'zarrita';
 
+// use background color of tile for transparent data
+const SPATIAL_BACKGROUND_COLOR = { 0: 246, 1: 247, 2: 249 };
+
 function getV2DataType(dtype) {
   const mapping = {
     int8: '|i1',
@@ -54,7 +57,7 @@ export function createZarrArrayAdapter(arr) {
   });
 }
 
-export function createZarrArrayAdapterGrid(arrs, [n, p]) {
+export function createZarrArrayAdapterGrid(arrs, [numRows, numCols]) {
   const firstArray = arrs[0];
 
   return new Proxy(firstArray, {
@@ -65,36 +68,58 @@ export function createZarrArrayAdapterGrid(arrs, [n, p]) {
           const [heightPerImage, widthPerImage] = shape.slice(-2);
 
           if (selection) {
-            // Account for full range in any dimension marked by null
-            const gridSelection = [
-              selection[0],
-              { start: 0, stop: heightPerImage * n, step: 1 },
-              { start: 0, stop: widthPerImage * p, step: 1 },
-            ];
+            // Normalize the selection, ensuring that any null values for x or y axes default to a grid-wide range
+            // Use provided selection unless it's nullish, in which case calculate the grid spanning range
+            const normalizedSelection = selection.map((s, i) => s ?? {
+              start: 0,
+              stop: (i === shape.length - 2
+                ? heightPerImage * numRows // Full range for y-axis based on number of rows
+                : widthPerImage * numCols), // Full range for x-axis based on number of columns
+              step: 1,
+            });
 
-            const normalizedSelection = selection.map((s, i) => s ?? gridSelection[i]);
+            // Calculate the y-axis (row-wise) and x-axis (column-wise) slice ranges for each image in the grid
+            const yRanges = calculateRanges(normalizedSelection[shape.length - 2], heightPerImage, numRows);
+            const xRanges = calculateRanges(normalizedSelection[shape.length - 1], widthPerImage, numCols);
 
-            // get x and y ranges and associated row and col value
-            const yRanges = calculateRanges(normalizedSelection[shape.length - 2], heightPerImage, n);
-            const xRanges = calculateRanges(normalizedSelection[shape.length - 1], widthPerImage, p);
+            const dataSelections = yRanges.flatMap((yRange, row) => xRanges.map((xRange, col) => {
+              if (!yRange || !xRange) return null; // Immediately filter out null ranges
 
-            const dataSelections = yRanges.flatMap((yRange, row) => xRanges.map((xRange, col) => ({
-              imageIndex: row * p + col,
-              row,
-              col,
-              adjustedSelection: normalizedSelection.map((dimSelection, i) => {
-                if (i === shape.length - 2) return yRange ? slice(yRange.start, yRange.stop, yRange.step) : null;
-                if (i === shape.length - 1) return xRange ? slice(xRange.start, xRange.stop, xRange.step) : null;
-                return dimSelection;
-              }),
-            }))).filter(({ adjustedSelection }) => !adjustedSelection.includes(null));
+              // Generate a list of data selections across the grid based on calculated ranges.
+              const adjustedSelection = normalizedSelection.map((dimSelection, i) => {
+                switch (i) {
+                  case shape.length - 2:
+                    return slice(yRange.start, yRange.stop, yRange.step);
+                  case shape.length - 1:
+                    return slice(xRange.start, xRange.stop, xRange.step);
+                  default:
+                    return dimSelection;
+                }
+              });
+
+              const imageIndex = row * numCols + col;
+              const hasImage = imageIndex < arrs.length;
+
+              return {
+                imageIndex,
+                row,
+                col,
+                adjustedSelection,
+                hasImage,
+              };
+            })).filter(Boolean); // Remove any null results
 
             const dataPerImage = await Promise.all(
               dataSelections.map(({
-                imageIndex, adjustedSelection, row, col,
-              }) => get(arrs[imageIndex], adjustedSelection).then((data) => ({
-                data, row, col,
-              }))),
+                imageIndex, adjustedSelection, hasImage, row, col,
+              }) => {
+                if (hasImage) {
+                  return get(arrs[imageIndex], adjustedSelection).then((data) => ({ data, row, col }));
+                }
+
+                // Generate transparent image data if the image doesn't exist
+                return generateTransparentData(adjustedSelection, row, col);
+              }),
             );
 
             return combineGridData(dataPerImage);
@@ -108,8 +133,8 @@ export function createZarrArrayAdapterGrid(arrs, [n, p]) {
 
       if (prop === 'shape') {
         const shape = firstArray.shape.slice();
-        shape[shape.length - 2] *= n;
-        shape[shape.length - 1] *= p;
+        shape[shape.length - 2] *= numRows;
+        shape[shape.length - 1] *= numCols;
         return shape;
       }
 
@@ -118,13 +143,41 @@ export function createZarrArrayAdapterGrid(arrs, [n, p]) {
   });
 }
 
+function generateTransparentData(adjustedSelection, row, col) {
+  // Extract the relevant slices for y and x dimensions
+  const [channel, ySlice, xSlice] = adjustedSelection;
+
+  // Calculate the dimensions for the transparent data
+  const height = ySlice.stop - ySlice.start;
+  const width = xSlice.stop - xSlice.start;
+
+  // Create transparent data (assumed 0 to be transparent)
+  const data = new Uint8Array(height * width).fill(SPATIAL_BACKGROUND_COLOR[channel]);
+
+  // Return an object structured like Zarr array data
+  return {
+    data: {
+      data,
+      shape: [height, width],
+      stride: [width, 1],
+    },
+    row,
+    col,
+  };
+}
+
 function calculateRanges(dimSelection, sizePerImage, imagesPerDimension) {
   const { start, stop, step } = dimSelection;
 
+  // Create an array corresponding to each image along the dimension
   return Array.from({ length: imagesPerDimension }, (_, i) => {
+    // Calculate the starting point for this image's range, ensuring it isn't negative
     const rangeStart = Math.max(0, start - i * sizePerImage);
+
+    // Calculate the ending point for this image's range, ensuring it doesn't exceed image size
     const rangeStop = Math.min(stop - i * sizePerImage, sizePerImage);
 
+    // Check if this range is valid. If so, return it; otherwise, return null.
     return rangeStart < rangeStop ? { start: rangeStart, stop: rangeStop, step } : null;
   });
 }
@@ -135,10 +188,10 @@ function combineGridData(dataArrays) {
   }
 
   // Identify the grid bounds
-  const minRow = Math.min(...dataArrays.map(({ row }) => row));
-  const maxRow = Math.max(...dataArrays.map(({ row }) => row));
-  const minCol = Math.min(...dataArrays.map(({ col }) => col));
-  const maxCol = Math.max(...dataArrays.map(({ col }) => col));
+  const rows = dataArrays.map(({ row }) => row);
+  const cols = dataArrays.map(({ col }) => col);
+  const [minRow, maxRow] = [Math.min(...rows), Math.max(...rows)];
+  const [minCol, maxCol] = [Math.min(...cols), Math.max(...cols)];
 
   // Calculate the row heights and column widths
   const rowHeights = Array(maxRow - minRow + 1).fill(0);

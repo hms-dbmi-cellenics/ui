@@ -86,7 +86,7 @@ const SpatialViewer = (props) => {
     const omeZarrRoot4 = zarrRoot(new FetchStore(omeZarrUrl));
 
     // Load both datasets
-    loadOmeZarrGrid([omeZarrRoot1, omeZarrRoot2, omeZarrRoot3, omeZarrRoot4], [2, 2]).then(setLoader);
+    loadOmeZarrGrid([omeZarrRoot1, omeZarrRoot2, omeZarrRoot3], [2, 2]).then(setLoader);
 
     // const omeZarrRoot = zarrRoot(new FetchStore(omeZarrUrl));
     // loadOmeZarr(omeZarrRoot).then(setLoader);
