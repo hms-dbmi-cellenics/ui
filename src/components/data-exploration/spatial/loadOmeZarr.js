@@ -3,7 +3,7 @@
 
 import { ZarrPixelSource } from '@hms-dbmi/viv';
 import { open as zarrOpen } from 'zarrita';
-import { createZarrArrayAdapter, createZarrArrayAdapterDual, createZarrArrayAdapterGrid } from './createZarrArrayAdapter';
+import { createZarrArrayAdapter, createZarrArrayAdapterGrid } from './createZarrArrayAdapter';
 
 function prevPowerOf2(x) {
   return 2 ** Math.floor(Math.log2(x));
@@ -87,29 +87,6 @@ export async function loadOmeZarr(root) {
   return {
     data: pyramid,
     metadata: rootAttrs,
-  };
-}
-
-export async function loadOmeZarrDual(roots) {
-  // Load data for each root
-  const firstRoot = roots[0];
-  const secondRoot = roots[1];
-
-  const { data: data1, rootAttrs, labels } = await loadMultiscales(firstRoot);
-  const { data: data2 } = await loadMultiscales(secondRoot);
-
-  const tileSize = guessTileSize(data1[0]);
-
-  // Assuming createZarrArrayAdapter is updated to handle multiple datasets
-  const pyramid = data1.map((arr1, i) => new ZarritaPixelSource(
-    createZarrArrayAdapterDual([arr1, data2[i]]), // Pass arrays for both images
-    labels,
-    tileSize,
-  ));
-
-  return {
-    data: pyramid,
-    metadata: rootAttrs, // Only using the first root's metadata
   };
 }
 

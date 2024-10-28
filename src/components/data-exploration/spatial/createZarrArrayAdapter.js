@@ -54,131 +54,6 @@ export function createZarrArrayAdapter(arr) {
   });
 }
 
-export function createZarrArrayAdapterDual(arrs) {
-  const [arr1, arr2] = arrs;
-
-  return new Proxy(arr1, {
-    get(target, prop) {
-      if (prop === 'getRaw') {
-        return async (selection) => {
-          let data1;
-          let data2;
-
-          if (selection) {
-            const shape1 = arr1.shape;
-            const width1 = shape1[shape1.length - 1];
-
-            // Adjust the selection for the x-axis
-            const adjustedSelections = selection.map((dimSelection, i) => {
-              if (typeof dimSelection === 'object' && dimSelection !== null) {
-                const [start, stop, step] = [dimSelection.start, dimSelection.stop, dimSelection.step];
-
-                if (i === shape1.length - 1) { // If it's the x-axis
-                  const firstImageStart = Math.max(0, Math.min(start, width1));
-                  const firstImageStop = Math.max(firstImageStart, Math.min(stop, width1));
-                  const secondImageStart = Math.max(0, start - width1);
-                  const secondImageStop = Math.max(secondImageStart, stop - width1);
-
-                  const firstImageSelection = slice(firstImageStart, firstImageStop, step);
-                  const secondImageSelection = slice(secondImageStart, secondImageStop, step);
-
-                  return [firstImageSelection, secondImageSelection];
-                }
-
-                return [slice(start, stop, step), slice(start, stop, step)];
-              }
-              return [dimSelection, dimSelection];
-            });
-
-            const data1Selection = adjustedSelections.map(([s1, _]) => s1);
-            const data2Selection = adjustedSelections.map(([_, s2]) => s2);
-
-            // Check if one of the selections is effectively empty
-            const isData1Empty = data1Selection.some((s) => s !== null && typeof s === 'object' && s.start === s.stop);
-            const isData2Empty = data2Selection.some((s) => s !== null && typeof s === 'object' && s.start === s.stop);
-
-            if (!isData1Empty) {
-              data1 = await get(arr1, data1Selection);
-            }
-            if (!isData2Empty) {
-              data2 = await get(arr2, data2Selection);
-            }
-
-            // Return from the non-empty data
-            if (isData1Empty) return data2;
-            if (isData2Empty) return data1;
-
-            // Combine the data if both parts are valid
-            const combinedData = combineSideBySide(data1, data2);
-
-            return combinedData;
-          }
-
-          // Default selection to full extents if falsy
-          const s1 = arr1.shape.map(() => null);
-          const s2 = arr2.shape.map(() => null);
-
-          data1 = await get(arr1, s1);
-          data2 = await get(arr2, s2);
-
-          const combinedData = combineSideBySide(data1, data2);
-          return combinedData;
-        };
-      }
-      if (prop === 'getRawChunk') {
-        throw new Error('getRawChunk should not have been called');
-      }
-      if (prop === 'dtype') {
-        return getV2DataType(target.dtype);
-      }
-      if (prop === 'shape') {
-        // Calculate combined shape
-        const shape1 = arr1.shape;
-        const shape2 = arr2.shape;
-        const combinedShape = [...shape1];
-        combinedShape[combinedShape.length - 1] += shape2[shape2.length - 1];
-        return combinedShape;
-      }
-      return Reflect.get(target, prop);
-    },
-  });
-}
-function combineSideBySide(data1, data2) {
-  const shape1 = data1.shape;
-  const shape2 = data2.shape;
-
-  const height = shape1[0]; // Number of rows, assuming shape = [height, width]
-  const width1 = shape1[1]; // Width of the first image
-  const width2 = shape2[1]; // Width of the second image
-
-  // New combined shape and stride
-  const newShape = [height, width1 + width2];
-  const newStride = [width1 + width2, 1];
-
-  // Prepare new data container
-  const combinedData = new Uint8Array(newShape[0] * newShape[1]);
-
-  // Iteratively combine data from both arrays
-  for (let i = 0; i < height; i++) {
-    // Calculate indices for each row
-    const rowStart1 = i * width1;
-    const rowStart2 = i * width2;
-    const combinedRowStart = i * newStride[0];
-
-    // Copy data for row i from data1
-    combinedData.set(data1.data.subarray(rowStart1, rowStart1 + width1), combinedRowStart);
-
-    // Copy data for row i from data2
-    combinedData.set(data2.data.subarray(rowStart2, rowStart2 + width2), combinedRowStart + width1);
-  }
-
-  return {
-    data: combinedData,
-    shape: newShape,
-    stride: newStride,
-  };
-}
-
 export function createZarrArrayAdapterGrid(arrs, [n, p]) {
   const firstArray = arrs[0];
 
@@ -187,12 +62,9 @@ export function createZarrArrayAdapterGrid(arrs, [n, p]) {
       if (prop === 'getRaw') {
         return async (selection) => {
           const { shape } = firstArray;
-          const heightPerImage = shape[shape.length - 2];
-          const widthPerImage = shape[shape.length - 1];
+          const [heightPerImage, widthPerImage] = shape.slice(-2);
 
           if (selection) {
-            console.log('selection!!!');
-            console.log(selection);
             // Account for full range in any dimension marked by null
             const gridSelection = [
               selection[0],
@@ -200,19 +72,11 @@ export function createZarrArrayAdapterGrid(arrs, [n, p]) {
               { start: 0, stop: widthPerImage * p, step: 1 },
             ];
 
-            const normalizedSelection = selection.map((s, i) => (
-              s === null ? gridSelection[i] : s
-            ));
+            const normalizedSelection = selection.map((s, i) => s ?? gridSelection[i]);
 
             // get x and y ranges and associated row and col value
-            console.log('normalizedSelection!!!');
-            console.log(normalizedSelection);
             const yRanges = calculateRanges(normalizedSelection[shape.length - 2], heightPerImage, n);
             const xRanges = calculateRanges(normalizedSelection[shape.length - 1], widthPerImage, p);
-
-            console.log('ranges!!!!');
-            console.log(yRanges);
-            console.log(xRanges);
 
             const dataSelections = yRanges.flatMap((yRange, row) => xRanges.map((xRange, col) => ({
               imageIndex: row * p + col,
@@ -224,9 +88,6 @@ export function createZarrArrayAdapterGrid(arrs, [n, p]) {
                 return dimSelection;
               }),
             }))).filter(({ adjustedSelection }) => !adjustedSelection.includes(null));
-
-            console.log('dataSelections!!!!');
-            console.log(dataSelections);
 
             const dataPerImage = await Promise.all(
               dataSelections.map(({
@@ -295,20 +156,20 @@ function combineGridData(dataArrays) {
 
   const combinedData = new Uint8Array(totalHeight * totalWidth);
 
-  // Calculate offsets based on row heights and column widths
+  // Calculate offsets using row heights and column widths and place image data
   dataArrays.forEach(({ data, row, col }) => {
     const [height, width] = data.shape;
 
+    // Calculate the offsets using reduce for row and column
     const offsetY = rowHeights.slice(0, row - minRow).reduce((sum, h) => sum + h, 0);
     const offsetX = colWidths.slice(0, col - minCol).reduce((sum, w) => sum + w, 0);
 
-    for (let y = 0; y < height; y++) {
-      for (let x = 0; x < width; x++) {
-        const srcIndex = y * width + x;
-        const destIndex = (offsetY + y) * totalWidth + (offsetX + x);
-        combinedData[destIndex] = data.data[srcIndex];
-      }
-    }
+    // Loop through each pixel in the source image
+    [...Array(height)].forEach((_, y) => [...Array(width)].forEach((_, x) => {
+      const srcIndex = y * width + x;
+      const destIndex = (offsetY + y) * totalWidth + (offsetX + x);
+      combinedData[destIndex] = data.data[srcIndex];
+    }));
   });
 
   return {
