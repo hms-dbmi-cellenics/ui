@@ -98,7 +98,7 @@ export function createZarrArrayAdapterGrid(arrs, [numRows, numCols]) {
               });
 
               const imageIndex = row * numCols + col;
-              const hasImage = imageIndex < arrs.length;
+              const hasImage = imageIndex < arrs.length; // e.g. if 3 images but grid is 2 x 2 then 1 empty image
 
               return {
                 imageIndex,
@@ -117,8 +117,8 @@ export function createZarrArrayAdapterGrid(arrs, [numRows, numCols]) {
                   return get(arrs[imageIndex], adjustedSelection).then((data) => ({ data, row, col }));
                 }
 
-                // Generate transparent image data if the image doesn't exist
-                return generateTransparentData(adjustedSelection, row, col);
+                // Generate image data if the image doesn't exist
+                return generateEmptyImageData(adjustedSelection, row, col);
               }),
             );
 
@@ -143,16 +143,17 @@ export function createZarrArrayAdapterGrid(arrs, [numRows, numCols]) {
   });
 }
 
-function generateTransparentData(adjustedSelection, row, col) {
-  // Extract the relevant slices for y and x dimensions
+function generateEmptyImageData(adjustedSelection, row, col) {
+  // Extract the channel and slices for y and x dimensions
   const [channel, ySlice, xSlice] = adjustedSelection;
 
-  // Calculate the dimensions for the transparent data
+  // Calculate the dimensions for the empty image data
   const height = ySlice.stop - ySlice.start;
   const width = xSlice.stop - xSlice.start;
 
-  // Create transparent data (assumed 0 to be transparent)
-  const data = new Uint8Array(height * width).fill(SPATIAL_BACKGROUND_COLOR[channel]);
+  // Create empty data using background color of spatial tile
+  const backgroundChannelValue = SPATIAL_BACKGROUND_COLOR[channel];
+  const data = new Uint8Array(height * width).fill(backgroundChannelValue);
 
   // Return an object structured like Zarr array data
   return {
@@ -199,8 +200,8 @@ function combineGridData(dataArrays) {
 
   dataArrays.forEach(({ data, row, col }) => {
     const [height, width] = data.shape;
-    rowHeights[row - minRow] = Math.max(rowHeights[row - minRow], height);
-    colWidths[col - minCol] = Math.max(colWidths[col - minCol], width);
+    rowHeights[row - minRow] = height;
+    colWidths[col - minCol] = width;
   });
 
   // Compute total dimensions
@@ -213,16 +214,18 @@ function combineGridData(dataArrays) {
   dataArrays.forEach(({ data, row, col }) => {
     const [height, width] = data.shape;
 
-    // Calculate the offsets using reduce for row and column
     const offsetY = rowHeights.slice(0, row - minRow).reduce((sum, h) => sum + h, 0);
     const offsetX = colWidths.slice(0, col - minCol).reduce((sum, w) => sum + w, 0);
 
-    // Loop through each pixel in the source image
-    [...Array(height)].forEach((_, y) => [...Array(width)].forEach((_, x) => {
-      const srcIndex = y * width + x;
-      const destIndex = (offsetY + y) * totalWidth + (offsetX + x);
-      combinedData[destIndex] = data.data[srcIndex];
-    }));
+    // Copy each line of the image data to the destination grid
+    for (let y = 0; y < height; y += 1) {
+      const srcIndexStart = y * width;
+      const srcIndexEnd = srcIndexStart + width;
+      const destIndexStart = (offsetY + y) * totalWidth + offsetX;
+
+      // Copy the entire row at once
+      combinedData.set(data.data.subarray(srcIndexStart, srcIndexEnd), destIndexStart);
+    }
   });
 
   return {
