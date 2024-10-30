@@ -2,6 +2,7 @@ import React, { useEffect, useState, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import dynamic from 'next/dynamic';
 import { root as zarrRoot, FetchStore } from 'zarrita';
+import { ZipFileStore } from '@zarrita/storage';
 import { loadOmeZarrGrid } from './loadOmeZarr';
 
 import ExampleData from './ExampleData';
@@ -79,14 +80,16 @@ const SpatialViewer = (props) => {
   const [loader, setLoader] = useState(null);
 
   useEffect(() => {
+    console.log('ZipFileStore!!!');
+    console.log(ZipFileStore);
     // Create Zarr roots for each URL
-    const omeZarrRoot1 = zarrRoot(new FetchStore(omeZarrUrl));
-    const omeZarrRoot2 = zarrRoot(new FetchStore(omeZarrUrl));
-    const omeZarrRoot3 = zarrRoot(new FetchStore(omeZarrUrl));
-    const omeZarrRoot4 = zarrRoot(new FetchStore(omeZarrUrl));
+    const omeZarrRoot1 = zarrRoot(ZipFileStore.fromUrl(omeZarrUrl));
+    const omeZarrRoot2 = zarrRoot(ZipFileStore.fromUrl(omeZarrUrl));
+    const omeZarrRoot3 = zarrRoot(ZipFileStore.fromUrl(omeZarrUrl));
+    const omeZarrRoot4 = zarrRoot(ZipFileStore.fromUrl(omeZarrUrl));
 
     // Load both datasets
-    loadOmeZarrGrid([omeZarrRoot1, omeZarrRoot2, omeZarrRoot3], [2, 2]).then(setLoader);
+    loadOmeZarrGrid([omeZarrRoot1, omeZarrRoot2, omeZarrRoot3, omeZarrRoot4], [2, 2]).then(setLoader);
 
     // const omeZarrRoot = zarrRoot(new FetchStore(omeZarrUrl));
     // loadOmeZarr(omeZarrRoot).then(setLoader);

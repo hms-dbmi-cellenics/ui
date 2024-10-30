@@ -95,7 +95,7 @@ const ExplorationViewPage = ({
           experimentId={experimentId}
           width={width}
           height={height}
-          omeZarrUrl='http://localhost:8000/human-lymph-node-10x-visium/data/processed/human_lymph_node_10x_visium.ome.zarr'
+          omeZarrUrl='http://localhost:8000/human-lymph-node-10x-visium/data/processed/human_lymph_node_10x_visium.ome.zarr.zip'
         />
       ),
     },

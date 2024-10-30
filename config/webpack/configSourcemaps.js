@@ -10,6 +10,12 @@ const webpackConfigSourcemaps = (config, { dev }) => {
     'scheduler/tracing': 'scheduler/tracing-profiling',
   };
 
+  // need so that can import ZipFileStore from zarrita
+  config.resolve.fallback = {
+    ...config.resolve.fallback,
+    fs: require.resolve('graceful-fs'),
+  };
+
   return config;
 };
 
