@@ -99,9 +99,6 @@ export async function loadOmeZarrGrid(roots, gridSize) {
 
   const tileSize = guessTileSize(dataGroups[0][0]); // Assuming first image for tiling
 
-  console.log('rootAttrs!!!');
-  console.log(rootAttrs);
-
   // Create adapters for each image pair in the grid
   const pyramid = dataGroups[0].map((_, resolution) => {
     const arrs = dataGroups.map((group) => group[resolution]);

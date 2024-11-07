@@ -153,7 +153,7 @@ function generateEmptyImageData(adjustedSelection, row, col) {
 
   // Create empty data using background color of spatial tile
   const backgroundChannelValue = SPATIAL_BACKGROUND_COLOR[channel];
-  const data = new Uint8Array(height * width).fill(backgroundChannelValue);
+  const data = new Int32Array(height * width).fill(backgroundChannelValue);
 
   // Return an object structured like Zarr array data
   return {
@@ -208,7 +208,8 @@ function combineGridData(dataArrays) {
   const totalHeight = rowHeights.reduce((sum, h) => sum + h, 0);
   const totalWidth = colWidths.reduce((sum, w) => sum + w, 0);
 
-  const combinedData = new Uint8Array(totalHeight * totalWidth);
+  // Uint8Array causes WebGL: INVALID_OPERATION: texImage2D: type INT but ArrayBufferView not Int32Array
+  const combinedData = new Int32Array(totalHeight * totalWidth);
 
   // Calculate offsets using row heights and column widths and place image data
   dataArrays.forEach(({ data, row, col }) => {
