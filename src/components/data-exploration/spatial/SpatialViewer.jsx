@@ -474,6 +474,8 @@ const SpatialViewer = (props) => {
               geneExpressionColormap='plasma'
               getExpressionValue={getExpressionValue}
               setCellSelection={setCellSelection}
+              updateViewInfo={updateViewInfo}
+              setCellHighlight={setCellHighlight}
               // ======= EXAMPLE DATA =======
               // obsCentroids={ExampleData.obsCentroids}
               // obsCentroidsIndex={ExampleData.obsCentroidsIndex}
