@@ -10,7 +10,7 @@ import CrossHair from 'components/data-exploration/embedding/CrossHair';
 import CellInfo from 'components/data-exploration/CellInfo';
 import PlatformError from 'components/PlatformError';
 import Loader from 'components/Loader';
-import { root as zarrRoot } from 'zarrita';
+import { root as zarrRoot, open as zarrOpen } from 'zarrita';
 import { ZipFileStore } from '@zarrita/storage';
 import { getSampleFileUrls } from 'utils/data-management/downloadSampleFile';
 
@@ -19,10 +19,11 @@ import { getCellSetsHierarchyByType, getCellSets } from 'redux/selectors';
 import { createCellSet } from 'redux/actions/cellSets';
 import { loadGeneExpression } from 'redux/actions/genes';
 import { updateCellInfo } from 'redux/actions/cellInfo';
+import { union } from 'utils/cellSetOperations';
 
 import {
   convertCentroidsData,
-  getImageOffsets,
+  offsetCentroids,
   renderCellSetColors,
   colorByGeneExpression,
   colorInterpolator,
@@ -106,7 +107,6 @@ const obsSegmentationsLayerDefs = {
   opacity: 1,
 };
 
-const obsSegmentationsType = 'polygon';
 const geneExpressionColormapRange = [0, 1];
 
 const SpatialViewer = (props) => {
@@ -154,16 +154,15 @@ const SpatialViewer = (props) => {
   const [omeZarrUrls, setOmeZarrUrls] = useState(null);
   const [loader, setLoader] = useState(null);
   const [offsetData, setOffsetData] = useState();
+  const [perImageShape, setPerImageShape] = useState();
+  const [gridShape, setGridShape] = useState();
+  const [cellColorsForVitessce, setCellColorsForVitessce] = useState();
 
   useEffect(() => {
-    if (!data || !omeZarrSampleIds || !cellSetProperties) return;
+    if (!data || !omeZarrSampleIds || !cellSetProperties || !perImageShape || !gridShape) return;
 
-    const numColumns = Math.min(omeZarrSampleIds.length, 4);
-
-    setOffsetData(getImageOffsets(data, cellSetProperties, omeZarrSampleIds, 600, 600, numColumns));
-  }, [data, omeZarrSampleIds, cellSetProperties, cellSetHidden]);
-
-  // const getExpressionValue = useCallback(() => { }, []);
+    setOffsetData(offsetCentroids(data, cellSetProperties, omeZarrSampleIds, perImageShape, gridShape));
+  }, [data, omeZarrSampleIds, cellSetProperties, perImageShape, gridShape]);
 
   useEffect(() => {
     (async () => {
@@ -192,16 +191,31 @@ const SpatialViewer = (props) => {
   useEffect(() => {
     if (!omeZarrUrls) return; // Exit early if there are no URLs
 
-    // Create Zarr roots for each URL
-    const omeZarrRoots = omeZarrUrls.map((url) => zarrRoot(ZipFileStore.fromUrl(url)));
-
     // Determine grid size
     const numColumns = Math.min(omeZarrUrls.length, 4);
     const numRows = Math.ceil(omeZarrUrls.length / numColumns);
 
-    // Load the datasets
-    loadOmeZarrGrid(omeZarrRoots, [numRows, numColumns]).then(setLoader);
+    setGridShape([numRows, numColumns]);
   }, [omeZarrUrls]);
+
+  useEffect(() => {
+    if (!omeZarrUrls || !gridShape) return;
+
+    // Create Zarr roots for each URL
+    const omeZarrRoots = omeZarrUrls.map((url) => zarrRoot(ZipFileStore.fromUrl(url)));
+
+    // Load the datasets
+    loadOmeZarrGrid(omeZarrRoots, gridShape).then(setLoader);
+  }, [omeZarrUrls, gridShape]);
+
+  useEffect(() => {
+    if (!loader) return;
+
+    const { shape } = loader;
+    // first dim is number of color channels
+    const [_, perImageWidth, perImageHeight] = shape;
+    setPerImageShape([perImageWidth, perImageHeight]);
+  }, [loader]);
 
   const originalView = {
     zoom: -2,
@@ -271,26 +285,12 @@ const SpatialViewer = (props) => {
     setCellColors(colorByGeneExpression(truncatedExpression, truncatedMin, truncatedMax));
   }, [focusData.key, expressionLoading]);
 
-  const [convertedCellsData, setConvertedCellsData] = useState();
-
-  useEffect(() => {
-    if (!offsetData || !cellSetHidden || !cellSetProperties || !omeZarrSampleIds) return;
-
-    setConvertedCellsData(convertCentroidsData(offsetData, cellSetHidden, cellSetProperties));
-  }, [offsetData, cellSetHidden, cellSetProperties]);
-
-  // default segmentations are diamonds
-  // TODO: get from backend
-  const [obsSegmentations, setObsSegmentations] = useState();
+  const [convertedCentroidsData, setConvertedCentroidsData] = useState();
 
   useEffect(() => {
     if (!offsetData) return;
 
-    setObsSegmentations({
-      data: offsetData.map((datum) => toDiamond(datum[0], datum[1], RADIUS_DEFAULT)),
-      shape: [offsetData.length, 4, 2],
-      stride: [8, 2, 1],
-    });
+    setConvertedCentroidsData(convertCentroidsData(offsetData));
   }, [offsetData]);
 
   useEffect(() => {
@@ -366,7 +366,34 @@ const SpatialViewer = (props) => {
     }
   }, []);
 
-  const cellColorsForVitessce = useMemo(() => new Map(Object.entries(cellColors)), [cellColors]);
+  const [hiddenCentroids, setHiddenCentroids] = useState();
+  useEffect(() => {
+    if (!cellSetHidden || !cellSetProperties) return;
+
+    setHiddenCentroids(union([...cellSetHidden], cellSetProperties));
+  }, [cellSetHidden, cellSetProperties]);
+
+  // const cellColorsForVitessce = useMemo(() => new Map(Object.entries(cellColors)), [cellColors]);
+  useEffect(() => {
+    if (!cellColors || !hiddenCentroids) return;
+
+    const filteredCellColors = _.omit(cellColors, [...hiddenCentroids]);
+
+    setCellColorsForVitessce(new Map(Object.entries(filteredCellColors)));
+  }, [cellColors, hiddenCentroids]);
+
+  const [cellSelection, setCellSelection] = useState();
+
+  useEffect(() => {
+    if (!convertedCentroidsData || !hiddenCentroids) return;
+
+    console.log('convertedCentroidsData!!!');
+    console.log(convertedCentroidsData);
+
+    const filteredSelection = convertedCentroidsData?.obsCentroidsIndex.filter((item) => !hiddenCentroids.has(item));
+
+    setCellSelection(filteredSelection);
+  }, [convertedCentroidsData, hiddenCentroids]);
 
   const setViewState = useCallback(({ zoom, target }) => {
     setView({ zoom, target });
@@ -437,7 +464,7 @@ const SpatialViewer = (props) => {
     <>
       {showLoader && <center><Loader experimentId={experimentId} size='large' /></center>}
       <div
-        className='vitessce-container vitessce-theme-light'
+        className='vitessce-container vitessce-theme-light2'
         style={{
           width,
           height,
@@ -464,17 +491,14 @@ const SpatialViewer = (props) => {
               uuid='spatial-0'
               width={width}
               height={height}
-              theme='light'
+              theme='light2'
               imageLayerLoaders={{ 0: loader }}
               imageLayerDefs={imageLayerDefs}
-              obsCentroids={convertedCellsData?.obsEmbedding}
-              obsCentroidsIndex={convertedCellsData?.obsEmbeddingIndex}
+              obsCentroids={convertedCentroidsData?.obsCentroids}
+              obsCentroidsIndex={convertedCentroidsData?.obsCentroidsIndex}
               cellColors={cellColorsForVitessce}
-              obsSegmentations={obsSegmentations}
-              obsSegmentationsIndex={convertedCellsData?.obsEmbeddingIndex}
               obsSegmentationsLayerDefs={obsSegmentationsLayerDefs}
-              obsSegmentationsType={obsSegmentationsType}
-              cellSelection={convertedCellsData?.obsEmbeddingIndex}
+              cellSelection={cellSelection}
               cellColorEncoding='cellSetSelection'
               geneExpressionColormapRange={geneExpressionColormapRange}
               geneExpressionColormap='plasma'

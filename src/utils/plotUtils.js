@@ -66,28 +66,24 @@ const colorByGeneExpression = (truncatedExpression, min, max = 4) => {
   ));
 };
 
-const convertCentroidsData = (results, hidden, properties) => {
+const convertCentroidsData = (results) => {
   const data = [{}, {}];
-  const obsEmbeddingIndex = [];
+  const obsCentroidsIndex = [];
 
-  const hiddenCells = union([...hidden], properties);
   results.forEach((value, key) => {
-    if (hiddenCells.has(key)) {
-      return;
-    }
     if (value.length !== 2) {
       throw new Error('Unexpected number of embedding dimensions');
     }
-    const [firstDimension, secondDimension] = value;
-    data[0][key] = firstDimension;
-    data[1][key] = secondDimension;
+    const [x, y] = value;
+    data[0][key] = x;
+    data[1][key] = y;
 
-    obsEmbeddingIndex.push(key.toString());
+    obsCentroidsIndex.push(key.toString());
   });
 
   return {
-    obsEmbedding: { data, shape: [data.length, results.length] },
-    obsEmbeddingIndex,
+    obsCentroids: { data, shape: [data.length, results.length] },
+    obsCentroidsIndex,
   };
 };
 
@@ -114,10 +110,22 @@ const convertCellsData = (results, hidden, properties) => {
   };
 };
 
-const getImageOffsets = (results, properties, sampleIds, imageWidth, imageHeight, numColumns) => {
-  const offsetResults = results.map((value, key) => {
-    const [firstDimension, secondDimension] = value;
+const offsetCentroids = (results, properties, sampleIds, perImageShape, gridShape) => {
+  const [imageWidth, imageHeight] = perImageShape;
+  const [_, numColumns] = gridShape;
 
+  // Pre-calculate offsets for each sampleId
+  const sampleOffsets = sampleIds.map((_, sampleIndex) => {
+    const row = Math.floor(sampleIndex / numColumns);
+    const column = sampleIndex % numColumns;
+    return {
+      xOffset: column * imageWidth,
+      yOffset: row * imageHeight,
+    };
+  });
+
+  // Map the results with pre-calculated offsets
+  const offsetResults = results.map(([x, y], key) => {
     // Determine which sample this cell belongs to
     const sampleId = sampleIds.find((id) => properties[id].cellIds.has(key));
     if (!sampleId) {
@@ -130,16 +138,11 @@ const getImageOffsets = (results, properties, sampleIds, imageWidth, imageHeight
       throw new Error(`Sample ID ${sampleId} not found in sampleIds`);
     }
 
-    // Calculate the grid position
-    const row = Math.floor(sampleIndex / numColumns);
-    const column = sampleIndex % numColumns;
-
-    // Calculate offsets
-    const xOffset = column * imageWidth;
-    const yOffset = row * imageHeight;
+    // Retrieve pre-calculated offsets
+    const { xOffset, yOffset } = sampleOffsets[sampleIndex];
 
     // Apply offsets
-    return [firstDimension + yOffset, secondDimension + xOffset];
+    return [x + xOffset, y + yOffset];
   });
 
   return offsetResults;
@@ -164,7 +167,7 @@ export {
   clearPleaseWait,
   colorByGeneExpression,
   colorInterpolator,
-  getImageOffsets,
+  offsetCentroids,
   hexToRgb,
   convertRange,
 };
