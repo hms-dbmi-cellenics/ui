@@ -22,7 +22,7 @@ import { updateCellInfo } from 'redux/actions/cellInfo';
 import { union } from 'utils/cellSetOperations';
 
 import {
-  convertCentroidsData,
+  filterCentroidsData,
   offsetCentroids,
   renderCellSetColors,
   colorByGeneExpression,
@@ -32,9 +32,6 @@ import getContainingCellSetsProperties from 'utils/cellSets/getContainingCellSet
 
 import { loadOmeZarrGrid } from './loadOmeZarr';
 
-// import ExampleData from './ExampleData';
-
-const toDiamond = (x, y, r) => [[x, y + r], [x + r, y], [x, y - r], [x - r, y]];
 const RADIUS_DEFAULT = 3;
 
 const Spatial = dynamic(
@@ -156,7 +153,6 @@ const SpatialViewer = (props) => {
   const [offsetData, setOffsetData] = useState();
   const [perImageShape, setPerImageShape] = useState();
   const [gridShape, setGridShape] = useState();
-  const [cellColorsForVitessce, setCellColorsForVitessce] = useState();
 
   useEffect(() => {
     if (!data || !omeZarrSampleIds || !cellSetProperties || !perImageShape || !gridShape) return;
@@ -285,13 +281,16 @@ const SpatialViewer = (props) => {
     setCellColors(colorByGeneExpression(truncatedExpression, truncatedMin, truncatedMax));
   }, [focusData.key, expressionLoading]);
 
-  const [convertedCentroidsData, setConvertedCentroidsData] = useState();
+  const [filteredData, setFilteredData] = useState();
 
   useEffect(() => {
-    if (!offsetData) return;
+    if (!offsetData || !cellColors || !cellSetHidden || !cellSetProperties) return;
 
-    setConvertedCentroidsData(convertCentroidsData(offsetData));
-  }, [offsetData]);
+    const hiddenCentroids = union([...cellSetHidden], cellSetProperties);
+    const newFilteredData = filterCentroidsData(offsetData, cellColors, hiddenCentroids);
+
+    setFilteredData(newFilteredData);
+  }, [offsetData, cellColors, cellSetHidden, cellSetProperties]);
 
   useEffect(() => {
     if (selectedCell) {
@@ -365,35 +364,6 @@ const SpatialViewer = (props) => {
       setSelectedIds(selectedIdsToInt);
     }
   }, []);
-
-  const [hiddenCentroids, setHiddenCentroids] = useState();
-  useEffect(() => {
-    if (!cellSetHidden || !cellSetProperties) return;
-
-    setHiddenCentroids(union([...cellSetHidden], cellSetProperties));
-  }, [cellSetHidden, cellSetProperties]);
-
-  // const cellColorsForVitessce = useMemo(() => new Map(Object.entries(cellColors)), [cellColors]);
-  useEffect(() => {
-    if (!cellColors || !hiddenCentroids) return;
-
-    const filteredCellColors = _.omit(cellColors, [...hiddenCentroids]);
-
-    setCellColorsForVitessce(new Map(Object.entries(filteredCellColors)));
-  }, [cellColors, hiddenCentroids]);
-
-  const [cellSelection, setCellSelection] = useState();
-
-  useEffect(() => {
-    if (!convertedCentroidsData || !hiddenCentroids) return;
-
-    console.log('convertedCentroidsData!!!');
-    console.log(convertedCentroidsData);
-
-    const filteredSelection = convertedCentroidsData?.obsCentroidsIndex.filter((item) => !hiddenCentroids.has(item));
-
-    setCellSelection(filteredSelection);
-  }, [convertedCentroidsData, hiddenCentroids]);
 
   const setViewState = useCallback(({ zoom, target }) => {
     setView({ zoom, target });
@@ -494,11 +464,11 @@ const SpatialViewer = (props) => {
               theme='light2'
               imageLayerLoaders={{ 0: loader }}
               imageLayerDefs={imageLayerDefs}
-              obsCentroids={convertedCentroidsData?.obsCentroids}
-              obsCentroidsIndex={convertedCentroidsData?.obsCentroidsIndex}
-              cellColors={cellColorsForVitessce}
+              obsCentroids={filteredData?.obsCentroids}
+              obsCentroidsIndex={filteredData?.obsCentroidsIndex}
+              cellColors={filteredData?.centroidColors}
               obsSegmentationsLayerDefs={obsSegmentationsLayerDefs}
-              cellSelection={cellSelection}
+              cellSelection={filteredData?.obsCentroidsIndex}
               cellColorEncoding='cellSetSelection'
               geneExpressionColormapRange={geneExpressionColormapRange}
               geneExpressionColormap='plasma'

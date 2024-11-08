@@ -66,6 +66,40 @@ const colorByGeneExpression = (truncatedExpression, min, max = 4) => {
   ));
 };
 
+const filterCentroidsData = (results, colors, hiddenCentroids) => {
+  // obsCentroidsIndex is the cell names
+  // data keys are positions from 0 to length (no missing)
+  // centroidColors is a map from cell name => color
+  let dataKey = 0;
+  const data = [{}, {}];
+  const obsCentroidsIndex = [];
+  const centroidColors = new Map();
+
+  results.forEach((value, key) => {
+    if (hiddenCentroids.has(key)) {
+      return;
+    }
+    if (value.length !== 2) {
+      throw new Error('Unexpected number of embedding dimensions');
+    }
+
+    const [x, y] = value;
+    data[0][dataKey] = x;
+    data[1][dataKey] = y;
+
+    centroidColors.set(key.toString(), colors[key]);
+    obsCentroidsIndex.push(key.toString());
+
+    dataKey += 1;
+  });
+
+  return {
+    obsCentroids: { data, shape: [data.length, obsCentroidsIndex.length] },
+    obsCentroidsIndex,
+    centroidColors,
+  };
+};
+
 const convertCentroidsData = (results) => {
   const data = [{}, {}];
   const obsCentroidsIndex = [];
@@ -163,6 +197,7 @@ export {
   renderCellSetColors,
   convertCellsData,
   convertCentroidsData,
+  filterCentroidsData,
   updateStatus,
   clearPleaseWait,
   colorByGeneExpression,
