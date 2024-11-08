@@ -357,7 +357,7 @@ const SpatialViewer = (props) => {
     }
   }, [selectedCell]);
 
-  const setCellsSelection = useCallback((selection) => {
+  const setCellSelection = useCallback((selection) => {
     if (Array.from(selection).length > 0) {
       setCreateClusterPopover(true);
       const selectedIdsToInt = new Set(Array.from(selection).map((id) => parseInt(id, 10)));
@@ -473,6 +473,7 @@ const SpatialViewer = (props) => {
               geneExpressionColormapRange={geneExpressionColormapRange}
               geneExpressionColormap='plasma'
               getExpressionValue={getExpressionValue}
+              setCellSelection={setCellSelection}
               // ======= EXAMPLE DATA =======
               // obsCentroids={ExampleData.obsCentroids}
               // obsCentroidsIndex={ExampleData.obsCentroidsIndex}
