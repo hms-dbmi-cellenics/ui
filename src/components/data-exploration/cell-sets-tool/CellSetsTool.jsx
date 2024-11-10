@@ -240,14 +240,16 @@ const CellSetsTool = (props) => {
         paddingRight: '5px',
       }}
     >
-      <Space direction='vertical'>
-        {hidden.size > 0 && (
-          <Alert
-            message={`${hidden.size} cell set${hidden.size > 1 ? 's are' : ' is'} currently hidden.`}
-            type='warning'
-            action={<Button type='link' size='small' onClick={() => dispatch(unhideAllCellSets(experimentId))}>Unhide all</Button>}
-          />
-        )}
+      <Space direction='vertical' style={{ gap: 0 }}>
+        <Alert
+          message={`${hidden.size} cell set${hidden.size > 1 ? 's are' : ' is'} currently hidden.`}
+          type='warning'
+          action={<Button type='link' size='small' onClick={() => dispatch(unhideAllCellSets(experimentId))}>Unhide all</Button>}
+          style={{
+            visibility: hidden.size > 0 ? 'visible' : 'hidden',
+            opacity: hidden.size > 0 ? 1 : 0, // ensure opacity changes are instant
+          }}
+        />
         {renderContent()}
       </Space>
     </Element>
