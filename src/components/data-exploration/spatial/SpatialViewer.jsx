@@ -10,7 +10,7 @@ import CrossHair from 'components/data-exploration/embedding/CrossHair';
 import CellInfo from 'components/data-exploration/CellInfo';
 import PlatformError from 'components/PlatformError';
 import Loader from 'components/Loader';
-import { root as zarrRoot, open as zarrOpen } from 'zarrita';
+import { root as zarrRoot } from 'zarrita';
 import { ZipFileStore } from '@zarrita/storage';
 import { getSampleFileUrls } from 'utils/data-management/downloadSampleFile';
 
@@ -311,7 +311,7 @@ const SpatialViewer = (props) => {
       // getting the cluster properties for every cluster that has the cellId
       const cellProperties = getContainingCellSetsProperties(
         Number.parseInt(selectedCell, 10),
-        rootClusterNodes,
+        ['sample', ...rootClusterNodes],
         cellSets,
       );
 
