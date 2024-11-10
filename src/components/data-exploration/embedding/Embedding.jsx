@@ -174,7 +174,7 @@ const Embedding = (props) => {
       const prefixedCellSetNames = [];
       Object.values(cellProperties).forEach((clusterProperties) => {
         clusterProperties.forEach(({ name, parentNodeKey }) => {
-          prefixedCellSetNames.push(`${cellSetProperties[parentNodeKey].name} : ${name}`);
+          prefixedCellSetNames.push(`${cellSetProperties[parentNodeKey].name}: ${name}`);
         });
       });
 
