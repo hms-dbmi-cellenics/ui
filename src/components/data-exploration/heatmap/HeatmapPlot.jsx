@@ -231,7 +231,6 @@ const HeatmapPlot = (props) => {
     heatmapSettings?.groupedTracks,
     heatmapSettings?.selectedCellSet,
     heatmapSettings?.selectedPoints,
-    cellSets.hidden,
     groupedCellSets,
   ]);
 

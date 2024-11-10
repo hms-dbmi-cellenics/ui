@@ -1,16 +1,21 @@
 import generateVitessceHeatmapExpressionsMatrix from 'components/plots/helpers/heatmap/vitessce/utils/generateVitessceHeatmapExpressionsMatrix';
 import generateVitessceHeatmapTracksData from 'components/plots/helpers/heatmap/vitessce/utils/generateVitessceHeatmapTracksData';
+import { union } from 'utils/cellSetOperations';
 
 const generateVitessceData = (
   cellOrder, selectedTracks,
   expressionMatrix, selectedGenes, cellSets,
 ) => {
+  // filter out hidden cells
+  const hiddenCells = union([...cellSets.hidden], cellSets.properties);
+  const cellOrderFiltered = cellOrder.filter((cell) => !hiddenCells.has(cell));
+
   const trackColorData = generateVitessceHeatmapTracksData(
-    selectedTracks, cellSets, cellOrder,
+    selectedTracks, cellSets, cellOrderFiltered,
   );
 
   const vitessceMatrix = generateVitessceHeatmapExpressionsMatrix(
-    cellOrder,
+    cellOrderFiltered,
     selectedGenes,
     expressionMatrix,
   );
@@ -21,7 +26,7 @@ const generateVitessceData = (
   return {
     expressionMatrix: {
       cols: selectedGenes,
-      rows: cellOrder.map((x) => `${x}`),
+      rows: cellOrderFiltered.map((x) => `${x}`),
       matrix: Uint8Array.from(vitessceMatrix),
     },
     metadataTracks: {
