@@ -2,7 +2,7 @@ import * as vega from 'vega';
 
 import { union } from 'utils/cellSetOperations';
 
-const colorInterpolator = vega.scheme('purplered');
+const colorInterpolator = vega.scheme('plasma');
 
 const hexToRgb = (hex) => {
   if (hex) {

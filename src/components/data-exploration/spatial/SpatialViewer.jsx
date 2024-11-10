@@ -394,47 +394,11 @@ const SpatialViewer = (props) => {
     );
   }
 
-  const renderExpressionView = () => {
-    if (focusData.store === 'genes') {
-      const colorScale = vega.scale('sequential')()
-        .interpolator(colorInterpolator);
-
-      return (
-        <div>
-          <label htmlFor='continuous data name'>
-            <strong>{focusData.key}</strong>
-          </label>
-          <div
-            style={{
-              position: 'absolute',
-              background: `linear-gradient(${colorScale(1)}, ${colorScale(0)})`,
-              height: 200,
-              width: 20,
-              top: 70,
-            }}
-          />
-        </div>
-      );
-    }
-
-    if (focusData.store === 'cellSets') {
-      return (
-        <div>
-          <label htmlFor='cell set name'>
-            <strong>{cellSetProperties[focusData.key] ? cellSetProperties[focusData.key].name : ''}</strong>
-          </label>
-        </div>
-      );
-    }
-
-    return <div />;
-  };
-
   return (
     <>
       {showLoader && <center><Loader experimentId={experimentId} size='large' /></center>}
       <div
-        className='vitessce-container vitessce-theme-light2'
+        className='vitessce-container vitessce-theme-light'
         style={{
           width,
           height,
@@ -452,7 +416,6 @@ const SpatialViewer = (props) => {
         onClick={clearCellHighlight}
         onKeyPress={clearCellHighlight}
       >
-        {renderExpressionView()}
         {
           loader ? (
             <Spatial
