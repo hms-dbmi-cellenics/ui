@@ -15,7 +15,7 @@ import Embedding from 'components/data-exploration/embedding/Embedding';
 import SpatialViewer from 'components/data-exploration/spatial/SpatialViewer';
 import HeatmapPlot, { COMPONENT_TYPE } from 'components/data-exploration/heatmap/HeatmapPlot';
 import HeatmapSettings from 'components/data-exploration/heatmap/HeatmapSettings';
-import SpatialSettings from 'components/data-exploration/spatial/SpatialSettings';
+import OpacityDropdown from 'components/data-exploration/spatial/SpatialSettings';
 import MosaicCloseButton from 'components/MosaicCloseButton';
 import { updateLayout, addWindow } from 'redux/actions/layout/index';
 import SearchMenu from 'components/SearchMenu';
@@ -87,7 +87,7 @@ const ExplorationViewPage = ({
     Spatial: {
       toolbarControls: (
         <>
-          <SpatialSettings componentType={COMPONENT_TYPE} key='spatial-settings' />
+          <OpacityDropdown componentType={COMPONENT_TYPE} key='spatial-settings' />
           <MosaicCloseButton key='remove-button-spatial' />
         </>
       ),
