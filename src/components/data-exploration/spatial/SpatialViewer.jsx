@@ -417,7 +417,7 @@ const SpatialViewer = (props) => {
         onKeyPress={clearCellHighlight}
       >
         {
-          loader ? (
+          filteredData ? (
             <Spatial
               viewState={view}
               setViewState={setViewState}

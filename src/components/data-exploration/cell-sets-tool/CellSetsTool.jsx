@@ -248,6 +248,8 @@ const CellSetsTool = (props) => {
           style={{
             visibility: hidden.size > 0 ? 'visible' : 'hidden',
             opacity: hidden.size > 0 ? 1 : 0, // ensure opacity changes are instant
+            paddingTop: 0,
+            paddingBottom: 0,
           }}
         />
         {renderContent()}
