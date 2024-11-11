@@ -39,7 +39,7 @@ const Spatial = dynamic(
   { ssr: false },
 );
 
-const imageLayerDefs = [
+const defaultImageLayerDefs = [
   {
     channels: [
       {
@@ -108,10 +108,16 @@ const geneExpressionColormapRange = [0, 1];
 
 const SpatialViewer = (props) => {
   const {
-    experimentId, height, width,
+    experimentId, height, width, opacity,
   } = props;
 
   const dispatch = useDispatch();
+
+  const [imageLayerDefs, setImageLayerDefs] = useState(defaultImageLayerDefs);
+
+  useEffect(() => {
+    setImageLayerDefs([{ ...defaultImageLayerDefs[0], opacity }]);
+  }, [opacity]);
 
   const rootClusterNodes = useSelector(getCellSetsHierarchyByType('cellSets')).map(({ key }) => key);
 
@@ -492,6 +498,7 @@ SpatialViewer.propTypes = {
   width: PropTypes.number.isRequired,
   height: PropTypes.number.isRequired,
   experimentId: PropTypes.string.isRequired,
+  opacity: PropTypes.string.isRequired,
 };
 
 export default SpatialViewer;

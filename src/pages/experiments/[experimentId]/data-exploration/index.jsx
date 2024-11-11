@@ -34,6 +34,7 @@ const ExplorationViewPage = ({
   const { windows, panel } = layout;
   const [selectedTab, setSelectedTab] = useState(panel);
   const [addMenuVisible, setAddMenuVisible] = useState(false);
+  const [opacity, setOpacity] = useState(1);
   const { method } = useSelector((state) => (
     state.experimentSettings.processing?.configureEmbedding?.embeddingSettings
   )) || false;
@@ -87,7 +88,7 @@ const ExplorationViewPage = ({
     Spatial: {
       toolbarControls: (
         <>
-          <OpacityDropdown componentType={COMPONENT_TYPE} key='spatial-settings' />
+          <OpacityDropdown opacity={opacity} setOpacity={setOpacity} key='spatial-settings' />
           <MosaicCloseButton key='remove-button-spatial' />
         </>
       ),
@@ -96,6 +97,7 @@ const ExplorationViewPage = ({
           experimentId={experimentId}
           width={width}
           height={height}
+          opacity={opacity}
         />
       ),
     },

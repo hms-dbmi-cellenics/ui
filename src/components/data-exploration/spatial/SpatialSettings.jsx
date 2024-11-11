@@ -1,11 +1,11 @@
-import React, { useState } from 'react';
+import React from 'react';
 import {
   Dropdown, Button, Menu, Slider,
 } from 'antd';
 import { SettingOutlined } from '@ant-design/icons';
 
-const OpacityDropdown = () => {
-  const [opacity, setOpacity] = useState(1);
+const OpacityDropdown = (props) => {
+  const { opacity, setOpacity } = props;
 
   // Create a menu with a slider to adjust opacity
   const menu = (
