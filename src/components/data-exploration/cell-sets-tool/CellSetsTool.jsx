@@ -240,7 +240,7 @@ const CellSetsTool = (props) => {
         paddingRight: '5px',
       }}
     >
-      <Space direction='vertical' style={{ gap: 0 }}>
+      <Space direction='vertical' style={{ rowGap: 0 }}>
         <Alert
           message={`${hidden.size} cell set${hidden.size > 1 ? 's are' : ' is'} currently hidden.`}
           type='warning'
