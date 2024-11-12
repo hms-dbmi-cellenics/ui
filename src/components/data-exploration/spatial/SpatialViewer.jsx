@@ -179,7 +179,6 @@ const SpatialViewer = (props) => {
 
   useEffect(() => {
     if (!data || !omeZarrSampleIds || !cellSetProperties || !perImageShape || !gridShape) return;
-    console.log('blah!');
 
     setOffsetData(offsetCentroids(data, cellSetProperties, omeZarrSampleIds, perImageShape, gridShape));
   }, [data, omeZarrSampleIds, cellSetProperties, perImageShape, gridShape]);
@@ -262,7 +261,7 @@ const SpatialViewer = (props) => {
     if (!data) {
       dispatch(loadEmbedding(experimentId, embeddingType));
     }
-  }, []);
+  }, [experimentId]);
 
   // Handle focus change (e.g. a cell set or gene or metadata got selected).
   // Also handle here when the cell set properties or hierarchy change.
