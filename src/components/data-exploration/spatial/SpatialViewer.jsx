@@ -4,7 +4,6 @@ import React, {
 import dynamic from 'next/dynamic';
 import { useSelector, shallowEqual, useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
-import * as vega from 'vega';
 import ClusterPopover from 'components/data-exploration/embedding/ClusterPopover';
 import CrossHair from 'components/data-exploration/embedding/CrossHair';
 import CellInfo from 'components/data-exploration/CellInfo';
@@ -14,23 +13,26 @@ import { root as zarrRoot } from 'zarrita';
 import { ZipFileStore } from '@zarrita/storage';
 import { getSampleFileUrls } from 'utils/data-management/downloadSampleFile';
 
+import { loadComponentConfig } from 'redux/actions/componentConfig';
 import { loadEmbedding } from 'redux/actions/embedding';
 import { getCellSetsHierarchyByType, getCellSets } from 'redux/selectors';
 import { createCellSet } from 'redux/actions/cellSets';
 import { loadGeneExpression } from 'redux/actions/genes';
 import { updateCellInfo } from 'redux/actions/cellInfo';
 import { union } from 'utils/cellSetOperations';
+import _ from 'lodash';
 
 import {
   filterCentroidsData,
   offsetCentroids,
   renderCellSetColors,
   colorByGeneExpression,
-  colorInterpolator,
 } from 'utils/plotUtils';
 import getContainingCellSetsProperties from 'utils/cellSets/getContainingCellSetsProperties';
 
 import { loadOmeZarrGrid } from './loadOmeZarr';
+
+const COMPONENT_TYPE = 'interactiveSpatial';
 
 const RADIUS_DEFAULT = 3;
 
@@ -39,7 +41,7 @@ const Spatial = dynamic(
   { ssr: false },
 );
 
-const defaultImageLayerDefs = [
+const imageLayerDefsDefault = [
   {
     channels: [
       {
@@ -97,33 +99,23 @@ const defaultImageLayerDefs = [
   },
 ];
 
-const obsSegmentationsLayerDefs = {
-  visible: true,
-  stroked: false,
-  radius: RADIUS_DEFAULT,
-  opacity: 1,
-};
-
 const geneExpressionColormapRange = [0, 1];
 
 const SpatialViewer = (props) => {
   const {
-    experimentId, height, width, opacity,
+    experimentId, height, width,
   } = props;
 
   const dispatch = useDispatch();
-
-  const [imageLayerDefs, setImageLayerDefs] = useState(defaultImageLayerDefs);
-
-  useEffect(() => {
-    setImageLayerDefs([{ ...defaultImageLayerDefs[0], opacity }]);
-  }, [opacity]);
 
   const rootClusterNodes = useSelector(getCellSetsHierarchyByType('cellSets')).map(({ key }) => key);
 
   const embeddingType = 'images';
 
   const { data, loading, error } = useSelector((state) => state.embeddings[embeddingType]) || {};
+
+  const spatialSettings = useSelector((state) => state.componentConfig[COMPONENT_TYPE]?.config,
+    _.isEqual) || {};
 
   // the store/key for the currently selected cell set (e.g. 'sample')
   const focusData = useSelector((state) => state.cellInfo.focus);
@@ -159,9 +151,35 @@ const SpatialViewer = (props) => {
   const [offsetData, setOffsetData] = useState();
   const [perImageShape, setPerImageShape] = useState();
   const [gridShape, setGridShape] = useState();
+  const [obsSegmentationsLayerDefs, setObsSegmentationsLayerDefs] = useState();
+  const [imageLayerDefs, setImageLayerDefs] = useState(imageLayerDefsDefault);
+
+  useEffect(() => {
+    if (!_.isEmpty(spatialSettings)) {
+      return;
+    }
+    dispatch(loadComponentConfig(experimentId, COMPONENT_TYPE, COMPONENT_TYPE));
+  }, [spatialSettings]);
+
+  useEffect(() => {
+    setObsSegmentationsLayerDefs({
+      visible: spatialSettings.showSegmentations,
+      stroked: false,
+      radius: RADIUS_DEFAULT,
+      opacity: 1,
+    });
+  }, [spatialSettings.showSegmentations]);
+
+  useEffect(() => {
+    setImageLayerDefs([{
+      ...imageLayerDefsDefault[0],
+      opacity: spatialSettings.showSlides ? 1 : 0,
+    }]);
+  }, [spatialSettings.showSlides]);
 
   useEffect(() => {
     if (!data || !omeZarrSampleIds || !cellSetProperties || !perImageShape || !gridShape) return;
+    console.log('blah!');
 
     setOffsetData(offsetCentroids(data, cellSetProperties, omeZarrSampleIds, perImageShape, gridShape));
   }, [data, omeZarrSampleIds, cellSetProperties, perImageShape, gridShape]);
@@ -233,6 +251,7 @@ const SpatialViewer = (props) => {
 
   const showLoader = useMemo(() => {
     const dataIsLoaded = !data || loading;
+
     const geneLoadedIfNecessary = focusData.store === 'genes' && !expressionMatrix.geneIsLoaded(focusData.key);
 
     return dataIsLoaded || geneLoadedIfNecessary;
@@ -498,7 +517,8 @@ SpatialViewer.propTypes = {
   width: PropTypes.number.isRequired,
   height: PropTypes.number.isRequired,
   experimentId: PropTypes.string.isRequired,
-  opacity: PropTypes.string.isRequired,
 };
 
 export default SpatialViewer;
+
+export { COMPONENT_TYPE };

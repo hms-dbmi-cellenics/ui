@@ -12,10 +12,10 @@ import CellSetsTool from 'components/data-exploration/cell-sets-tool/CellSetsToo
 import GeneListTool from 'components/data-exploration/gene-list-tool/GeneListTool';
 import DiffExprManager from 'components/data-exploration/differential-expression-tool/DiffExprManager';
 import Embedding from 'components/data-exploration/embedding/Embedding';
-import SpatialViewer from 'components/data-exploration/spatial/SpatialViewer';
-import HeatmapPlot, { COMPONENT_TYPE } from 'components/data-exploration/heatmap/HeatmapPlot';
+import SpatialViewer, { COMPONENT_TYPE as SPATIAL_COMPONENT_TYPE } from 'components/data-exploration/spatial/SpatialViewer';
+import HeatmapPlot, { COMPONENT_TYPE as HEATMAP_COMPONENT_TYPE } from 'components/data-exploration/heatmap/HeatmapPlot';
 import HeatmapSettings from 'components/data-exploration/heatmap/HeatmapSettings';
-import OpacityDropdown from 'components/data-exploration/spatial/SpatialSettings';
+import SpatialSettings from 'components/data-exploration/spatial/SpatialSettings';
 import MosaicCloseButton from 'components/MosaicCloseButton';
 import { updateLayout, addWindow } from 'redux/actions/layout/index';
 import SearchMenu from 'components/SearchMenu';
@@ -34,7 +34,6 @@ const ExplorationViewPage = ({
   const { windows, panel } = layout;
   const [selectedTab, setSelectedTab] = useState(panel);
   const [addMenuVisible, setAddMenuVisible] = useState(false);
-  const [opacity, setOpacity] = useState(1);
   const { method } = useSelector((state) => (
     state.experimentSettings.processing?.configureEmbedding?.embeddingSettings
   )) || false;
@@ -88,7 +87,7 @@ const ExplorationViewPage = ({
     Spatial: {
       toolbarControls: (
         <>
-          <OpacityDropdown opacity={opacity} setOpacity={setOpacity} key='spatial-settings' />
+          <SpatialSettings componentType={SPATIAL_COMPONENT_TYPE} key='spatial-settings' />
           <MosaicCloseButton key='remove-button-spatial' />
         </>
       ),
@@ -97,14 +96,13 @@ const ExplorationViewPage = ({
           experimentId={experimentId}
           width={width}
           height={height}
-          opacity={opacity}
         />
       ),
     },
     Heatmap: {
       toolbarControls: (
         <>
-          <HeatmapSettings componentType={COMPONENT_TYPE} key='heatmap-settings' />
+          <HeatmapSettings componentType={HEATMAP_COMPONENT_TYPE} key='heatmap-settings' />
           <MosaicCloseButton key='remove-button-heatmap' />
         </>
       ),

@@ -1,44 +1,64 @@
 import React from 'react';
 import {
-  Dropdown, Button, Menu, Slider,
+  SettingOutlined,
+} from '@ant-design/icons';
+import {
+  Button, Dropdown, Tooltip,
 } from 'antd';
-import { SettingOutlined } from '@ant-design/icons';
 
-const OpacityDropdown = (props) => {
-  const { opacity, setOpacity } = props;
+import PropTypes from 'prop-types';
+import SpatialVisibleLayersSettings from 'components/data-exploration/spatial/SpatialVisibleLayersSettings';
+import SpatialGroupBySettings from 'components/data-exploration/spatial/SpatialGroupBySettings';
 
-  // Create a menu with a slider to adjust opacity
-  const menu = (
-    <Menu>
-      <Menu.Item key='slider'>
-        <div>
-          <span>
-            Opacity:
-          </span>
-          <Slider
-            min={0}
-            max={1}
-            step={0.01}
-            value={opacity}
-            onChange={setOpacity}
-            style={{ width: '150px' }}
-          />
-        </div>
-      </Menu.Item>
-    </Menu>
-  );
+const SpatialSettings = (props) => {
+  const { componentType } = props;
+
+  const menuItems = [
+    {
+      label: 'Visible layers',
+      key: 'visibleLayers',
+      children: [
+        {
+          label: (<SpatialVisibleLayersSettings componentType={componentType} />),
+          key: 'visibleLayersChild',
+        },
+      ],
+    },
+    {
+      label: 'Group slides by',
+      key: 'groupBy',
+      children: [
+        {
+          label: (<SpatialGroupBySettings componentType={componentType} />),
+          key: 'groupByChild',
+        },
+      ],
+    },
+  ];
 
   return (
-    <div>
-      <Dropdown overlay={menu} trigger={['click']}>
-        <Button
-          icon={<SettingOutlined />}
-          type='text'
-          className='bp3-button bp3-minimal'
-        />
+    <>
+      <Dropdown
+        arrow
+        type='link'
+        size='small'
+        menu={{ items: menuItems }}
+        trigger={['click']}
+      >
+        <Tooltip title='Settings'>
+          <Button
+            type='text'
+            icon={<SettingOutlined />}
+            className='bp3-button bp3-minimal'
+          />
+        </Tooltip>
       </Dropdown>
-    </div>
+    </>
   );
 };
 
-export default OpacityDropdown;
+SpatialSettings.propTypes = {
+  componentType: PropTypes.string.isRequired,
+};
+
+export default SpatialSettings;

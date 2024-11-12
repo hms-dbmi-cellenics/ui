@@ -585,6 +585,12 @@ const interactiveHeatmapInitialConfig = {
   legendIsVisible: true,
 };
 
+const interactiveSpatialInitialConfig = {
+  showSlides: true,
+  showSegmentations: true,
+  groupSlidesBy: ['sample'],
+};
+
 // CELL SIZE DISTRIBUTION - Cell Size Distribution Histogram
 const cellSizeDistributionHistogram = {
   spec: '1.0.0',
@@ -982,6 +988,7 @@ const initialPlotConfigStates = {
 
 const initialComponentConfigStates = {
   interactiveHeatmap: interactiveHeatmapInitialConfig,
+  interactiveSpatial: interactiveSpatialInitialConfig,
 };
 
 const initialPlotDataState = {
