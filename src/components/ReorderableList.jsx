@@ -85,7 +85,8 @@ const ReorderableList = (props) => {
   );
 
   const composeItem = (itemData, i) => (
-    <div data-testid='reorderableListItem' key={i}>
+    // eslint-disable-next-line jsx-a11y/click-events-have-key-events
+    <div data-testid='reorderableListItem' key={i} onClick={(e) => e.stopPropagation()}>
       {leftItem(itemData, i)}
 
       {upButton(itemData.key, i)}
