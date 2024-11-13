@@ -25,7 +25,7 @@ const SpatialSettings = (props) => {
       ],
     },
     {
-      label: 'Group slides by',
+      label: 'Group images by',
       key: 'groupBy',
       children: [
         {

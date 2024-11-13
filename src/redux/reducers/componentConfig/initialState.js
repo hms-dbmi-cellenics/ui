@@ -586,7 +586,7 @@ const interactiveHeatmapInitialConfig = {
 };
 
 const interactiveSpatialInitialConfig = {
-  showSlides: true,
+  showImages: true,
   showSegmentations: true,
   groupSlidesBy: ['sample'],
 };

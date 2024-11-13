@@ -17,7 +17,7 @@ const SpatialVisibleLayersSettings = (props) => {
   const dispatch = useDispatch();
 
   const { componentType } = props;
-  const { showSlides, showSegmentations } = useSelector((state) => state.componentConfig[componentType]);
+  const { showImages, showSegmentations } = useSelector((state) => state.componentConfig[componentType]);
 
   const [listData, setListData] = useState([]);
 
@@ -32,9 +32,9 @@ const SpatialVisibleLayersSettings = (props) => {
   useEffect(() => {
     setListData([
       {
-        key: 'showSlides',
-        name: 'Slides',
-        visible: showSlides || true,
+        key: 'showImages',
+        name: 'Images',
+        visible: showImages || true,
       },
       {
         key: 'showSegmentations',
@@ -43,7 +43,7 @@ const SpatialVisibleLayersSettings = (props) => {
 
       },
     ]);
-  }, [showSlides, showSegmentations]);
+  }, [showImages, showSegmentations]);
 
   const leftItem = (layerItem) => (
     <Switch

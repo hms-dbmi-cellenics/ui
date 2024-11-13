@@ -15,6 +15,7 @@ import { getSampleFileUrls } from 'utils/data-management/downloadSampleFile';
 
 import { loadComponentConfig } from 'redux/actions/componentConfig';
 import { loadEmbedding } from 'redux/actions/embedding';
+import { loadProcessingSettings } from 'redux/actions/experimentSettings';
 import { getCellSetsHierarchyByType, getCellSets } from 'redux/selectors';
 import { createCellSet } from 'redux/actions/cellSets';
 import { loadGeneExpression } from 'redux/actions/genes';
@@ -132,9 +133,7 @@ const SpatialViewer = (props) => {
   const expressionMatrix = useSelector((state) => state.genes.expression.full.matrix);
 
   // shallowEqual prevents new object returned every time state updates
-  const sampleIdsForFileUrls = useSelector((state) => Object.values(state.samples)
-    .map((sample) => sample.uuid).filter(Boolean),
-  shallowEqual);
+  const sampleIdsForFileUrls = useSelector((state) => state.experimentSettings.info.sampleIds);
 
   const isObj2s = useSelector((state) => state.backendStatus[experimentId].status.obj2s.status !== null);
 
@@ -173,9 +172,9 @@ const SpatialViewer = (props) => {
   useEffect(() => {
     setImageLayerDefs([{
       ...imageLayerDefsDefault[0],
-      opacity: spatialSettings.showSlides ? 1 : 0,
+      opacity: spatialSettings.showImages ? 1 : 0,
     }]);
-  }, [spatialSettings.showSlides]);
+  }, [spatialSettings.showImages]);
 
   useEffect(() => {
     if (!data || !omeZarrSampleIds || !cellSetProperties || !perImageShape || !gridShape) return;
@@ -256,12 +255,23 @@ const SpatialViewer = (props) => {
     return dataIsLoaded || geneLoadedIfNecessary;
   });
 
-  // try to load the embedding with the appropriate data.
+  const embeddingSettings = useSelector(
+    (state) => state.experimentSettings?.originalProcessing?.configureEmbedding?.embeddingSettings,
+  );
+
+  // Load embedding settings if they aren't already.
   useEffect(() => {
-    if (!data) {
+    if (!embeddingSettings) {
+      dispatch(loadProcessingSettings(experimentId));
+    }
+  }, []);
+
+  // Then, try to load the embedding with the appropriate data.
+  useEffect(() => {
+    if (embeddingSettings && !data) {
       dispatch(loadEmbedding(experimentId, embeddingType));
     }
-  }, [experimentId]);
+  }, [embeddingSettings]);
 
   // Handle focus change (e.g. a cell set or gene or metadata got selected).
   // Also handle here when the cell set properties or hierarchy change.
@@ -457,7 +467,7 @@ const SpatialViewer = (props) => {
               obsSegmentationsLayerDefs={obsSegmentationsLayerDefs}
               cellSelection={filteredData?.obsCentroidsIndex}
               cellColorEncoding='cellSetSelection'
-              geneExpressionColormapRange={geneExpressionColormapRange}
+              geneExpressionColormapRange={[0, 1]}
               geneExpressionColormap='plasma'
               getExpressionValue={getExpressionValue}
               setCellSelection={setCellSelection}
