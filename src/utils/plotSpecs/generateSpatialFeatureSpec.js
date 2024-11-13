@@ -2,14 +2,14 @@
 
 import { getAllCells, getSampleCells } from 'utils/cellSets';
 
-const generateSpec = (config, method, imageUrl, plotData) => {
-  const xScaleDomain = config.axesRanges.xAxisAuto
-    ? { data: 'plotData', field: 'x' }
-    : [config.axesRanges.xMin, config.axesRanges.xMax];
+const generateSpec = (config, method, imageData, plotData) => {
+  const { imageUrl, imageWidth, imageHeight } = imageData;
 
-  const yScaleDomain = config.axesRanges.yAxisAuto
-    ? { data: 'plotData', field: 'y' }
-    : [config.axesRanges.yMin, config.axesRanges.yMax];
+  const plotWidth = config.dimensions.width;
+  const plotHeight = config.dimensions.height;
+
+  const yScaleDomain = [0, imageHeight];
+  const xScaleDomain = [0, imageWidth];
 
   let legend = [];
 
@@ -31,8 +31,8 @@ const generateSpec = (config, method, imageUrl, plotData) => {
   return {
     $schema: 'https://vega.github.io/schema/vega/v5.json',
     description: 'Continuous embedding plot',
-    width: config.dimensions.width,
-    height: config.dimensions.height,
+    width: plotWidth,
+    height: plotHeight,
     autosize: { type: 'pad', resize: true },
 
     background: config.colour.toggleInvert,
@@ -41,6 +41,20 @@ const generateSpec = (config, method, imageUrl, plotData) => {
       {
         name: 'plotData',
         values: plotData,
+        // Vega internally modifies objects during data transforms. If the plot data is frozen,
+        // Vega is not able to carry out the transform and will throw an error.
+        // https://github.com/vega/vega/issues/2453#issuecomment-604516777
+        format: {
+          type: 'json',
+          copy: true,
+        },
+        transform: [
+          {
+            type: 'formula',
+            as: 'scaled_y',
+            expr: `${imageHeight} - datum.y`,
+          },
+        ],
       },
     ],
     scales: [
@@ -97,7 +111,7 @@ const generateSpec = (config, method, imageUrl, plotData) => {
       },
       {
         scale: 'y',
-        grid: true,
+        grid: false,
         domain: true,
         orient: 'left',
         titlePadding: 5,
@@ -122,9 +136,9 @@ const generateSpec = (config, method, imageUrl, plotData) => {
         encode: {
           enter: {
             url: { value: imageUrl },
-            width: { value: config.dimensions.width },
+            width: { value: plotWidth },
             aspect: { value: false },
-            height: { value: config.dimensions.height },
+            height: { value: plotHeight },
             y: { value: 0 },
             x: { value: 0 },
             opacity: { value: 1 },
@@ -138,13 +152,9 @@ const generateSpec = (config, method, imageUrl, plotData) => {
         encode: {
           enter: {
             x: { scale: 'x', field: 'x' },
-            y: { scale: 'y', field: 'y' },
+            y: { scale: 'y', field: 'scaled_y' },
             size: [
-              {
-                test: "inrange(datum.x, domain('x')) && inrange(datum.y, domain('y'))",
-                value: config?.marker.size,
-              },
-              { value: 0 },
+              { value: config?.marker.size },
             ],
             stroke: {
               scale: 'color',
@@ -155,7 +165,7 @@ const generateSpec = (config, method, imageUrl, plotData) => {
               field: 'value',
             },
             // TODO: make selectable (hexagon)
-            shape: { value: 'M 1,0 L 0.5,0.866 L -0.5,0.866 L -1,0 L -0.5,-0.866 L 0.5,-0.866 Z' },
+            shape: { value: config?.marker.shape },
             fillOpacity: { value: config.marker.opacity / 10 },
           },
         },

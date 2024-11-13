@@ -9,21 +9,24 @@ import { loadEmbedding } from 'redux/actions/embedding';
 import { loadProcessingSettings } from 'redux/actions/experimentSettings';
 import { getCellSets } from 'redux/selectors';
 import { generateSpec, generateData } from 'utils/plotSpecs/generateSpatialFeatureSpec';
-import { loadOmeZarr } from 'components/data-exploration/spatial/loadOmeZarr';
+import { loadOmeZarr, loadOmeZarrGrid } from 'components/data-exploration/spatial/loadOmeZarr';
 import { root as zarrRoot, FetchStore } from 'zarrita';
+import { ZipFileStore } from '@zarrita/storage';
+import { getSampleFileUrls } from 'utils/data-management/downloadSampleFile';
 import PlatformError from '../PlatformError';
 import Loader from '../Loader';
 
-// Load OME-Zarr and return the pyramid and loader (an example)
-const fetchImageData = async (omeZarrUrl) => {
-  const omeZarrRoot = zarrRoot(new FetchStore(omeZarrUrl));
+const EMBEDDING_TYPE = 'images';
 
-  const { data } = await loadOmeZarr(omeZarrRoot);
+// Load OME-Zarr and return the pyramid and loader (an example)
+const fetchImageData = async (omeZarrUrls, gridShape = [1, 1]) => {
+  const omeZarrRoots = omeZarrUrls.map((url) => zarrRoot(ZipFileStore.fromUrl(url)));
+
+  const { data } = await loadOmeZarrGrid([omeZarrRoots[0]], gridShape);
   const base = data[0];
 
-  const imageUrl = await processImageData(base);
-
-  return imageUrl;
+  const imageData = await processImageData(base);
+  return imageData;
 };
 
 const processImageData = async (base) => {
@@ -59,7 +62,7 @@ const processImageData = async (base) => {
   ctx.putImageData(imageDataObject, 0, 0);
 
   const imageUrl = canvas.toDataURL();
-  return imageUrl;
+  return { imageUrl, imageWidth: width, imageHeight: height };
 };
 
 const SpatialFeaturePlot = (props) => {
@@ -74,38 +77,67 @@ const SpatialFeaturePlot = (props) => {
     reloadPlotData,
   } = props;
 
-  const omeZarrUrl = 'http://localhost:8000/human-lymph-node-10x-visium/data/processed/human_lymph_node_10x_visium.ome.zarr';
+  // const omeZarrUrl = 'http://localhost:8000/human-lymph-node-10x-visium/data/processed/human_lymph_node_10x_visium.ome.zarr';
 
   const dispatch = useDispatch();
-
-  const embeddingSettings = useSelector(
-    (state) => state.experimentSettings.originalProcessing?.configureEmbedding?.embeddingSettings,
-  );
 
   const {
     data: embeddingData,
     loading: embeddingLoading,
     error: embeddingError,
-  } = useSelector((state) => state.embeddings[embeddingSettings?.method]) || {};
+  } = useSelector((state) => state.embeddings[EMBEDDING_TYPE]) || {};
+
+  const embeddingSettings = useSelector(
+    (state) => state.experimentSettings.originalProcessing?.configureEmbedding?.embeddingSettings,
+  );
 
   const cellSets = useSelector(getCellSets());
 
-  const [plotSpec, setPlotSpec] = useState({});
+  const sampleIdsForFileUrls = useSelector((state) => state.experimentSettings.info.sampleIds);
+  const isObj2s = useSelector((state) => state.backendStatus[experimentId].status.obj2s.status !== null);
 
-  const [imageUrl, setImageUrl] = useState(null);
+  const [plotSpec, setPlotSpec] = useState({});
+  const [imageData, setImageData] = useState(null);
+  const [omeZarrSampleIds, setOmeZarrSampleIds] = useState(null);
+  const [omeZarrUrls, setOmeZarrUrls] = useState(null);
 
   useEffect(() => {
+    (async () => {
+      try {
+        const results = (await Promise.all(
+          sampleIdsForFileUrls.map((sampleId) => getSampleFileUrls(experimentId, sampleId, 'ome_zarr_zip')),
+        )).flat();
+
+        const signedUrls = results.map(({ url }) => url);
+        setOmeZarrUrls(signedUrls);
+
+        if (isObj2s) {
+          // For obj2s, file IDs correspond to sample IDs
+          // whereas there is a single dummy sample ID in state
+          const fileIds = results.map(({ fileId }) => fileId);
+          setOmeZarrSampleIds(fileIds);
+        } else {
+          setOmeZarrSampleIds(sampleIdsForFileUrls);
+        }
+      } catch (error) {
+        console.error('Error fetching URLs:', error);
+      }
+    })(); // Immediately invoked function expression (IIFE)
+  }, [sampleIdsForFileUrls, experimentId, isObj2s]);
+
+  useEffect(() => {
+    if (!omeZarrUrls) return;
     const loadImageData = async () => {
-      const url = await fetchImageData(omeZarrUrl); // Update with actual path
-      setImageUrl(url);
+      const url = await fetchImageData(omeZarrUrls); // Update with actual path
+      setImageData(url);
     };
 
     loadImageData();
-  }, [omeZarrUrl]);
+  }, [omeZarrUrls]);
 
   useEffect(() => {
     dispatch(loadCellSets(experimentId));
-  }, []);
+  }, [omeZarrUrls]);
 
   useEffect(() => {
     if (!embeddingSettings) {
@@ -113,33 +145,37 @@ const SpatialFeaturePlot = (props) => {
     }
 
     if (!embeddingData && embeddingSettings?.method) {
-      dispatch(loadEmbedding(experimentId, embeddingSettings?.method));
+      dispatch(loadEmbedding(experimentId, EMBEDDING_TYPE));
     }
   }, [embeddingSettings?.method]);
 
   useEffect(() => {
+    console.log('embeddingData!!');
+    console.log(embeddingData);
     if (!embeddingLoading
       && !embeddingError
       && config
       && plotData?.length > 0
       && cellSets.accessible
       && embeddingData?.length
-      && imageUrl) {
-      setPlotSpec(
-        generateSpec(
-          config,
-          embeddingSettings.method,
-          imageUrl,
-          generateData(
-            cellSets,
-            config.selectedSample,
-            config.truncatedValues ? truncatedPlotData : plotData,
-            embeddingData,
-          ),
+      && imageData) {
+      const plotSpec = generateSpec(
+        config,
+        EMBEDDING_TYPE,
+        imageData,
+        generateData(
+          cellSets,
+          config.selectedSample,
+          config.truncatedValues ? truncatedPlotData : plotData,
+          embeddingData,
         ),
       );
+
+      console.log('plotSpec!!!');
+      console.log(plotSpec);
+      setPlotSpec(plotSpec);
     }
-  }, [config, plotData, embeddingData, cellSets, embeddingLoading, imageUrl]);
+  }, [config, plotData, embeddingData, cellSets, embeddingLoading, imageData]);
 
   const render = () => {
     if (error) {
@@ -164,7 +200,7 @@ const SpatialFeaturePlot = (props) => {
       return (
         <PlatformError
           error={error}
-          onClick={() => { loadEmbedding(experimentId, embeddingSettings?.method); }}
+          onClick={() => { loadEmbedding(experimentId, EMBEDDING_TYPE); }}
         />
       );
     }

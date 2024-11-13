@@ -130,7 +130,10 @@ const spatialFeatureInitialConfig = {
     defaultValues: ['x', 'y'],
     offset: 10,
   },
-  axesRanges: axesRangesBaseState,
+  axesRanges: {
+    ...axesRangesBaseState,
+    yAxisAuto: false,
+  },
   title: {
     ...titleBaseState,
     dx: 0,

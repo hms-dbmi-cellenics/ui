@@ -99,8 +99,7 @@ const imageLayerDefsDefault = [
     type: 'raster',
   },
 ];
-
-const geneExpressionColormapRange = [0, 1];
+const EMBEDDING_TYPE = 'images';
 
 const SpatialViewer = (props) => {
   const {
@@ -111,9 +110,7 @@ const SpatialViewer = (props) => {
 
   const rootClusterNodes = useSelector(getCellSetsHierarchyByType('cellSets')).map(({ key }) => key);
 
-  const embeddingType = 'images';
-
-  const { data, loading, error } = useSelector((state) => state.embeddings[embeddingType]) || {};
+  const { data, loading, error } = useSelector((state) => state.embeddings[EMBEDDING_TYPE]) || {};
 
   const spatialSettings = useSelector((state) => state.componentConfig[COMPONENT_TYPE]?.config,
     _.isEqual) || {};
@@ -132,9 +129,7 @@ const SpatialViewer = (props) => {
   const expressionLoading = useSelector((state) => state.genes.expression.full.loading);
   const expressionMatrix = useSelector((state) => state.genes.expression.full.matrix);
 
-  // shallowEqual prevents new object returned every time state updates
   const sampleIdsForFileUrls = useSelector((state) => state.experimentSettings.info.sampleIds);
-
   const isObj2s = useSelector((state) => state.backendStatus[experimentId].status.obj2s.status !== null);
 
   const cellCoordinatesRef = useRef({ x: 200, y: 300 });
@@ -269,7 +264,7 @@ const SpatialViewer = (props) => {
   // Then, try to load the embedding with the appropriate data.
   useEffect(() => {
     if (embeddingSettings && !data) {
-      dispatch(loadEmbedding(experimentId, embeddingType));
+      dispatch(loadEmbedding(experimentId, EMBEDDING_TYPE));
     }
   }, [embeddingSettings]);
 
@@ -359,7 +354,7 @@ const SpatialViewer = (props) => {
       setCellInfoTooltip({
         cellSets: prefixedCellSetNames,
         cellId: selectedCell,
-        componentType: embeddingType,
+        componentType: EMBEDDING_TYPE,
         expression: expressionToDispatch,
         geneName,
       });
@@ -423,7 +418,7 @@ const SpatialViewer = (props) => {
     return (
       <PlatformError
         error={error}
-        onClick={() => dispatch(loadEmbedding(experimentId, embeddingType))}
+        onClick={() => dispatch(loadEmbedding(experimentId, EMBEDDING_TYPE))}
       />
     );
   }
@@ -503,12 +498,12 @@ const SpatialViewer = (props) => {
                   <CellInfo
                     containerWidth={width}
                     containerHeight={height}
-                    componentType={embeddingType}
+                    componentType={EMBEDDING_TYPE}
                     coordinates={cellCoordinatesRef.current}
                     cellInfo={cellInfoTooltip}
                   />
                   <CrossHair
-                    componentType={embeddingType}
+                    componentType={EMBEDDING_TYPE}
                     coordinates={cellCoordinatesRef}
                   />
                 </div>
