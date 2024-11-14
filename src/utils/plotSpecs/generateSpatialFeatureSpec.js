@@ -2,14 +2,15 @@
 
 import { getAllCells, getSampleCells } from 'utils/cellSets';
 
-const generateSpec = (config, method, imageData, plotData) => {
-  const { imageUrl, imageWidth, imageHeight } = imageData;
+const generateSpec = (config, viewState, method, imageData, plotData) => {
+  console.log('viewState!!!');
+  console.log(viewState);
+  console.log(config);
+  const selectedSample = config.selectedSample != 'All' ? config.selectedSample : imageData[0].sampleId;
+  const { imageUrl, imageWidth, imageHeight } = imageData.find((item) => item.sampleId === selectedSample);
 
   const plotWidth = config.dimensions.width;
   const plotHeight = config.dimensions.height;
-
-  const yScaleDomain = [0, imageHeight];
-  const xScaleDomain = [0, imageWidth];
 
   let legend = [];
 
@@ -17,7 +18,7 @@ const generateSpec = (config, method, imageData, plotData) => {
     legend = [
       {
         fill: 'color',
-        type: 'symbol',
+        type: 'gradient',
         orient: config.legend.position,
         title: config.shownGene,
         labelColor: config.colour.masterColour,
@@ -51,28 +52,152 @@ const generateSpec = (config, method, imageData, plotData) => {
         transform: [
           {
             type: 'formula',
-            as: 'scaled_y',
+            as: 'flipped_y',
             expr: `${imageHeight} - datum.y`,
+          },
+        ],
+      },
+    ],
+    signals: [
+      // Signals for zooming and panning
+      {
+        name: 'initXdom',
+        value: viewState.xdom,
+      },
+      {
+        name: 'initYdom',
+        value: viewState.ydom,
+      },
+      { name: 'xrange', update: '[0, width]' },
+      { name: 'yrange', update: '[height, 0]' },
+      {
+        name: 'down',
+        value: null,
+        on: [
+          { events: 'mousedown[!event.shiftKey]', update: 'xy()' },
+          { events: 'mouseup[!event.shiftKey]', update: 'null' },
+        ],
+      },
+      {
+        name: 'xcur',
+        value: null,
+        on: [
+          {
+            events: 'mousedown',
+            update: 'slice(xdom)',
+          },
+        ],
+      },
+      {
+        name: 'ycur',
+        value: null,
+        on: [
+          {
+            events: 'mousedown',
+            update: 'slice(ydom)',
+          },
+        ],
+      },
+      {
+        name: 'delta',
+        value: [0, 0],
+        on: [
+          {
+            events: [
+              {
+                source: 'window',
+                type: 'mousemove',
+                between: [
+                  { type: 'mousedown', filter: '!event.shiftKey' },
+                  { source: 'window', type: 'mouseup' },
+                ],
+              },
+            ],
+            update: 'down ? [down[0]-x(), y()-down[1]] : [0,0]',
+          },
+        ],
+      },
+      {
+        name: 'anchor',
+        value: [0, 0],
+        on: [
+          {
+            events: 'wheel',
+            update: "[invert('xscale', x()), invert('yscale', y())]",
+          },
+        ],
+      },
+      {
+        name: 'zoom',
+        value: 1,
+        on: [
+          {
+            events: 'wheel!',
+            force: true,
+            update: 'pow(1.001, event.deltaY * pow(2, event.deltaMode))',
+          },
+        ],
+      },
+      {
+        name: 'xdom',
+        update: 'initXdom',
+        on: [
+          {
+            events: { signal: 'delta' },
+            update: '[xcur[0] + span(xcur) * delta[0] / width, xcur[1] + span(xcur) * delta[0] / width]',
+          },
+          {
+            events: { signal: 'zoom' },
+            update: '[anchor[0] + (xdom[0] - anchor[0]) * zoom, anchor[0] + (xdom[1] - anchor[0]) * zoom]',
+          },
+        ],
+      },
+      {
+        name: 'ydom',
+        update: 'initYdom',
+        on: [
+          {
+            events: { signal: 'delta' },
+            update: '[ycur[0] + span(ycur) * delta[1] / height, ycur[1] + span(ycur) * delta[1] / height]',
+          },
+          {
+            events: { signal: 'zoom' },
+            update: '[anchor[1] + (ydom[0] - anchor[1]) * zoom, anchor[1] + (ydom[1] - anchor[1]) * zoom]',
+          },
+        ],
+      },
+      {
+        name: 'symbolSize',
+        update: `max(${config.marker.size} * width / span(xdom), ${config.marker.size})`,
+      },
+      {
+        name: 'domUpdates',
+        on: [
+          {
+            events: { signal: 'delta' },
+            update: '[[xcur[0] + span(xcur) * delta[0] / width, xcur[1] + span(xcur) * delta[0] / width], [ycur[0] + span(ycur) * delta[1] / height, ycur[1] + span(ycur) * delta[1] / height]]',
+          },
+          {
+            events: { signal: 'zoom' },
+            update: '[[anchor[0] + (xdom[0] - anchor[0]) * zoom, anchor[0] + (xdom[1] - anchor[0]) * zoom], [anchor[1] + (ydom[0] - anchor[1]) * zoom, anchor[1] + (ydom[1] - anchor[1]) * zoom]]',
           },
         ],
       },
     ],
     scales: [
       {
-        name: 'x',
+        name: 'xscale',
         type: 'linear',
-        nice: true,
         zero: false,
-        domain: xScaleDomain,
-        range: 'width',
+        domain: { signal: 'xdom' },
+        range: { signal: 'xrange' },
       },
       {
-        name: 'y',
+        name: 'yscale',
         type: 'linear',
-        nice: true,
         zero: false,
-        domain: yScaleDomain,
-        range: 'height',
+        domain: { signal: 'ydom' },
+        range: { signal: 'yrange' },
       },
       {
         name: 'color',
@@ -87,9 +212,39 @@ const generateSpec = (config, method, imageData, plotData) => {
         reverse: config.colour.reverseCbar,
       },
     ],
+    // scales: [
+    //   {
+    //     name: 'x',
+    //     type: 'linear',
+    //     nice: true,
+    //     zero: false,
+    //     domain: xScaleDomain,
+    //     range: 'width',
+    //   },
+    //   {
+    //     name: 'y',
+    //     type: 'linear',
+    //     nice: true,
+    //     zero: false,
+    //     domain: yScaleDomain,
+    //     range: 'height',
+    //   },
+    //   {
+    //     name: 'color',
+    //     type: 'quantize',
+    //     range: {
+    //       scheme: config.colour.gradient === 'default'
+    //         ? (config.colour.toggleInvert === '#FFFFFF' ? 'purplered' : 'darkgreen')
+    //         : config.colour.gradient,
+    //       count: 5,
+    //     },
+    //     domain: { data: 'plotData', field: 'value' },
+    //     reverse: config.colour.reverseCbar,
+    //   },
+    // ],
     axes: [
       {
-        scale: 'x',
+        scale: 'xscale',
         grid: true,
         domain: true,
         orient: 'bottom',
@@ -110,7 +265,7 @@ const generateSpec = (config, method, imageData, plotData) => {
         labelAlign: config.axes.xAxisRotateLabels ? 'left' : 'center',
       },
       {
-        scale: 'y',
+        scale: 'yscale',
         grid: false,
         domain: true,
         orient: 'left',
@@ -133,14 +288,15 @@ const generateSpec = (config, method, imageData, plotData) => {
     marks: [
       {
         type: 'image',
+        clip: true,
         encode: {
-          enter: {
+          update: {
             url: { value: imageUrl },
-            width: { value: plotWidth },
+            x: { signal: 'scale("xscale", 0)' }, // Use scale signal directly
+            y: { signal: `scale("yscale", ${imageHeight})` }, // Use "scale" function with y
+            width: { signal: `scale("xscale", ${imageWidth}) - scale("xscale", 0)` }, // Calculate width using scale domain
+            height: { signal: `scale("yscale", 0) - scale("yscale", ${imageHeight})` }, // Calculate height using scale domain
             aspect: { value: false },
-            height: { value: plotHeight },
-            y: { value: 0 },
-            x: { value: 0 },
             opacity: { value: 1 },
           },
         },
@@ -150,16 +306,11 @@ const generateSpec = (config, method, imageData, plotData) => {
         clip: true,
         from: { data: 'plotData' },
         encode: {
-          enter: {
-            x: { scale: 'x', field: 'x' },
-            y: { scale: 'y', field: 'scaled_y' },
-            size: [
-              { value: config?.marker.size },
-            ],
-            stroke: {
-              scale: 'color',
-              field: 'value',
-            },
+          update: {
+            x: { scale: 'xscale', field: 'x' },
+            y: { scale: 'yscale', field: 'flipped_y' },
+            size: { signal: 'symbolSize' }, // Use the adjusted symbol size
+
             fill: {
               scale: 'color',
               field: 'value',

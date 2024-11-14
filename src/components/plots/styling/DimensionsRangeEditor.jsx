@@ -10,7 +10,7 @@ const DimensionsRangeEditor = (props) => {
     onUpdate, config, maxHeight, maxWidth,
   } = props;
 
-  const minWidth = 400;
+  const minWidth = 200;
   const widthMarks = {};
   widthMarks[minWidth] = minWidth;
   widthMarks[maxWidth] = maxWidth;

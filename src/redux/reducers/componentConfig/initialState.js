@@ -132,7 +132,6 @@ const spatialFeatureInitialConfig = {
   },
   axesRanges: {
     ...axesRangesBaseState,
-    yAxisAuto: false,
   },
   title: {
     ...titleBaseState,

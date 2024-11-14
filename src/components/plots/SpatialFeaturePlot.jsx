@@ -1,4 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, {
+  useState, useEffect, useRef, useMemo, useImperativeHandle, forwardRef,
+} from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
 import { Vega } from 'react-vega';
@@ -19,14 +21,18 @@ import Loader from '../Loader';
 const EMBEDDING_TYPE = 'images';
 
 // Load OME-Zarr and return the pyramid and loader (an example)
-const fetchImageData = async (omeZarrUrls, gridShape = [1, 1]) => {
+const fetchImageData = async (omeZarrUrls, omeZarrSampleIds) => {
   const omeZarrRoots = omeZarrUrls.map((url) => zarrRoot(ZipFileStore.fromUrl(url)));
 
-  const { data } = await loadOmeZarrGrid([omeZarrRoots[0]], gridShape);
-  const base = data[0];
+  const imageDatas = await Promise.all(omeZarrRoots.map(async (omeZarrRoot, ind) => {
+    const { data } = await loadOmeZarr(omeZarrRoot);
+    const base = data[0];
 
-  const imageData = await processImageData(base);
-  return imageData;
+    const imageData = await processImageData(base);
+    imageData.sampleId = omeZarrSampleIds[ind];
+    return imageData;
+  }));
+  return imageDatas;
 };
 
 const processImageData = async (base) => {
@@ -65,7 +71,7 @@ const processImageData = async (base) => {
   return { imageUrl, imageWidth: width, imageHeight: height };
 };
 
-const SpatialFeaturePlot = (props) => {
+const SpatialFeaturePlot = forwardRef((props, ref) => {
   const {
     experimentId,
     config,
@@ -80,6 +86,16 @@ const SpatialFeaturePlot = (props) => {
   // const omeZarrUrl = 'http://localhost:8000/human-lymph-node-10x-visium/data/processed/human_lymph_node_10x_visium.ome.zarr';
 
   const dispatch = useDispatch();
+
+  const viewStateRef = useRef({ xdom: [-2, 2], ydom: [-2, 2] });
+  const previousAxisSettings = useRef({
+    xAxisAuto: null,
+    xMin: null,
+    xMax: null,
+    yAxisAuto: null,
+    yMin: null,
+    yMax: null,
+  });
 
   const {
     data: embeddingData,
@@ -97,7 +113,8 @@ const SpatialFeaturePlot = (props) => {
   const isObj2s = useSelector((state) => state.backendStatus[experimentId].status.obj2s.status !== null);
 
   const [plotSpec, setPlotSpec] = useState({});
-  const [imageData, setImageData] = useState(null);
+  const [forceReset, setForceReset] = useState(0);
+  const [imageDatas, setImageDatas] = useState(null);
   const [omeZarrSampleIds, setOmeZarrSampleIds] = useState(null);
   const [omeZarrUrls, setOmeZarrUrls] = useState(null);
 
@@ -128,8 +145,8 @@ const SpatialFeaturePlot = (props) => {
   useEffect(() => {
     if (!omeZarrUrls) return;
     const loadImageData = async () => {
-      const url = await fetchImageData(omeZarrUrls); // Update with actual path
-      setImageData(url);
+      const imageDatas = await fetchImageData(omeZarrUrls, omeZarrSampleIds); // Update with actual path
+      setImageDatas(imageDatas);
     };
 
     loadImageData();
@@ -149,33 +166,100 @@ const SpatialFeaturePlot = (props) => {
     }
   }, [embeddingSettings?.method]);
 
+  // Add/subtract 1 to give some padding to the plot
+  const extent = (arr) => [_.min(arr) - 1, _.max(arr) + 1];
+
+  const xExtent = useMemo(() => {
+    if (!embeddingData) return [-10, 10];
+    return extent(embeddingData.filter((data) => data !== undefined).map((data) => data[0]));
+  }, [embeddingData]);
+
+  const yExtent = useMemo(() => {
+    if (!embeddingData) return [-10, 10];
+    return extent(embeddingData.filter((data) => data !== undefined).map((data) => data[1]));
+  }, [embeddingData]);
+
+  useImperativeHandle(ref, () => ({
+    resetZoom() {
+      viewStateRef.current = { xdom: xExtent, ydom: yExtent };
+      setPlotSpec(calculatePlotSpec());
+      setForceReset(forceReset + 1);
+    },
+  }));
+
   useEffect(() => {
-    console.log('embeddingData!!');
-    console.log(embeddingData);
+    // eslint-disable-next-line no-param-reassign
+    viewStateRef.current = { xdom: xExtent, ydom: yExtent };
+  }, [xExtent, yExtent]);
+
+  const calculatePlotSpec = () => {
+    const {
+      xAxisAuto, yAxisAuto, xMin, xMax, yMin, yMax,
+    } = config.axesRanges;
+
+    const viewState = {};
+
+    if (previousAxisSettings.current.xAxisAuto === xAxisAuto
+      && previousAxisSettings.current.xMin === xMin
+      && previousAxisSettings.current.xMax === xMax
+    ) {
+      viewState.xdom = viewStateRef.current.xdom;
+    } else if (xAxisAuto) {
+      viewState.xdom = xExtent;
+    } else {
+      viewState.xdom = [xMin, xMax];
+    }
+
+    if (previousAxisSettings.current.yAxisAuto === yAxisAuto
+      && previousAxisSettings.current.yMin === yMin
+      && previousAxisSettings.current.yMax === yMax
+    ) {
+      viewState.ydom = viewStateRef.current.ydom;
+    } else if (yAxisAuto) {
+      viewState.ydom = yExtent;
+    } else {
+      viewState.ydom = [yMin, yMax];
+    }
+
+    previousAxisSettings.current = config.axesRanges;
+
+    const spec = generateSpec(
+      config,
+      viewState,
+      EMBEDDING_TYPE,
+      imageDatas,
+      generateData(
+        cellSets,
+        config.selectedSample,
+        config.truncatedValues ? truncatedPlotData : plotData,
+        embeddingData,
+      ),
+    );
+
+    return spec;
+  };
+
+  useEffect(() => {
     if (!embeddingLoading
       && !embeddingError
       && config
       && plotData?.length > 0
       && cellSets.accessible
       && embeddingData?.length
-      && imageData) {
-      const plotSpec = generateSpec(
-        config,
-        EMBEDDING_TYPE,
-        imageData,
-        generateData(
-          cellSets,
-          config.selectedSample,
-          config.truncatedValues ? truncatedPlotData : plotData,
-          embeddingData,
-        ),
-      );
-
-      console.log('plotSpec!!!');
-      console.log(plotSpec);
-      setPlotSpec(plotSpec);
+      && imageDatas) {
+      setPlotSpec(calculatePlotSpec());
     }
-  }, [config, plotData, embeddingData, cellSets, embeddingLoading, imageData]);
+  }, [
+    config, plotData, embeddingData, cellSets, embeddingLoading, imageDatas,
+  ]);
+
+  const plotListeners = {
+    domUpdates: (e, val) => {
+      const [xdom, ydom] = val;
+      // eslint-disable-next-line no-param-reassign
+      viewStateRef.current = { xdom, ydom };
+    },
+  };
 
   const render = () => {
     if (error) {
@@ -220,7 +304,7 @@ const SpatialFeaturePlot = (props) => {
 
     return (
       <center>
-        <Vega spec={plotSpec} actions={actions} />
+        <Vega reset={forceReset} spec={plotSpec || {}} actions={actions} signalListeners={plotListeners} />
       </center>
     );
   };
@@ -230,7 +314,7 @@ const SpatialFeaturePlot = (props) => {
       {render()}
     </>
   );
-};
+});
 
 SpatialFeaturePlot.defaultProps = {
   reloadPlotData: () => { },
