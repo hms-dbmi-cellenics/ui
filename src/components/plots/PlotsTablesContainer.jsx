@@ -41,7 +41,7 @@ CardItem.propTypes = {
 
 const plots = [
   {
-    title: 'Cell sets & metadata',
+    title: 'Cell Sets and Metadata',
     plots: [
       {
         name: plotNames.CATEGORICAL_EMBEDDING,
@@ -70,7 +70,7 @@ const plots = [
     ],
   },
   {
-    title: 'Gene expression',
+    title: 'Gene Expression',
     plots: [
       {
         name: plotNames.CONTINUOUS_EMBEDDING,
@@ -80,7 +80,7 @@ const plots = [
       },
       {
         name: plotNames.SPATIAL_FEATURE,
-        image: '/static/media/embeddingContinuous.png',
+        image: '/static/media/spatialFeature.png',
         key: 'spatial-feature-key',
         link: 'spatial-feature',
       },
@@ -111,7 +111,7 @@ const plots = [
     ],
   },
   {
-    title: 'Differential expression',
+    title: 'Differential Expression',
     plots: [
       {
         name: plotNames.VOLCANO_PLOT,

@@ -146,6 +146,7 @@ const spatialFeatureInitialConfig = {
   colour: {
     ...colourBaseState,
     gradient: 'plasma',
+    reverseColourBar: true,
   },
   marker: {
     ...markerBaseState,

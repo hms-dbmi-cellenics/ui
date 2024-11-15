@@ -161,7 +161,7 @@ const generateSpec = (config, method, imageData, plotData) => {
       {
         name: 'x',
         type: 'linear',
-        nice: true,
+        nice: false,
         zero: false,
         domain: xScaleDomain,
         range: 'width',
@@ -169,7 +169,7 @@ const generateSpec = (config, method, imageData, plotData) => {
       {
         name: 'y',
         type: 'linear',
-        nice: true,
+        nice: false,
         zero: false,
         domain: yScaleDomain,
         range: 'height',
@@ -184,7 +184,7 @@ const generateSpec = (config, method, imageData, plotData) => {
           count: 5,
         },
         domain: { data: 'plotData', field: 'value' },
-        reverse: config.colour.reverseCbar,
+        reverse: config.colour.gradient === 'spectral' || config.colour.reverseCbar,
       },
     ],
     axes,

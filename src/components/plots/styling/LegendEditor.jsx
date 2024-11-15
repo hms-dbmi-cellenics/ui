@@ -17,10 +17,10 @@ const LegendEditor = (props) => {
 
   const positions = {
     corners: {
-      'top-left': 'Top left',
-      'top-right': 'Top right',
-      'bottom-left': 'Bottom left',
-      'bottom-right': 'Bottom right',
+      'top-left': 'Top Left',
+      'top-right': 'Top Right',
+      'bottom-left': 'Bottom Left',
+      'bottom-right': 'Bottom Right',
     },
     'top-bottom': {
       left: 'Left',
