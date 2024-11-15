@@ -167,10 +167,10 @@ const generateSpec = (config, method, imageData, plotData) => {
             size: [
               { value: config?.marker.size },
             ],
-            stroke: {
+            stroke: config?.marker.outline ? {
               scale: 'color',
               field: 'value',
-            },
+            } : null,
             fill: {
               scale: 'color',
               field: 'value',
