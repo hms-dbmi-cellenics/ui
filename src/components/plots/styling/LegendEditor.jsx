@@ -23,9 +23,10 @@ const LegendEditor = (props) => {
       'bottom-right': 'Bottom right',
     },
     'top-bottom': {
+      left: 'Left',
+      right: 'Right',
       top: 'Top',
       bottom: 'Bottom',
-      right: 'Right',
     },
     'horizontal-vertical': {
       horizontal: 'Horizontal',
@@ -36,7 +37,7 @@ const LegendEditor = (props) => {
   return (
     <Form>
 
-      <p><strong>Toggle Legend</strong></p>
+      <p><strong>Toggle Legend:</strong></p>
       <Form.Item>
         <Radio.Group
           onChange={(e) => onUpdate({
@@ -55,7 +56,7 @@ const LegendEditor = (props) => {
       {
         config.legend.enabled && (
           <>
-            <p><strong>Position</strong></p>
+            <p><strong>Position:</strong></p>
             <Form.Item>
               <Radio.Group
                 onChange={(e) => onUpdate({ legend: { position: e.target.value } })}

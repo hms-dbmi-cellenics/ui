@@ -17,7 +17,7 @@ const PointDesign = (props) => {
         labelCol={{ span: 12, style: { textAlign: 'left' } }}
         wrapperCol={{ span: 12 }}
       >
-        <p><strong>Point Style</strong></p>
+        <p><strong>Point Style:</strong></p>
         <Form.Item
           label='Point Size'
         >
@@ -54,14 +54,14 @@ const PointDesign = (props) => {
           showShapeType
           && (
             <>
-              <p><strong>Point Shape</strong></p>
+              <p><strong>Point Shape:</strong></p>
               <Form.Item>
                 <Radio.Group onChange={(e) => onUpdate({ marker: { shape: e.target.value } })} value={config.marker.shape}>
                   <Radio value='circle'>Circle</Radio>
                   <Radio value='diamond'>Diamond</Radio>
                 </Radio.Group>
               </Form.Item>
-              <p><strong>Toggle Outline</strong></p>
+              <p><strong>Toggle Outline:</strong></p>
               <Form.Item>
                 <Radio.Group onChange={(e) => onUpdate({ marker: { outline: e.target.value } })} value={config.marker.outline}>
                   <Radio value>Show</Radio>

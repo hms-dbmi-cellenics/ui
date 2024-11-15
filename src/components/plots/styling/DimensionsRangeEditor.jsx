@@ -23,7 +23,7 @@ const DimensionsRangeEditor = (props) => {
 
   return (
     <Space direction='vertical' style={{ width: '80%' }}>
-      <p><strong>Dimensions</strong></p>
+      <p><strong>Dimensions:</strong></p>
       <Form
         size='small'
         labelCol={{ span: 6, style: { textAlign: 'left' } }}

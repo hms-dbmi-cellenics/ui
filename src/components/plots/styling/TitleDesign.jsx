@@ -18,7 +18,7 @@ const TitleDesign = (props) => {
         labelCol={{ span: 10, style: { textAlign: 'left' } }}
         wrapperCol={{ span: 14 }}
       >
-        <p><strong>Title Styles</strong></p>
+        <p><strong>Title Styles:</strong></p>
         {allowTitleChange
           && (
             <Form.Item

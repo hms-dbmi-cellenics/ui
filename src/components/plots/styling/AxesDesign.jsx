@@ -16,7 +16,7 @@ const AxesDesign = (props) => {
       labelCol={{ span: 10, style: { textAlign: 'left' } }}
       wrapperCol={{ span: 11 }}
     >
-      <p><strong>Toggle Axes</strong></p>
+      <p><strong>Toggle Axes:</strong></p>
       <Form.Item>
         <Radio.Group
           value={config.axes.enabled}
@@ -33,7 +33,7 @@ const AxesDesign = (props) => {
       {
         config.axes.enabled && (
           <>
-            <p><strong>Axes Settings</strong></p>
+            <p><strong>Axes Settings:</strong></p>
             <Form.Item label='X-Axis Title'>
               <Input
                 value={config.axes.xAxisText}
@@ -62,6 +62,15 @@ const AxesDesign = (props) => {
               />
             </Form.Item>
 
+            <Form.Item label='Rotate X-Axis Labels'>
+              <Switch
+                checked={newConfig.axes.xAxisRotateLabels}
+                onChange={(checked) => {
+                  handleChange({ axes: { xAxisRotateLabels: checked } });
+                }}
+              />
+            </Form.Item>
+
             <Form.Item label='Axes Title Size'>
               <Slider
                 value={newConfig.axes.titleFontSize}
@@ -71,15 +80,6 @@ const AxesDesign = (props) => {
                   handleChange({ axes: { titleFontSize: value } });
                 }}
                 marks={{ 5: 5, 21: 21 }}
-              />
-            </Form.Item>
-
-            <Form.Item label='Rotate X-Axis Labels'>
-              <Switch
-                checked={newConfig.axes.xAxisRotateLabels}
-                onChange={(checked) => {
-                  handleChange({ axes: { xAxisRotateLabels: checked } });
-                }}
               />
             </Form.Item>
 

@@ -43,7 +43,7 @@ const AxesWithRangesDesign = (props) => {
         <Panel header='Axes Ranges'>
           <Space direction='vertical' style={{ width: '80%' }}>
             <Space direction='vertical' style={{ width: '100%' }} hidden={hideXRange}>
-              <p><strong>X-Axis</strong></p>
+              <p><strong>X-Axis:</strong></p>
               <Form
                 size='small'
                 labelCol={{ span: 8, style: { textAlign: 'left' } }}
@@ -88,7 +88,7 @@ const AxesWithRangesDesign = (props) => {
             </Space>
 
             <Space direction='vertical' style={{ width: '100%' }} hidden={hideYRange}>
-              <p><strong>Y-Axis</strong></p>
+              <p><strong>Y-Axis:</strong></p>
               <Form
                 size='small'
                 labelCol={{ span: 8, style: { textAlign: 'left' } }}

@@ -23,7 +23,7 @@ const ExpressionValuesCapping = (props) => {
         labelCol={{ span: 12 }}
         wrapperCol={{ span: 12 }}
       >
-        <p><strong>Capping</strong></p>
+        <p><strong>Capping:</strong></p>
         <Form.Item>
           <Radio.Group onChange={onChange} value={!showingZScore && truncatedValues}>
             <Radio disabled={showingZScore} value>Capped</Radio>

@@ -24,7 +24,7 @@ const generateSpec = (config, method, imageData, plotData) => {
         fill: 'color',
         type: 'gradient',
         orient: config.legend.position,
-        direction: config.legend.position === 'right' ? 'vertical' : 'horizontal',
+        direction: ['left', 'right'].includes(config.legend.position) ? 'vertical' : 'horizontal',
         title: config.shownGene,
         labelColor: config.colour.masterColour,
         titleColor: config.colour.masterColour,
@@ -32,6 +32,53 @@ const generateSpec = (config, method, imageData, plotData) => {
         symbolSize: 100,
         offset: 40,
       }];
+  }
+
+  let marks = [{
+    type: 'symbol',
+    clip: true,
+    from: { data: 'plotData' },
+    encode: {
+      update: {
+        x: { scale: 'x', field: 'x' },
+        y: { scale: 'y', field: 'flipped_y' },
+        size: [
+          { value: config?.marker.size },
+        ],
+        stroke: config?.marker.outline ? {
+          scale: 'color',
+          field: 'value',
+        } : null,
+        fill: {
+          scale: 'color',
+          field: 'value',
+        },
+        // TODO: make selectable (hexagon)
+        shape: { value: config?.marker.shape },
+        fillOpacity: { value: config.marker.opacity / 10 },
+      },
+    },
+  }];
+  if (config.showImage) {
+    marks = [
+      {
+        type: 'image',
+        clip: true,
+        encode: {
+          update: {
+            url: { value: imageUrl },
+            x: { signal: 'scale("x", 0)' }, // Use scale signal directly
+            y: { signal: `scale("y", ${imageHeight})` }, // Use "scale" function with y
+            width: { signal: `scale("x", ${imageWidth}) - scale("x", 0)` }, // Calculate width using scale domain
+            height: { signal: `scale("y", 0) - scale("y", ${imageHeight})` }, // Calculate height using scale domain
+            aspect: { value: false },
+            opacity: { value: 1 },
+          },
+        },
+      },
+      ...marks,
+
+    ];
   }
 
   let axes = [];
@@ -141,48 +188,7 @@ const generateSpec = (config, method, imageData, plotData) => {
       },
     ],
     axes,
-    marks: [
-      {
-        type: 'image',
-        clip: true,
-        encode: {
-          update: {
-            url: { value: imageUrl },
-            x: { signal: 'scale("x", 0)' }, // Use scale signal directly
-            y: { signal: `scale("y", ${imageHeight})` }, // Use "scale" function with y
-            width: { signal: `scale("x", ${imageWidth}) - scale("x", 0)` }, // Calculate width using scale domain
-            height: { signal: `scale("y", 0) - scale("y", ${imageHeight})` }, // Calculate height using scale domain
-            aspect: { value: false },
-            opacity: { value: 1 },
-          },
-        },
-      },
-      {
-        type: 'symbol',
-        clip: true,
-        from: { data: 'plotData' },
-        encode: {
-          update: {
-            x: { scale: 'x', field: 'x' },
-            y: { scale: 'y', field: 'flipped_y' },
-            size: [
-              { value: config?.marker.size },
-            ],
-            stroke: config?.marker.outline ? {
-              scale: 'color',
-              field: 'value',
-            } : null,
-            fill: {
-              scale: 'color',
-              field: 'value',
-            },
-            // TODO: make selectable (hexagon)
-            shape: { value: config?.marker.shape },
-            fillOpacity: { value: config.marker.opacity / 10 },
-          },
-        },
-      },
-    ],
+    marks,
     legends: legend,
     title:
     {

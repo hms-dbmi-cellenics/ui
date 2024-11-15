@@ -132,6 +132,10 @@ const spatialFeatureInitialConfig = {
   },
   axesRanges: {
     ...axesRangesBaseState,
+    xMin: 50,
+    xMax: 450,
+    yMin: 70,
+    yMax: 450,
   },
   title: {
     ...titleBaseState,
@@ -143,7 +147,11 @@ const spatialFeatureInitialConfig = {
     ...colourBaseState,
     gradient: 'plasma',
   },
-  marker: markerBaseState,
+  marker: {
+    ...markerBaseState,
+    size: 10,
+    outline: false,
+  },
   labels: labelBaseState,
   logEquation: 'datum.expression*1',
   shownGene: null,
@@ -151,6 +159,7 @@ const spatialFeatureInitialConfig = {
   truncatedValues: true,
   selectedSample: null,
   keepValuesOnReset: ['shownGene'],
+  showImage: true,
 };
 
 // PLOTS & TABLES - Heatmap

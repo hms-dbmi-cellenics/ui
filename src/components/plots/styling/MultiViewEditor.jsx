@@ -191,13 +191,13 @@ const MultiViewEditor = (props) => {
         // wrapperCol={{ span: 14 }}
       >
 
-        <p><strong>Add Plots</strong></p>
+        <p><strong>Add Plots:</strong></p>
         <Form.Item>
           <GeneSearchBar
             onSelect={addGeneToMultiView}
           />
         </Form.Item>
-        <p><strong>Controls Update</strong></p>
+        <p><strong>Controls Update:</strong></p>
         <Form.Item>
           <Radio.Group
             onChange={(e) => setUpdateAll(e.target.value)}
@@ -213,7 +213,7 @@ const MultiViewEditor = (props) => {
           </Radio.Group>
         </Form.Item>
 
-        <p><strong>Selected Plot</strong></p>
+        <p><strong>Selected Plot:</strong></p>
         <Form.Item>
           <Select
             aria-label='selectPlot'
@@ -222,7 +222,7 @@ const MultiViewEditor = (props) => {
             onChange={(value) => setSelectedPlotUuid(value)}
           />
         </Form.Item>
-        <p><strong>Grid Dimensions</strong></p>
+        <p><strong>Grid Dimensions:</strong></p>
         <Form.Item>
           <Row justify='left' align='left'>
             <Col span={3}>
@@ -254,7 +254,7 @@ const MultiViewEditor = (props) => {
             </Col>
           </Row>
         </Form.Item>
-        <p><strong>Plot Order</strong></p>
+        <p><strong>Plot Order:</strong></p>
         <Form.Item>
           <HierarchicalTreeGenes
             treeData={treeData}
