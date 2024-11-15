@@ -77,7 +77,7 @@ const spatialCategoricalInitialConfig = {
     enabled: false,
   },
   selectedCellSet: 'louvain',
-  selectedSample: 'All',
+  selectedSample: null,
 };
 
 // PLOTS & TABLES - Continuous Embedding
@@ -139,14 +139,17 @@ const spatialFeatureInitialConfig = {
     fontSize: 20,
   },
   fontStyle: fontStyleBaseState,
-  colour: colourBaseState,
+  colour: {
+    ...colourBaseState,
+    gradient: 'plasma',
+  },
   marker: markerBaseState,
   labels: labelBaseState,
   logEquation: 'datum.expression*1',
   shownGene: null,
   expressionValue: 'raw',
   truncatedValues: true,
-  selectedSample: 'All',
+  selectedSample: null,
   keepValuesOnReset: ['shownGene'],
 };
 

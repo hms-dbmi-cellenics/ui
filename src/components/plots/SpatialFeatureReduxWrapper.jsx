@@ -12,8 +12,6 @@ const SpatialFeatureReduxWrapper = (props) => {
     experimentId, actions, plotUuid,
   } = props;
 
-  console.log('plotUuid!!!');
-  console.log(plotUuid);
   const dispatch = useDispatch();
   const config = useSelector((state) => state.componentConfig[plotUuid]?.config);
   const geneExpression = useSelector((state) => state.genes.expression.full);

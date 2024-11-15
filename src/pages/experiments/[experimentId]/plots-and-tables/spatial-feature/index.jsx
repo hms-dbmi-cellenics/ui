@@ -39,6 +39,16 @@ const SpatialFeaturePage = ({ experimentId }) => {
   const shownGenes = _.compact(multiViewPlotUuids?.map((uuid) => plotConfigs[uuid]?.shownGene));
   const [selectedPlotUuid, setSelectedPlotUuid] = useState(`${plotUuid}-0`);
   const [updateAll, setUpdateAll] = useState(true);
+  const [sampleCellSets, setSampleCellSets] = useState(cellSets);
+
+  useEffect(() => {
+    const sampleOnlyCellSets = {
+      ...cellSets,
+      hierarchy: cellSets.hierarchy.filter((item) => item.key === 'sample'),
+    };
+
+    setSampleCellSets(sampleOnlyCellSets);
+  }, [cellSets]);
 
   useEffect(() => {
     dispatch(loadCellSets(experimentId));
@@ -114,7 +124,7 @@ const SpatialFeaturePage = ({ experimentId }) => {
           buttonText='Submit'
         />
       </Panel>
-      <Panel header='View multiple plots' key='view-multiple-plots'>
+      <Panel header='View multiple plots' key='view-multiple-plots' collapsible={false}>
         <MultiViewEditor
           shownGenes={shownGenes}
           plotType={plotType}
@@ -129,8 +139,9 @@ const SpatialFeaturePage = ({ experimentId }) => {
       <Panel header='Select data' key='select-data'>
         <SelectData
           config={config}
+          plotType={plotType}
           onUpdate={updateAll ? updateAllWithChanges : updatePlotWithChanges}
-          cellSets={cellSets}
+          cellSets={sampleCellSets}
         />
       </Panel>
     </>

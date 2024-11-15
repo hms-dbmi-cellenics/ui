@@ -26,7 +26,7 @@ const ViolinControls = (props) => {
   } = props;
 
   return (
-    <Collapse defaultActiveKey='view-multiple-plots'>
+    <Collapse accordion defaultActiveKey='view-multiple-plots'>
       <Panel header='Gene selection' key='gene-selection'>
         <GeneSearchBar
           onSelect={changeSelectedPlotGene}

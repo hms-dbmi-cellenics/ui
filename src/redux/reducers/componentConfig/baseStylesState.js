@@ -18,8 +18,9 @@ const axesBaseState = {
   offset: 0,
   gridOpacity: 0,
   gridWidth: 10,
-  domainWidth: 2,
+  domainWidth: 1,
   xAxisRotateLabels: false,
+  enabled: true,
 };
 
 const axesRangesBaseState = {

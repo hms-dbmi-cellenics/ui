@@ -7,6 +7,8 @@ import {
   Skeleton,
 } from 'antd';
 
+import { spatialPlotTypes } from 'utils/constants';
+
 import { metadataKeyToName } from 'utils/data-management/metadataUtils';
 
 import InlineError from 'components/InlineError';
@@ -14,7 +16,7 @@ import InlineError from 'components/InlineError';
 const { Option, OptGroup } = Select;
 const SelectData = (props) => {
   const {
-    onUpdate, config, cellSets, disabled,
+    onUpdate, config, cellSets, disabled, plotType,
   } = props;
 
   const {
@@ -62,7 +64,7 @@ const SelectData = (props) => {
             handleChange(value);
           }}
         >
-          <Option value='All'>All</Option>
+          {!spatialPlotTypes.includes(plotType) && <Option value='All'>All</Option>}
           {parents.map((parent) => (
             <OptGroup label={metadataKeyToName(properties[parent.value].name)}>
               {getMetadataOptions(parent.value).map((option) => (

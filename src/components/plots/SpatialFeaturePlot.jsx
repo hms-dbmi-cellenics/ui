@@ -1,6 +1,4 @@
-import React, {
-  useState, useEffect, useRef, useMemo, useImperativeHandle, forwardRef,
-} from 'react';
+import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
 import { Vega } from 'react-vega';
@@ -11,8 +9,8 @@ import { loadEmbedding } from 'redux/actions/embedding';
 import { loadProcessingSettings } from 'redux/actions/experimentSettings';
 import { getCellSets } from 'redux/selectors';
 import { generateSpec, generateData } from 'utils/plotSpecs/generateSpatialFeatureSpec';
-import { loadOmeZarr, loadOmeZarrGrid } from 'components/data-exploration/spatial/loadOmeZarr';
-import { root as zarrRoot, FetchStore } from 'zarrita';
+import { loadOmeZarr } from 'components/data-exploration/spatial/loadOmeZarr';
+import { root as zarrRoot } from 'zarrita';
 import { ZipFileStore } from '@zarrita/storage';
 import { getSampleFileUrls } from 'utils/data-management/downloadSampleFile';
 import PlatformError from '../PlatformError';
@@ -21,21 +19,17 @@ import Loader from '../Loader';
 const EMBEDDING_TYPE = 'images';
 
 // Load OME-Zarr and return the pyramid and loader (an example)
-const fetchImageData = async (omeZarrUrls, omeZarrSampleIds) => {
-  const omeZarrRoots = omeZarrUrls.map((url) => zarrRoot(ZipFileStore.fromUrl(url)));
+const getImageUrls = async (omeZarrUrl) => {
+  const omeZarrRoot = zarrRoot(ZipFileStore.fromUrl(omeZarrUrl));
 
-  const imageDatas = await Promise.all(omeZarrRoots.map(async (omeZarrRoot, ind) => {
-    const { data } = await loadOmeZarr(omeZarrRoot);
-    const base = data[0];
+  const { data } = await loadOmeZarr(omeZarrRoot);
+  const base = data[0];
 
-    const imageData = await processImageData(base);
-    imageData.sampleId = omeZarrSampleIds[ind];
-    return imageData;
-  }));
-  return imageDatas;
+  const imageUrl = await imageDataToUrl(base);
+  return imageUrl;
 };
 
-const processImageData = async (base) => {
+const imageDataToUrl = async (base) => {
   const canvas = document.createElement('canvas');
   const ctx = canvas.getContext('2d');
 
@@ -71,7 +65,7 @@ const processImageData = async (base) => {
   return { imageUrl, imageWidth: width, imageHeight: height };
 };
 
-const SpatialFeaturePlot = forwardRef((props, ref) => {
+const SpatialFeaturePlot = (props) => {
   const {
     experimentId,
     config,
@@ -86,16 +80,6 @@ const SpatialFeaturePlot = forwardRef((props, ref) => {
   // const omeZarrUrl = 'http://localhost:8000/human-lymph-node-10x-visium/data/processed/human_lymph_node_10x_visium.ome.zarr';
 
   const dispatch = useDispatch();
-
-  const viewStateRef = useRef({ xdom: [-2, 2], ydom: [-2, 2] });
-  const previousAxisSettings = useRef({
-    xAxisAuto: null,
-    xMin: null,
-    xMax: null,
-    yAxisAuto: null,
-    yMin: null,
-    yMax: null,
-  });
 
   const {
     data: embeddingData,
@@ -113,10 +97,9 @@ const SpatialFeaturePlot = forwardRef((props, ref) => {
   const isObj2s = useSelector((state) => state.backendStatus[experimentId].status.obj2s.status !== null);
 
   const [plotSpec, setPlotSpec] = useState({});
-  const [forceReset, setForceReset] = useState(0);
-  const [imageDatas, setImageDatas] = useState(null);
-  const [omeZarrSampleIds, setOmeZarrSampleIds] = useState(null);
+  const [imageUrls, setImageUrls] = useState({});
   const [omeZarrUrls, setOmeZarrUrls] = useState(null);
+  const [selectedSample, setSelectedSample] = useState();
 
   useEffect(() => {
     (async () => {
@@ -125,17 +108,14 @@ const SpatialFeaturePlot = forwardRef((props, ref) => {
           sampleIdsForFileUrls.map((sampleId) => getSampleFileUrls(experimentId, sampleId, 'ome_zarr_zip')),
         )).flat();
 
-        const signedUrls = results.map(({ url }) => url);
-        setOmeZarrUrls(signedUrls);
+        // For obj2s, file IDs correspond to sample IDs
+        // whereas there is a single dummy sample ID in state
+        const signedUrls = results.map(({ url, fileId }, i) => ({
+          url,
+          sampleId: isObj2s ? fileId : sampleIdsForFileUrls[i],
+        }));
 
-        if (isObj2s) {
-          // For obj2s, file IDs correspond to sample IDs
-          // whereas there is a single dummy sample ID in state
-          const fileIds = results.map(({ fileId }) => fileId);
-          setOmeZarrSampleIds(fileIds);
-        } else {
-          setOmeZarrSampleIds(sampleIdsForFileUrls);
-        }
+        setOmeZarrUrls(signedUrls);
       } catch (error) {
         console.error('Error fetching URLs:', error);
       }
@@ -143,14 +123,30 @@ const SpatialFeaturePlot = forwardRef((props, ref) => {
   }, [sampleIdsForFileUrls, experimentId, isObj2s]);
 
   useEffect(() => {
-    if (!omeZarrUrls) return;
+    if (!omeZarrUrls || !config) return;
+
+    // default to first sample
+    const sampleId = config.selectedSample || omeZarrUrls[0].sampleId;
+    setSelectedSample(sampleId);
+  }, [config, omeZarrUrls]);
+
+  useEffect(() => {
+    if (!omeZarrUrls || !selectedSample || imageUrls[selectedSample]) return;
+
+    const { url: selectedUrl } = omeZarrUrls.find(({ sampleId }) => sampleId === selectedSample);
+
     const loadImageData = async () => {
-      const imageDatas = await fetchImageData(omeZarrUrls, omeZarrSampleIds); // Update with actual path
-      setImageDatas(imageDatas);
+      const sampleImageData = await getImageUrls(selectedUrl);
+      const newImageUrls = {
+        ...imageUrls,
+        [selectedSample]: sampleImageData,
+      };
+
+      setImageUrls(newImageUrls);
     };
 
     loadImageData();
-  }, [omeZarrUrls]);
+  }, [omeZarrUrls, selectedSample]);
 
   useEffect(() => {
     dispatch(loadCellSets(experimentId));
@@ -166,100 +162,30 @@ const SpatialFeaturePlot = forwardRef((props, ref) => {
     }
   }, [embeddingSettings?.method]);
 
-  // Add/subtract 1 to give some padding to the plot
-  const extent = (arr) => [_.min(arr) - 1, _.max(arr) + 1];
-
-  const xExtent = useMemo(() => {
-    if (!embeddingData) return [-10, 10];
-    return extent(embeddingData.filter((data) => data !== undefined).map((data) => data[0]));
-  }, [embeddingData]);
-
-  const yExtent = useMemo(() => {
-    if (!embeddingData) return [-10, 10];
-    return extent(embeddingData.filter((data) => data !== undefined).map((data) => data[1]));
-  }, [embeddingData]);
-
-  useImperativeHandle(ref, () => ({
-    resetZoom() {
-      viewStateRef.current = { xdom: xExtent, ydom: yExtent };
-      setPlotSpec(calculatePlotSpec());
-      setForceReset(forceReset + 1);
-    },
-  }));
-
-  useEffect(() => {
-    // eslint-disable-next-line no-param-reassign
-    viewStateRef.current = { xdom: xExtent, ydom: yExtent };
-  }, [xExtent, yExtent]);
-
-  const calculatePlotSpec = () => {
-    const {
-      xAxisAuto, yAxisAuto, xMin, xMax, yMin, yMax,
-    } = config.axesRanges;
-
-    const viewState = {};
-
-    if (previousAxisSettings.current.xAxisAuto === xAxisAuto
-      && previousAxisSettings.current.xMin === xMin
-      && previousAxisSettings.current.xMax === xMax
-    ) {
-      viewState.xdom = viewStateRef.current.xdom;
-    } else if (xAxisAuto) {
-      viewState.xdom = xExtent;
-    } else {
-      viewState.xdom = [xMin, xMax];
-    }
-
-    if (previousAxisSettings.current.yAxisAuto === yAxisAuto
-      && previousAxisSettings.current.yMin === yMin
-      && previousAxisSettings.current.yMax === yMax
-    ) {
-      viewState.ydom = viewStateRef.current.ydom;
-    } else if (yAxisAuto) {
-      viewState.ydom = yExtent;
-    } else {
-      viewState.ydom = [yMin, yMax];
-    }
-
-    previousAxisSettings.current = config.axesRanges;
-
-    const spec = generateSpec(
-      config,
-      viewState,
-      EMBEDDING_TYPE,
-      imageDatas,
-      generateData(
-        cellSets,
-        config.selectedSample,
-        config.truncatedValues ? truncatedPlotData : plotData,
-        embeddingData,
-      ),
-    );
-
-    return spec;
-  };
-
   useEffect(() => {
     if (!embeddingLoading
       && !embeddingError
       && config
+      && selectedSample
       && plotData?.length > 0
       && cellSets.accessible
       && embeddingData?.length
-      && imageDatas) {
-      setPlotSpec(calculatePlotSpec());
-    }
-  }, [
-    config, plotData, embeddingData, cellSets, embeddingLoading, imageDatas,
-  ]);
+      && imageUrls[selectedSample]) {
+      const spec = generateSpec(
+        config,
+        EMBEDDING_TYPE,
+        imageUrls[selectedSample],
+        generateData(
+          cellSets,
+          selectedSample,
+          config.truncatedValues ? truncatedPlotData : plotData,
+          embeddingData,
+        ),
+      );
 
-  const plotListeners = {
-    domUpdates: (e, val) => {
-      const [xdom, ydom] = val;
-      // eslint-disable-next-line no-param-reassign
-      viewStateRef.current = { xdom, ydom };
-    },
-  };
+      setPlotSpec(spec);
+    }
+  }, [config, plotData, embeddingData, cellSets, embeddingLoading, imageUrls, selectedSample]);
 
   const render = () => {
     if (error) {
@@ -304,7 +230,7 @@ const SpatialFeaturePlot = forwardRef((props, ref) => {
 
     return (
       <center>
-        <Vega reset={forceReset} spec={plotSpec || {}} actions={actions} signalListeners={plotListeners} />
+        <Vega spec={plotSpec} actions={actions} />
       </center>
     );
   };
@@ -314,7 +240,7 @@ const SpatialFeaturePlot = forwardRef((props, ref) => {
       {render()}
     </>
   );
-});
+};
 
 SpatialFeaturePlot.defaultProps = {
   reloadPlotData: () => { },
