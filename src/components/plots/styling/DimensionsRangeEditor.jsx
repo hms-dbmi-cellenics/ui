@@ -26,8 +26,8 @@ const DimensionsRangeEditor = (props) => {
       <p><strong>Dimensions</strong></p>
       <Form
         size='small'
-        labelCol={{ span: 12 }}
-        wrapperCol={{ span: 12 }}
+        labelCol={{ span: 6, style: { textAlign: 'left' } }}
+        wrapperCol={{ span: 16 }}
       >
         <Form.Item
           label='Width'

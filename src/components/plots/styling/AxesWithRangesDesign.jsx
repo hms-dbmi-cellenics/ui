@@ -46,7 +46,7 @@ const AxesWithRangesDesign = (props) => {
               <p><strong>X-Axis</strong></p>
               <Form
                 size='small'
-                labelCol={{ span: 10 }}
+                labelCol={{ span: 8, style: { textAlign: 'left' } }}
               >
                 <Form.Item
                   label='Auto'
@@ -91,7 +91,7 @@ const AxesWithRangesDesign = (props) => {
               <p><strong>Y-Axis</strong></p>
               <Form
                 size='small'
-                labelCol={{ span: 10 }}
+                labelCol={{ span: 8, style: { textAlign: 'left' } }}
               >
                 <Form.Item
                   label='Auto'

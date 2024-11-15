@@ -56,11 +56,11 @@ const SpatialFeaturePage = ({ experimentId }) => {
 
   const plotStylingConfig = [
     {
-      panelTitle: 'Expression values',
+      panelTitle: 'Expression Values',
       controls: ['expressionValuesCapping'],
     },
     {
-      panelTitle: 'Main schema',
+      panelTitle: 'Main Schema',
       controls: ['dimensions'],
       children: [
         {
@@ -74,7 +74,7 @@ const SpatialFeaturePage = ({ experimentId }) => {
       ],
     },
     {
-      panelTitle: 'Axes and margins',
+      panelTitle: 'Axes and Margins',
       controls: ['axesWithRanges'],
     },
     {
@@ -117,14 +117,14 @@ const SpatialFeaturePage = ({ experimentId }) => {
 
   const renderExtraPanels = () => (
     <>
-      <Panel header='Gene selection' key='gene-selection'>
+      <Panel header='Gene Selection' key='gene-selection'>
         <GeneSearchBar
           allowMultiple={false}
           onSelect={changeSelectedPlotGene}
           buttonText='Submit'
         />
       </Panel>
-      <Panel header='View multiple plots' key='view-multiple-plots' collapsible={false}>
+      <Panel header='View Multiple Plots' key='view-multiple-plots' collapsible={false}>
         <MultiViewEditor
           shownGenes={shownGenes}
           plotType={plotType}
@@ -136,7 +136,7 @@ const SpatialFeaturePage = ({ experimentId }) => {
           setUpdateAll={setUpdateAll}
         />
       </Panel>
-      <Panel header='Select data' key='select-data'>
+      <Panel header='Select Data' key='select-data'>
         <SelectData
           config={config}
           plotType={plotType}

@@ -52,13 +52,10 @@ const SelectData = (props) => {
 
   return (
     <>
-      <div>
-        Select the data to view on the embedding:
-      </div>
+      <p><strong>Select Data for Plot</strong></p>
       <Form.Item>
         <Select
           value={config.selectedSample}
-          style={{ width: 200 }}
           disabled={disabled}
           onChange={(value) => {
             handleChange(value);

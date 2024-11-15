@@ -13,8 +13,8 @@ const AxesDesign = (props) => {
   return (
     <Form
       size='small'
-      labelCol={{ span: 8 }}
-      wrapperCol={{ span: 12 }}
+      labelCol={{ span: 10, style: { textAlign: 'left' } }}
+      wrapperCol={{ span: 11 }}
     >
       <p><strong>Toggle Axes</strong></p>
       <Form.Item>
