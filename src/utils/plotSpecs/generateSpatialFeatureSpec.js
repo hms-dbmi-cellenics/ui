@@ -24,6 +24,7 @@ const generateSpec = (config, method, imageData, plotData) => {
         fill: 'color',
         type: 'gradient',
         orient: config.legend.position,
+        direction: config.legend.position === 'right' ? 'vertical' : 'horizontal',
         title: config.shownGene,
         labelColor: config.colour.masterColour,
         titleColor: config.colour.masterColour,

@@ -87,7 +87,16 @@ const SpatialFeaturePage = ({ experimentId }) => {
     },
     {
       panelTitle: 'Legend',
-      controls: ['legend'],
+      controls: [
+        {
+          name: 'legend',
+          props: {
+            option: {
+              positions: 'top-bottom',
+            },
+          },
+        },
+      ],
     },
   ];
 
