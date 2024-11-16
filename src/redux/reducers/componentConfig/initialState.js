@@ -78,6 +78,7 @@ const spatialCategoricalInitialConfig = {
   },
   selectedCellSet: 'louvain',
   selectedSample: null,
+  showImage: true,
 };
 
 // PLOTS & TABLES - Continuous Embedding
@@ -146,7 +147,6 @@ const spatialFeatureInitialConfig = {
   colour: {
     ...colourBaseState,
     gradient: 'plasma',
-    reverseColourBar: true,
   },
   marker: {
     ...markerBaseState,

@@ -1,63 +1,50 @@
 /* eslint-disable no-param-reassign */
-import React, { useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
+import PropTypes from 'prop-types';
+import { useSelector, useDispatch } from 'react-redux';
+import MultiViewEditor from 'components/plots/styling/MultiViewEditor';
 import _ from 'lodash';
 import {
   Collapse,
   Select,
   Skeleton,
-  Space,
 } from 'antd';
-import { useSelector, useDispatch } from 'react-redux';
-import PropTypes from 'prop-types';
-import { getCellSets, getCellSetsHierarchy, getCellSetsHierarchyByKeys } from 'redux/selectors';
+import MultiViewGrid from 'components/plots/MultiViewGrid';
+
+import SelectData from 'components/plots/styling/embedding-continuous/SelectData';
+import Header from 'components/Header';
+import PlotContainer from 'components/plots/PlotContainer';
+import { loadGeneExpression } from 'redux/actions/genes';
+
 import {
   updatePlotConfig,
-  loadPlotConfig,
 } from 'redux/actions/componentConfig/index';
-import Header from 'components/Header';
 import { loadCellSets } from 'redux/actions/cellSets';
-import Loader from 'components/Loader';
-import CategoricalEmbeddingPlot from 'components/plots/CategoricalEmbeddingPlot';
-import PlotContainer from 'components/plots/PlotContainer';
-import SelectData from 'components/plots/styling/embedding-continuous/SelectData';
-import PlotLegendAlert, { MAX_LEGEND_ITEMS } from 'components/plots/helpers/PlotLegendAlert';
+import { getCellSets, getPlotConfigs, getCellSetsHierarchy } from 'redux/selectors';
 import { plotNames, plotUuids, plotTypes } from 'utils/constants';
+import SpatialCategoricalReduxWrapper from 'components/plots/SpatialCategoricalReduxWrapper';
 
 const { Panel } = Collapse;
 
 const plotUuid = plotUuids.SPATIAL_CATEGORICAL;
 const plotType = plotTypes.SPATIAL_CATEGORICAL;
+const multiViewUuid = plotUuids.getMultiPlotUuid(plotType);
 
 const SpatialCategoricalPage = ({ experimentId }) => {
   const dispatch = useDispatch();
-
-  const config = useSelector((state) => state.componentConfig[plotUuid]?.config);
-  const configIsLoaded = useSelector((state) => !_.isNil(state.componentConfig[plotUuid]));
-
+  const config = useSelector((state) => state.componentConfig[multiViewUuid]?.config);
   const cellSets = useSelector(getCellSets());
-  const numLegendItems = useSelector(
-    getCellSetsHierarchyByKeys([config?.selectedCellSet]),
-  )[0]?.children?.length;
   const hierarchy = useSelector(getCellSetsHierarchy());
+  const multiViewConfig = useSelector((state) => state.componentConfig[multiViewUuid]?.config);
+  const multiViewPlotUuids = multiViewConfig?.plotUuids;
+  const plotConfigs = useSelector(getPlotConfigs(multiViewPlotUuids));
+  const shownGenes = _.compact(multiViewPlotUuids?.map((uuid) => plotConfigs[uuid]?.shownGene));
+  const [selectedPlotUuid, setSelectedPlotUuid] = useState(`${plotUuid}-0`);
+  const [updateAll, setUpdateAll] = useState(true);
 
   useEffect(() => {
     dispatch(loadCellSets(experimentId));
-    if (!config) dispatch(loadPlotConfig(experimentId, plotUuid, plotType));
   }, []);
-
-  const updatePlotWithChanges = (obj) => {
-    dispatch(updatePlotConfig(plotUuid, obj));
-  };
-
-  useEffect(() => {
-    if (!configIsLoaded
-      || !cellSets.accessible
-      || !config.legend.enabled) return;
-
-    const showAlert = numLegendItems > MAX_LEGEND_ITEMS;
-
-    if (showAlert) updatePlotWithChanges({ legend: { showAlert, enabled: !showAlert } });
-  }, [configIsLoaded, cellSets.accessible]);
 
   const generateGroupByOptions = () => {
     if (!cellSets.accessible) {
@@ -113,6 +100,22 @@ const SpatialCategoricalPage = ({ experimentId }) => {
     },
   ];
 
+  const updateAllWithChanges = (updateField) => {
+    multiViewPlotUuids.forEach((uuid) => {
+      dispatch(updatePlotConfig(uuid, updateField));
+    });
+  };
+  const updatePlotWithChanges = (updateField) => {
+    dispatch(updatePlotConfig(selectedPlotUuid, updateField));
+  };
+  const renderPlot = (plotUuidToRender) => (
+    <SpatialCategoricalReduxWrapper
+      experimentId={experimentId}
+      plotUuid={plotUuidToRender}
+
+    />
+  );
+
   const renderExtraPanels = () => (
     <>
       <Panel header='Select data' key='select-data'>
@@ -120,6 +123,7 @@ const SpatialCategoricalPage = ({ experimentId }) => {
           config={config}
           onUpdate={updatePlotWithChanges}
           cellSets={cellSets}
+          plotType={plotType}
         />
       </Panel>
       <Panel header='Group by' key='group-by'>
@@ -140,44 +144,33 @@ const SpatialCategoricalPage = ({ experimentId }) => {
     </>
   );
 
-  const render = () => {
-    if (!cellSets.accessible || !config) {
-      return (
-        <center>
-          <Loader experimentId={experimentId} />
-        </center>
-      );
-    }
-
-    return (
-      <Space direction='vertical'>
-        {config?.legend?.showAlert && <PlotLegendAlert />}
-        <CategoricalEmbeddingPlot
-          experimentId={experimentId}
-          config={config}
-          plotUuid={plotUuid}
-        />
-      </Space>
-    );
-  };
-
   return (
     <>
       <Header title={plotNames.SPATIAL_CATEGORICAL} />
       <PlotContainer
         experimentId={experimentId}
-        plotUuid={plotUuid}
+        plotUuid={selectedPlotUuid}
         plotType={plotType}
         plotStylingConfig={plotStylingConfig}
-        plotInfo='In order to rename existing clusters or create new ones, use the cell set tool, located in the Data Exploration page.'
         extraControlPanels={renderExtraPanels()}
-        defaultActiveKey='group-by'
+        defaultActiveKey='view-multiple-plots'
+        onPlotReset={() => dispatch(
+          updatePlotConfig(multiViewUuid, { nrows: 1, ncols: 1, plotUuids: [`${plotUuid}-0`] }),
+        )}
+        onUpdate={updateAll ? updateAllWithChanges : updatePlotWithChanges}
       >
-        {render()}
+        <MultiViewGrid
+          experimentId={experimentId}
+          renderPlot={renderPlot}
+          updateAllWithChanges={updateAllWithChanges}
+          plotType={plotType}
+          plotUuid={plotUuid}
+        />
       </PlotContainer>
     </>
   );
 };
+
 SpatialCategoricalPage.propTypes = {
   experimentId: PropTypes.string.isRequired,
 };
