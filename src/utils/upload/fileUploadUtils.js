@@ -10,11 +10,17 @@ const techNamesToDisplay = {
   [sampleTech['10X']]: '10X Chromium',
   [sampleTech.RHAPSODY]: 'BD Rhapsody',
   [sampleTech.SEURAT_OBJECT]: 'Seurat',
-  [sampleTech.SEURAT_SPATIAL_OBJECT]: 'Seurat - Spatial',
+  [sampleTech.SEURAT_SPATIAL_OBJECT]: 'Seurat',
   [sampleTech.SCE_OBJECT]: 'SingleCellExperiment',
   [sampleTech.ANNDATA_OBJECT]: 'AnnData',
   [sampleTech.H5]: '10X Chromium - H5',
   [sampleTech.PARSE]: 'Parse Evercode WT',
+};
+
+const techCategoryNames = {
+  SINGLE_CELL_COUNT_MATRIX: 'SINGLE CELL - Sample Count Matrices',
+  SINGLE_CELL_PREPROCESSED: 'SINGLE CELL - Preprocessed Object',
+  SPATIAL_PREPROCESSED: 'SPATIAL - Preprocessed Object',
 };
 
 const matchFileName = (fileName, fileNames) => {
@@ -68,6 +74,7 @@ const getFileSampleAndNameDefault = (filePath) => {
 /* eslint-disable max-len */
 const fileUploadUtils = {
   [sampleTech['10X']]: {
+    category: techCategoryNames.SINGLE_CELL_COUNT_MATRIX,
     acceptedFiles: new Set([
       'barcodes.tsv',
       'barcodes.tsv.gz',
@@ -114,123 +121,22 @@ const fileUploadUtils = {
     getFileSampleAndName: getFileSampleAndNameDefault,
     getFilePathToDisplay: getFilePathToDisplayDefaultConstructor(sampleTech['10X']),
   },
-  [sampleTech.SEURAT_OBJECT]: {
-    validExtensionTypes: ['.rds'],
-    inputInfo: [
-      ['<code>scdata$samples</code>: sample assignment. If absent, treated as unisample.'],
-      ['<code>scdata[[\'RNA\']]@counts</code>: raw feature counts.'],
-      ['<code>DefaultDimReduc(scdata)</code>: is either <code>umap</code>, <code>tsne</code>, or a close match (e.g. <code>ref.umap</code>).'],
-      ['\uD83D\uDCA1cluster metadata in <code>scdata@meta.data</code> is auto-detected.'],
-      ['\uD83D\uDCA1sample level metadata in <code>scdata@meta.data</code> that groups samples in <code>scdata$samples</code> is auto-detected for downstream analysis.'],
-      ['\uD83D\uDCA1if file size is over 15GB, try removing any assays not indicated above.'],
-    ],
-    requiredFiles: [sampleFileType.SEURAT_OBJECT],
-    fileUploadParagraphs: [
-      '<p>For your dataset, upload a single <code>*.rds</code> file with the Seurat object (max 15GB).</p>',
-      '<p>The Seurat object must contain the following slots and metadata:</p>',
-    ],
-    dropzoneText: 'Drag and drop *.rds file here or click to browse.',
-    // setting to null allows file upload on dropzone click
-    webkitdirectory: null,
-    isNameValid(fileName) {
-      return this.validExtensionTypes.some(
-        (validExtension) => fileName.endsWith(validExtension),
-      );
-    },
-    getCorrespondingType: () => sampleFileType.SEURAT_OBJECT,
-    // For more information on this one check the TODO1 at FileUploadModal
-    filterFiles: () => { throw new Error('Not Implemented'); },
-    getFilePathToDisplay: getFilePathToDisplayDefaultConstructor(sampleTech.SEURAT_OBJECT),
-    getFileSampleAndName: getFileSampleAndNameDefault,
-  },
-  [sampleTech.SEURAT_SPATIAL_OBJECT]: {
-    validExtensionTypes: ['.rds'],
-    inputInfo: [
-      ['<code>scdata$samples</code>: sample assignment. If absent, treated as unisample.'],
-      ['<code>scdata[[\'RNA\']]@counts</code>: raw feature counts.'],
-      ['<code>DefaultDimReduc(scdata)</code>: is either <code>umap</code>, <code>tsne</code>, or a close match (e.g. <code>ref.umap</code>).'],
-      ['\uD83D\uDCA1cluster metadata in <code>scdata@meta.data</code> is auto-detected.'],
-      ['\uD83D\uDCA1sample level metadata in <code>scdata@meta.data</code> that groups samples in <code>scdata$samples</code> is auto-detected for downstream analysis.'],
-      ['\uD83D\uDCA1if file size is over 15GB, try removing any assays not indicated above.'],
-    ],
-    requiredFiles: [sampleFileType.SEURAT_SPATIAL_OBJECT],
-    fileUploadParagraphs: [
-      '<p>For your dataset, upload a single <code>*.rds</code> file with the Seurat object (max 15GB).</p>',
-      '<p>The Seurat object must contain the following slots and metadata:</p>',
-    ],
-    dropzoneText: 'Drag and drop *.rds file here or click to browse.',
-    // setting to null allows file upload on dropzone click
-    webkitdirectory: null,
-    isNameValid(fileName) {
-      return this.validExtensionTypes.some(
-        (validExtension) => fileName.endsWith(validExtension),
-      );
-    },
-    getCorrespondingType: () => sampleFileType.SEURAT_SPATIAL_OBJECT,
-    // For more information on this one check the TODO1 at FileUploadModal
-    filterFiles: () => { throw new Error('Not Implemented'); },
-    getFilePathToDisplay: getFilePathToDisplayDefaultConstructor(sampleTech.SEURAT_SPATIAL_OBJECT),
-    getFileSampleAndName: getFileSampleAndNameDefault,
-  },
-  [sampleTech.SCE_OBJECT]: {
-    validExtensionTypes: ['.rds'],
-    inputInfo: [
-      ['<code>sce$samples</code>: sample assignment. If absent, treated as unisample.'],
-      ['<code>counts(sce)</code>: raw feature counts.'],
-      ['<code>reducedDimNames(sce)</code>: includes either <code>UMAP</code>, <code>TSNE</code>, or a close match (e.g. <code>REF.UMAP</code>).'],
-      ['\uD83D\uDCA1cluster metadata in <code>sce@colData</code> is auto-detected.'],
-      ['\uD83D\uDCA1sample level metadata in <code>sce@colData</code> that groups samples in <code>sce$samples</code> is auto-detected for downstream analysis.'],
-      ['\uD83D\uDCA1if file size is over 15GB, try removing any slots not indicated above.'],
-    ],
-    requiredFiles: [sampleFileType.SCE_OBJECT],
-    fileUploadParagraphs: [
-      '<p>For your dataset, upload a single <code>*.rds</code> file with the SingleCellExperiment object (max 15GB).</p>',
-      '<p>The SingleCellExperiment object must contain the following slots and metadata:</p>',
-    ],
-    dropzoneText: 'Drag and drop *.rds file here or click to browse.',
-    // setting to null allows file upload on dropzone click
-    webkitdirectory: null,
-    isNameValid(fileName) {
-      return this.validExtensionTypes.some(
-        (validExtension) => fileName.endsWith(validExtension),
-      );
-    },
-    getCorrespondingType: () => sampleFileType.SCE_OBJECT,
-    // For more information on this one check the TODO1 at FileUploadModal
-    filterFiles: () => { throw new Error('Not Implemented'); },
-    getFilePathToDisplay: getFilePathToDisplayDefaultConstructor(sampleTech.SCE_OBJECT),
-    getFileSampleAndName: getFileSampleAndNameDefault,
-  },
-  [sampleTech.ANNDATA_OBJECT]: {
-    validExtensionTypes: ['.h5ad'],
-    inputInfo: [
-      ["<code>adata.obs['samples']</code>: sample assignment. If absent, treated as unisample."],
-      ['<code>adata.raw.X</code> or <code>adata.X</code>: raw feature counts. If both are present, <code>adata.raw.X</code> should be raw counts.'],
-      ["<code>adata.obsm</code>: includes either a <code>'X_umap'</code> or <code>'X_tsne'</code> reduction."],
-      ['\uD83D\uDCA1cluster metadata in <code>adata.obs</code> is auto-detected.'],
-      ["\uD83D\uDCA1sample level metadata in <code>adata.obs</code> that groups samples in <code>adata.obs['samples']</code> is auto-detected for downstream analysis."],
-      ['\uD83D\uDCA1if file size is over 15GB, try removing any slots not indicated above.'],
-    ],
-    requiredFiles: [sampleFileType.ANNDATA_OBJECT],
-    fileUploadParagraphs: [
-      '<p>For your dataset, upload a single <code>*.h5ad</code> file with the AnnData object (max 15GB).</p>',
-      '<p>The AnnData object must contain the following fields and metadata:</p>',
-    ],
-    dropzoneText: 'Drag and drop *.h5ad file here or click to browse.',
-    // setting to null allows file upload on dropzone click
-    webkitdirectory: null,
-    isNameValid(fileName) {
-      return this.validExtensionTypes.some(
-        (validExtension) => fileName.endsWith(validExtension),
-      );
-    },
-    getCorrespondingType: () => sampleFileType.ANNDATA_OBJECT,
-    // For more information on this one check the TODO1 at FileUploadModal
-    filterFiles: () => { throw new Error('Not Implemented'); },
-    getFilePathToDisplay: getFilePathToDisplayDefaultConstructor(sampleTech.ANNDATA_OBJECT),
+  [sampleTech.H5]: {
+    category: techCategoryNames.SINGLE_CELL_COUNT_MATRIX,
+    acceptedFiles: new Set(['matrix.h5', 'matrix.h5.gz']),
+    inputInfo: [['<code>matrix.h5</code> or <code>matrix.h5.gz</code>']],
+    requiredFiles: ['10x_h5'],
+    fileUploadParagraphs: [`For each sample, upload a folder containing the h5 file. The folder's
+    name will be used to name the sample in it.
+    You can change this name later in Data Management.`],
+    isNameValid: (fileName) => fileName.toLowerCase().match(/.*matrix.h5(.gz)?$/),
+    getCorrespondingType: () => '10x_h5',
+    filterFiles: filterFilesDefaultConstructor(sampleTech.H5),
+    getFilePathToDisplay: getFilePathToDisplayDefaultConstructor(sampleTech.H5),
     getFileSampleAndName: getFileSampleAndNameDefault,
   },
   [sampleTech.RHAPSODY]: {
+    category: techCategoryNames.SINGLE_CELL_COUNT_MATRIX,
     acceptedFiles: new Set(['expression_data.st', 'expression_data.st.gz']),
     requiredFiles: ['rhapsody'],
     inputInfo: [
@@ -249,20 +155,8 @@ const fileUploadUtils = {
     getFilePathToDisplay: getFilePathToDisplayDefaultConstructor(sampleTech.RHAPSODY),
     getFileSampleAndName: getFileSampleAndNameDefault,
   },
-  [sampleTech.H5]: {
-    acceptedFiles: new Set(['matrix.h5', 'matrix.h5.gz']),
-    inputInfo: [['<code>matrix.h5</code> or <code>matrix.h5.gz</code>']],
-    requiredFiles: ['10x_h5'],
-    fileUploadParagraphs: [`For each sample, upload a folder containing the h5 file. The folder's
-    name will be used to name the sample in it.
-    You can change this name later in Data Management.`],
-    isNameValid: (fileName) => fileName.toLowerCase().match(/.*matrix.h5(.gz)?$/),
-    getCorrespondingType: () => '10x_h5',
-    filterFiles: filterFilesDefaultConstructor(sampleTech.H5),
-    getFilePathToDisplay: getFilePathToDisplayDefaultConstructor(sampleTech.H5),
-    getFileSampleAndName: getFileSampleAndNameDefault,
-  },
   [sampleTech.PARSE]: {
+    category: techCategoryNames.SINGLE_CELL_COUNT_MATRIX,
     acceptedFiles: new Set([
       'all_genes.csv',
       'all_genes.csv.gz',
@@ -411,6 +305,126 @@ const fileUploadUtils = {
 
       return { sample, filteredState, name };
     },
+  },
+  [sampleTech.SEURAT_OBJECT]: {
+    category: techCategoryNames.SINGLE_CELL_PREPROCESSED,
+    validExtensionTypes: ['.rds'],
+    inputInfo: [
+      ['<code>scdata$samples</code>: sample assignment. If absent, treated as unisample.'],
+      ['<code>scdata[[\'RNA\']]@counts</code>: raw feature counts.'],
+      ['<code>DefaultDimReduc(scdata)</code>: is either <code>umap</code>, <code>tsne</code>, or a close match (e.g. <code>ref.umap</code>).'],
+      ['\uD83D\uDCA1cluster metadata in <code>scdata@meta.data</code> is auto-detected.'],
+      ['\uD83D\uDCA1sample level metadata in <code>scdata@meta.data</code> that groups samples in <code>scdata$samples</code> is auto-detected for downstream analysis.'],
+      ['\uD83D\uDCA1if file size is over 15GB, try removing any assays not indicated above.'],
+    ],
+    requiredFiles: [sampleFileType.SEURAT_OBJECT],
+    fileUploadParagraphs: [
+      '<p>For your dataset, upload a single <code>*.rds</code> file with the Seurat object (max 15GB).</p>',
+      '<p>The Seurat object must contain the following slots and metadata:</p>',
+    ],
+    dropzoneText: 'Drag and drop *.rds file here or click to browse.',
+    // setting to null allows file upload on dropzone click
+    webkitdirectory: null,
+    isNameValid(fileName) {
+      return this.validExtensionTypes.some(
+        (validExtension) => fileName.endsWith(validExtension),
+      );
+    },
+    getCorrespondingType: () => sampleFileType.SEURAT_OBJECT,
+    // For more information on this one check the TODO1 at FileUploadModal
+    filterFiles: () => { throw new Error('Not Implemented'); },
+    getFilePathToDisplay: getFilePathToDisplayDefaultConstructor(sampleTech.SEURAT_OBJECT),
+    getFileSampleAndName: getFileSampleAndNameDefault,
+  },
+  [sampleTech.SCE_OBJECT]: {
+    category: techCategoryNames.SINGLE_CELL_PREPROCESSED,
+    validExtensionTypes: ['.rds'],
+    inputInfo: [
+      ['<code>sce$samples</code>: sample assignment. If absent, treated as unisample.'],
+      ['<code>counts(sce)</code>: raw feature counts.'],
+      ['<code>reducedDimNames(sce)</code>: includes either <code>UMAP</code>, <code>TSNE</code>, or a close match (e.g. <code>REF.UMAP</code>).'],
+      ['\uD83D\uDCA1cluster metadata in <code>sce@colData</code> is auto-detected.'],
+      ['\uD83D\uDCA1sample level metadata in <code>sce@colData</code> that groups samples in <code>sce$samples</code> is auto-detected for downstream analysis.'],
+      ['\uD83D\uDCA1if file size is over 15GB, try removing any slots not indicated above.'],
+    ],
+    requiredFiles: [sampleFileType.SCE_OBJECT],
+    fileUploadParagraphs: [
+      '<p>For your dataset, upload a single <code>*.rds</code> file with the SingleCellExperiment object (max 15GB).</p>',
+      '<p>The SingleCellExperiment object must contain the following slots and metadata:</p>',
+    ],
+    dropzoneText: 'Drag and drop *.rds file here or click to browse.',
+    // setting to null allows file upload on dropzone click
+    webkitdirectory: null,
+    isNameValid(fileName) {
+      return this.validExtensionTypes.some(
+        (validExtension) => fileName.endsWith(validExtension),
+      );
+    },
+    getCorrespondingType: () => sampleFileType.SCE_OBJECT,
+    // For more information on this one check the TODO1 at FileUploadModal
+    filterFiles: () => { throw new Error('Not Implemented'); },
+    getFilePathToDisplay: getFilePathToDisplayDefaultConstructor(sampleTech.SCE_OBJECT),
+    getFileSampleAndName: getFileSampleAndNameDefault,
+  },
+  [sampleTech.ANNDATA_OBJECT]: {
+    category: techCategoryNames.SINGLE_CELL_PREPROCESSED,
+    validExtensionTypes: ['.h5ad'],
+    inputInfo: [
+      ["<code>adata.obs['samples']</code>: sample assignment. If absent, treated as unisample."],
+      ['<code>adata.raw.X</code> or <code>adata.X</code>: raw feature counts. If both are present, <code>adata.raw.X</code> should be raw counts.'],
+      ["<code>adata.obsm</code>: includes either a <code>'X_umap'</code> or <code>'X_tsne'</code> reduction."],
+      ['\uD83D\uDCA1cluster metadata in <code>adata.obs</code> is auto-detected.'],
+      ["\uD83D\uDCA1sample level metadata in <code>adata.obs</code> that groups samples in <code>adata.obs['samples']</code> is auto-detected for downstream analysis."],
+      ['\uD83D\uDCA1if file size is over 15GB, try removing any slots not indicated above.'],
+    ],
+    requiredFiles: [sampleFileType.ANNDATA_OBJECT],
+    fileUploadParagraphs: [
+      '<p>For your dataset, upload a single <code>*.h5ad</code> file with the AnnData object (max 15GB).</p>',
+      '<p>The AnnData object must contain the following fields and metadata:</p>',
+    ],
+    dropzoneText: 'Drag and drop *.h5ad file here or click to browse.',
+    // setting to null allows file upload on dropzone click
+    webkitdirectory: null,
+    isNameValid(fileName) {
+      return this.validExtensionTypes.some(
+        (validExtension) => fileName.endsWith(validExtension),
+      );
+    },
+    getCorrespondingType: () => sampleFileType.ANNDATA_OBJECT,
+    // For more information on this one check the TODO1 at FileUploadModal
+    filterFiles: () => { throw new Error('Not Implemented'); },
+    getFilePathToDisplay: getFilePathToDisplayDefaultConstructor(sampleTech.ANNDATA_OBJECT),
+    getFileSampleAndName: getFileSampleAndNameDefault,
+  },
+  [sampleTech.SEURAT_SPATIAL_OBJECT]: {
+    category: techCategoryNames.SPATIAL_PREPROCESSED,
+    validExtensionTypes: ['.rds'],
+    inputInfo: [
+      ['<code>scdata$samples</code>: sample assignment. If absent, treated as unisample.'],
+      ['<code>scdata[[\'RNA\']]@counts</code>: raw feature counts.'],
+      ['<code>DefaultDimReduc(scdata)</code>: is either <code>umap</code>, <code>tsne</code>, or a close match (e.g. <code>ref.umap</code>).'],
+      ['\uD83D\uDCA1cluster metadata in <code>scdata@meta.data</code> is auto-detected.'],
+      ['\uD83D\uDCA1sample level metadata in <code>scdata@meta.data</code> that groups samples in <code>scdata$samples</code> is auto-detected for downstream analysis.'],
+      ['\uD83D\uDCA1if file size is over 15GB, try removing any assays not indicated above.'],
+    ],
+    requiredFiles: [sampleFileType.SEURAT_SPATIAL_OBJECT],
+    fileUploadParagraphs: [
+      '<p>For your dataset, upload a single <code>*.rds</code> file with the Seurat object (max 15GB).</p>',
+      '<p>The Seurat object must contain the following slots and metadata:</p>',
+    ],
+    dropzoneText: 'Drag and drop *.rds file here or click to browse.',
+    // setting to null allows file upload on dropzone click
+    webkitdirectory: null,
+    isNameValid(fileName) {
+      return this.validExtensionTypes.some(
+        (validExtension) => fileName.endsWith(validExtension),
+      );
+    },
+    getCorrespondingType: () => sampleFileType.SEURAT_SPATIAL_OBJECT,
+    // For more information on this one check the TODO1 at FileUploadModal
+    filterFiles: () => { throw new Error('Not Implemented'); },
+    getFilePathToDisplay: getFilePathToDisplayDefaultConstructor(sampleTech.SEURAT_SPATIAL_OBJECT),
+    getFileSampleAndName: getFileSampleAndNameDefault,
   },
 };
 

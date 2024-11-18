@@ -33,7 +33,7 @@ import endUserMessages from 'utils/endUserMessages';
 import getDomainSpecificContent from 'utils/getDomainSpecificContent';
 
 const { Text, Title, Paragraph } = Typography;
-const { Option } = Select;
+const { Option, OptGroup } = Select;
 
 // allow at most 15 GiB .rds object uploads
 const OBJ2S_MAX_FILE_SIZE = 15 * 1024 * 1024 * 1024;
@@ -137,6 +137,16 @@ const FileUploadModal = (props) => {
 
   const { fileUploadParagraphs, dropzoneText, webkitdirectory } = fileUploadUtils[selectedTech];
 
+  // Group technologies by category
+  const groupedTechnologies = Object.entries(fileUploadUtils).reduce((acc, [tech, details]) => {
+    const category = details.category || 'Other';
+    if (!acc[category]) {
+      acc[category] = [];
+    }
+    acc[category].push(tech);
+    return acc;
+  }, {});
+
   const renderHelpText = () => (
     <>
       <Space direction='vertical' style={{ width: '100%' }}>
@@ -209,15 +219,20 @@ const FileUploadModal = (props) => {
                   disabled={currentSelectedTech}
                   onChange={(value) => setSelectedTech(value)}
                   // Fix the width so that the dropdown doesn't change size when the value changes
-                  style={{ width: 180 }}
+                  style={{ width: 250 }}
+                  listHeight={350}
                 >
                   {
-                    Object.values(sampleTech)
-                      .map((tech) => (
-                        <Option key={`key-${tech}`} value={tech}>
-                          {techNamesToDisplay[tech]}
-                        </Option>
-                      ))
+                    // Iterate over categories and each technology within them
+                    Object.entries(groupedTechnologies).map(([category, techs]) => (
+                      <OptGroup key={category} label={category}>
+                        {techs.map((tech) => (
+                          <Option key={`key-${tech}`} value={tech}>
+                            {techNamesToDisplay[tech]}
+                          </Option>
+                        ))}
+                      </OptGroup>
+                    ))
                   }
                 </Select>
               </Tooltip>
