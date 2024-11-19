@@ -114,9 +114,9 @@ const generateSpec = (config, method, imageData, plotData, cellSetLegendsData) =
         encode: {
           update: {
             url: { value: imageUrl },
-            x: { signal: 'scale("x", 0)' }, // Use scale signal directly
+            x: { signal: 'scale("x", 1)' }, // Use scale signal directly
             y: { signal: `scale("y", ${imageHeight})` }, // Use "scale" function with y
-            width: { signal: `scale("x", ${imageWidth}) - scale("x", 0)` }, // Calculate width using scale domain
+            width: { signal: `scale("x", ${imageWidth}) - scale("x", 1)` }, // Calculate width using scale domain
             height: { signal: `scale("y", 0) - scale("y", ${imageHeight})` }, // Calculate height using scale domain
             aspect: { value: false },
             opacity: { value: 1 },
@@ -323,8 +323,6 @@ const filterCells = (cellSets, sampleKey, groupBy) => {
 // Generate dynamic data from redux store
 const generateData = (cellSets, sampleKey, groupBy, embeddingData) => {
   const { filteredCells, cellSetLegendsData } = filterCells(cellSets, sampleKey, groupBy);
-
-  const filteredCellIds = new Set(Object.keys(filteredCells));
 
   const plotData = embeddingData
     .map((coordinates, cellId) => ({ cellId, coordinates }))
