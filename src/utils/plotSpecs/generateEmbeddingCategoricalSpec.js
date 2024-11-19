@@ -50,8 +50,8 @@ const generateSpec = (config, method, plotData, cellSetLegendsData) => {
         zindex: 1,
         encode: {
           enter: {
-            x: { scale: 'x', field: 'meanX' },
-            y: { scale: 'y', field: 'meanY' },
+            x: { scale: 'x', field: 'medianX' },
+            y: { scale: 'y', field: 'medianY' },
             text: { field: 'cellSetName' },
             fontSize: { value: config?.labels.size },
             strokeWidth: { value: 1.2 },
@@ -185,7 +185,7 @@ const generateSpec = (config, method, plotData, cellSetLegendsData) => {
         source: 'values',
         transform: [
           {
-            type: 'aggregate', groupby: ['cellSetKey', 'cellSetName'], fields: ['x', 'y'], ops: ['mean', 'mean'], as: ['meanX', 'meanY'],
+            type: 'aggregate', groupby: ['cellSetKey', 'cellSetName'], fields: ['x', 'y'], ops: ['median', 'median'], as: ['medianX', 'medianY'],
           },
         ],
       },
