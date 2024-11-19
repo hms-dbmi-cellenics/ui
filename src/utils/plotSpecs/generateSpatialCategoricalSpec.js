@@ -125,6 +125,55 @@ const generateSpec = (config, method, imageData, plotData, cellSetLegendsData) =
     ];
   }
 
+  if (config?.labels.enabled) {
+    marks.push(
+      {
+        name: 'clusterLabels',
+        type: 'text',
+        clip: true,
+        from: { data: 'labels' },
+        zindex: 1,
+        encode: {
+          enter: {
+            x: { scale: 'x', field: 'medianX' },
+            y: { scale: 'y', field: 'medianY' },
+            text: { field: 'cellSetName' },
+            fontSize: { value: config?.labels.size },
+            strokeWidth: { value: 1.2 },
+            fill: { value: config?.colour.masterColour },
+            fillOpacity: { value: config?.labels.enabled },
+            font: { value: config?.fontStyle.font },
+          },
+        },
+        transform: [
+          {
+            type: 'label',
+            size: { signal: '[width + 60, height]' },
+            anchor: ['left', 'right', 'top', 'bottom', 'middle'],
+            avoidBaseMark: false,
+          },
+        ],
+      },
+    );
+
+    marks.push(
+      {
+        type: 'rect',
+        from: { data: 'clusterLabels' },
+        encode: {
+          update: {
+            x: { field: 'bounds.x1', offset: -2 },
+            x2: { field: 'bounds.x2', offset: 2 },
+            y: { field: 'bounds.y1', offset: -2 },
+            y2: { field: 'bounds.y2', offset: 2 },
+            fill: { value: 'white' },
+            opacity: { value: 0.5 },
+          },
+        },
+      },
+    );
+  }
+
   let axes = [];
   if (config.axes.enabled) {
     axes = [
@@ -197,6 +246,15 @@ const generateSpec = (config, method, imageData, plotData, cellSetLegendsData) =
             type: 'formula',
             as: 'flipped_y',
             expr: `${imageHeight} - datum.y`,
+          },
+        ],
+      },
+      {
+        name: 'labels',
+        source: 'values',
+        transform: [
+          {
+            type: 'aggregate', groupby: ['cellSetKey', 'cellSetName'], fields: ['x', 'flipped_y'], ops: ['median', 'median'], as: ['medianX', 'medianY'],
           },
         ],
       },

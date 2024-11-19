@@ -43,9 +43,11 @@ const generateSpec = (config, method, plotData, cellSetLegendsData) => {
   if (config?.labels.enabled) {
     marks.push(
       {
+        name: 'clusterLabels',
         type: 'text',
         clip: true,
         from: { data: 'labels' },
+        zindex: 1,
         encode: {
           enter: {
             x: { scale: 'x', field: 'meanX' },
@@ -65,6 +67,23 @@ const generateSpec = (config, method, plotData, cellSetLegendsData) => {
             avoidBaseMark: false,
           },
         ],
+      },
+    );
+
+    marks.push(
+      {
+        type: 'rect',
+        from: { data: 'clusterLabels' },
+        encode: {
+          update: {
+            x: { field: 'bounds.x1', offset: -2 },
+            x2: { field: 'bounds.x2', offset: 2 },
+            y: { field: 'bounds.y1', offset: -2 },
+            y2: { field: 'bounds.y2', offset: 2 },
+            fill: { value: 'white' },
+            opacity: { value: 0.5 },
+          },
+        },
       },
     );
   }
