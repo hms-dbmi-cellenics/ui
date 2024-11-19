@@ -65,7 +65,13 @@ const spatialCategoricalInitialConfig = {
     defaultValues: ['x', 'y'],
     offset: 0,
   },
-  axesRanges: axesRangesBaseState,
+  axesRanges: {
+    ...axesRangesBaseState,
+    xMin: 50,
+    xMax: 450,
+    yMin: 70,
+    yMax: 450,
+  },
   title: {
     ...titleBaseState,
     fontSize: 20,

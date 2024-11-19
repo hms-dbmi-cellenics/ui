@@ -134,7 +134,7 @@ const generateSpec = (config, method, imageData, plotData, cellSetLegendsData) =
         from: { data: 'labels' },
         zindex: 1,
         encode: {
-          enter: {
+          update: {
             x: { scale: 'x', field: 'medianX' },
             y: { scale: 'y', field: 'medianY' },
             text: { field: 'cellSetName' },
@@ -148,7 +148,7 @@ const generateSpec = (config, method, imageData, plotData, cellSetLegendsData) =
         transform: [
           {
             type: 'label',
-            size: { signal: '[width + 60, height]' },
+            size: { signal: '[width, height]' },
             anchor: ['left', 'right', 'top', 'bottom', 'middle'],
             avoidBaseMark: false,
           },
