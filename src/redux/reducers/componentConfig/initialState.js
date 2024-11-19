@@ -41,6 +41,7 @@ const embeddingCategoricalInitialConfig = {
   labels: {
     ...labelBaseState,
     enabled: false,
+    size: 12,
   },
   selectedCellSet: 'louvain',
   selectedSample: 'All',

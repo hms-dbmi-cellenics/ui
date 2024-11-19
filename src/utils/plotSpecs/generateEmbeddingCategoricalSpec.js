@@ -58,6 +58,13 @@ const generateSpec = (config, method, plotData, cellSetLegendsData) => {
             font: { value: config?.fontStyle.font },
           },
         },
+        transform: [
+          {
+            type: 'label',
+            size: { signal: '[width + 60, height]' },
+            avoidBaseMark: false,
+          },
+        ],
       },
     );
   }
