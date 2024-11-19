@@ -81,6 +81,7 @@ const spatialCategoricalInitialConfig = {
   labels: {
     ...labelBaseState,
     enabled: false,
+    size: 12,
   },
   selectedCellSet: 'louvain',
   selectedSample: null,
@@ -219,7 +220,7 @@ const volcanoInitialConfig = {
   spec: '1.0.0',
   legend: {
     ...legendBaseState,
-    position: 'top-right',
+    position: 'bottom-right',
   },
   dimensions: dimensionsBaseState,
   marker: {

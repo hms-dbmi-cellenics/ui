@@ -234,9 +234,13 @@ const generateSpec = (configSrc, plotData) => {
             fill: { value: config.colour.masterColour },
             text: { field: 'gene_names' },
           },
-          transform: [
-            { type: 'label', size: ['width', 'height'] }],
         },
+        transform: [
+          {
+            type: 'label',
+            size: { signal: '[width + 60, height]' },
+          }]
+        ,
       },
       {
         type: 'rule',
