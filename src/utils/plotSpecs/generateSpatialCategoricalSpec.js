@@ -2,8 +2,13 @@
 
 import { getAllCells, getSampleCells } from 'utils/cellSets';
 
+const paddingSize = 5;
+
 const generateSpec = (config, method, imageData, plotData, cellSetLegendsData) => {
   const { imageUrl, imageWidth, imageHeight } = imageData;
+
+  console.log('cellSetLegendsData!!!');
+  console.log(cellSetLegendsData);
 
   const xScaleDomain = config.axesRanges.xAxisAuto
     ? [0, imageWidth]
@@ -19,19 +24,62 @@ const generateSpec = (config, method, imageData, plotData, cellSetLegendsData) =
   let legend = [];
 
   if (config.legend.enabled) {
+    const positionIsRight = config.legend.position === 'right';
+
+    // Approximate the size of each name.
+    // All names can have that size or less, so can use it calculate the amount of columns
+    //
+    // The size of each name is calculated by getting the amount of chars in
+    //  each name and multiplying by each approx char size, 5.5
+    //  plus 30 for the color symbol and offset
+    const colorSymbolSize = 30;
+    const characterSizeHorizontal = 5.5;
+    const characterSizeVertical = 11;
+    const xTickSize = 140;
+
+    const maxLegendItemsPerCol = Math.floor(
+      (config.dimensions.height - xTickSize - (2 * paddingSize))
+      / characterSizeVertical,
+    );
+
+    const legendSize = colorSymbolSize + _.max(
+      cellSetLegendsData.map((legendData) => legendData.name.length * characterSizeHorizontal),
+    );
+
+    // only 20 rows per column if the legend is on the right
+    const legendColumns = positionIsRight
+      ? Math.ceil(cellSetLegendsData.length / maxLegendItemsPerCol)
+      : Math.floor((config.dimensions.width) / legendSize);
+    const labelLimit = positionIsRight ? 0 : legendSize;
+
     legend = [
       {
         fill: 'cellSetLabelColors',
+        title: config?.legend.title || 'Cluster Name',
+        titleColor: config?.colour.masterColour,
         type: 'symbol',
-        orient: config.legend.position,
-        direction: ['left', 'right'].includes(config.legend.position) ? 'vertical' : 'horizontal',
-        title: config.shownGene,
-        labelColor: config.colour.masterColour,
-        titleColor: config.colour.masterColour,
+        orient: config?.legend.position,
+        offset: 40,
         symbolType: 'circle',
         symbolSize: 100,
-        offset: 40,
-      }];
+        encode: {
+          labels: {
+            update: {
+              text: {
+                scale: 'sampleToName', field: 'label',
+              },
+              fill: { value: config?.colour.masterColour },
+            },
+          },
+        },
+        direction: 'horizontal',
+        labelFont: config?.fontStyle.font,
+        titleFont: config?.fontStyle.font,
+        symbolLimit: 0,
+        columns: legendColumns,
+        labelLimit,
+      },
+    ];
   }
 
   let marks = [{
@@ -53,7 +101,6 @@ const generateSpec = (config, method, imageData, plotData, cellSetLegendsData) =
           scale: 'cellSetMarkColors',
           field: 'cellSetKey',
         },
-        // TODO: make selectable (hexagon)
         shape: { value: config?.marker.shape },
         fillOpacity: { value: config.marker.opacity / 10 },
       },
@@ -197,7 +244,7 @@ const generateSpec = (config, method, imageData, plotData, cellSetLegendsData) =
     legends: legend,
     title:
     {
-      text: config.title.text,
+      text: config?.title.text,
       color: config.colour.masterColour,
       anchor: config.title.anchor,
       font: config.fontStyle.font,
@@ -218,12 +265,12 @@ const filterCells = (cellSets, sampleKey, groupBy) => {
   }
 
   // Get the cell set names
-  const clusterEnteries = cellSets.hierarchy
+  const clusterEntries = cellSets.hierarchy
     .find(
       (rootNode) => rootNode.key === groupBy,
     )?.children || [];
 
-  const cellSetKeys = clusterEnteries.map(({ key }) => key);
+  const cellSetKeys = clusterEntries.map(({ key }) => key);
 
   const colorToCellIdsMap = cellSetKeys.reduce((acc, key) => {
     acc.push({
@@ -277,9 +324,12 @@ const filterCells = (cellSets, sampleKey, groupBy) => {
 const generateData = (cellSets, sampleKey, groupBy, embeddingData) => {
   const { filteredCells, cellSetLegendsData } = filterCells(cellSets, sampleKey, groupBy);
 
+  const filteredCellIds = new Set(Object.keys(filteredCells));
+
   const plotData = embeddingData
     .map((coordinates, cellId) => ({ cellId, coordinates }))
     .filter(({ coordinates }) => coordinates !== undefined)
+    .filter(({ cellId }) => Object.hasOwn(filteredCells, cellId))
     .map((data) => {
       const { cellId, coordinates } = data;
 

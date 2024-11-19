@@ -2,14 +2,14 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { useSelector, useDispatch } from 'react-redux';
-import MultiViewEditor from 'components/plots/styling/MultiViewEditor';
+import MultiViewPlotEditor from 'components/plots/styling/MultiViewPlotEditor';
 import _ from 'lodash';
 import {
   Collapse,
   Select,
   Skeleton,
 } from 'antd';
-import MultiViewGrid from 'components/plots/MultiViewGrid';
+import MultiViewPlotGrid from 'components/plots/MultiViewPlotGrid';
 
 import SelectData from 'components/plots/styling/embedding-continuous/SelectData';
 import Header from 'components/Header';
@@ -38,9 +38,11 @@ const SpatialCategoricalPage = ({ experimentId }) => {
   const multiViewConfig = useSelector((state) => state.componentConfig[multiViewUuid]?.config);
   const multiViewPlotUuids = multiViewConfig?.plotUuids;
   const plotConfigs = useSelector(getPlotConfigs(multiViewPlotUuids));
-  const shownGenes = _.compact(multiViewPlotUuids?.map((uuid) => plotConfigs[uuid]?.shownGene));
   const [selectedPlotUuid, setSelectedPlotUuid] = useState(`${plotUuid}-0`);
   const [updateAll, setUpdateAll] = useState(true);
+
+  console.log('config!!!');
+  console.log(config);
 
   useEffect(() => {
     dispatch(loadCellSets(experimentId));
@@ -118,6 +120,17 @@ const SpatialCategoricalPage = ({ experimentId }) => {
 
   const renderExtraPanels = () => (
     <>
+      <Panel header='View Multiple Plots' key='view-multiple-plots' collapsible={false}>
+        <MultiViewPlotEditor
+          plotType={plotType}
+          experimentId={experimentId}
+          plotUuid={plotUuid}
+          selectedPlotUuid={selectedPlotUuid}
+          setSelectedPlotUuid={setSelectedPlotUuid}
+          updateAll={updateAll}
+          setUpdateAll={setUpdateAll}
+        />
+      </Panel>
       <Panel header='Select data' key='select-data'>
         <SelectData
           config={config}
@@ -159,7 +172,7 @@ const SpatialCategoricalPage = ({ experimentId }) => {
         )}
         onUpdate={updateAll ? updateAllWithChanges : updatePlotWithChanges}
       >
-        <MultiViewGrid
+        <MultiViewPlotGrid
           experimentId={experimentId}
           renderPlot={renderPlot}
           updateAllWithChanges={updateAllWithChanges}

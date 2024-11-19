@@ -7,7 +7,7 @@ import {
   Button,
 } from 'antd';
 
-import GeneReorderTool from 'components/plots/GeneReorderTool';
+import ReorderTool from 'components/plots/ReorderTool';
 import GeneSearchBar from 'components/plots/GeneSearchBar';
 
 const MarkerGeneSelection = (props) => {
@@ -58,7 +58,7 @@ const MarkerGeneSelection = (props) => {
         />
         {showGeneTable
           && (
-            <GeneReorderTool
+            <ReorderTool
               plotUuid={plotUuid}
               onDelete={onGenesChange}
             />

@@ -171,6 +171,11 @@ const SpatialCategoricalPlot = (props) => {
       console.log('plotData!!!');
       console.log(plotData);
       console.log(cellSetLegendsData);
+      const cellSetKeys = plotData.map(({ cellSetKey }) => cellSetKey);
+      console.log([...new Set(cellSetKeys)]);
+
+      const filteredItems = plotData.filter((item) => item.cellSetKey === undefined);
+      console.log(filteredItems);
 
       setPlotSpec(generateSpec(config, EMBEDDING_TYPE, imageUrls[selectedSample], plotData, cellSetLegendsData));
     }
