@@ -51,7 +51,7 @@ const plots = [
       },
       {
         name: plotNames.SPATIAL_CATEGORICAL,
-        image: '/static/media/embeddingCategorical.png',
+        image: '/static/media/spatialCategorical.png',
         key: 'spatial-categorical-key',
         link: 'spatial-categorical',
       },

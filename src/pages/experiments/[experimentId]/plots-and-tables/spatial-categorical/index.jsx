@@ -8,6 +8,7 @@ import {
   Collapse,
   Select,
   Skeleton,
+  Form,
 } from 'antd';
 import MultiViewPlotGrid from 'components/plots/MultiViewPlotGrid';
 
@@ -41,8 +42,7 @@ const SpatialCategoricalPage = ({ experimentId }) => {
   const [selectedPlotUuid, setSelectedPlotUuid] = useState(`${plotUuid}-0`);
   const [updateAll, setUpdateAll] = useState(true);
 
-  console.log('config!!!');
-  console.log(config);
+  console.log(plotConfigs);
 
   useEffect(() => {
     dispatch(loadCellSets(experimentId));
@@ -78,7 +78,7 @@ const SpatialCategoricalPage = ({ experimentId }) => {
       controls: ['axesWithRanges'],
     },
     {
-      panelTitle: 'Colour Inversion',
+      panelTitle: 'Colour inversion',
       controls: ['colourInversion'],
     },
     {
@@ -120,7 +120,7 @@ const SpatialCategoricalPage = ({ experimentId }) => {
 
   const renderExtraPanels = () => (
     <>
-      <Panel header='View Multiple Plots' key='view-multiple-plots' collapsible={false}>
+      <Panel header='View multiple plots' key='view-multiple-plots' collapsible={false}>
         <MultiViewPlotEditor
           plotType={plotType}
           experimentId={experimentId}
@@ -140,18 +140,20 @@ const SpatialCategoricalPage = ({ experimentId }) => {
         />
       </Panel>
       <Panel header='Group by' key='group-by'>
-        <p>
-          Select the cell set category you would like to group cells by.
-        </p>
+        <p><strong>Cell Set For Embedding:</strong></p>
         {config ? (
-          <Select
-            labelInValue
-            style={{ width: '100%' }}
-            placeholder='Select cell set...'
-            value={{ value: config.selectedCellSet }}
-            options={generateGroupByOptions()}
-            onChange={({ value }) => updatePlotWithChanges({ selectedCellSet: value })}
-          />
+          <>
+            <Form.Item>
+              <Select
+                labelInValue
+                style={{ width: '100%' }}
+                placeholder='Select cell set...'
+                value={config.selectedCellSet}
+                options={generateGroupByOptions()}
+                onChange={({ value }) => updatePlotWithChanges({ selectedCellSet: value })}
+              />
+            </Form.Item>
+          </>
         ) : <Skeleton.Input style={{ width: '100%' }} active />}
       </Panel>
     </>

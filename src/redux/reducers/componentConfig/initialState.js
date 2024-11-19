@@ -71,7 +71,12 @@ const spatialCategoricalInitialConfig = {
   },
   fontStyle: fontStyleBaseState,
   colour: colourBaseState,
-  marker: markerBaseState,
+  marker: {
+    ...markerBaseState,
+    size: 20,
+    outline: false,
+    opacity: 10,
+  },
   labels: {
     ...labelBaseState,
     enabled: false,
@@ -129,7 +134,7 @@ const spatialFeatureInitialConfig = {
     xAxisText: null,
     yAxisText: null,
     defaultValues: ['x', 'y'],
-    offset: 10,
+    offset: 0,
   },
   axesRanges: {
     ...axesRangesBaseState,
@@ -146,12 +151,13 @@ const spatialFeatureInitialConfig = {
   fontStyle: fontStyleBaseState,
   colour: {
     ...colourBaseState,
-    gradient: 'plasma',
+    gradient: 'spectral',
   },
   marker: {
     ...markerBaseState,
-    size: 10,
+    size: 20,
     outline: false,
+    opacity: 10,
   },
   labels: labelBaseState,
   logEquation: 'datum.expression*1',

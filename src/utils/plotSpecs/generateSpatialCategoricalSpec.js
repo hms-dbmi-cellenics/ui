@@ -7,9 +7,6 @@ const paddingSize = 5;
 const generateSpec = (config, method, imageData, plotData, cellSetLegendsData) => {
   const { imageUrl, imageWidth, imageHeight } = imageData;
 
-  console.log('cellSetLegendsData!!!');
-  console.log(cellSetLegendsData);
-
   const xScaleDomain = config.axesRanges.xAxisAuto
     ? [0, imageWidth]
     : [config.axesRanges.xMin, config.axesRanges.xMax];

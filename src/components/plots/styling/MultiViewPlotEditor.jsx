@@ -41,9 +41,6 @@ const MultiViewPlotEditor = (props) => {
   const multiViewPlotUuids = multiViewConfig?.plotUuids;
   const plotConfigs = useSelector(getPlotConfigs(multiViewConfig?.plotUuids));
 
-  console.log('plotConfigs!!!');
-  console.log(plotConfigs);
-
   const selectedConfig = plotConfigs[selectedPlotUuid];
 
   const renderUuidOptions = (uuids) => {
@@ -165,9 +162,6 @@ const MultiViewPlotEditor = (props) => {
       </Space>
     );
   };
-
-  console.log('multiViewPlotUuids!!!');
-  console.log(multiViewPlotUuids);
 
   const treeData = multiViewPlotUuids.map((plotUuid, index) => (
     { key: index, title: renderTitle(index) }

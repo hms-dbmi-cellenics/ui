@@ -8,7 +8,7 @@ import {
   Radio,
 } from 'antd';
 
-import { spatialPlotTypes } from 'utils/constants';
+import { spatialPlotTypes, plotUuids } from 'utils/constants';
 
 import { metadataKeyToName } from 'utils/data-management/metadataUtils';
 
