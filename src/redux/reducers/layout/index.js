@@ -1,8 +1,8 @@
 import { UPDATE_LAYOUT } from 'redux/actionTypes/layout';
-import initialState from './initialState';
+import { initialLayoutSingleCell } from './initialState';
 import updateLayout from './updateLayout';
 
-const layoutReducer = (state = initialState, action) => {
+const layoutReducer = (state = initialLayoutSingleCell, action) => {
   switch (action.type) {
     case UPDATE_LAYOUT:
       return updateLayout(state, action);

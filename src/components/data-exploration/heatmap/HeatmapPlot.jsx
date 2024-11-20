@@ -351,7 +351,7 @@ const HeatmapPlot = (props) => {
       />
       <div>
         {
-          highlightedTrackData ? (
+          highlightedTrackData?.cellId ? (
             <HeatmapTracksCellInfo
               containerWidth={width}
               containerHeight={height}

@@ -10,7 +10,7 @@ const techNamesToDisplay = {
   [sampleTech['10X']]: '10X Chromium',
   [sampleTech.RHAPSODY]: 'BD Rhapsody',
   [sampleTech.SEURAT_OBJECT]: 'Seurat',
-  [sampleTech.SEURAT_SPATIAL_OBJECT]: 'Seurat',
+  [sampleTech.SEURAT_SPATIAL_OBJECT]: 'Seurat - Spatial',
   [sampleTech.SCE_OBJECT]: 'SingleCellExperiment',
   [sampleTech.ANNDATA_OBJECT]: 'AnnData',
   [sampleTech.H5]: '10X Chromium - H5',

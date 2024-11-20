@@ -7,6 +7,7 @@ import { DownOutlined, PictureOutlined, ToolOutlined } from '@ant-design/icons';
 import PropTypes from 'prop-types';
 import { loadProcessingSettings } from 'redux/actions/experimentSettings';
 import Header from 'components/Header';
+import { spatialTechs } from 'utils/constants';
 
 import CellSetsTool from 'components/data-exploration/cell-sets-tool/CellSetsTool';
 import GeneListTool from 'components/data-exploration/gene-list-tool/GeneListTool';
@@ -23,6 +24,7 @@ import 'react-mosaic-component/react-mosaic-component.css';
 import MultiTileContainer from 'components/MultiTileContainer';
 import { loadGeneExpression } from 'redux/actions/genes';
 import getHighestDispersionGenes from 'utils/getHighestDispersionGenes';
+import { initialLayoutSingleCell, initialLayoutSpatial } from 'redux/reducers/layout/initialState';
 
 const { TabPane } = Tabs;
 
@@ -38,6 +40,14 @@ const ExplorationViewPage = ({
     state.experimentSettings.processing?.configureEmbedding?.embeddingSettings
   )) || false;
   const geneData = useSelector((state) => state.genes.properties.data);
+
+  const samples = useSelector((state) => state.samples);
+  const selectedTechnology = (samples[experimentData?.sampleIds?.[0]]?.type || false);
+
+  console.log('initialLayoutSingleCell!!!');
+  console.log(initialLayoutSingleCell);
+
+  const isSpatial = spatialTechs.includes(selectedTechnology);
 
   useEffect(() => {
     setSelectedTab(panel);
@@ -72,6 +82,14 @@ const ExplorationViewPage = ({
       }));
     }
   }, [method]);
+
+  useEffect(() => {
+    const newLayout = isSpatial
+      ? initialLayoutSpatial
+      : initialLayoutSingleCell;
+
+    dispatch(updateLayout(newLayout.windows));
+  }, [isSpatial]);
 
   const TILE_MAP = {
     [methodUppercase]: {

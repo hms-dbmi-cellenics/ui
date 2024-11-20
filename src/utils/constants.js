@@ -28,6 +28,7 @@ const sampleTech = {
 };
 
 const obj2sTechs = [sampleTech.SEURAT_OBJECT, sampleTech.SCE_OBJECT, sampleTech.ANNDATA_OBJECT, sampleTech.SEURAT_SPATIAL_OBJECT];
+const spatialTechs = [sampleTech.SEURAT_SPATIAL_OBJECT];
 
 const plotTypes = {
   CONTINUOUS_EMBEDDING: 'embeddingContinuous',
@@ -97,6 +98,7 @@ export {
   modules,
   sampleTech,
   obj2sTechs,
+  spatialTechs,
   plotTypes,
   spatialPlotTypes,
   plotUuids,
