@@ -468,18 +468,7 @@ const SpatialViewer = (props) => {
               setCellSelection={setCellSelection}
               updateViewInfo={updateViewInfo}
               setCellHighlight={setCellHighlight}
-              // ======= EXAMPLE DATA =======
-              // obsCentroids={ExampleData.obsCentroids}
-              // obsCentroidsIndex={ExampleData.obsCentroidsIndex}
-              // cellColors={ExampleData.cellColors}
-              // obsSegmentations={ExampleData.obsSegmentations}
-              // obsSegmentationsIndex={ExampleData.obsSegmentationsIndex}
-              // obsSegmentationsLayerDefs={ExampleData.obsSegmentationsLayerDefs}
-              // obsSegmentationsType={ExampleData.obsSegmentationsType}
-              // cellSelection={ExampleData.cellSelection}
-              // cellColorEncoding={ExampleData.cellColorEncoding}
-              // geneExpressionColormapRange={ExampleData.geneExpressionColormapRange}
-              // geneExpressionColormap={ExampleData.geneExpressionColormap}
+              originalViewState={originalView}
             />
           ) : ''
         }

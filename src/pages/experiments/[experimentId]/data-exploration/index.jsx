@@ -44,9 +44,6 @@ const ExplorationViewPage = ({
   const samples = useSelector((state) => state.samples);
   const selectedTechnology = (samples[experimentData?.sampleIds?.[0]]?.type || false);
 
-  console.log('initialLayoutSingleCell!!!');
-  console.log(initialLayoutSingleCell);
-
   const isSpatial = spatialTechs.includes(selectedTechnology);
 
   useEffect(() => {

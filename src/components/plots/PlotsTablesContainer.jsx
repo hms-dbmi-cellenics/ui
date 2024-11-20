@@ -39,6 +39,8 @@ CardItem.propTypes = {
   experimentId: PropTypes.string.isRequired,
 };
 
+const spatialPlotNames = [plotNames.SPATIAL_CATEGORICAL, plotNames.SPATIAL_FEATURE];
+
 const plots = [
   {
     title: 'Cell Sets and Metadata',
@@ -130,7 +132,9 @@ const plots = [
 ];
 
 const PlotsTablesContainer = (props) => {
-  const { width, height, experimentId } = props;
+  const {
+    width, height, experimentId, isSpatial,
+  } = props;
 
   return (
     <div
@@ -152,18 +156,21 @@ const PlotsTablesContainer = (props) => {
               </Divider>
             </Col>
             {section.plots.map((item) => (
-              <Col className='plot-card' key={item.key}>
-                <Card
-                  size='small'
-                  hoverable
-                  title={item.name}
-                  bodyStyle={{ padding: '0' }}
-                  style={CARD_STYLE}
-                >
-                  <CardItem item={item} experimentId={experimentId} />
-                </Card>
-              </Col>
-            ))}
+              !spatialPlotNames.includes(item.name) || isSpatial
+                ? (
+                  <Col className='plot-card' key={item.key}>
+                    <Card
+                      size='small'
+                      hoverable
+                      title={item.name}
+                      bodyStyle={{ padding: '0' }}
+                      style={CARD_STYLE}
+                    >
+                      <CardItem item={item} experimentId={experimentId} />
+                    </Card>
+                  </Col>
+                )
+                : <></>))}
           </Row>
         ))}
       </Space>
@@ -173,6 +180,7 @@ const PlotsTablesContainer = (props) => {
 
 PlotsTablesContainer.propTypes = {
   experimentId: PropTypes.string.isRequired,
+  isSpatial: PropTypes.bool.isRequired,
   width: PropTypes.number,
   height: PropTypes.number,
 };
