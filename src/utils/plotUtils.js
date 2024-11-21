@@ -146,10 +146,10 @@ const convertCellsData = (results, hidden, properties) => {
 
 const offsetCentroids = (results, properties, sampleIds, perImageShape, gridShape) => {
   const [imageWidth, imageHeight] = perImageShape;
-  const [_, numColumns] = gridShape;
+  const numColumns = gridShape[1];
 
   // Pre-calculate offsets for each sampleId
-  const sampleOffsets = sampleIds.map((_, sampleIndex) => {
+  const sampleOffsets = sampleIds.map((sampleId, sampleIndex) => {
     const row = Math.floor(sampleIndex / numColumns);
     const column = sampleIndex % numColumns;
     return {

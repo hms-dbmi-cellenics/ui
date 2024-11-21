@@ -1,6 +1,7 @@
 /* eslint-disable no-param-reassign */
 
 import { getAllCells, getSampleCells } from 'utils/cellSets';
+import _ from 'lodash';
 
 const paddingSize = 5;
 

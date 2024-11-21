@@ -1,5 +1,4 @@
 // from https://github.com/vitessce/vitessce/blob/main/packages/utils/zarr-utils/src/adapter.ts
-// should be able to import { createZarrArrayAdapter } from '@vitessce/zarr-utils' but it doesn't work!
 
 import { slice, get } from 'zarrita';
 
@@ -68,8 +67,10 @@ export function createZarrArrayAdapterGrid(arrs, [numRows, numCols]) {
           const [heightPerImage, widthPerImage] = shape.slice(-2);
 
           if (selection) {
-            // Normalize the selection, ensuring that any null values for x or y axes default to a grid-wide range
-            // Use provided selection unless it's nullish, in which case calculate the grid spanning range
+            // Normalize the selection, ensuring that any null
+            // values for x or y axes default to a grid-wide range
+            // Use provided selection unless it's nullish,
+            // in which case calculate the grid spanning range
             const normalizedSelection = selection.map((s, i) => s ?? {
               start: 0,
               stop: (i === shape.length - 2
@@ -78,9 +79,18 @@ export function createZarrArrayAdapterGrid(arrs, [numRows, numCols]) {
               step: 1,
             });
 
-            // Calculate the y-axis (row-wise) and x-axis (column-wise) slice ranges for each image in the grid
-            const yRanges = calculateRanges(normalizedSelection[shape.length - 2], heightPerImage, numRows);
-            const xRanges = calculateRanges(normalizedSelection[shape.length - 1], widthPerImage, numCols);
+            // Calculate the y-axis (row-wise) and x-axis
+            // (column-wise) slice ranges for each image in the grid
+            const yRanges = calculateRanges(
+              normalizedSelection[shape.length - 2],
+              heightPerImage,
+              numRows,
+            );
+            const xRanges = calculateRanges(
+              normalizedSelection[shape.length - 1],
+              widthPerImage,
+              numCols,
+            );
 
             const dataSelections = yRanges.flatMap((yRange, row) => xRanges.map((xRange, col) => {
               if (!yRange || !xRange) return null; // Immediately filter out null ranges
@@ -98,7 +108,8 @@ export function createZarrArrayAdapterGrid(arrs, [numRows, numCols]) {
               });
 
               const imageIndex = row * numCols + col;
-              const hasImage = imageIndex < arrs.length; // e.g. if 3 images but grid is 2 x 2 then 1 empty image
+              // e.g. if 3 images but grid is 2 x 2 then 1 empty image
+              const hasImage = imageIndex < arrs.length;
 
               return {
                 imageIndex,
@@ -114,7 +125,10 @@ export function createZarrArrayAdapterGrid(arrs, [numRows, numCols]) {
                 imageIndex, adjustedSelection, hasImage, row, col,
               }) => {
                 if (hasImage) {
-                  return get(arrs[imageIndex], adjustedSelection).then((data) => ({ data, row, col }));
+                  return get(
+                    arrs[imageIndex],
+                    adjustedSelection,
+                  ).then((data) => ({ data, row, col }));
                 }
 
                 // Generate image data if the image doesn't exist
@@ -208,7 +222,8 @@ function combineGridData(dataArrays) {
   const totalHeight = rowHeights.reduce((sum, h) => sum + h, 0);
   const totalWidth = colWidths.reduce((sum, w) => sum + w, 0);
 
-  // Uint8Array causes WebGL: INVALID_OPERATION: texImage2D: type INT but ArrayBufferView not Int32Array
+  // Uint8Array causes WebGL: INVALID_OPERATION:
+  // texImage2D: type INT but ArrayBufferView not Int32Array
   const combinedData = new Int32Array(totalHeight * totalWidth);
 
   // Calculate offsets using row heights and column widths and place image data

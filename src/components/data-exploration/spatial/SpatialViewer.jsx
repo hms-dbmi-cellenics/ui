@@ -232,7 +232,7 @@ const SpatialViewer = (props) => {
 
   const originalView = {
     zoom: -2,
-    target: [500, 300, null],
+    target: [650, 400, null],
     rotationX: 0,
     rotationY: 0,
     rotationZ: 0,
