@@ -1,12 +1,12 @@
 import addWindow from 'redux/actions/layout/addWindow';
 import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
-import initialState from 'redux/reducers/layout/initialState';
+import { initialLayoutSingleCell } from 'redux/reducers/layout/initialState';
 
 const mockStore = configureStore([thunk]);
 
 describe('add window', () => {
-  const state = { layout: initialState };
+  const state = { layout: initialLayoutSingleCell };
   let store;
   beforeEach(() => {
     store = mockStore(state);

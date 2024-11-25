@@ -70,6 +70,7 @@ const obj2sTechFiles = {
   anndata_object: 'adata.h5ad',
   seurat_object: 'seurat.rds',
   sce_object: 'sce.rds',
+  seurat_spatial_object: 'seurat.rds',
 };
 
 const selectTech = (selectedTech) => {

@@ -3,7 +3,6 @@ import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 import { downloadSampleFile } from 'utils/data-management/downloadSampleFile';
 import downloadFromUrl from 'utils/downloadFromUrl';
 
-import { sampleTech } from 'utils/constants';
 import fake from '__test__/test-utils/constants';
 import sampleFileType from 'utils/sampleFileType';
 
@@ -20,13 +19,13 @@ describe('downloadFromUrl', () => {
   });
 
   it('Downloads from url', async () => {
-    const mockSignedUrl = 'mockDownloadUrl';
+    const mockSignedUrl = [{ url: 'mockDownloadUrl', fileId: 'fake-file-id' }];
 
     fetchMock.mockResponse(JSON.stringify(mockSignedUrl));
 
-    await downloadSampleFile(fake.EXPERIMENT_ID, fake.SAMPLE_ID, sampleFileType.FEATURES_10_X, sampleTech['10X']);
+    await downloadSampleFile(fake.EXPERIMENT_ID, fake.SAMPLE_ID, sampleFileType.FEATURES_10_X);
 
-    expect(downloadFromUrl).toHaveBeenCalledWith(mockSignedUrl);
+    expect(downloadFromUrl).toHaveBeenCalledWith(mockSignedUrl[0].url);
     expect(fetchMock.mock.calls).toMatchSnapshot();
   });
 });

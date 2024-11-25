@@ -9,7 +9,8 @@ exports[`updateConfig Checking if empty update doesnt change anything 1`] = `
           "x",
           "y",
         ],
-        "domainWidth": 2,
+        "domainWidth": 1,
+        "enabled": true,
         "gridOpacity": 0,
         "gridWidth": 10,
         "labelFontSize": 12,
@@ -44,7 +45,7 @@ exports[`updateConfig Checking if empty update doesnt change anything 1`] = `
       },
       "labels": {
         "enabled": false,
-        "size": 18,
+        "size": 12,
       },
       "legend": {
         "colour": "#000000",
@@ -54,6 +55,7 @@ exports[`updateConfig Checking if empty update doesnt change anything 1`] = `
       },
       "marker": {
         "opacity": 5,
+        "outline": true,
         "shape": "circle",
         "showOpacity": true,
         "size": 5,
@@ -84,7 +86,8 @@ exports[`updateConfig Checking if fields changed 1`] = `
     "config": {
       "adjPvalueThreshold": 0.05,
       "axes": {
-        "domainWidth": 2,
+        "domainWidth": 1,
+        "enabled": true,
         "gridOpacity": 5,
         "gridWidth": 10,
         "labelFontSize": 12,
@@ -126,7 +129,7 @@ exports[`updateConfig Checking if fields changed 1`] = `
       "legend": {
         "colour": "#000000",
         "enabled": true,
-        "position": "top-right",
+        "position": "bottom-right",
         "showAlert": false,
       },
       "logFoldChangeDomain": 1,
@@ -135,6 +138,7 @@ exports[`updateConfig Checking if fields changed 1`] = `
       "logFoldChangeTickCount": 5,
       "marker": {
         "opacity": 5,
+        "outline": true,
         "shape": "circle",
         "showOpacity": false,
         "size": 32,

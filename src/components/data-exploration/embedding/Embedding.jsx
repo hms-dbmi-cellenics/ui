@@ -31,7 +31,7 @@ import {
 import getContainingCellSetsProperties from 'utils/cellSets/getContainingCellSetsProperties';
 
 const Scatterplot = dynamic(
-  () => import('../DynamicVitessceWrappers').then((mod) => mod.Scatterplot),
+  () => import('../DynamicESMWrappers').then((mod) => mod.Scatterplot),
   { ssr: false },
 );
 

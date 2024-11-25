@@ -39,6 +39,7 @@ const ExplorationViewPage = ({
   const { method } = useSelector((state) => (
     state.experimentSettings.processing?.configureEmbedding?.embeddingSettings
   )) || false;
+
   const geneData = useSelector((state) => state.genes.properties.data);
 
   const samples = useSelector((state) => state.samples);

@@ -234,8 +234,9 @@ describe('HeatmapPlot', () => {
       jest.runAllTimers();
     });
 
-    // It performs the request with the new hidden cell sets array
-    expect(fetchWork).toHaveBeenCalledTimes(2);
+    // It does not re-request a new hidden cell sets array
+    // (just hides what is already calculated)
+    expect(fetchWork).toHaveBeenCalledTimes(1);
   });
 
   it('Shows an empty message when all cell sets are hidden ', async () => {

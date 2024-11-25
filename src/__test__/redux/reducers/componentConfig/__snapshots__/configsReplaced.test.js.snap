@@ -163,6 +163,7 @@ exports[`configsReplaced Replaces existing state 1`] = `
     "config": {
       "axes": {
         "domainWidth": 2,
+        "enabled": true,
         "gridOpacity": 0,
         "gridWidth": 10,
         "labelFontSize": 12,
@@ -209,6 +210,7 @@ exports[`configsReplaced Replaces existing state 1`] = `
       },
       "marker": {
         "opacity": 5,
+        "outline": true,
         "shape": "circle",
         "showOpacity": true,
         "size": 5,
@@ -238,6 +240,7 @@ exports[`configsReplaced Replaces existing state 1`] = `
     "config": {
       "axes": {
         "domainWidth": 2,
+        "enabled": true,
         "gridOpacity": 0,
         "gridWidth": 10,
         "labelFontSize": 12,
@@ -284,6 +287,7 @@ exports[`configsReplaced Replaces existing state 1`] = `
       },
       "marker": {
         "opacity": 5,
+        "outline": true,
         "shape": "circle",
         "showOpacity": true,
         "size": 5,
@@ -317,6 +321,7 @@ exports[`configsReplaced Replaces existing state 1`] = `
           "y",
         ],
         "domainWidth": 2,
+        "enabled": true,
         "gridOpacity": 0,
         "gridWidth": 10,
         "labelFontSize": 12,
@@ -361,6 +366,7 @@ exports[`configsReplaced Replaces existing state 1`] = `
       },
       "marker": {
         "opacity": 5,
+        "outline": true,
         "shape": "circle",
         "showOpacity": true,
         "size": 5,
@@ -386,6 +392,7 @@ exports[`configsReplaced Replaces existing state 1`] = `
     "config": {
       "axes": {
         "domainWidth": 2,
+        "enabled": true,
         "gridOpacity": 0,
         "gridWidth": 10,
         "labelFontSize": 12,
@@ -432,6 +439,7 @@ exports[`configsReplaced Replaces existing state 1`] = `
       },
       "marker": {
         "opacity": 5,
+        "outline": true,
         "shape": "circle",
         "showOpacity": true,
         "size": 5,
@@ -477,6 +485,7 @@ exports[`configsReplaced Replaces existing state 1`] = `
           "y",
         ],
         "domainWidth": 2,
+        "enabled": true,
         "gridOpacity": 0,
         "gridWidth": 10,
         "labelFontSize": 12,
@@ -523,6 +532,7 @@ exports[`configsReplaced Replaces existing state 1`] = `
       },
       "marker": {
         "opacity": 5,
+        "outline": true,
         "shape": "circle",
         "showOpacity": true,
         "size": 20,

@@ -64,7 +64,7 @@ describe('DiffExprCompute', () => {
 
     // Should show radio buttons to choose from
     expect(screen.getByText(/Compare cell sets within a sample\/group/i)).toBeInTheDocument();
-    expect(screen.getByText(/Compare a selected cell set between samples\/groups/i)).toBeInTheDocument();
+    expect(screen.getByText(/Compare a cell set between samples\/groups/i)).toBeInTheDocument();
 
     // Should show the "within" group comparison first
     expect(screen.getByText(/Compare cell set:/i)).toBeInTheDocument();
@@ -72,7 +72,7 @@ describe('DiffExprCompute', () => {
     expect(screen.getByText(/within sample\/group:/i)).toBeInTheDocument();
 
     // And show "between" groups comparison after changing the radio button
-    userEvent.click(screen.getByText('Compare a selected cell set between samples/groups'));
+    userEvent.click(screen.getByText('Compare a cell set between samples/groups'));
 
     expect(screen.getByText(/Compare cell set:/i)).toBeInTheDocument();
     expect(screen.getByText(/between sample\/group:/i)).toBeInTheDocument();
@@ -137,7 +137,7 @@ describe('DiffExprCompute', () => {
 
     expect(withinRadioButton).toBeEnabled();
 
-    const betweenRadioButton = screen.getByText(/Compare a selected cell set between samples\/groups/i)
+    const betweenRadioButton = screen.getByText(/Compare a cell set between samples\/groups/i)
       .closest('label').querySelector("input[type='radio']");
 
     expect(betweenRadioButton).toBeDisabled();
@@ -179,7 +179,7 @@ describe('DiffExprCompute', () => {
     await renderDiffExprCompute(storeState);
 
     // Select compare between groups
-    userEvent.click(screen.getByText('Compare a selected cell set between samples/groups'));
+    userEvent.click(screen.getByText('Compare a cell set between samples/groups'));
 
     // Choose cell set
     const selectCellSet = screen.getByRole('combobox', { name: /Compare cell set/i });
@@ -212,7 +212,7 @@ describe('DiffExprCompute', () => {
     await renderDiffExprCompute(storeState);
 
     // Select compare between groups
-    userEvent.click(screen.getByText('Compare a selected cell set between samples/groups'));
+    userEvent.click(screen.getByText('Compare a cell set between samples/groups'));
 
     // Choose cell set
     const selectCellSet = screen.getByRole('combobox', { name: /Compare cell set/i });
@@ -243,7 +243,7 @@ describe('DiffExprCompute', () => {
     await renderDiffExprCompute(storeState);
 
     // Select compare between groups
-    userEvent.click(screen.getByText('Compare a selected cell set between samples/groups'));
+    userEvent.click(screen.getByText('Compare a cell set between samples/groups'));
 
     // Choose cell set
     const selectCellSet = screen.getByRole('combobox', { name: /Compare cell set/i });

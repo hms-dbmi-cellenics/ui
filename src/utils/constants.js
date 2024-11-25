@@ -83,6 +83,8 @@ const plotNames = {
   SPATIAL_FEATURE: 'Spatial Feature Plot',
 };
 
+const spatialPlotNames = [plotNames.SPATIAL_CATEGORICAL, plotNames.SPATIAL_FEATURE];
+
 const layout = {
   PANEL_HEADING_HEIGHT: 30,
   PANEL_PADDING: 10,
@@ -107,6 +109,7 @@ export {
   spatialTechs,
   plotTypes,
   spatialPlotTypes,
+  spatialPlotNames,
   plotUuids,
   plotNames,
   layout,

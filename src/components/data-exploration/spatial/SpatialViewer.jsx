@@ -9,8 +9,6 @@ import CrossHair from 'components/data-exploration/embedding/CrossHair';
 import CellInfo from 'components/data-exploration/CellInfo';
 import PlatformError from 'components/PlatformError';
 import Loader from 'components/Loader';
-import { root as zarrRoot } from 'zarrita';
-import { ZipFileStore } from '@zarrita/storage';
 import { getSampleFileUrls } from 'utils/data-management/downloadSampleFile';
 
 import { loadComponentConfig } from 'redux/actions/componentConfig';
@@ -38,7 +36,17 @@ const COMPONENT_TYPE = 'interactiveSpatial';
 const RADIUS_DEFAULT = 3;
 
 const Spatial = dynamic(
-  () => import('../DynamicVitessceWrappers').then((mod) => mod.Spatial),
+  () => import('../DynamicESMWrappers').then((mod) => mod.Spatial),
+  { ssr: false },
+);
+
+const zarrRoot = dynamic(
+  () => import('../DynamicESMWrappers').then((mod) => mod.root),
+  { ssr: false },
+);
+
+const ZipFileStore = dynamic(
+  () => import('../DynamicESMWrappers').then((mod) => mod.ZipFileStore),
   { ssr: false },
 );
 

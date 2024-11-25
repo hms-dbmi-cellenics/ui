@@ -19,6 +19,7 @@
     "prod": "NODE_ENV=production node server.js",
     "pretest": "eslint ./src",
     "test": "jest --silent",
+    "clear_jest": "jest --clearCache",
     "coverage": "jest --coverage --silent",
     "test:debug": "node --inspect node_modules/.bin/jest --runInBand",
     "lint": "eslint ./src",

@@ -4,7 +4,8 @@ exports[`loadPlotConfig Loads config properly 1`] = `
 {
   "config": {
     "axes": {
-      "domainWidth": 2,
+      "domainWidth": 1,
+      "enabled": true,
       "gridOpacity": 0,
       "gridWidth": 10,
       "labelFontSize": 12,
@@ -49,6 +50,7 @@ exports[`loadPlotConfig Loads config properly 1`] = `
     },
     "marker": {
       "opacity": 5,
+      "outline": true,
       "shape": "circle",
       "showOpacity": true,
       "size": 5,
@@ -80,7 +82,8 @@ exports[`loadPlotConfig Loads default initial config for plots if plot config is
 {
   "config": {
     "axes": {
-      "domainWidth": 2,
+      "domainWidth": 1,
+      "enabled": true,
       "gridOpacity": 0,
       "gridWidth": 10,
       "labelFontSize": 12,
@@ -125,6 +128,7 @@ exports[`loadPlotConfig Loads default initial config for plots if plot config is
     },
     "marker": {
       "opacity": 5,
+      "outline": true,
       "shape": "circle",
       "showOpacity": true,
       "size": 5,

@@ -29,7 +29,7 @@ import { loadCellSets } from 'redux/actions/cellSets';
 const COMPONENT_TYPE = 'interactiveHeatmap';
 
 const Heatmap = dynamic(
-  () => import('../DynamicVitessceWrappers').then((mod) => mod.Heatmap),
+  () => import('../DynamicESMWrappers').then((mod) => mod.Heatmap),
   { ssr: false },
 );
 
@@ -283,7 +283,7 @@ const HeatmapPlot = (props) => {
     );
   }
 
-  if (downsampledCellOrder.length === 0) {
+  if (heatmapData.expressionMatrix.rows.length === 0) {
     return (
       <center>
         <Empty description='Unhide some cell sets to show the heatmap' />

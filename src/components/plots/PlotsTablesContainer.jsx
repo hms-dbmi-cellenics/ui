@@ -5,7 +5,7 @@ import {
 } from 'antd';
 import Link from 'next/link';
 
-import { plotNames, layout } from 'utils/constants';
+import { plotNames, layout, spatialPlotNames } from 'utils/constants';
 
 const CARD_STYLE = { marginBottom: '1em' };
 const CardItem = (({
@@ -38,8 +38,6 @@ CardItem.propTypes = {
   item: PropTypes.object.isRequired,
   experimentId: PropTypes.string.isRequired,
 };
-
-const spatialPlotNames = [plotNames.SPATIAL_CATEGORICAL, plotNames.SPATIAL_FEATURE];
 
 const plots = [
   {
