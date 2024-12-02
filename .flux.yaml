@@ -39,7 +39,7 @@ spec:
     pattern: FILLED_IN_BY_CI
     extract: FILLED_IN_BY_CI
 ---
-apiVersion: image.toolkit.fluxcd.io/v1beta1
+apiVersion: image.toolkit.fluxcd.io/v1beta2
 kind: ImageUpdateAutomation
 metadata:
   name: FILLED_IN_BY_CI
@@ -59,7 +59,7 @@ spec:
     strategy: Setters
     path: FILLED_IN_BY_CI
 ---
-apiVersion: helm.toolkit.fluxcd.io/v2beta1
+apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
   name: FILLED_IN_BY_CI
