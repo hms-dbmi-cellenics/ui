@@ -1,18 +1,9 @@
 // from https://github.com/vitessce/vitessce/blob/main/packages/utils/spatial-utils/src/load-ome-zarr.js
 // should be able to import { loadOmeZarr } from '@vitessce/spatial-utils' but it doesn't work!
 
-import dynamic from 'next/dynamic';
+import { open as zarrOpen } from 'zarrita';
+import { ZarrPixelSource } from '@hms-dbmi/viv';
 import { createZarrArrayAdapter, createZarrArrayAdapterGrid } from './createZarrArrayAdapter';
-
-const ZarrPixelSource = dynamic(
-  () => import('../DynamicESMWrappers').then((mod) => mod.ZarrPixelSource),
-  { ssr: false },
-);
-
-const zarrOpen = dynamic(
-  () => import('../DynamicESMWrappers').then((mod) => mod.open),
-  { ssr: false },
-);
 
 function prevPowerOf2(x) {
   return 2 ** Math.floor(Math.log2(x));
@@ -99,12 +90,12 @@ export async function loadOmeZarr(root) {
   const { data, rootAttrs, labels } = await loadMultiscales(root);
 
   const tileSize = guessTileSize(data[0]);
-  const pyramid = data
+  const pyramid = await Promise.all(data
     .map((arr) => createPixelSource(
       createZarrArrayAdapter(arr),
       labels,
       tileSize,
-    ));
+    )));
 
   return {
     data: pyramid,
@@ -125,14 +116,14 @@ export async function loadOmeZarrGrid(roots, gridSize) {
   const { shape } = dataGroups[0][0];
 
   // Create adapters for each image pair in the grid
-  const pyramid = dataGroups[0].map((_, resolution) => {
+  const pyramid = await Promise.all(dataGroups[0].map((_, resolution) => {
     const arrs = dataGroups.map((group) => group[resolution]);
     return createPixelSource(
       createZarrArrayAdapterGrid(arrs, gridSize),
       labels,
       tileSize,
     );
-  });
+  }));
 
   return {
     data: pyramid,

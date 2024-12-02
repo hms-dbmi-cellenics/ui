@@ -4,12 +4,7 @@
 import { Heatmap } from '@vitessce/heatmap';
 import { Scatterplot } from '@vitessce/scatterplot';
 import { Spatial } from '@vitessce/spatial';
-import {
-  root, open, slice, get,
-} from 'zarrita';
-import { ZipFileStore } from '@zarrita/storage';
-import { ZarrPixelSource } from '@hms-dbmi/viv';
 
 export {
-  Heatmap, Scatterplot, Spatial, root, open, slice, get, ZipFileStore, ZarrPixelSource,
+  Heatmap, Scatterplot, Spatial,
 };

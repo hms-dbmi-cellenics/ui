@@ -1,15 +1,5 @@
 // from https://github.com/vitessce/vitessce/blob/main/packages/utils/zarr-utils/src/adapter.ts
-import dynamic from 'next/dynamic';
-
-const slice = dynamic(
-  () => import('../DynamicESMWrappers').then((mod) => mod.slice),
-  { ssr: false },
-);
-
-const get = dynamic(
-  () => import('../DynamicESMWrappers').then((mod) => mod.get),
-  { ssr: false },
-);
+import { slice, get } from 'zarrita';
 
 // use background color of tile for transparent data
 const SPATIAL_BACKGROUND_COLOR = { 0: 246, 1: 247, 2: 249 };

@@ -21,6 +21,9 @@ import { updateCellInfo } from 'redux/actions/cellInfo';
 import { union } from 'utils/cellSetOperations';
 import _ from 'lodash';
 
+import { ZipFileStore } from '@zarrita/storage';
+import { root as zarrRoot } from 'zarrita';
+
 import {
   filterCentroidsData,
   offsetCentroids,
@@ -37,16 +40,6 @@ const RADIUS_DEFAULT = 3;
 
 const Spatial = dynamic(
   () => import('../DynamicESMWrappers').then((mod) => mod.Spatial),
-  { ssr: false },
-);
-
-const zarrRoot = dynamic(
-  () => import('../DynamicESMWrappers').then((mod) => mod.root),
-  { ssr: false },
-);
-
-const ZipFileStore = dynamic(
-  () => import('../DynamicESMWrappers').then((mod) => mod.ZipFileStore),
   { ssr: false },
 );
 
