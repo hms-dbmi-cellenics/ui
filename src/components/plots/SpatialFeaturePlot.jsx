@@ -28,8 +28,6 @@ const SpatialFeaturePlot = (props) => {
     reloadPlotData,
   } = props;
 
-  // const omeZarrUrl = 'http://localhost:8000/human-lymph-node-10x-visium/data/processed/human_lymph_node_10x_visium.ome.zarr';
-
   const dispatch = useDispatch();
 
   const {

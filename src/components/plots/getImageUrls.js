@@ -18,7 +18,7 @@ const imageDataToUrl = async (base) => {
   const ctx = canvas.getContext('2d');
 
   // Extract dimensions from the first channel
-  const { data, width, height } = await base.getRaster({ selection: { c: 0, x: 0, y: 0 } });
+  const { width, height } = await base.getRaster({ selection: { c: 0, x: 0, y: 0 } });
 
   canvas.width = width;
   canvas.height = height;
