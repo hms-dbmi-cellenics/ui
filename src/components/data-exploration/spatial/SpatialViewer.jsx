@@ -39,7 +39,7 @@ const COMPONENT_TYPE = 'interactiveSpatial';
 const RADIUS_DEFAULT = 3;
 
 const Spatial = dynamic(
-  () => import('../DynamicESMWrappers').then((mod) => mod.Spatial),
+  () => import('../DynamicVitessceWrappers').then((mod) => mod.Spatial),
   { ssr: false },
 );
 

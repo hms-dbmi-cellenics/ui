@@ -29,7 +29,7 @@ import { loadCellSets } from 'redux/actions/cellSets';
 const COMPONENT_TYPE = 'interactiveHeatmap';
 
 const Heatmap = dynamic(
-  () => import('../DynamicESMWrappers').then((mod) => mod.Heatmap),
+  () => import('../DynamicVitessceWrappers').then((mod) => mod.Heatmap),
   { ssr: false },
 );
 
