@@ -104,9 +104,9 @@ jobs:
           repository: ${{github.event.pull_request.head.repo.full_name}}
 
       - id: setup-node
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
-          node-version: '14'
+          node-version: '20.18.0'
           cache: 'npm'
 
       - id: install
@@ -158,9 +158,9 @@ jobs:
           repository: ${{github.event.pull_request.head.repo.full_name}}
 
       - id: setup-node
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
-          node-version: '14'
+          node-version: '20.18.0'
           cache: 'npm'
 
       - id: install
