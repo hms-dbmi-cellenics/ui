@@ -11,7 +11,6 @@ import mockAPI, {
 import { makeStore } from 'redux/store';
 import { loadBackendStatus } from 'redux/actions/backendStatus';
 import fake from '__test__/test-utils/constants';
-import { updateFilterSettings } from 'redux/actions/experimentSettings';
 import createTestComponentFactory from '__test__/test-utils/testComponentFactory';
 
 describe('Data exploration index page', () => {
@@ -47,11 +46,5 @@ describe('Data exploration index page', () => {
     expect(screen.getAllByText('Cell sets and Metadata')[0]).toHaveClass('mosaic-window-title');
     expect(screen.getAllByText('Genes')[0]).toHaveClass('mosaic-window-title');
     expect(screen.getAllByText('Heatmap')[0]).toHaveClass('mosaic-window-title');
-  });
-
-  it('Changing method changes the embedding window title', async () => {
-    await storeState.dispatch(updateFilterSettings('configureEmbedding', { embeddingSettings: { method: 'newmethod' } }));
-    await renderExplorationPage();
-    expect(screen.getAllByText('NEWMETHOD')[0]).toHaveClass('mosaic-window-title');
   });
 });

@@ -4,8 +4,9 @@ import { Provider } from 'react-redux';
 import configureMockStore from 'redux-mock-store';
 import CloseButton from 'components/MosaicCloseButton';
 import { MosaicContext, MosaicWindowContext } from 'react-mosaic-component';
+import thunk from 'redux-thunk';
 
-const mockStore = configureMockStore();
+const mockStore = configureMockStore([thunk]);
 
 describe('MosaicCloseButton tests', () => {
   let store;

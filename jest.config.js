@@ -46,6 +46,9 @@ module.exports = {
     '^react-native$': 'react-native-web',
     '^.+\\.module\\.(css|sass|scss)$': 'identity-obj-proxy',
     uuid: require.resolve('uuid'), // https://stackoverflow.com/a/73203803
+    '^@zarrita/storage$': '<rootDir>/__mocks__/@zarrita/storage.js',
+    '^zarrita$': '<rootDir>/__mocks__/zarrita.js',
+    '^@hms-dbmi/viv$': '<rootDir>/__mocks__/@hms-dbmi/viv.js',
   },
   moduleFileExtensions: [
     'web.js',

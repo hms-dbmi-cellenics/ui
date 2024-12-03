@@ -5,6 +5,4 @@ import { Heatmap } from '@vitessce/heatmap';
 import { Scatterplot } from '@vitessce/scatterplot';
 import { Spatial } from '@vitessce/spatial';
 
-export {
-  Heatmap, Scatterplot, Spatial,
-};
+export { Heatmap, Scatterplot, Spatial };
