@@ -117,7 +117,7 @@ jobs:
           echo "NPM version: $(npm --version)"
 
           git config --global url."https://".insteadOf ssh://
-          npm ci
+          npm ci --legacy-peer-deps
 
       - id: test
         name: Run unit tests
@@ -171,7 +171,7 @@ jobs:
           echo "NPM version: $(npm --version)"
 
           git config --global url."https://".insteadOf ssh://
-          npm ci
+          npm ci --legacy-peer-deps
 
       - id: next-cache-seek
         name: Look up the Next.js build cache
