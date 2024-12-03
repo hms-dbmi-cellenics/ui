@@ -1,8 +1,8 @@
 // from https://github.com/vitessce/vitessce/blob/main/packages/utils/spatial-utils/src/load-ome-zarr.js
 // should be able to import { loadOmeZarr } from '@vitessce/spatial-utils' but it doesn't work!
 
-import { open as zarrOpen } from 'zarrita';
 import { ZarrPixelSource } from '@hms-dbmi/viv';
+import { open as zarrOpen } from 'zarrita';
 import { createZarrArrayAdapter, createZarrArrayAdapterGrid } from './createZarrArrayAdapter';
 
 function prevPowerOf2(x) {
@@ -58,30 +58,17 @@ async function loadMultiscales(root) {
   };
 }
 
-// Ensure async context resolution for class extension
-// This function idea wraps the dynamic import for class creation
-async function createZarritaPixelSource(arr, labels, tileSize) {
-  // Wait for dynamic import to resolve the correct constructor
-  const Class = await ZarrPixelSource; // Wait for ZarrPixelSource to resolve
-
-  return class extends Class {
-    constructor() {
-      super(arr, labels, tileSize);
-      // We prevent reading chunks directly, since Zarrita does not
-      // handle x/y chunk differences the same as zarr.js.
-      // TODO: fix this once fixed in either zarrita getChunk or
-      // in createZarrArrayAdapter.
-      // Reference: https://github.com/hms-dbmi/vizarr/pull/172#issuecomment-1714497516
-      // eslint-disable-next-line no-underscore-dangle
-      this._readChunks = false;
-    }
-  };
-}
-
-// When you need to create a new pixel source dynamically
-async function createPixelSource(arr, labels, tileSize) {
-  const ZarritaPixelSource = await createZarritaPixelSource(arr, labels, tileSize);
-  return new ZarritaPixelSource();
+export class ZarritaPixelSource extends ZarrPixelSource {
+  constructor(arr, labels, tileSize) {
+    super(arr, labels, tileSize);
+    // We prevent reading chunks directly, since Zarrita does not
+    // handle x/y chunk differences the same as zarr.js.
+    // TODO: fix this once fixed in either zarrita getChunk or
+    // in createZarrArrayAdapter.
+    // Reference: https://github.com/hms-dbmi/vizarr/pull/172#issuecomment-1714497516
+    // eslint-disable-next-line no-underscore-dangle
+    this._readChunks = false;
+  }
 }
 
 // We use our own loadOmeZarr function (instead of viv.loadOmeZarr)
@@ -90,12 +77,12 @@ export async function loadOmeZarr(root) {
   const { data, rootAttrs, labels } = await loadMultiscales(root);
 
   const tileSize = guessTileSize(data[0]);
-  const pyramid = await Promise.all(data
-    .map((arr) => createPixelSource(
+  const pyramid = data
+    .map((arr) => new ZarritaPixelSource(
       createZarrArrayAdapter(arr),
       labels,
       tileSize,
-    )));
+    ));
 
   return {
     data: pyramid,
@@ -116,14 +103,14 @@ export async function loadOmeZarrGrid(roots, gridSize) {
   const { shape } = dataGroups[0][0];
 
   // Create adapters for each image pair in the grid
-  const pyramid = await Promise.all(dataGroups[0].map((_, resolution) => {
+  const pyramid = dataGroups[0].map((_, resolution) => {
     const arrs = dataGroups.map((group) => group[resolution]);
-    return createPixelSource(
+    return new ZarritaPixelSource(
       createZarrArrayAdapterGrid(arrs, gridSize),
       labels,
       tileSize,
     );
-  }));
+  });
 
   return {
     data: pyramid,
