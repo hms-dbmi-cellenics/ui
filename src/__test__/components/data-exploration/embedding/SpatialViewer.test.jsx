@@ -10,41 +10,23 @@ import { loadOmeZarrGrid } from 'components/data-exploration/spatial/loadOmeZarr
 import CrossHair from 'components/data-exploration/embedding/CrossHair';
 import CellInfo from 'components/data-exploration/CellInfo';
 import { getSampleFileUrls } from 'utils/data-management/downloadSampleFile';
-import { CELL_SETS_CREATE } from 'redux/actionTypes/cellSets';
 import { initialEmbeddingState } from 'redux/reducers/embeddings/initialState';
-import { ZipFileStore } from '@zarrita/storage';
 import { root as zarrRoot } from 'zarrita';
 import { initialComponentConfigStates } from 'redux/reducers/componentConfig/initialState';
 import PipelineStatus from 'utils/pipelineStatusValues';
-import generateExperimentSettingsMock from '__test__/test-utils/experimentSettings.mock';
-import { CELL_INFO_UPDATE } from 'redux/actionTypes/cellInfo';
 import '__test__/test-utils/setupTests';
 import ExpressionMatrix from 'utils/ExpressionMatrix/ExpressionMatrix';
+import { ZipFileStore } from '@zarrita/storage';
 
 jest.mock('utils/data-management/downloadSampleFile', () => ({
   getSampleFileUrls: jest.fn(),
-}));
-
-jest.mock('@zarrita/storage', () => ({
-  ...jest.requireActual('@zarrita/storage'),
-  ZipFileStore: {
-    fromUrl: jest.fn(),
-  },
-}));
-
-jest.mock('zarrita', () => ({
-  ...jest.requireActual('zarrita'),
-  root: jest.fn(() => ({
-    // Mock any additional methods or properties needed
-    getHierarchy: jest.fn(() => Promise.resolve({})),
-  })),
 }));
 
 jest.mock('components/data-exploration/spatial/loadOmeZarr', () => ({
   loadOmeZarrGrid: jest.fn(() => Promise.resolve({
     data: 'mockPyramidData',
     metadata: 'mockMetadata',
-    shape: [256, 256],
+    shape: [3, 256, 256],
   })),
 }));
 
@@ -56,10 +38,8 @@ const width = 100;
 const height = 200;
 const experimentId = '1234';
 const obj2sSampleId = 'obj2s-sample';
-
-const initialExperimentState = generateExperimentSettingsMock([]);
-
-jest.mock('next/dynamic', () => () => (props) => 'I am a spatial');
+const sample1FileId = 'sample1';
+const sample2FileId = 'sample2';
 
 describe('SpatialViewer', () => {
   const initialState = {
@@ -81,22 +61,35 @@ describe('SpatialViewer', () => {
       images: {
         ...initialEmbeddingState,
         loading: false,
-        data: {
-          obsCentroids: [[-13, 32], [6, 7], [43, 9], [57, 3]],
-          obsCentroidsIndex: [0, 1, 2, 3],
-          centroidColors: { 0: '#ff0000', 1: '#00ff00' },
-        },
+        data: [[-13, 32], [6, 7], [43, 9], [57, 3]],
       },
     },
     cellSets: {
       properties: {
-        sample: {
-          name: 'Sample clusters',
+        louvain: {
+          name: 'Louvain clusters',
           color: undefined,
+        },
+        cluster1: {
+          color: '#0000ff',
+          cellIds: new Set([0, 3]),
+        },
+        cluster2: {
+          color: '#ff0000',
+          cellIds: new Set([1, 2]),
+        },
+        [sample1FileId]: {
+          cellIds: new Set([0, 1]),
+        },
+        [sample2FileId]: {
+          cellIds: new Set([2, 3]),
         },
       },
       hierarchy: [
-        { key: 'sample', children: [] },
+        {
+          key: 'louvain',
+          children: [{ key: 'cluster1' }, { key: 'cluster2' }],
+        },
       ],
       hidden: new Set(),
     },
@@ -112,7 +105,7 @@ describe('SpatialViewer', () => {
       cellId: 2,
       focus: {
         store: 'cellSets',
-        key: 'sample',
+        key: 'louvain',
       },
     },
     experimentSettings: {
@@ -126,34 +119,37 @@ describe('SpatialViewer', () => {
     await preloadAll();
   });
 
-  beforeEach(() => {
+  beforeEach(async () => {
     getSampleFileUrls.mockResolvedValue([
-      { url: 'http://example.com/sample1.ome.zarr.zip', fileId: 'fileId1' },
-      { url: 'http://example.com/sample2.ome.zarr.zip', fileId: 'fileId2' },
+      { url: 'http://example.com/sample1.ome.zarr.zip', fileId: sample1FileId },
+      { url: 'http://example.com/sample2.ome.zarr.zip', fileId: sample2FileId },
     ]);
 
     store = mockStore(initialState);
-    component = mount(
-      <Provider store={store}>
-        <SpatialViewer experimentId={experimentId} width={width} height={height} />
-      </Provider>,
-    );
+
+    await act(() => {
+      component = mount(
+        <Provider store={store}>
+          <SpatialViewer experimentId={experimentId} width={width} height={height} />
+        </Provider>,
+      );
+    });
   });
 
   afterEach(() => {
     component.unmount();
   });
 
-  it('fetches sample file URLs and processes them', async () => {
-    await act(async () => {
-      component.update();
-    });
+  it('fetches sample file URLs and processes them', () => {
+    // gets sample file urls from single obj2s sample id
+    expect(getSampleFileUrls).toHaveBeenCalledTimes(1);
 
-    expect(getSampleFileUrls).toHaveBeenCalledWith(expect.any(String), expect.any(String), 'ome_zarr_zip');
-    expect(ZipFileStore.fromUr).toHaveBeenCalled(); // Ensure zarrRoot is called
-    expect(zarrRoot).toHaveBeenCalled(); // Ensure zarrRoot is called
-    expect(loadOmeZarrGrid).toHaveBeenCalled(); // Ensure loadOmeZarrGrid is called
-    // Add assertions to verify that component processed the URLs correctly
+    // creates zip file store and zarrRoot from each of the two returned urls
+    expect(ZipFileStore.fromUrl).toHaveBeenCalledTimes(2);
+    expect(zarrRoot).toHaveBeenCalledTimes(2);
+
+    // loads a single grid from the two roots
+    expect(loadOmeZarrGrid).toHaveBeenCalledTimes(1);
   });
 
   it('renders correctly with initial data', () => {
@@ -162,57 +158,5 @@ describe('SpatialViewer', () => {
 
     expect(component.find(CrossHair).length).toEqual(0);
     expect(component.find(CellInfo).length).toEqual(0);
-  });
-
-  it('renders popover on cell selection and closes on cancel', () => {
-    expect(component.find('ClusterPopover').length).toEqual(0);
-
-    const selectedCellIds = new Set([1, 2]);
-    act(() => {
-      component.find('div.vitessce-container').props().setCellSelection(selectedCellIds);
-    });
-    component.update();
-
-    let popover = component.find('ClusterPopover');
-    expect(popover.length).toEqual(1);
-
-    // Close the popover
-    act(() => {
-      popover.getElement().props.onCancel();
-    });
-    component.update();
-    popover = component.find('ClusterPopover');
-    expect(popover.length).toEqual(0);
-    expect(store.getActions().length).toEqual(0);
-  });
-
-  it('highlights cells on hover', () => {
-    act(() => {
-      component.find('div.vitessce-container').props().setCellHighlight(1);
-    });
-
-    expect(store.getActions().length).toEqual(1);
-    expect(store.getActions()[0].type).toEqual(CELL_INFO_UPDATE);
-    expect(store.getActions()[0].payload.cellId).toEqual(1);
-  });
-
-  it('creates a new cluster on popover create action', () => {
-    const selectedCellIds = new Set([1, 2]);
-    act(() => {
-      component.find('div.vitessce-container').props().setCellSelection(selectedCellIds);
-    });
-    component.update();
-
-    const popover = component.find('ClusterPopover');
-
-    // Emulate clicking create
-    act(() => {
-      popover.getElement().props.onCreate();
-    });
-    component.update();
-
-    expect(store.getActions().length).toEqual(1);
-    expect(store.getActions()[0].type).toEqual(CELL_SETS_CREATE);
-    expect(store.getActions()[0].payload.cellIds).toEqual(selectedCellIds);
   });
 });

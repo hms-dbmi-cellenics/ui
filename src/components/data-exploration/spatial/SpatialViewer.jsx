@@ -131,8 +131,6 @@ const SpatialViewer = (props) => {
   const expressionMatrix = useSelector((state) => state.genes.expression.full.matrix);
 
   const sampleIdsForFileUrls = useSelector((state) => state.experimentSettings.info.sampleIds);
-  console.log('sampleIdsForFileUrls!!!!');
-  console.log(sampleIdsForFileUrls);
   const isObj2s = useSelector((state) => state.backendStatus[experimentId].status.obj2s.status !== null);
 
   const cellCoordinatesRef = useRef({ x: 200, y: 300 });
@@ -142,7 +140,7 @@ const SpatialViewer = (props) => {
   const [cellColors, setCellColors] = useState({});
   const [cellInfoVisible, setCellInfoVisible] = useState(true);
 
-  const [omeZarrSampleIds, setOmeZarrSampleIds] = useState(null);
+  const [omeZarrSampleIds, setOmeZarrSampleIds] = useState([]);
   const [omeZarrUrls, setOmeZarrUrls] = useState([]);
   const [loader, setLoader] = useState(null);
   const [offsetData, setOffsetData] = useState();
@@ -175,7 +173,7 @@ const SpatialViewer = (props) => {
   }, [spatialSettings.showImages]);
 
   useEffect(() => {
-    if (!data || !omeZarrSampleIds || !cellSetProperties || !perImageShape || !gridShape) return;
+    if (!data || !omeZarrSampleIds.length || !cellSetProperties || !perImageShape || !gridShape) return;
 
     setOffsetData(offsetCentroids(data, cellSetProperties, omeZarrSampleIds, perImageShape, gridShape));
   }, [data, omeZarrSampleIds, cellSetProperties, perImageShape, gridShape]);

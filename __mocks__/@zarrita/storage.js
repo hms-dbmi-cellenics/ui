@@ -1,5 +1,5 @@
 module.exports = {
-  ZipFileStore: jest.fn(() => ({
-    // Define any methods used in your tests, if necessary.
-  })),
+  ZipFileStore: {
+    fromUrl: jest.fn(() => 'zip_file_store'),
+  },
 };
