@@ -2,7 +2,7 @@ import React, {
   useEffect, useState, useRef, useCallback, useMemo,
 } from 'react';
 import dynamic from 'next/dynamic';
-import { useSelector, shallowEqual, useDispatch } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
 import ClusterPopover from 'components/data-exploration/embedding/ClusterPopover';
 import CrossHair from 'components/data-exploration/embedding/CrossHair';
@@ -131,6 +131,8 @@ const SpatialViewer = (props) => {
   const expressionMatrix = useSelector((state) => state.genes.expression.full.matrix);
 
   const sampleIdsForFileUrls = useSelector((state) => state.experimentSettings.info.sampleIds);
+  console.log('sampleIdsForFileUrls!!!!');
+  console.log(sampleIdsForFileUrls);
   const isObj2s = useSelector((state) => state.backendStatus[experimentId].status.obj2s.status !== null);
 
   const cellCoordinatesRef = useRef({ x: 200, y: 300 });
@@ -141,7 +143,7 @@ const SpatialViewer = (props) => {
   const [cellInfoVisible, setCellInfoVisible] = useState(true);
 
   const [omeZarrSampleIds, setOmeZarrSampleIds] = useState(null);
-  const [omeZarrUrls, setOmeZarrUrls] = useState(null);
+  const [omeZarrUrls, setOmeZarrUrls] = useState([]);
   const [loader, setLoader] = useState(null);
   const [offsetData, setOffsetData] = useState();
   const [perImageShape, setPerImageShape] = useState();
@@ -186,6 +188,7 @@ const SpatialViewer = (props) => {
         )).flat();
 
         const signedUrls = results.map(({ url }) => url);
+
         setOmeZarrUrls(signedUrls);
 
         if (isObj2s) {
@@ -203,7 +206,7 @@ const SpatialViewer = (props) => {
   }, [sampleIdsForFileUrls, experimentId, isObj2s]);
 
   useEffect(() => {
-    if (!omeZarrUrls) return; // Exit early if there are no URLs
+    if (!omeZarrUrls.length) return; // Exit early if there are no URLs
 
     // Determine grid size
     const numColumns = Math.min(omeZarrUrls.length, 4);
@@ -213,7 +216,7 @@ const SpatialViewer = (props) => {
   }, [omeZarrUrls]);
 
   useEffect(() => {
-    if (!omeZarrUrls || !gridShape) return;
+    if (!omeZarrUrls.length || !gridShape) return;
 
     // Create Zarr roots for each URL
     const omeZarrRoots = omeZarrUrls.map((url) => zarrRoot(ZipFileStore.fromUrl(url)));
