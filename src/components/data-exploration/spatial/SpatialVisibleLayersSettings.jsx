@@ -17,7 +17,7 @@ const SpatialVisibleLayersSettings = (props) => {
   const dispatch = useDispatch();
 
   const { componentType } = props;
-  const { showImages, showSegmentations } = useSelector((state) => state.componentConfig[componentType]);
+  const { showImages, showSegmentations } = useSelector((state) => state.componentConfig[componentType].config);
 
   const [listData, setListData] = useState([]);
 
@@ -34,12 +34,12 @@ const SpatialVisibleLayersSettings = (props) => {
       {
         key: 'showImages',
         name: 'Images',
-        visible: showImages || true,
+        visible: showImages,
       },
       {
         key: 'showSegmentations',
         name: 'Segmentations',
-        visible: showSegmentations || true,
+        visible: showSegmentations,
 
       },
     ]);
