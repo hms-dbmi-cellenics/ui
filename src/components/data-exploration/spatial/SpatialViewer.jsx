@@ -21,7 +21,6 @@ import { updateCellInfo } from 'redux/actions/cellInfo';
 import { union } from 'utils/cellSetOperations';
 import _ from 'lodash';
 
-import { ZipFileStore } from '@zarrita/storage';
 import { root as zarrRoot } from 'zarrita';
 
 import {
@@ -31,6 +30,7 @@ import {
   colorByGeneExpression,
 } from 'utils/plotUtils';
 import getContainingCellSetsProperties from 'utils/cellSets/getContainingCellSetsProperties';
+import ZipFileStore from 'components/data-exploration/spatial/zip';
 
 import { loadOmeZarrGrid } from './loadOmeZarr';
 

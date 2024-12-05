@@ -1,6 +1,6 @@
 import { loadOmeZarr } from 'components/data-exploration/spatial/loadOmeZarr';
 import { root as zarrRoot } from 'zarrita';
-import { ZipFileStore } from '@zarrita/storage';
+import ZipFileStore from 'components/data-exploration/spatial/zip';
 
 // Load OME-Zarr and return the pyramid and loader (an example)
 const getImageUrls = async (omeZarrUrl) => {
