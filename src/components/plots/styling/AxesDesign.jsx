@@ -2,7 +2,7 @@ import React from 'react';
 import _ from 'lodash';
 import PropTypes from 'prop-types';
 import {
-  Slider, Form, Input, Switch, Space, Radio,
+  Slider, Form, Input, Switch, Radio,
 } from 'antd';
 import useUpdateThrottled from 'utils/customHooks/useUpdateThrottled';
 
