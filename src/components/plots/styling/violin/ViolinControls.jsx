@@ -4,7 +4,7 @@ import {
   Collapse, Radio, Form, Slider, Skeleton,
 } from 'antd';
 import SelectData from 'components/plots/styling/SelectData';
-import MultiViewEditor from 'components/plots/styling/MultiViewEditor';
+import MultiViewGenesEditor from 'components/plots/styling/MultiViewGenesEditor';
 import { plotUuids, plotTypes } from 'utils/constants';
 import GeneSearchBar from 'components/plots/GeneSearchBar';
 
@@ -35,7 +35,7 @@ const ViolinControls = (props) => {
         />
       </Panel>
       <Panel header='View multiple plots' key='view-multiple-plots'>
-        <MultiViewEditor
+        <MultiViewGenesEditor
           updateAll={updateAll}
           experimentId={experimentId}
           setUpdateAll={setUpdateAll}

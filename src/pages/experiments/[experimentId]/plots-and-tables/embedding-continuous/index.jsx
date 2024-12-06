@@ -2,12 +2,12 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { useSelector, useDispatch } from 'react-redux';
-import MultiViewEditor from 'components/plots/styling/MultiViewEditor';
+import MultiViewGenesEditor from 'components/plots/styling/MultiViewGenesEditor';
 import _ from 'lodash';
 import {
   Collapse,
 } from 'antd';
-import MultiViewGrid from 'components/plots/MultiViewGrid';
+import MultiViewGenesGrid from 'components/plots/MultiViewGenesGrid';
 
 import SelectData from 'components/plots/styling/embedding-continuous/SelectData';
 import Header from 'components/Header';
@@ -115,7 +115,7 @@ const ContinuousEmbeddingPage = ({ experimentId }) => {
         />
       </Panel>
       <Panel header='View multiple plots' key='view-multiple-plots'>
-        <MultiViewEditor
+        <MultiViewGenesEditor
           shownGenes={shownGenes}
           plotType={plotType}
           experimentId={experimentId}
@@ -151,7 +151,7 @@ const ContinuousEmbeddingPage = ({ experimentId }) => {
         )}
         onUpdate={updateAll ? updateAllWithChanges : updatePlotWithChanges}
       >
-        <MultiViewGrid
+        <MultiViewGenesGrid
           experimentId={experimentId}
           renderPlot={renderPlot}
           updateAllWithChanges={updateAllWithChanges}

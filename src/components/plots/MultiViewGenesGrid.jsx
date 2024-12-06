@@ -31,7 +31,7 @@ const tableState = {
 
 const multiViewType = plotTypes.MULTI_VIEW_PLOT;
 
-const MultiViewGrid = (props) => {
+const MultiViewGenesGrid = (props) => {
   const {
     experimentId,
     renderPlot,
@@ -208,7 +208,7 @@ const MultiViewGrid = (props) => {
   return render();
 };
 
-MultiViewGrid.propTypes = {
+MultiViewGenesGrid.propTypes = {
   experimentId: PropTypes.string.isRequired,
   renderPlot: PropTypes.func.isRequired,
   updateAllWithChanges: PropTypes.func.isRequired,
@@ -216,4 +216,4 @@ MultiViewGrid.propTypes = {
   plotUuid: PropTypes.string.isRequired,
 };
 
-export default MultiViewGrid;
+export default MultiViewGenesGrid;

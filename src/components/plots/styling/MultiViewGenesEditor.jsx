@@ -25,7 +25,7 @@ import { generateMultiViewGridPlotUuid } from 'utils/generateCustomPlotUuid';
 import { plotUuids } from 'utils/constants';
 import loadConditionalComponentConfig from 'redux/actions/componentConfig/loadConditionalComponentConfig';
 
-const MultiViewEditor = (props) => {
+const MultiViewGenesEditor = (props) => {
   const {
     experimentId,
     plotType,
@@ -267,7 +267,7 @@ const MultiViewEditor = (props) => {
   );
 };
 
-MultiViewEditor.propTypes = {
+MultiViewGenesEditor.propTypes = {
   shownGenes: PropTypes.array.isRequired,
   plotType: PropTypes.string.isRequired,
   experimentId: PropTypes.string.isRequired,
@@ -278,4 +278,4 @@ MultiViewEditor.propTypes = {
   setUpdateAll: PropTypes.func.isRequired,
 };
 
-export default MultiViewEditor;
+export default MultiViewGenesEditor;

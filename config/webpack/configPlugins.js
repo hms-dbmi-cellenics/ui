@@ -15,23 +15,6 @@ const webpackConfigPlugins = (config, { dev }) => {
     );
   }
 
-  // need so that can import ZipFileStore from zarrita
-  plugins.push(
-    new NormalModuleReplacementPlugin(/node:/, (resource) => {
-      const mod = resource.request.replace(/^node:/, '');
-      switch (mod) {
-        case 'fs':
-          resource.request = 'fs';
-          break;
-        case 'path':
-          resource.request = 'path';
-          break;
-        default:
-          throw new Error(`Need to modify /node:/ webpack plugin. Case not found: ${mod}`);
-      }
-    }),
-  );
-
   // Only load minimizer/optimizer plugins for production builds.
   // Terser and OptimizeCss are automatically loaded in Webpack 4+.
   if (!dev) {

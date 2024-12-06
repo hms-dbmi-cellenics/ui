@@ -1,9 +1,26 @@
 /* eslint-disable */
 // adapted from @zarrita/storage so that GET is used instead of HEAD (presigned urls need to be different based on method)
-
 import { unzip } from "unzipit";
-import { fetch_range, strip_prefix } from "./util.js";
-export class BlobReader {
+
+function strip_prefix(path) {
+  return path.slice(1);
+}
+
+function fetch_range(url, offset, length, opts = {}) {
+  if (offset !== undefined && length !== undefined) {
+    // merge request opts
+    opts = {
+      ...opts,
+      headers: {
+        ...opts.headers,
+        Range: `bytes=${offset}-${offset + length - 1}`,
+      },
+    };
+  }
+  return fetch(url, opts);
+}
+
+class BlobReader {
     blob;
     constructor(blob) {
         this.blob = blob;
@@ -16,7 +33,8 @@ export class BlobReader {
         return new Uint8Array(await blob.arrayBuffer());
     }
 }
-export class HTTPRangeReader {
+
+class HTTPRangeReader {
     url;
     length;
     constructor(url) {
@@ -73,4 +91,5 @@ class ZipFileStore {
         return new ZipFileStore(new BlobReader(blob));
     }
 }
+
 export default ZipFileStore;

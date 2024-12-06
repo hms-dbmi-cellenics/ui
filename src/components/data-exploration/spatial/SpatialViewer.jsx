@@ -30,7 +30,7 @@ import {
   colorByGeneExpression,
 } from 'utils/plotUtils';
 import getContainingCellSetsProperties from 'utils/cellSets/getContainingCellSetsProperties';
-import ZipFileStore from 'components/data-exploration/spatial/zip';
+import ZipFileStore from 'components/data-exploration/spatial/ZipFileStore';
 
 import { loadOmeZarrGrid } from './loadOmeZarr';
 

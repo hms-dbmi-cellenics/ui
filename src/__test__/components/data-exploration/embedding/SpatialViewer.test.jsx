@@ -16,7 +16,7 @@ import { initialComponentConfigStates } from 'redux/reducers/componentConfig/ini
 import PipelineStatus from 'utils/pipelineStatusValues';
 import '__test__/test-utils/setupTests';
 import ExpressionMatrix from 'utils/ExpressionMatrix/ExpressionMatrix';
-import ZipFileStore from 'components/data-exploration/spatial/zip';
+import ZipFileStore from 'components/data-exploration/spatial/ZipFileStore';
 
 jest.mock('utils/data-management/downloadSampleFile', () => ({
   getSampleFileUrls: jest.fn(),
@@ -30,7 +30,7 @@ jest.mock('components/data-exploration/spatial/loadOmeZarr', () => ({
   })),
 }));
 
-jest.mock('components/data-exploration/spatial/zip', () => ({
+jest.mock('components/data-exploration/spatial/ZipFileStore', () => ({
   fromUrl: jest.fn(),
 }));
 
