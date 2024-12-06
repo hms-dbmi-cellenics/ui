@@ -3,5 +3,6 @@
 // See https://github.com/webpack/webpack/issues/13865
 import { Heatmap } from '@vitessce/heatmap';
 import { Scatterplot } from '@vitessce/scatterplot';
+import { Spatial } from '@vitessce/spatial';
 
-export { Heatmap, Scatterplot };
+export { Heatmap, Scatterplot, Spatial };

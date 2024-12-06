@@ -15,7 +15,7 @@ import PlotContainer from 'components/plots/PlotContainer';
 import ViolinPlotMain from 'components/plots/ViolinPlotMain';
 import { getCellSets, getPlotConfigs } from 'redux/selectors';
 import { plotNames, plotUuids, plotTypes } from 'utils/constants';
-import MultiViewGrid from 'components/plots/MultiViewGrid';
+import MultiViewGenesGrid from 'components/plots/MultiViewGenesGrid';
 
 const plotUuid = plotUuids.VIOLIN_PLOT;
 const plotType = plotTypes.VIOLIN_PLOT;
@@ -134,7 +134,7 @@ const ViolinIndex = ({ experimentId }) => {
   );
 
   const renderMultiView = () => (
-    <MultiViewGrid
+    <MultiViewGenesGrid
       experimentId={experimentId}
       renderPlot={renderPlot}
       updateAllWithChanges={updateAllWithChanges}

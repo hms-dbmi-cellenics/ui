@@ -17,7 +17,7 @@ import PlatformError from 'components/PlatformError';
 import loadConditionalComponentConfig from 'redux/actions/componentConfig/loadConditionalComponentConfig';
 import Loader from 'components/Loader';
 import { loadPaginatedGeneProperties, loadGeneExpression } from 'redux/actions/genes';
-import { plotTypes, plotUuids } from 'utils/constants';
+import { plotTypes, plotUuids, spatialPlotTypes } from 'utils/constants';
 
 const PROPERTIES = ['dispersions'];
 
@@ -31,7 +31,7 @@ const tableState = {
 
 const multiViewType = plotTypes.MULTI_VIEW_PLOT;
 
-const MultiViewGrid = (props) => {
+const MultiViewGenesGrid = (props) => {
   const {
     experimentId,
     renderPlot,
@@ -141,7 +141,11 @@ const MultiViewGrid = (props) => {
     if (currentPlotUuids.length > previousPlotUuids.length) {
       // when adding the second plot rescale all to fit
       if (previousPlotUuids.length === 1) {
-        updateAllWithChanges({ dimensions: { width: 550, height: 400 } });
+        const isSpatial = spatialPlotTypes.includes(plotType);
+
+        const dimensions = { width: isSpatial ? 425 : 550, height: 400 };
+
+        updateAllWithChanges({ dimensions });
       }
 
       const plotsToAdd = _.difference(currentPlotUuids, previousPlotUuids);
@@ -204,7 +208,7 @@ const MultiViewGrid = (props) => {
   return render();
 };
 
-MultiViewGrid.propTypes = {
+MultiViewGenesGrid.propTypes = {
   experimentId: PropTypes.string.isRequired,
   renderPlot: PropTypes.func.isRequired,
   updateAllWithChanges: PropTypes.func.isRequired,
@@ -212,4 +216,4 @@ MultiViewGrid.propTypes = {
   plotUuid: PropTypes.string.isRequired,
 };
 
-export default MultiViewGrid;
+export default MultiViewGenesGrid;

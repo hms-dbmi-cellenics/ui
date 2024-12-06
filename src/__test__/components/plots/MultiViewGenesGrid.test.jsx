@@ -1,7 +1,7 @@
 import React from 'react';
 import { render, screen, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import MultiViewGrid from 'components/plots/MultiViewGrid';
+import MultiViewGenesGrid from 'components/plots/MultiViewGenesGrid';
 import { Provider } from 'react-redux';
 import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
@@ -18,7 +18,7 @@ jest.mock('redux/actions/componentConfig/savePlotConfig', () => ({
 
 const mockStore = configureMockStore([thunk]);
 
-describe('MultiViewGrid', () => {
+describe('MultiViewGenesGrid', () => {
   let store;
   const multiViewConfig = {
     plotUuids: ['ViolinMain-0', 'ViolinMain-1', 'ViolinMain-2'],
@@ -67,7 +67,7 @@ describe('MultiViewGrid', () => {
   const renderComponent = () => {
     render(
       <Provider store={store}>
-        <MultiViewGrid
+        <MultiViewGenesGrid
           experimentId={experimentId}
           renderPlot={(uuid) => <div>{uuid}</div>}
           updateAllWithChanges={() => {}}

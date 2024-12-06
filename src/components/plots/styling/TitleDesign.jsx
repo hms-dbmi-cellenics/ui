@@ -15,14 +15,14 @@ const TitleDesign = (props) => {
     <Space direction='vertical' style={{ width: '80%' }}>
       <Form
         size='small'
-        labelCol={{ span: 12 }}
-        wrapperCol={{ span: 12 }}
+        labelCol={{ span: 10, style: { textAlign: 'left' } }}
+        wrapperCol={{ span: 14 }}
       >
-        <p><strong>Title Styles</strong></p>
+        <p><strong>Title Styles:</strong></p>
         {allowTitleChange
           && (
             <Form.Item
-              label='Define Title'
+              label='Title Text'
             >
               <Input
                 placeholder={placeHolder}

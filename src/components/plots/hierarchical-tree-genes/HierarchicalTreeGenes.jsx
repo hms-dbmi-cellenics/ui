@@ -34,7 +34,7 @@ const HierarchicalTreeGenes = (props) => {
     // add padding to the tree to make first drop position visible
     <div className='scroll-wrapper' id='ScrollWrapper' style={{ overflowY: 'auto', maxHeight: '400px' }}>
       <Tree
-        style={{ paddingTop: '6px', paddingBottom: '3px' }}
+        style={{ paddingTop: '6px', paddingBottom: '3px', textAlign: 'left' }}
         data-testid='HierachicalTreeGenes'
         draggable
         treeData={treeData}

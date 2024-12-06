@@ -32,6 +32,10 @@ const getSelectedMetadataTracks = (...params) => (state) => (
   componentConfigSelectors.getSelectedMetadataTracks(...params)(state)
 );
 
+const getGroupSlidesBy = (...params) => (state) => (
+  componentConfigSelectors.getGroupSlidesBy(...params)(state)
+);
+
 export {
   getBackendStatus,
   getCellSets,
@@ -41,4 +45,5 @@ export {
   getPlotConfigs,
   getGeneList,
   getSelectedMetadataTracks,
+  getGroupSlidesBy,
 };

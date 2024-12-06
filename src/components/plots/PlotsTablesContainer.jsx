@@ -5,7 +5,7 @@ import {
 } from 'antd';
 import Link from 'next/link';
 
-import { plotNames, layout } from 'utils/constants';
+import { plotNames, layout, spatialPlotNames } from 'utils/constants';
 
 const CARD_STYLE = { marginBottom: '1em' };
 const CardItem = (({
@@ -41,13 +41,19 @@ CardItem.propTypes = {
 
 const plots = [
   {
-    title: 'Cell sets & metadata',
+    title: 'Cell Sets and Metadata',
     plots: [
       {
         name: plotNames.CATEGORICAL_EMBEDDING,
         image: '/static/media/embeddingCategorical.png',
         key: 'embedding-categorical-key',
         link: 'embedding-categorical',
+      },
+      {
+        name: plotNames.SPATIAL_CATEGORICAL,
+        image: '/static/media/spatialCategorical.png',
+        key: 'spatial-categorical-key',
+        link: 'spatial-categorical',
       },
       {
         name: 'Frequency Plot',
@@ -64,13 +70,19 @@ const plots = [
     ],
   },
   {
-    title: 'Gene expression',
+    title: 'Gene Expression',
     plots: [
       {
         name: plotNames.CONTINUOUS_EMBEDDING,
         image: '/static/media/embeddingContinuous.png',
         key: 'embedding-continuous-key',
         link: 'embedding-continuous',
+      },
+      {
+        name: plotNames.SPATIAL_FEATURE,
+        image: '/static/media/spatialFeature.png',
+        key: 'spatial-feature-key',
+        link: 'spatial-feature',
       },
       {
         name: plotNames.MARKER_HEATMAP,
@@ -99,7 +111,7 @@ const plots = [
     ],
   },
   {
-    title: 'Differential expression',
+    title: 'Differential Expression',
     plots: [
       {
         name: plotNames.VOLCANO_PLOT,
@@ -118,7 +130,9 @@ const plots = [
 ];
 
 const PlotsTablesContainer = (props) => {
-  const { width, height, experimentId } = props;
+  const {
+    width, height, experimentId, isSpatial,
+  } = props;
 
   return (
     <div
@@ -140,18 +154,21 @@ const PlotsTablesContainer = (props) => {
               </Divider>
             </Col>
             {section.plots.map((item) => (
-              <Col className='plot-card' key={item.key}>
-                <Card
-                  size='small'
-                  hoverable
-                  title={item.name}
-                  bodyStyle={{ padding: '0' }}
-                  style={CARD_STYLE}
-                >
-                  <CardItem item={item} experimentId={experimentId} />
-                </Card>
-              </Col>
-            ))}
+              !spatialPlotNames.includes(item.name) || isSpatial
+                ? (
+                  <Col className='plot-card' key={item.key}>
+                    <Card
+                      size='small'
+                      hoverable
+                      title={item.name}
+                      bodyStyle={{ padding: '0' }}
+                      style={CARD_STYLE}
+                    >
+                      <CardItem item={item} experimentId={experimentId} />
+                    </Card>
+                  </Col>
+                )
+                : <></>))}
           </Row>
         ))}
       </Space>
@@ -161,6 +178,7 @@ const PlotsTablesContainer = (props) => {
 
 PlotsTablesContainer.propTypes = {
   experimentId: PropTypes.string.isRequired,
+  isSpatial: PropTypes.bool.isRequired,
   width: PropTypes.number,
   height: PropTypes.number,
 };

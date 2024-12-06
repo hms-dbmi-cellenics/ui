@@ -23,13 +23,14 @@ const generateSpec = (config, method, plotData, cellSetLegendsData) => {
         enter: {
           x: { scale: 'x', field: 'x' },
           y: { scale: 'y', field: 'y' },
-          size: [
+          opacity: [
             {
               test: "inrange(datum.x, domain('x')) && inrange(datum.y, domain('y'))",
-              value: config?.marker.size,
+              value: 1,
             },
-            { value: 0 },
+            { value: 0 }, // Full invisibility for points outside the range
           ],
+          size: { value: config?.marker.size },
           stroke: { scale: 'cellSetMarkColors', field: 'cellSetKey' },
           fill: { scale: 'cellSetMarkColors', field: 'cellSetKey' },
           shape: { value: 'circle' },
@@ -42,19 +43,45 @@ const generateSpec = (config, method, plotData, cellSetLegendsData) => {
   if (config?.labels.enabled) {
     marks.push(
       {
+        name: 'clusterLabels',
         type: 'text',
         clip: true,
         from: { data: 'labels' },
+        zindex: 1,
         encode: {
-          enter: {
-            x: { scale: 'x', field: 'meanX' },
-            y: { scale: 'y', field: 'meanY' },
+          update: {
+            x: { scale: 'x', field: 'medianX' },
+            y: { scale: 'y', field: 'medianY' },
             text: { field: 'cellSetName' },
             fontSize: { value: config?.labels.size },
             strokeWidth: { value: 1.2 },
             fill: { value: config?.colour.masterColour },
             fillOpacity: { value: config?.labels.enabled },
             font: { value: config?.fontStyle.font },
+          },
+        },
+        transform: [
+          {
+            type: 'label',
+            size: { signal: '[width, height]' },
+            avoidBaseMark: false,
+          },
+        ],
+      },
+    );
+
+    marks.push(
+      {
+        type: 'rect',
+        from: { data: 'clusterLabels' },
+        encode: {
+          update: {
+            x: { field: 'bounds.x1', offset: -2 },
+            x2: { field: 'bounds.x2', offset: 2 },
+            y: { field: 'bounds.y1', offset: -2 },
+            y2: { field: 'bounds.y2', offset: 2 },
+            fill: { value: 'white' },
+            opacity: { value: 0.5 },
           },
         },
       },
@@ -158,7 +185,7 @@ const generateSpec = (config, method, plotData, cellSetLegendsData) => {
         source: 'values',
         transform: [
           {
-            type: 'aggregate', groupby: ['cellSetKey', 'cellSetName'], fields: ['x', 'y'], ops: ['mean', 'mean'], as: ['meanX', 'meanY'],
+            type: 'aggregate', groupby: ['cellSetKey', 'cellSetName'], fields: ['x', 'y'], ops: ['median', 'median'], as: ['medianX', 'medianY'],
           },
         ],
       },

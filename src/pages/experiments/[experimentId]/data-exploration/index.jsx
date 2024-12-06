@@ -7,13 +7,16 @@ import { DownOutlined, PictureOutlined, ToolOutlined } from '@ant-design/icons';
 import PropTypes from 'prop-types';
 import { loadProcessingSettings } from 'redux/actions/experimentSettings';
 import Header from 'components/Header';
+import { spatialTechs } from 'utils/constants';
 
 import CellSetsTool from 'components/data-exploration/cell-sets-tool/CellSetsTool';
 import GeneListTool from 'components/data-exploration/gene-list-tool/GeneListTool';
 import DiffExprManager from 'components/data-exploration/differential-expression-tool/DiffExprManager';
 import Embedding from 'components/data-exploration/embedding/Embedding';
-import HeatmapPlot, { COMPONENT_TYPE } from 'components/data-exploration/heatmap/HeatmapPlot';
+import SpatialViewer, { COMPONENT_TYPE as SPATIAL_COMPONENT_TYPE } from 'components/data-exploration/spatial/SpatialViewer';
+import HeatmapPlot, { COMPONENT_TYPE as HEATMAP_COMPONENT_TYPE } from 'components/data-exploration/heatmap/HeatmapPlot';
 import HeatmapSettings from 'components/data-exploration/heatmap/HeatmapSettings';
+import SpatialSettings from 'components/data-exploration/spatial/SpatialSettings';
 import MosaicCloseButton from 'components/MosaicCloseButton';
 import { updateLayout, addWindow } from 'redux/actions/layout/index';
 import SearchMenu from 'components/SearchMenu';
@@ -21,6 +24,7 @@ import 'react-mosaic-component/react-mosaic-component.css';
 import MultiTileContainer from 'components/MultiTileContainer';
 import { loadGeneExpression } from 'redux/actions/genes';
 import getHighestDispersionGenes from 'utils/getHighestDispersionGenes';
+import { initialLayoutSingleCell, initialLayoutSpatial } from 'redux/reducers/layout/initialState';
 
 const { TabPane } = Tabs;
 
@@ -35,7 +39,14 @@ const ExplorationViewPage = ({
   const { method } = useSelector((state) => (
     state.experimentSettings.processing?.configureEmbedding?.embeddingSettings
   )) || false;
+
   const geneData = useSelector((state) => state.genes.properties.data);
+
+  const samples = useSelector((state) => state.samples);
+  const selectedTechnology = (samples[experimentData?.sampleIds?.[0]]?.type || false);
+
+  const isSpatial = spatialTechs.includes(selectedTechnology);
+
   useEffect(() => {
     setSelectedTab(panel);
   }, [panel]);
@@ -70,6 +81,14 @@ const ExplorationViewPage = ({
     }
   }, [method]);
 
+  useEffect(() => {
+    const newLayout = isSpatial
+      ? initialLayoutSpatial
+      : initialLayoutSingleCell;
+
+    dispatch(updateLayout(newLayout.windows));
+  }, [isSpatial]);
+
   const TILE_MAP = {
     [methodUppercase]: {
       toolbarControls: <MosaicCloseButton key='remove-button-embedding' />,
@@ -81,10 +100,25 @@ const ExplorationViewPage = ({
         />
       ),
     },
+    Spatial: {
+      toolbarControls: (
+        <>
+          <SpatialSettings componentType={SPATIAL_COMPONENT_TYPE} key='spatial-settings' />
+          <MosaicCloseButton key='remove-button-spatial' />
+        </>
+      ),
+      component: (width, height) => (
+        <SpatialViewer
+          experimentId={experimentId}
+          width={width}
+          height={height}
+        />
+      ),
+    },
     Heatmap: {
       toolbarControls: (
         <>
-          <HeatmapSettings componentType={COMPONENT_TYPE} key='heatmap-settings' />
+          <HeatmapSettings componentType={HEATMAP_COMPONENT_TYPE} key='heatmap-settings' />
           <MosaicCloseButton key='remove-button-heatmap' />
         </>
       ),
@@ -151,6 +185,10 @@ const ExplorationViewPage = ({
         description: `Visualize cells clustered by genetic expression using a ${embeddingTitle}.`,
       },
       {
+        key: 'Spatial',
+        description: 'Visualize spatial clustering and expression data.',
+      },
+      {
         key: 'Heatmap',
         description: 'Gain a high-level understanding of expression levels across large groups of genes and cells.',
       },
@@ -167,7 +205,7 @@ const ExplorationViewPage = ({
       options={categoryItems}
       categoryInfo={categoryInfo}
       onSelect={(key, category, belongsToGroup) => {
-        dispatch(addWindow(key, belongsToGroup));
+        dispatch(addWindow(`${key}`, belongsToGroup));
         setAddMenuVisible(false);
       }}
     />

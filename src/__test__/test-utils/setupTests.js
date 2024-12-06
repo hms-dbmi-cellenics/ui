@@ -13,6 +13,7 @@ jest.mock('utils/pushNotificationMessage');
 jest.mock('components/data-exploration/DynamicVitessceWrappers', () => ({
   Scatterplot: () => 'Mocked Scatterplot',
   Heatmap: () => 'Mocked Heatmap',
+  Spatial: () => 'Mocked Spatial',
 }));
 
 beforeAll(async () => {

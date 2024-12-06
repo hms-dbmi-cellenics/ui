@@ -231,7 +231,6 @@ const HeatmapPlot = (props) => {
     heatmapSettings?.groupedTracks,
     heatmapSettings?.selectedCellSet,
     heatmapSettings?.selectedPoints,
-    cellSets.hidden,
     groupedCellSets,
   ]);
 
@@ -284,7 +283,7 @@ const HeatmapPlot = (props) => {
     );
   }
 
-  if (downsampledCellOrder.length === 0) {
+  if (heatmapData.expressionMatrix.rows.length === 0) {
     return (
       <center>
         <Empty description='Unhide some cell sets to show the heatmap' />
@@ -352,7 +351,7 @@ const HeatmapPlot = (props) => {
       />
       <div>
         {
-          highlightedTrackData ? (
+          highlightedTrackData?.cellId ? (
             <HeatmapTracksCellInfo
               containerWidth={width}
               containerHeight={height}

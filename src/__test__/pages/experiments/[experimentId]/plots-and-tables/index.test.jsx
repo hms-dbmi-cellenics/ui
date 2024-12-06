@@ -10,13 +10,13 @@ import '__test__/test-utils/mockWorkerBackend';
 import createTestComponentFactory from '__test__/test-utils/testComponentFactory';
 
 import PlotsTablesHome from 'pages/experiments/[experimentId]/plots-and-tables';
-import { plotNames } from 'utils/constants';
+import { plotNames, spatialPlotNames } from 'utils/constants';
 
 const plotsAndTablesPageFactory = createTestComponentFactory(PlotsTablesHome);
 
 let storeState = null;
 
-const hiddenPlotNames = [];
+const hiddenPlotNames = [...spatialPlotNames];
 const shownPlotNames = Object.values(plotNames).filter((name) => !hiddenPlotNames.includes(name));
 
 describe('Plots and Tables page', () => {
@@ -24,7 +24,7 @@ describe('Plots and Tables page', () => {
     storeState = makeStore();
   });
 
-  it('contains all the plot tiles', async () => {
+  it('contains all the single-cell plot tiles by default', async () => {
     await act(async () => {
       render(
         <Provider store={storeState}>

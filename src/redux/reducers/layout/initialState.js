@@ -1,4 +1,26 @@
-const initialState = {
+const initialLayoutSpatial = {
+  windows: {
+    direction: 'row',
+    first: {
+      first: {
+        first: 'UMAP', second: 'Spatial', direction: 'row', splitPercentage: 62,
+      },
+      second: {
+        first: 'Heatmap',
+        second: 'Cell sets and Metadata',
+        direction: 'row',
+        splitPercentage: 62,
+      },
+      direction: 'column',
+      splitPercentage: 45,
+    },
+    second: 'Genes',
+    splitPercentage: 70,
+  },
+  panel: 'Gene list',
+};
+
+const initialLayoutSingleCell = {
   windows: {
     direction: 'row',
     first: {
@@ -15,4 +37,4 @@ const initialState = {
   panel: 'Gene list',
 };
 
-export default initialState;
+export { initialLayoutSpatial, initialLayoutSingleCell };

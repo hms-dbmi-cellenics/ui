@@ -10,7 +10,7 @@ const DimensionsRangeEditor = (props) => {
     onUpdate, config, maxHeight, maxWidth,
   } = props;
 
-  const minWidth = 400;
+  const minWidth = 200;
   const widthMarks = {};
   widthMarks[minWidth] = minWidth;
   widthMarks[maxWidth] = maxWidth;
@@ -23,11 +23,11 @@ const DimensionsRangeEditor = (props) => {
 
   return (
     <Space direction='vertical' style={{ width: '80%' }}>
-      <p><strong>Dimensions</strong></p>
+      <p><strong>Dimensions:</strong></p>
       <Form
         size='small'
-        labelCol={{ span: 12 }}
-        wrapperCol={{ span: 12 }}
+        labelCol={{ span: 6, style: { textAlign: 'left' } }}
+        wrapperCol={{ span: 16 }}
       >
         <Form.Item
           label='Width'

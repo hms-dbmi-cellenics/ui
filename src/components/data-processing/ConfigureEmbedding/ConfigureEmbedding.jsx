@@ -65,7 +65,7 @@ const ConfigureEmbedding = (props) => {
 
   const categoricalEmbStylingControls = [
     {
-      panelTitle: 'Colour Inversion',
+      panelTitle: 'Colour inversion',
       controls: ['colourInversion'],
       footer: <Alert
         message='Changing plot colours is not available here. Use the Cell sets and Metadata tool in Data Exploration to customise cell set and metadata colours'

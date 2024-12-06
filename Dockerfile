@@ -1,5 +1,5 @@
 # pull official base image
-FROM node:22.9.0-alpine AS builder
+FROM node:20.18.0-alpine AS builder
 
 # set working directory
 WORKDIR /app
@@ -12,7 +12,7 @@ COPY package.json package-lock.json /app/
 
 # install dependencies
 RUN apk add --no-cache git
-RUN git config --global url."https://".insteadOf ssh:// && npm ci --only=production
+RUN git config --global url."https://".insteadOf ssh:// && npm ci --only=production --legacy-peer-deps
 
 # copy rest of app
 COPY . .

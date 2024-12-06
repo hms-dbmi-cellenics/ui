@@ -41,9 +41,57 @@ const embeddingCategoricalInitialConfig = {
   labels: {
     ...labelBaseState,
     enabled: false,
+    size: 12,
   },
   selectedCellSet: 'louvain',
   selectedSample: 'All',
+};
+
+// PLOTS & TABLES - Spatial Categorical Plot
+const spatialCategoricalInitialConfig = {
+  spec: '1.0.0',
+  legend: {
+    ...legendBaseState,
+  },
+  dimensions: {
+    ...dimensionsBaseState,
+    width: 500,
+    height: 500,
+  },
+  axes: {
+    ...axesBaseState,
+    xAxisText: null,
+    yAxisText: null,
+    defaultValues: ['x', 'y'],
+    offset: 0,
+  },
+  axesRanges: {
+    ...axesRangesBaseState,
+    xMin: 50,
+    xMax: 450,
+    yMin: 70,
+    yMax: 450,
+  },
+  title: {
+    ...titleBaseState,
+    fontSize: 20,
+  },
+  fontStyle: fontStyleBaseState,
+  colour: colourBaseState,
+  marker: {
+    ...markerBaseState,
+    size: 20,
+    outline: false,
+    opacity: 10,
+  },
+  labels: {
+    ...labelBaseState,
+    enabled: false,
+    size: 12,
+  },
+  selectedCellSet: 'louvain',
+  selectedSample: null,
+  showImage: true,
 };
 
 // PLOTS & TABLES - Continuous Embedding
@@ -78,6 +126,55 @@ const embeddingContinuousInitialConfig = {
   truncatedValues: true,
   selectedSample: 'All',
   keepValuesOnReset: ['shownGene'],
+};
+
+// PLOTS & TABLES - Spatial Feature Plot
+const spatialFeatureInitialConfig = {
+  spec: '1.0.0',
+  legend: legendBaseState,
+  dimensions: {
+    ...dimensionsBaseState,
+    width: 500,
+    height: 500,
+  },
+  axes: {
+    ...axesBaseState,
+    xAxisText: null,
+    yAxisText: null,
+    defaultValues: ['x', 'y'],
+    offset: 0,
+  },
+  axesRanges: {
+    ...axesRangesBaseState,
+    xMin: 50,
+    xMax: 450,
+    yMin: 70,
+    yMax: 450,
+  },
+  title: {
+    ...titleBaseState,
+    dx: 0,
+    fontSize: 20,
+  },
+  fontStyle: fontStyleBaseState,
+  colour: {
+    ...colourBaseState,
+    gradient: 'spectral',
+  },
+  marker: {
+    ...markerBaseState,
+    size: 20,
+    outline: false,
+    opacity: 10,
+  },
+  labels: labelBaseState,
+  logEquation: 'datum.expression*1',
+  shownGene: null,
+  expressionValue: 'raw',
+  truncatedValues: true,
+  selectedSample: null,
+  keepValuesOnReset: ['shownGene'],
+  showImage: true,
 };
 
 // PLOTS & TABLES - Heatmap
@@ -129,7 +226,7 @@ const volcanoInitialConfig = {
   spec: '1.0.0',
   legend: {
     ...legendBaseState,
-    position: 'top-right',
+    position: 'bottom-right',
   },
   dimensions: dimensionsBaseState,
   marker: {
@@ -517,6 +614,12 @@ const interactiveHeatmapInitialConfig = {
   legendIsVisible: true,
 };
 
+const interactiveSpatialInitialConfig = {
+  showImages: true,
+  showSegmentations: true,
+  groupSlidesBy: ['sample'],
+};
+
 // CELL SIZE DISTRIBUTION - Cell Size Distribution Histogram
 const cellSizeDistributionHistogram = {
   spec: '1.0.0',
@@ -889,6 +992,8 @@ const initialPlotConfigStates = {
   doubletScoreHistogram,
   embeddingCategorical: embeddingCategoricalInitialConfig,
   embeddingContinuous: embeddingContinuousInitialConfig,
+  [plotTypes.SPATIAL_FEATURE]: spatialFeatureInitialConfig,
+  [plotTypes.SPATIAL_CATEGORICAL]: spatialCategoricalInitialConfig,
   heatmap: heatmapInitialConfig,
   volcano: volcanoInitialConfig,
   markerHeatmap: markerHeatmapInitialConfig,
@@ -912,6 +1017,7 @@ const initialPlotConfigStates = {
 
 const initialComponentConfigStates = {
   interactiveHeatmap: interactiveHeatmapInitialConfig,
+  interactiveSpatial: interactiveSpatialInitialConfig,
 };
 
 const initialPlotDataState = {

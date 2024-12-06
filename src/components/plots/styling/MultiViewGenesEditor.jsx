@@ -10,6 +10,7 @@ import {
   Row,
   Col,
   Radio,
+  Form,
 } from 'antd';
 import { CloseOutlined } from '@ant-design/icons';
 import { arrayMoveImmutable } from 'utils/arrayUtils';
@@ -24,7 +25,7 @@ import { generateMultiViewGridPlotUuid } from 'utils/generateCustomPlotUuid';
 import { plotUuids } from 'utils/constants';
 import loadConditionalComponentConfig from 'redux/actions/componentConfig/loadConditionalComponentConfig';
 
-const MultiViewEditor = (props) => {
+const MultiViewGenesEditor = (props) => {
   const {
     experimentId,
     plotType,
@@ -184,74 +185,89 @@ const MultiViewEditor = (props) => {
 
   return (
     <Space direction='vertical'>
-      <GeneSearchBar
-        onSelect={addGeneToMultiView}
-      />
-      <Space>
-        Selected plot:
-        <Select
-          aria-label='selectPlot'
-          value={selectedPlotUuid}
-          options={options}
-          onChange={(value) => setSelectedPlotUuid(value)}
-        />
-      </Space>
-      <Space>
-        Controls update:
-        <Radio.Group
-          onChange={(e) => setUpdateAll(e.target.value)}
-          value={updateAll}
-        >
-          <Radio value={false}>Selected plot</Radio>
-          <Radio
-            // eslint-disable-next-line react/jsx-boolean-value
-            value={true}
+      <Form
+        size='medium'
+        // labelCol={{ span: 10, style: { textAlign: 'left' } }}
+        // wrapperCol={{ span: 14 }}
+      >
+
+        <p><strong>Add Plots:</strong></p>
+        <Form.Item>
+          <GeneSearchBar
+            onSelect={addGeneToMultiView}
+          />
+        </Form.Item>
+        <p><strong>Controls Update:</strong></p>
+        <Form.Item>
+          <Radio.Group
+            onChange={(e) => setUpdateAll(e.target.value)}
+            value={updateAll}
           >
-            All plots
-          </Radio>
-        </Radio.Group>
-      </Space>
-      <Row justify='space-evenly' align='middle'>
-        <Col span={7}>
-          Grid dimesions:
-        </Col>
-        <Col span={3}>
-          <InputNumber
-            aria-label='setNRows'
-            style={{ width: '100%' }}
-            controls={false}
-            min={1}
-            max={30}
-            value={localNRows}
-            onChange={(value) => (value && onRowsChange(value))}
+            <Radio value={false}>Selected Plot</Radio>
+            <Radio
+            // eslint-disable-next-line react/jsx-boolean-value
+              value={true}
+            >
+              All Plots
+            </Radio>
+          </Radio.Group>
+        </Form.Item>
+
+        <p><strong>Selected Plot:</strong></p>
+        <Form.Item>
+          <Select
+            aria-label='selectPlot'
+            value={selectedPlotUuid}
+            options={options}
+            onChange={(value) => setSelectedPlotUuid(value)}
           />
-        </Col>
-        <Col span={2}>
-          <center>
-            x
-          </center>
-        </Col>
-        <Col span={3}>
-          <InputNumber
-            aria-label='setNCols'
-            style={{ width: '100%' }}
-            controls={false}
-            min={1}
-            max={30}
-            value={localNCols}
-            onChange={(value) => (value && onColsChange(value))}
+        </Form.Item>
+        <p><strong>Grid Dimensions:</strong></p>
+        <Form.Item>
+          <Row justify='left' align='left'>
+            <Col span={3}>
+              <InputNumber
+                aria-label='setNRows'
+                style={{ width: '100%' }}
+                controls={false}
+                min={1}
+                max={30}
+                value={localNRows}
+                onChange={(value) => (value && onRowsChange(value))}
+              />
+            </Col>
+            <Col span={2}>
+              <center>
+                x
+              </center>
+            </Col>
+            <Col span={3}>
+              <InputNumber
+                aria-label='setNCols'
+                style={{ width: '100%' }}
+                controls={false}
+                min={1}
+                max={30}
+                value={localNCols}
+                onChange={(value) => (value && onColsChange(value))}
+              />
+            </Col>
+          </Row>
+        </Form.Item>
+        <p><strong>Plot Order:</strong></p>
+        <Form.Item>
+          <HierarchicalTreeGenes
+            treeData={treeData}
+            onGeneReorder={onGeneReorder}
           />
-        </Col>
-      </Row>
-      <HierarchicalTreeGenes
-        treeData={treeData}
-        onGeneReorder={onGeneReorder}
-      />
+        </Form.Item>
+
+      </Form>
     </Space>
   );
 };
 
-MultiViewEditor.propTypes = {
+MultiViewGenesEditor.propTypes = {
   shownGenes: PropTypes.array.isRequired,
   plotType: PropTypes.string.isRequired,
   experimentId: PropTypes.string.isRequired,
@@ -262,4 +278,4 @@ MultiViewEditor.propTypes = {
   setUpdateAll: PropTypes.func.isRequired,
 };
 
-export default MultiViewEditor;
+export default MultiViewGenesEditor;

@@ -89,7 +89,7 @@ const EmbeddingCategoricalPage = ({ experimentId }) => {
       controls: ['axesWithRanges'],
     },
     {
-      panelTitle: 'Colour Inversion',
+      panelTitle: 'Colour inversion',
       controls: ['colourInversion'],
     },
     {

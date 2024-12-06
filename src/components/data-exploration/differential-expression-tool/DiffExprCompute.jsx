@@ -191,10 +191,10 @@ const DiffExprCompute = (props) => {
                 <Tooltip
                   overlay={(<span>Comparison between samples/groups is not possible with a dataset that contains only 1 sample</span>)}
                 >
-                  Compare a selected cell set between samples/groups
+                  Compare a cell set between samples/groups
                 </Tooltip>
               ) : (
-                'Compare a selected cell set between samples/groups'
+                'Compare a cell set between samples/groups'
               )
             }
             <Tooltip overlay={(

@@ -10,7 +10,6 @@ import { Provider } from 'react-redux';
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 
 import markerGenesData5 from '__test__/data/marker_genes_5.json';
-import noCellsGeneExpression from '__test__/data/no_cells_genes_expression.json';
 import cellSetsData from '__test__/data/cell_sets.json';
 
 import { makeStore } from 'redux/store';
@@ -234,41 +233,9 @@ describe('HeatmapPlot', () => {
       jest.runAllTimers();
     });
 
-    // It performs the request with the new hidden cell sets array
-    expect(fetchWork).toHaveBeenCalledTimes(2);
-  });
-
-  it('Shows an empty message when all cell sets are hidden ', async () => {
-    await act(async () => {
-      await loadAndRenderDefaultHeatmap(storeState);
-    });
-
-    // Renders correctly
-    expect(screen.getByText(/Sup Im a heatmap/i)).toBeInTheDocument();
-
-    // If all cell sets are hidden
-    const louvainClusterKeys = cellSetsData
-      .cellSets.find(({ key: parentKey }) => parentKey === 'louvain')
-      .children.map(({ key: cellSetKey }) => cellSetKey);
-
-    fetchWork
-      .mockReset()
-      // Last call (all the cellSets are hidden) return empty
-      .mockImplementationOnce(() => noCellsGeneExpression);
-
-    await act(async () => {
-      const hideAllCellsPromise = louvainClusterKeys.map(async (cellSetKey) => {
-        storeState.dispatch(setCellSetHiddenStatus(cellSetKey));
-      });
-      await Promise.all(hideAllCellsPromise);
-    });
-
-    await act(() => {
-      jest.runAllTimers();
-    });
-
-    // The plots shows an empty message
-    expect(screen.getByText(/Unhide some cell sets to show the heatmap/i)).toBeInTheDocument();
+    // It does not re-request a new hidden cell sets array
+    // (just hides what is already calculated)
+    expect(fetchWork).toHaveBeenCalledTimes(1);
   });
 
   it('Reacts to cellClass groupby being changed', async () => {

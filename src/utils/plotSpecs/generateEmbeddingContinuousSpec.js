@@ -124,13 +124,14 @@ const generateSpec = (config, method, plotData) => {
           enter: {
             x: { scale: 'x', field: 'x' },
             y: { scale: 'y', field: 'y' },
-            size: [
+            opacity: [
               {
                 test: "inrange(datum.x, domain('x')) && inrange(datum.y, domain('y'))",
-                value: config?.marker.size,
+                value: 1,
               },
-              { value: 0 },
+              { value: 0 }, // Full invisibility for points outside the range
             ],
+            size: { value: config?.marker.size },
             stroke: {
               scale: 'color',
               field: 'value',

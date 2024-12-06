@@ -1,11 +1,14 @@
-import React from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 
 import {
   Select,
   Form,
   Skeleton,
+  Radio,
 } from 'antd';
+
+import { spatialPlotTypes, plotUuids } from 'utils/constants';
 
 import { metadataKeyToName } from 'utils/data-management/metadataUtils';
 
@@ -14,13 +17,17 @@ import InlineError from 'components/InlineError';
 const { Option, OptGroup } = Select;
 const SelectData = (props) => {
   const {
-    onUpdate, config, cellSets, disabled,
+    onUpdate, config, cellSets, disabled, plotType,
   } = props;
 
   const {
     hierarchy,
     properties,
   } = cellSets;
+
+  const isSpatial = spatialPlotTypes.includes(plotType);
+
+  const [showImage, setShowImage] = useState(true);
 
   const getMetadataOptions = (parent) => {
     const children = hierarchy.filter((cluster) => (
@@ -50,19 +57,16 @@ const SelectData = (props) => {
 
   return (
     <>
-      <div>
-        Select the data to view on the embedding:
-      </div>
+      <p><strong>Included Samples:</strong></p>
       <Form.Item>
         <Select
           value={config.selectedSample}
-          style={{ width: 200 }}
           disabled={disabled}
           onChange={(value) => {
             handleChange(value);
           }}
         >
-          <Option value='All'>All</Option>
+          {!isSpatial && <Option value='All'>All</Option>}
           {parents.map((parent) => (
             <OptGroup label={metadataKeyToName(properties[parent.value].name)}>
               {getMetadataOptions(parent.value).map((option) => (
@@ -72,6 +76,23 @@ const SelectData = (props) => {
           ))}
         </Select>
       </Form.Item>
+      {isSpatial && (
+        <>
+          <p><strong>Toggle Image:</strong></p>
+          <Form.Item>
+            <Radio.Group
+              onChange={(e) => {
+                setShowImage(e.target.value);
+                onUpdate({ showImage: e.target.value });
+              }}
+              value={showImage}
+            >
+              <Radio value>Show</Radio>
+              <Radio value={false}>Hide</Radio>
+            </Radio.Group>
+          </Form.Item>
+        </>
+      )}
     </>
   );
 };
@@ -80,10 +101,12 @@ SelectData.propTypes = {
   config: PropTypes.object,
   cellSets: PropTypes.object.isRequired,
   disabled: PropTypes.bool,
+  plotType: PropTypes.string,
 };
 
 SelectData.defaultProps = {
   config: null,
   disabled: false,
+  plotType: null,
 };
 export default SelectData;

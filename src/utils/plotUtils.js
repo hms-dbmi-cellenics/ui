@@ -2,7 +2,7 @@ import * as vega from 'vega';
 
 import { union } from 'utils/cellSetOperations';
 
-const colorInterpolator = vega.scheme('purplered');
+const colorInterpolator = vega.scheme('plasma');
 
 const hexToRgb = (hex) => {
   if (hex) {
@@ -66,6 +66,61 @@ const colorByGeneExpression = (truncatedExpression, min, max = 4) => {
   ));
 };
 
+const filterCentroidsData = (results, colors, hiddenCentroids) => {
+  // obsCentroidsIndex is the cell names
+  // data keys are positions from 0 to length (no missing)
+  // centroidColors is a map from cell name => color
+  let dataKey = 0;
+  const data = [{}, {}];
+  const obsCentroidsIndex = [];
+  const centroidColors = new Map();
+
+  results.forEach((value, key) => {
+    if (hiddenCentroids.has(key)) {
+      return;
+    }
+    if (value.length !== 2) {
+      throw new Error('Unexpected number of embedding dimensions');
+    }
+
+    const [x, y] = value;
+    data[0][dataKey] = x;
+    data[1][dataKey] = y;
+
+    centroidColors.set(key.toString(), colors[key]);
+    obsCentroidsIndex.push(key.toString());
+
+    dataKey += 1;
+  });
+
+  return {
+    obsCentroids: { data, shape: [data.length, obsCentroidsIndex.length] },
+    obsCentroidsIndex,
+    centroidColors,
+  };
+};
+
+const convertCentroidsData = (results) => {
+  const data = [{}, {}];
+  const obsCentroidsIndex = [];
+
+  results.forEach((value, key) => {
+    if (value.length !== 2) {
+      throw new Error('Unexpected number of embedding dimensions');
+    }
+    const [x, y] = value;
+    data[0][key] = x;
+    data[1][key] = y;
+
+    obsCentroidsIndex.push(key.toString());
+  });
+
+  return {
+    obsCentroids: { data, shape: [data.length, results.length] },
+    obsCentroidsIndex,
+  };
+};
+
 const convertCellsData = (results, hidden, properties) => {
   const data = [[], []];
   const obsEmbeddingIndex = [];
@@ -89,6 +144,44 @@ const convertCellsData = (results, hidden, properties) => {
   };
 };
 
+const offsetCentroids = (results, properties, sampleIds, perImageShape, gridShape) => {
+  const [imageWidth, imageHeight] = perImageShape;
+  const numColumns = gridShape[1];
+
+  // Pre-calculate offsets for each sampleId
+  const sampleOffsets = sampleIds.map((sampleId, sampleIndex) => {
+    const row = Math.floor(sampleIndex / numColumns);
+    const column = sampleIndex % numColumns;
+    return {
+      xOffset: column * imageWidth,
+      yOffset: row * imageHeight,
+    };
+  });
+
+  // Map the results with pre-calculated offsets
+  const offsetResults = results.map(([x, y], key) => {
+    // Determine which sample this cell belongs to
+    const sampleId = sampleIds.find((id) => properties[id].cellIds.has(key));
+    if (!sampleId) {
+      throw new Error(`Sample ID not found for cell ID: ${key}`);
+    }
+
+    // Determine the index of the sample in the sampleIds array
+    const sampleIndex = sampleIds.indexOf(sampleId);
+    if (sampleIndex === -1) {
+      throw new Error(`Sample ID ${sampleId} not found in sampleIds`);
+    }
+
+    // Retrieve pre-calculated offsets
+    const { xOffset, yOffset } = sampleOffsets[sampleIndex];
+
+    // Apply offsets
+    return [x + xOffset, y + yOffset];
+  });
+
+  return offsetResults;
+};
+
 const updateStatus = () => { };
 const clearPleaseWait = () => { };
 
@@ -103,10 +196,13 @@ const convertRange = (value, r1, r2) => {
 export {
   renderCellSetColors,
   convertCellsData,
+  convertCentroidsData,
+  filterCentroidsData,
   updateStatus,
   clearPleaseWait,
   colorByGeneExpression,
   colorInterpolator,
+  offsetCentroids,
   hexToRgb,
   convertRange,
 };

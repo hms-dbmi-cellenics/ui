@@ -174,7 +174,7 @@ const Embedding = (props) => {
       const prefixedCellSetNames = [];
       Object.values(cellProperties).forEach((clusterProperties) => {
         clusterProperties.forEach(({ name, parentNodeKey }) => {
-          prefixedCellSetNames.push(`${cellSetProperties[parentNodeKey].name} : ${name}`);
+          prefixedCellSetNames.push(`${cellSetProperties[parentNodeKey].name}: ${name}`);
         });
       });
 
@@ -259,15 +259,24 @@ const Embedding = (props) => {
       const colorScale = vega.scale('sequential')()
         .interpolator(colorInterpolator);
 
+      // Creating a sequence of colors, adjusting the range to capture various stops in the gradient.
+      const colorGradient = [
+        colorScale(1),
+        colorScale(0.75),
+        colorScale(0.5),
+        colorScale(0.25),
+        colorScale(0),
+      ];
+
       return (
-        <div>
+        <div style={{ paddingTop: 40 }}>
           <label htmlFor='continuous data name'>
             <strong>{focusData.key}</strong>
           </label>
           <div
             style={{
               position: 'absolute',
-              background: `linear-gradient(${colorScale(1)}, ${colorScale(0)})`,
+              background: `linear-gradient(${colorGradient.join(', ')})`,
               height: 200,
               width: 20,
               top: 70,
@@ -279,7 +288,7 @@ const Embedding = (props) => {
 
     if (focusData.store === 'cellSets') {
       return (
-        <div>
+        <div style={{ paddingTop: 40 }}>
           <label htmlFor='cell set name'>
             <strong>{cellSetProperties[focusData.key] ? cellSetProperties[focusData.key].name : ''}</strong>
           </label>
@@ -312,7 +321,6 @@ const Embedding = (props) => {
         onClick={clearCellHighlight}
         onKeyPress={clearCellHighlight}
       >
-        {renderExpressionView()}
         {
           data ? (
             <Scatterplot
@@ -328,6 +336,7 @@ const Embedding = (props) => {
               updateViewInfo={updateViewInfo}
               obsEmbedding={convertedCellsData?.obsEmbedding}
               obsEmbeddingIndex={convertedCellsData?.obsEmbeddingIndex}
+              embeddingPointsVisible
               cellColors={cellColorsForVitessce}
               setCellSelection={setCellsSelection}
               getExpressionValue={getExpressionValue}
@@ -335,6 +344,7 @@ const Embedding = (props) => {
             />
           ) : ''
         }
+        {renderExpressionView()}
         {
           createClusterPopover
             ? (

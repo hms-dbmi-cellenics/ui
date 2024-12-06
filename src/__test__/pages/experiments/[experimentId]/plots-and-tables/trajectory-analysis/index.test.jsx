@@ -182,7 +182,7 @@ describe('Trajectory analysis plot', () => {
 
     userEvent.click(screen.getByText('Colours'));
 
-    expect(screen.getByText('Background Color')).toBeInTheDocument();
+    expect(screen.getByText('Background Color:')).toBeInTheDocument();
     expect(screen.queryByText('Colour Schemes')).toBeNull();
   });
 
