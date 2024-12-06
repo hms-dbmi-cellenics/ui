@@ -72,7 +72,6 @@
     "fflate": "^0.6.9",
     "file-saver": "^2.0.5",
     "filereader-stream": "^2.0.0",
-    "graceful-fs": "^4.2.11",
     "identity-obj-proxy": "^3.0.0",
     "immer": "^9.0.6",
     "ini": "^2.0.0",
