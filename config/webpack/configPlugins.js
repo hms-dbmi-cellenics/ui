@@ -1,6 +1,5 @@
 /* eslint-disable no-param-reassign */
 const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
-const { ProvidePlugin, NormalModuleReplacementPlugin } = require('webpack');
 
 const webpackConfigPlugins = (config, { dev }) => {
   const plugins = [];
