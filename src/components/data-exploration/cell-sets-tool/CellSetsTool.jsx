@@ -17,6 +17,7 @@ import CellSetOperation from 'components/data-exploration/cell-sets-tool/CellSet
 import PlatformError from 'components/PlatformError';
 import HierarchicalTree from 'components/data-exploration/hierarchical-tree/HierarchicalTree';
 import AnnotateClustersTool from 'components/data-exploration/cell-sets-tool/AnnotateClustersTool';
+import ScoreCellCycleTool from 'components/data-exploration/cell-sets-tool/ScoreCellCycleTool';
 
 import {
   createCellSet,
@@ -198,6 +199,16 @@ const CellSetsTool = (props) => {
           <AnnotateClustersTool
             experimentId={experimentId}
             onRunAnnotation={() => { setActiveTab('cellSets'); }}
+          />
+        ),
+      },
+      {
+        key: 'scoreCycle',
+        label: 'Score Cell Cycle',
+        children: (
+          <ScoreCellCycleTool
+            experimentId={experimentId}
+            onRunScoreCycle={() => { setActiveTab('cellSets'); }}
           />
         ),
       },
