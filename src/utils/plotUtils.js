@@ -2,8 +2,6 @@ import * as vega from 'vega';
 
 import { union } from 'utils/cellSetOperations';
 
-const colorInterpolator = vega.scheme('plasma');
-
 const hexToRgb = (hex) => {
   if (hex) {
     const i = parseInt(hex.replace(/^#/, ''), 16);
@@ -53,7 +51,7 @@ const renderCellSetColors = (rootKey, cellSetHierarchy, cellSetProperties) => {
   return colors;
 };
 
-const colorByGeneExpression = (truncatedExpression, min, max = 4) => {
+const colorByGeneExpression = (truncatedExpression, colorInterpolator, min, max = 4) => {
   // eslint-disable-next-line no-param-reassign
   if (max === 0) max = 4;
 
@@ -201,7 +199,6 @@ export {
   updateStatus,
   clearPleaseWait,
   colorByGeneExpression,
-  colorInterpolator,
   offsetCentroids,
   hexToRgb,
   convertRange,
