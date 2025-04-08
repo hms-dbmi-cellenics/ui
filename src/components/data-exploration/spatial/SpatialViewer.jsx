@@ -3,6 +3,7 @@ import React, {
 } from 'react';
 import dynamic from 'next/dynamic';
 import { useSelector, useDispatch } from 'react-redux';
+import * as vega from 'vega';
 import PropTypes from 'prop-types';
 import ClusterPopover from 'components/data-exploration/embedding/ClusterPopover';
 import CrossHair from 'components/data-exploration/embedding/CrossHair';
@@ -33,6 +34,9 @@ import getContainingCellSetsProperties from 'utils/cellSets/getContainingCellSet
 import ZipFileStore from 'components/data-exploration/spatial/ZipFileStore';
 
 import { loadOmeZarrGrid } from './loadOmeZarr';
+
+const COLOR_SCHEME = 'plasma';
+const colorInterpolator = vega.scheme(COLOR_SCHEME);
 
 const COMPONENT_TYPE = 'interactiveSpatial';
 
@@ -309,7 +313,7 @@ const SpatialViewer = (props) => {
     const truncatedExpression = expressionMatrix.getTruncatedExpression(focusData.key);
     const { truncatedMin, truncatedMax } = expressionMatrix.getStats(focusData.key);
 
-    setCellColors(colorByGeneExpression(truncatedExpression, truncatedMin, truncatedMax));
+    setCellColors(colorByGeneExpression(truncatedExpression, colorInterpolator, truncatedMin, truncatedMax));
   }, [focusData.key, expressionLoading]);
 
   const [filteredData, setFilteredData] = useState();

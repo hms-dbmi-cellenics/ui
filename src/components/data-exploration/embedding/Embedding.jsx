@@ -26,9 +26,11 @@ import {
   convertCellsData,
   renderCellSetColors,
   colorByGeneExpression,
-  colorInterpolator,
 } from 'utils/plotUtils';
 import getContainingCellSetsProperties from 'utils/cellSets/getContainingCellSetsProperties';
+
+const COLOR_SCHEME = 'purplered';
+const colorInterpolator = vega.scheme(COLOR_SCHEME);
 
 const Scatterplot = dynamic(
   () => import('../DynamicVitessceWrappers').then((mod) => mod.Scatterplot),
@@ -137,7 +139,7 @@ const Embedding = (props) => {
     const truncatedExpression = expressionMatrix.getTruncatedExpression(focusData.key);
     const { truncatedMin, truncatedMax } = expressionMatrix.getStats(focusData.key);
 
-    setCellColors(colorByGeneExpression(truncatedExpression, truncatedMin, truncatedMax));
+    setCellColors(colorByGeneExpression(truncatedExpression, colorInterpolator, truncatedMin, truncatedMax));
   }, [focusData.key, expressionLoading]);
 
   const [convertedCellsData, setConvertedCellsData] = useState();
