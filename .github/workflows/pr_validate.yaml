@@ -10,7 +10,7 @@ jobs:
   # in this workflow.
   lint-pr-body:
     name: Lint pull request body
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     concurrency:
       group: ${{ github.head_ref }}
       cancel-in-progress: true
@@ -85,7 +85,7 @@ jobs:
 
   run-integration-tests:
     name: Run integration tests
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     needs: lint-pr-body
     concurrency:
       group: ${{ github.sha }}
