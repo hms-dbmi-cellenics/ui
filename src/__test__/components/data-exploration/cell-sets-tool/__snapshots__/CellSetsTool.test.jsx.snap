@@ -90,3 +90,28 @@ Set {
   100,
 }
 `;
+
+exports[`ScoreCellCycleTool Can dispatch work request 1`] = `
+[MockFunction] {
+  "calls": [
+    [
+      "1234",
+      {
+        "name": "CellCycleScoring",
+      },
+      [Function],
+      [Function],
+      {
+        "broadcast": true,
+        "timeout": 180.172,
+      },
+    ],
+  ],
+  "results": [
+    {
+      "type": "return",
+      "value": undefined,
+    },
+  ],
+}
+`;
