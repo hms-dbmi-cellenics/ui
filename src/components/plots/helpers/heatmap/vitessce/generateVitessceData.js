@@ -37,4 +37,3 @@ const generateVitessceData = (
 };
 
 export default generateVitessceData;
-
