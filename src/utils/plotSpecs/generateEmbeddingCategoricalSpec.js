@@ -31,9 +31,12 @@ const generateSpec = (config, method, plotData, cellSetLegendsData) => {
             { value: 0 }, // Full invisibility for points outside the range
           ],
           size: { value: config?.marker.size },
-          stroke: { scale: 'cellSetMarkColors', field: 'cellSetKey' },
+          stroke: config?.marker.outline ? {
+            scale: 'cellSetMarkColors',
+            field: 'cellSetKey',
+          } : null,
           fill: { scale: 'cellSetMarkColors', field: 'cellSetKey' },
-          shape: { value: 'circle' },
+          shape: { value: config?.marker.shape },
           fillOpacity: { value: config?.marker.opacity / 10 },
         },
       },
