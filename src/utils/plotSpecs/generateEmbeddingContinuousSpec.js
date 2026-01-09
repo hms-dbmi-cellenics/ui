@@ -132,10 +132,10 @@ const generateSpec = (config, method, plotData) => {
               { value: 0 }, // Full invisibility for points outside the range
             ],
             size: { value: config?.marker.size },
-            stroke: {
+            stroke: config?.marker.outline ? {
               scale: 'color',
               field: 'value',
-            },
+            } : null,
             fill: {
               scale: 'color',
               field: 'value',

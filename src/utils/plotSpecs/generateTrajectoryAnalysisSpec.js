@@ -407,7 +407,10 @@ const insertClusterColorsSpec = (
           x: { scale: 'xscale', field: 'x' },
           y: { scale: 'yscale', field: 'y' },
           size: { signal: 'size' },
-          stroke: { scale: 'cellSetMarkColors', field: 'cellSetKey' },
+          stroke: config?.marker.outline ? {
+            scale: 'cellSetMarkColors',
+            field: 'cellSetKey',
+          } : null,
           fill: { scale: 'cellSetMarkColors', field: 'cellSetKey' },
           shape: { value: config?.marker.shape },
           fillOpacity: { value: config?.marker.opacity / 10 },
