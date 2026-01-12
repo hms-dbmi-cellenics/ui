@@ -46,7 +46,7 @@
     "@aws-amplify/core": "^4.3.10",
     "@aws-sdk/client-cognito-identity": "^3.11.0",
     "@aws-sdk/client-cognito-identity-provider": "^3.11.0",
-    "@aws-sdk/client-sts": "^3.12.0",
+    "@aws-sdk/client-sts": "^3.966.0",
     "@aws-sdk/credential-provider-web-identity": "^3.12.0",
     "@babel/core": "^7.21.0",
     "@babel/plugin-transform-runtime": "^7.21.0",
