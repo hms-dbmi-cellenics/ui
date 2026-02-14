@@ -249,6 +249,8 @@ const generateSpec = (config, method, plotData, cellSetLegendsData) => {
         domainWidth: config?.axes.domainWidth,
         labelAngle: config.axes.xAxisRotateLabels ? 45 : 0,
         labelAlign: config.axes.xAxisRotateLabels ? 'left' : 'center',
+        ticks: config?.axes.enabled === false ? false : undefined,
+        labels: config?.axes.enabled === false ? false : undefined,
       },
       {
         scale: 'y',
@@ -269,6 +271,8 @@ const generateSpec = (config, method, plotData, cellSetLegendsData) => {
         titleColor: config?.colour.masterColour,
         labelFontSize: config?.axes.labelFontSize,
         domainWidth: config?.axes.domainWidth,
+        ticks: config?.axes.enabled === false ? false : undefined,
+        labels: config?.axes.enabled === false ? false : undefined,
       },
     ],
     marks,
