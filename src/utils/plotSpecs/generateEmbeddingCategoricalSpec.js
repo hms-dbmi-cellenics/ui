@@ -106,7 +106,7 @@ const generateSpec = (config, method, plotData, cellSetLegendsData) => {
   plotData = plotData.filter((entry) => entry.cellSetKey);
 
   if (config?.legend.enabled) {
-    const positionIsRight = config.legend.position === 'right';
+    const positionIsLeftRight = ['left', 'right'].includes(config.legend.position);
 
     // Approximate the size of each name.
     // All names can have that size or less, so can use it calculate the amount of columns
@@ -128,11 +128,11 @@ const generateSpec = (config, method, plotData, cellSetLegendsData) => {
       cellSetLegendsData.map((legendData) => legendData.name.length * characterSizeHorizontal),
     );
 
-    // only 20 rows per column if the legend is on the right
-    const legendColumns = positionIsRight
+    // vertical layout for left/right, horizontal for top/bottom
+    const legendColumns = positionIsLeftRight
       ? Math.ceil(cellSetLegendsData.length / maxLegendItemsPerCol)
       : Math.floor((config.dimensions.width) / legendSize);
-    const labelLimit = positionIsRight ? 0 : legendSize;
+    const labelLimit = positionIsLeftRight ? 0 : legendSize;
 
     legend = [
       {
@@ -154,7 +154,7 @@ const generateSpec = (config, method, plotData, cellSetLegendsData) => {
             },
           },
         },
-        direction: 'horizontal',
+        direction: positionIsLeftRight ? 'vertical' : 'horizontal',
         labelFont: config?.fontStyle.font,
         titleFont: config?.fontStyle.font,
         symbolLimit: 0,
