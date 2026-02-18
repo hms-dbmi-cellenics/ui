@@ -25,8 +25,6 @@ const embeddingCategoricalInitialConfig = {
   },
   axes: {
     ...axesBaseState,
-    xAxisText: null,
-    yAxisText: null,
     defaultValues: ['x', 'y'],
     offset: 0,
   },
@@ -60,8 +58,6 @@ const spatialCategoricalInitialConfig = {
   },
   axes: {
     ...axesBaseState,
-    xAxisText: null,
-    yAxisText: null,
     defaultValues: ['x', 'y'],
     offset: 0,
   },
@@ -105,10 +101,8 @@ const embeddingContinuousInitialConfig = {
   },
   axes: {
     ...axesBaseState,
-    xAxisText: null,
-    yAxisText: null,
     defaultValues: ['x', 'y'],
-    offset: 10,
+    offset: 0,
   },
   axesRanges: axesRangesBaseState,
   title: {
@@ -139,8 +133,6 @@ const spatialFeatureInitialConfig = {
   },
   axes: {
     ...axesBaseState,
-    xAxisText: null,
-    yAxisText: null,
     defaultValues: ['x', 'y'],
     offset: 0,
   },
@@ -239,7 +231,7 @@ const volcanoInitialConfig = {
     xAxisText: 'log fold change',
     yAxisText: '-log10(adj p-value)',
     gridOpacity: 5,
-    offset: 10,
+    offset: 0,
   },
   axesRanges: axesRangesBaseState,
   title: titleBaseState,
@@ -276,7 +268,7 @@ const frequencyInitialConfig = {
   legend: {
     ...legendBaseState,
     title: 'Cell Set',
-    offset: 40,
+    offset: 0,
   },
   labels: labelBaseState,
   dimensions: dimensionsBaseState,
@@ -288,7 +280,7 @@ const frequencyInitialConfig = {
     xAxisText: 'Samples',
     yAxisText: 'Proportion',
     xAxisRotateLabels: true,
-    offset: 10,
+    offset: 0,
   },
   axesRanges: {
     yAxisAuto: true,
@@ -316,7 +308,7 @@ const violinConfig = {
   },
   axes: {
     ...axesBaseState,
-    offset: 10,
+    offset: 0,
     xAxisRotateLabels: true,
   },
   axesRanges: {
@@ -394,8 +386,6 @@ const trajectoryAnalysisInitialConfig = {
   },
   axes: {
     ...axesBaseState,
-    xAxisText: null,
-    yAxisText: null,
     defaultValues: ['x', 'y'],
   },
   axesRanges: axesRangesBaseState,
@@ -436,10 +426,8 @@ const embeddingPreviewBySampleInitialConfig = {
   },
   axes: {
     ...axesBaseState,
-    xAxisText: null,
-    yAxisText: null,
     defaultValues: ['x', 'y'],
-    offset: 10,
+    offset: 0,
   },
   axesRanges: axesRangesBaseState,
   title: {
@@ -470,10 +458,8 @@ const embeddingPreviewByCellSetsInitialConfig = {
   },
   axes: {
     ...axesBaseState,
-    xAxisText: null,
-    yAxisText: null,
     defaultValues: ['x', 'y'],
-    offset: 10,
+    offset: 0,
   },
   axesRanges: axesRangesBaseState,
   title: {
@@ -502,10 +488,8 @@ const embeddingPreviewMitochondrialContentInitialConfig = {
   },
   axes: {
     ...axesBaseState,
-    xAxisText: null,
-    yAxisText: null,
     defaultValues: ['x', 'y'],
-    offset: 10,
+    offset: 0,
   },
   axesRanges: axesRangesBaseState,
   title: {
@@ -532,10 +516,8 @@ const embeddingPreviewDoubletScoreInitialConfig = {
   },
   axes: {
     ...axesBaseState,
-    xAxisText: null,
-    yAxisText: null,
     defaultValues: ['x', 'y'],
-    offset: 10,
+    offset: 0,
   },
   axesRanges: axesRangesBaseState,
   title: {
@@ -560,10 +542,8 @@ const embeddingPreviewNumOfGenesInitialConfig = {
   },
   axes: {
     ...axesBaseState,
-    xAxisText: null,
-    yAxisText: null,
     defaultValues: ['x', 'y'],
-    offset: 10,
+    offset: 0,
   },
   axesRanges: axesRangesBaseState,
   title: {
@@ -587,10 +567,8 @@ const embeddingPreviewNumOfUmisInitialConfig = {
   },
   axes: {
     ...axesBaseState,
-    xAxisText: null,
-    yAxisText: null,
     defaultValues: ['x', 'y'],
-    offset: 10,
+    offset: 0,
   },
   axesRanges: axesRangesBaseState,
   title: {
@@ -871,7 +849,7 @@ const dataIntegrationEmbeddingInitialConfig = {
     xAxisText: '',
     yAxisText: '',
     defaultValues: ['x', 'y'],
-    offset: 10,
+    offset: 0,
   },
   axesRanges: axesRangesBaseState,
   title: {
@@ -897,7 +875,7 @@ const dataIntegrationFrequencyInitialConfig = {
   legend: {
     ...legendBaseState,
     title: 'Sample',
-    offset: 10,
+    offset: 0,
   },
   dimensions: {
     ...dimensionsBaseState,
@@ -910,7 +888,7 @@ const dataIntegrationFrequencyInitialConfig = {
     xAxisText: 'Louvain clusters',
     yAxisText: 'Proportion',
     xAxisRotateLabels: true,
-    offset: 10,
+    offset: 0,
   },
   axesRanges: {
     yAxisAuto: true,

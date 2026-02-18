@@ -175,51 +175,53 @@ const generateSpec = (config, method, imageData, plotData, cellSetLegendsData) =
     );
   }
 
-  let axes = [];
-  if (config.axes.enabled) {
-    axes = [
-      {
-        scale: 'x',
-        grid: true,
-        domain: true,
-        orient: 'bottom',
-        title: config.axes.xAxisText,
-        titleFont: config.fontStyle.font,
-        labelFont: config.fontStyle.font,
-        labelColor: config.colour.masterColour,
-        tickColor: config.colour.masterColour,
-        gridColor: config.colour.masterColour,
-        gridOpacity: (config.axes.gridOpacity / 20),
-        gridWidth: (config.gridWidth / 20),
-        offset: config.axes.offset,
-        titleFontSize: config.axes.titleFontSize,
-        titleColor: config.colour.masterColour,
-        labelFontSize: config.axes.labelFontSize,
-        domainWidth: config.axes.domainWidth,
-        labelAngle: config.axes.xAxisRotateLabels ? 45 : 0,
-        labelAlign: config.axes.xAxisRotateLabels ? 'left' : 'center',
-      },
-      {
-        scale: 'y',
-        grid: false,
-        domain: true,
-        orient: 'left',
-        titlePadding: 5,
-        gridColor: config.colour.masterColour,
-        gridOpacity: (config.axes.gridOpacity / 20),
-        gridWidth: (config.axes.gridWidth / 20),
-        tickColor: config.colour.masterColour,
-        offset: config.axes.offset,
-        title: config.axes.yAxisText,
-        titleFont: config.fontStyle.font,
-        labelFont: config.fontStyle.font,
-        labelColor: config.colour.masterColour,
-        titleFontSize: config.axes.titleFontSize,
-        titleColor: config.colour.masterColour,
-        labelFontSize: config.axes.labelFontSize,
-        domainWidth: config.axes.domainWidth,
-      },
-    ];
+  const axes = [];
+
+  if (config.axes.xAxisLabels) {
+    axes.push({
+      scale: 'x',
+      grid: true,
+      domain: true,
+      orient: 'bottom',
+      title: config.axes.xAxisText,
+      titleFont: config.fontStyle.font,
+      labelFont: config.fontStyle.font,
+      labelColor: config.colour.masterColour,
+      tickColor: config.colour.masterColour,
+      gridColor: config.colour.masterColour,
+      gridOpacity: (config.axes.gridOpacity / 20),
+      gridWidth: (config.gridWidth / 20),
+      offset: config.axes.offset,
+      titleFontSize: config.axes.titleFontSize,
+      titleColor: config.colour.masterColour,
+      labelFontSize: config.axes.labelFontSize,
+      domainWidth: config.axes.domainWidth,
+      labelAngle: config.axes.xAxisRotateLabels ? 45 : 0,
+      labelAlign: config.axes.xAxisRotateLabels ? 'left' : 'center',
+    });
+  }
+
+  if (config.axes.yAxisLabels) {
+    axes.push({
+      scale: 'y',
+      grid: false,
+      domain: true,
+      orient: 'left',
+      titlePadding: 5,
+      gridColor: config.colour.masterColour,
+      gridOpacity: (config.axes.gridOpacity / 20),
+      gridWidth: (config.axes.gridWidth / 20),
+      tickColor: config.colour.masterColour,
+      offset: config.axes.offset,
+      title: config.axes.yAxisText,
+      titleFont: config.fontStyle.font,
+      labelFont: config.fontStyle.font,
+      labelColor: config.colour.masterColour,
+      titleFontSize: config.axes.titleFontSize,
+      titleColor: config.colour.masterColour,
+      labelFontSize: config.axes.labelFontSize,
+      domainWidth: config.axes.domainWidth,
+    });
   }
 
   return {

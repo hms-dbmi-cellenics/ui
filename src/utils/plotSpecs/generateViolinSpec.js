@@ -159,6 +159,8 @@ const generateSpec = (config, plotData) => {
         titleFontSize: config.axes.titleFontSize,
         titleColor: config.colour.masterColour,
         labelFontSize: config.axes.labelFontSize,
+        ticks: config?.axes.yAxisLabels === false ? false : undefined,
+        labels: config?.axes.yAxisLabels === false ? false : undefined,
       },
       {
         orient: 'bottom',
@@ -179,6 +181,8 @@ const generateSpec = (config, plotData) => {
         labelFontSize: config.axes.labelFontSize,
         labelAngle: config.axes.xAxisRotateLabels ? 45 : 0,
         labelAlign: config.axes.xAxisRotateLabels ? 'left' : 'center',
+        ticks: config?.axes.xAxisLabels === false ? false : undefined,
+        labels: config?.axes.xAxisLabels === false ? false : undefined,
         encode: {
           labels: {
             update: {

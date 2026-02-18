@@ -171,6 +171,8 @@ const generateSpec = (config, plotData, xNamesToDisplay, yNamesToDisplay) => {
         domainWidth: config.axes.domainWidth,
         labelAngle: config.axes.xAxisRotateLabels ? 45 : 0,
         labelAlign: config.axes.xAxisRotateLabels ? 'left' : 'center',
+        ticks: config?.axes.xAxisLabels === false ? false : undefined,
+        labels: config?.axes.xAxisLabels === false ? false : undefined,
         encode: {
           labels: {
             update: {
@@ -196,6 +198,8 @@ const generateSpec = (config, plotData, xNamesToDisplay, yNamesToDisplay) => {
         titleColor: config.colour.masterColour,
         labelFontSize: config.axes.labelFontSize,
         domainWidth: config.axes.domainWidth,
+        ticks: config?.axes.yAxisLabels === false ? false : undefined,
+        labels: config?.axes.yAxisLabels === false ? false : undefined,
       },
     ],
     marks: [

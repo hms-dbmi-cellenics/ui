@@ -115,7 +115,10 @@ const VolcanoPlotPage = (props) => {
     },
     {
       panelTitle: 'Axes and margins',
-      controls: ['axesWithRanges'],
+      controls: [{
+        name: 'axesWithRanges',
+        props: { hideAxisLabelsToggle: true },
+      }],
     },
     {
       panelTitle: 'Colours',

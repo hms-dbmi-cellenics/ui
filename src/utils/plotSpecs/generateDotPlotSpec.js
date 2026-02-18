@@ -168,6 +168,8 @@ const generateSpec = (config, plotData, numClusters) => {
         domainWidth: config.axes.domainWidth,
         labelAngle: config.axes.xAxisRotateLabels ? 45 : 0,
         labelAlign: config.axes.xAxisRotateLabels ? 'left' : 'center',
+        ticks: config?.axes.xAxisLabels === false ? false : undefined,
+        labels: config?.axes.xAxisLabels === false ? false : undefined,
       },
       {
         orient: 'left',
@@ -187,6 +189,8 @@ const generateSpec = (config, plotData, numClusters) => {
         titleColor: config.colour.masterColour,
         labelFontSize: config.axes.labelFontSize,
         domainWidth: config.axes.domainWidth,
+        ticks: config?.axes.yAxisLabels === false ? false : undefined,
+        labels: config?.axes.yAxisLabels === false ? false : undefined,
       },
     ],
 

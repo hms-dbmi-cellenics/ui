@@ -20,7 +20,8 @@ const axesBaseState = {
   gridWidth: 10,
   domainWidth: 1,
   xAxisRotateLabels: false,
-  enabled: true,
+  xAxisLabels: true,
+  yAxisLabels: true,
 };
 
 const axesRangesBaseState = {
