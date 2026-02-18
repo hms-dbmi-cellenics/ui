@@ -5,14 +5,15 @@ exports[`ViolinIndex Adds a new plot to multi view: new-config 1`] = `
   "config": {
     "axes": {
       "domainWidth": 1,
-      "enabled": true,
       "gridOpacity": 0,
       "gridWidth": 10,
       "labelFontSize": 12,
-      "offset": 10,
+      "offset": 0,
       "titleFontSize": 13,
+      "xAxisLabels": true,
       "xAxisRotateLabels": true,
       "xAxisText": "",
+      "yAxisLabels": true,
       "yAxisText": "",
     },
     "axesRanges": {

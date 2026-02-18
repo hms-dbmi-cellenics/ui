@@ -110,7 +110,7 @@ const initialState = {
 const store = mockStore(initialState);
 let component;
 
-const spec = generateSpec(config,
+const spec = generateSpec(config, 'UMAP',
   generateData(cellSets,
     config.selectedSample,
     expression,

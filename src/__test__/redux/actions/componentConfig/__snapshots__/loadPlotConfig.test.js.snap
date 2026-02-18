@@ -5,14 +5,15 @@ exports[`loadPlotConfig Loads config properly 1`] = `
   "config": {
     "axes": {
       "domainWidth": 1,
-      "enabled": true,
       "gridOpacity": 0,
       "gridWidth": 10,
       "labelFontSize": 12,
       "offset": 0,
       "titleFontSize": 13,
+      "xAxisLabels": true,
       "xAxisRotateLabels": false,
       "xAxisText": "#UMIs in cell",
+      "yAxisLabels": true,
       "yAxisText": "#UMIs * #Cells",
     },
     "axesRanges": {
@@ -83,14 +84,15 @@ exports[`loadPlotConfig Loads default initial config for plots if plot config is
   "config": {
     "axes": {
       "domainWidth": 1,
-      "enabled": true,
       "gridOpacity": 0,
       "gridWidth": 10,
       "labelFontSize": 12,
       "offset": 0,
       "titleFontSize": 13,
+      "xAxisLabels": true,
       "xAxisRotateLabels": false,
       "xAxisText": "#UMIs in cell",
+      "yAxisLabels": true,
       "yAxisText": "#UMIs * #Cells",
     },
     "axesRanges": {
