@@ -15,8 +15,8 @@ const AxesDesign = (props) => {
   const defaultYAxisText = embeddingMethod ? `${embeddingMethod.toUpperCase()}2` : '';
 
   // Show default only if axis is still marked as using default, otherwise show actual config value
-  const displayXAxisText = config.axes.defaultValues?.includes('x') 
-    ? defaultXAxisText 
+  const displayXAxisText = config.axes.defaultValues?.includes('x')
+    ? defaultXAxisText
     : config.axes.xAxisText;
   const displayYAxisText = config.axes.defaultValues?.includes('y')
     ? defaultYAxisText
