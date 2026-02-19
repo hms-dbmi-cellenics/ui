@@ -223,7 +223,6 @@ const volcanoInitialConfig = {
   legend: {
     ...legendBaseState,
     position: 'right',
-    direction: 'vertical',
   },
   dimensions: {
     ...dimensionsBaseState,
