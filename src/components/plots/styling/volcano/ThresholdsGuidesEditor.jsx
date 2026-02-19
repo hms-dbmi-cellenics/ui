@@ -38,9 +38,9 @@ const ThresholdsGuidesEditor = (props) => {
           <Space direction='vertical' style={{ width: '100%' }}>
             <Space>
               <InputNumber
-                min={0}
+                min={0.00001}
                 value={config.adjPvalueThreshold}
-                step={1}
+                step={0.01}
                 type='number'
                 onChange={(val) => debouncedUpdate({ adjPvalueThreshold: val })}
               />
@@ -56,7 +56,7 @@ const ThresholdsGuidesEditor = (props) => {
             <Text type='secondary'>
               -log10(adj p-value) =
               {' '}
-              {-Math.log10(config.adjPvalueThreshold).toPrecision(3)}
+              {config.adjPvalueThreshold > 0 ? (-Math.log10(config.adjPvalueThreshold)).toPrecision(3) : 'Infinity'}
             </Text>
           </Space>
         </Form.Item>
@@ -66,8 +66,8 @@ const ThresholdsGuidesEditor = (props) => {
         >
           <Space>
             <InputNumber
-              min={0}
-              step={0.1}
+              min={0.01}
+              step={0.01}
               value={config.logFoldChangeThreshold}
               onChange={(val) => debouncedUpdate({ logFoldChangeThreshold: val })}
             />

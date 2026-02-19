@@ -144,7 +144,7 @@ const VolcanoPlotPage = (props) => {
             label='P-value:'
           >
             <InputNumber
-              min={0}
+              min={0.00001}
               max={1}
               step={0.01}
               value={config?.labelPvalueThreshold !== undefined ? config.labelPvalueThreshold : 0.05}
