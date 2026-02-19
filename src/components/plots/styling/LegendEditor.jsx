@@ -1,6 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Radio, Form } from 'antd';
+import { Radio, Form, Input, Slider, Space } from 'antd';
+import _ from 'lodash';
+import useUpdateThrottled from 'utils/customHooks/useUpdateThrottled';
 
 const defaultOption = {
   positions: 'corners',
@@ -8,12 +10,19 @@ const defaultOption = {
 
 const LegendEditor = (props) => {
   const {
-    onUpdate, config,
+    onUpdate, config, defaultTitle, showTitleInput = true,
   } = props;
 
   let { option } = props;
 
   option = option ?? defaultOption;
+
+  const [newConfig, handleChange] = useUpdateThrottled(onUpdate, config);
+
+  // Display title - show default if 'title' is in defaultValues, otherwise show custom title
+  const displayTitle = config.legend.defaultValues?.includes('title')
+    ? defaultTitle
+    : config.legend.title;
 
   const positions = {
     corners: {
@@ -69,7 +78,7 @@ const LegendEditor = (props) => {
                 }
               </Radio.Group>
             </Form.Item>
-            { config.legend.direction ? (
+            {config.legend.direction ? (
               <>
                 <p><strong>Direction</strong></p>
                 <Form.Item>
@@ -83,6 +92,60 @@ const LegendEditor = (props) => {
                 </Form.Item>
               </>
             ) : <></>}
+
+            {showTitleInput && (
+              <Form.Item
+                label='Title Text:'
+                labelCol={{ span: 8, style: { textAlign: 'left' } }}
+                wrapperCol={{ span: 19 }}
+                style={{ marginBottom: '15px' }}
+              >
+                <Input
+                  value={displayTitle || ''}
+                  onChange={(e) => onUpdate({
+                    legend: {
+                      title: e.target.value,
+                      defaultValues: _.without(config.legend.defaultValues, 'title'),
+                    },
+                  })}
+                />
+              </Form.Item>
+            )}
+
+            {showTitleInput && (
+              <Form.Item
+                label='Title Font Size:'
+                labelCol={{ span: 8, style: { textAlign: 'left' } }}
+                wrapperCol={{ span: 16 }}
+                style={{ marginBottom: 0 }}
+              >
+                <Slider
+                  value={newConfig.legend.titleFontSize || 12}
+                  min={8}
+                  max={24}
+                  onChange={(value) => {
+                    handleChange({ legend: { titleFontSize: value } });
+                  }}
+                  marks={{ 8: 8, 24: 24 }}
+                />
+              </Form.Item>
+            )}
+            <Form.Item
+              label='Label Font Size:'
+              labelCol={{ span: 8, style: { textAlign: 'left' } }}
+              wrapperCol={{ span: 16 }}
+              style={{ marginBottom: 0, marginTop: '15px' }}
+            >
+              <Slider
+                value={newConfig.legend.labelFontSize || 11}
+                min={8}
+                max={24}
+                onChange={(value) => {
+                  handleChange({ legend: { labelFontSize: value } });
+                }}
+                marks={{ 8: 8, 24: 24 }}
+              />
+            </Form.Item>
           </>
         )
       }
@@ -95,10 +158,12 @@ LegendEditor.propTypes = {
   onUpdate: PropTypes.func.isRequired,
   option: PropTypes.object,
   config: PropTypes.object.isRequired,
+  defaultTitle: PropTypes.string,
 };
 
 LegendEditor.defaultProps = {
   option: defaultOption,
+  defaultTitle: null,
 };
 
 export default LegendEditor;

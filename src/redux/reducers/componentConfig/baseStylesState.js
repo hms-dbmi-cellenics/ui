@@ -3,6 +3,10 @@ const legendBaseState = {
   showAlert: false,
   position: 'right',
   colour: '#000000',
+  title: '',
+  defaultValues: ['title'],
+  titleFontSize: 12,
+  labelFontSize: 11,
 };
 
 const dimensionsBaseState = {
@@ -20,7 +24,8 @@ const axesBaseState = {
   gridWidth: 10,
   domainWidth: 1,
   xAxisRotateLabels: false,
-  enabled: true,
+  xAxisLabels: true,
+  yAxisLabels: true,
 };
 
 const axesRangesBaseState = {
@@ -62,7 +67,7 @@ const markerBaseState = {
 
 const labelBaseState = {
   enabled: true,
-  size: 18,
+  size: 11,
 };
 
 export {

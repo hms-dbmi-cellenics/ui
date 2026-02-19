@@ -162,15 +162,20 @@ exports[`configsReplaced Replaces existing state 1`] = `
   "ViolinMain": {
     "config": {
       "axes": {
+        "defaultValues": [
+          "x",
+          "y",
+        ],
         "domainWidth": 2,
-        "enabled": true,
         "gridOpacity": 0,
         "gridWidth": 10,
         "labelFontSize": 12,
         "offset": 10,
         "titleFontSize": 13,
+        "xAxisLabels": true,
         "xAxisRotateLabels": true,
         "xAxisText": "",
+        "yAxisLabels": true,
         "yAxisText": "",
       },
       "axesRanges": {
@@ -204,9 +209,13 @@ exports[`configsReplaced Replaces existing state 1`] = `
       },
       "legend": {
         "colour": "#000000",
+        "defaultValues": [],
         "enabled": false,
+        "labelFontSize": 11,
         "position": "top",
         "showAlert": false,
+        "title": "",
+        "titleFontSize": 12,
       },
       "marker": {
         "opacity": 5,
@@ -239,15 +248,20 @@ exports[`configsReplaced Replaces existing state 1`] = `
   "ViolinMain-0": {
     "config": {
       "axes": {
+        "defaultValues": [
+          "x",
+          "y",
+        ],
         "domainWidth": 2,
-        "enabled": true,
         "gridOpacity": 0,
         "gridWidth": 10,
         "labelFontSize": 12,
         "offset": 10,
         "titleFontSize": 13,
+        "xAxisLabels": true,
         "xAxisRotateLabels": true,
         "xAxisText": "",
+        "yAxisLabels": true,
         "yAxisText": "",
       },
       "axesRanges": {
@@ -281,9 +295,13 @@ exports[`configsReplaced Replaces existing state 1`] = `
       },
       "legend": {
         "colour": "#000000",
+        "defaultValues": [],
         "enabled": false,
+        "labelFontSize": 11,
         "position": "top",
         "showAlert": false,
+        "title": "",
+        "titleFontSize": 12,
       },
       "marker": {
         "opacity": 5,
@@ -321,14 +339,15 @@ exports[`configsReplaced Replaces existing state 1`] = `
           "y",
         ],
         "domainWidth": 2,
-        "enabled": true,
         "gridOpacity": 0,
         "gridWidth": 10,
         "labelFontSize": 12,
         "offset": 0,
         "titleFontSize": 13,
+        "xAxisLabels": true,
         "xAxisRotateLabels": false,
         "xAxisText": "Umap 1",
+        "yAxisLabels": true,
         "yAxisText": "Umap 2",
       },
       "axesRanges": {
@@ -360,9 +379,15 @@ exports[`configsReplaced Replaces existing state 1`] = `
       },
       "legend": {
         "colour": "#000000",
+        "defaultValues": [
+          "title",
+        ],
         "enabled": true,
+        "labelFontSize": 11,
         "position": "top",
         "showAlert": false,
+        "title": "",
+        "titleFontSize": 12,
       },
       "marker": {
         "opacity": 5,
@@ -392,14 +417,15 @@ exports[`configsReplaced Replaces existing state 1`] = `
     "config": {
       "axes": {
         "domainWidth": 2,
-        "enabled": true,
         "gridOpacity": 0,
         "gridWidth": 10,
         "labelFontSize": 12,
         "offset": 10,
         "titleFontSize": 13,
+        "xAxisLabels": true,
         "xAxisRotateLabels": true,
         "xAxisText": "Sample",
+        "yAxisLabels": true,
         "yAxisText": "Proportion",
       },
       "axesRanges": {
@@ -431,11 +457,16 @@ exports[`configsReplaced Replaces existing state 1`] = `
       },
       "legend": {
         "colour": "#000000",
+        "defaultValues": [
+          "title",
+        ],
         "enabled": true,
+        "labelFontSize": 11,
         "offset": 40,
         "position": "top",
         "showAlert": false,
         "title": "Cell Set",
+        "titleFontSize": 12,
       },
       "marker": {
         "opacity": 5,
@@ -485,14 +516,15 @@ exports[`configsReplaced Replaces existing state 1`] = `
           "y",
         ],
         "domainWidth": 2,
-        "enabled": true,
         "gridOpacity": 0,
         "gridWidth": 10,
         "labelFontSize": 12,
         "offset": 0,
         "titleFontSize": 13,
+        "xAxisLabels": true,
         "xAxisRotateLabels": false,
         "xAxisText": "Umap 1",
+        "yAxisLabels": true,
         "yAxisText": "Umap 2",
       },
       "axesRanges": {
@@ -526,9 +558,15 @@ exports[`configsReplaced Replaces existing state 1`] = `
       },
       "legend": {
         "colour": "#000000",
+        "defaultValues": [
+          "title",
+        ],
         "enabled": true,
+        "labelFontSize": 11,
         "position": "top",
         "showAlert": false,
+        "title": "",
+        "titleFontSize": 12,
       },
       "marker": {
         "opacity": 5,

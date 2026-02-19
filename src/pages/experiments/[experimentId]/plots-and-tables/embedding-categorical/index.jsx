@@ -34,6 +34,10 @@ const EmbeddingCategoricalPage = ({ experimentId }) => {
   const config = useSelector((state) => state.componentConfig[plotUuid]?.config);
   const configIsLoaded = useSelector((state) => !_.isNil(state.componentConfig[plotUuid]));
 
+  const embeddingSettings = useSelector(
+    (state) => state.experimentSettings.originalProcessing?.configureEmbedding?.embeddingSettings,
+  );
+
   const cellSets = useSelector(getCellSets());
   const numLegendItems = useSelector(
     getCellSetsHierarchyByKeys([config?.selectedCellSet]),
@@ -86,7 +90,12 @@ const EmbeddingCategoricalPage = ({ experimentId }) => {
     },
     {
       panelTitle: 'Axes and margins',
-      controls: ['axesWithRanges'],
+      controls: [{
+        name: 'axesWithRanges',
+        props: {
+          embeddingMethod: embeddingSettings?.method,
+        },
+      }],
     },
     {
       panelTitle: 'Colour inversion',
@@ -104,6 +113,7 @@ const EmbeddingCategoricalPage = ({ experimentId }) => {
           option: {
             positions: 'top-bottom',
           },
+          defaultTitle: 'Cluster Name',
         },
       }],
     },
@@ -173,7 +183,7 @@ const EmbeddingCategoricalPage = ({ experimentId }) => {
         extraControlPanels={renderExtraPanels()}
         defaultActiveKey='group-by'
       >
-        { render() }
+        {render()}
       </PlotContainer>
     </>
   );

@@ -146,7 +146,8 @@ const generateSpec = (config, plotData) => {
         orient: 'left',
         scale: 'yscale',
         zindex: 1,
-        title: config.axes.yAxisText ? config.axes.yAxisText : (config.normalised === 'zScore' ? 'Z-Score of Expression' : 'Raw Expression'),
+        grid: true,
+        title: config.axes.defaultValues?.includes('y') ? (config.normalised === 'zScore' ? 'Z-Score of Expression' : 'Raw Expression') : config.axes.yAxisText,
         titlePadding: 5,
         gridColor: config.colour.masterColour,
         gridOpacity: (config.axes.gridOpacity / 20),
@@ -159,12 +160,15 @@ const generateSpec = (config, plotData) => {
         titleFontSize: config.axes.titleFontSize,
         titleColor: config.colour.masterColour,
         labelFontSize: config.axes.labelFontSize,
+        ticks: config?.axes.yAxisLabels === false ? false : undefined,
+        labels: config?.axes.yAxisLabels === false ? false : undefined,
       },
       {
         orient: 'bottom',
         scale: 'layout',
         zindex: 1,
-        title: config.axes.xAxisText ? config.axes.xAxisText : plotData.settings.groupingName,
+        grid: true,
+        title: config.axes.defaultValues?.includes('x') ? plotData.settings.groupingName : config.axes.xAxisText,
         titlePadding: 5,
         gridColor: config.colour.masterColour,
         gridOpacity: (config.axes.gridOpacity / 20),
@@ -179,6 +183,8 @@ const generateSpec = (config, plotData) => {
         labelFontSize: config.axes.labelFontSize,
         labelAngle: config.axes.xAxisRotateLabels ? 45 : 0,
         labelAlign: config.axes.xAxisRotateLabels ? 'left' : 'center',
+        ticks: config?.axes.xAxisLabels === false ? false : undefined,
+        labels: config?.axes.xAxisLabels === false ? false : undefined,
         encode: {
           labels: {
             update: {
@@ -392,13 +398,13 @@ const generateSpec = (config, plotData) => {
     const groupNames = groups.map((id) => plotData.groups[id].name);
     const groupColors = groups.map((id) => plotData.groups[id].color);
 
-    const positionIsRight = config.legend.position === 'right';
+    const positionIsLeftOrRight = config.legend.position === 'left' || config.legend.position === 'right';
 
-    const legendColumns = positionIsRight
+    const legendColumns = positionIsLeftOrRight
       ? Math.ceil(groups.length / 20)
       : Math.floor(config.dimensions.width / 85);
-    const labelLimit = positionIsRight ? 0 : 85;
-    if (positionIsRight) {
+    const labelLimit = positionIsLeftOrRight ? 0 : 85;
+    if (positionIsLeftOrRight) {
       const plotWidthIndex = spec.signals.findIndex((item) => item.name === 'plotWidth');
       spec.signals[plotWidthIndex].value = plotWidth * 0.85;
     }
@@ -415,10 +421,16 @@ const generateSpec = (config, plotData) => {
         type: 'symbol',
         symbolType: 'circle',
         symbolSize: 100,
+        title: config.legend.title ? config.legend.title : null,
+        titleFont: config?.fontStyle.font,
+        titleFontSize: config?.legend.titleFontSize,
+        titleColor: config?.colour.masterColour,
         orient: config?.legend.position,
         offset: 40,
-        direction: 'horizontal',
+        direction: positionIsLeftOrRight ? 'vertical' : 'horizontal',
         labelFont: config?.fontStyle.font,
+        labelFontSize: config?.legend.labelFontSize,
+        labelColor: config?.colour.masterColour,
         columns: legendColumns,
         labelLimit,
       },

@@ -5,6 +5,8 @@ import {
   Empty,
   Radio,
   Space,
+  Slider,
+  Form,
 } from 'antd';
 import _ from 'lodash';
 import { useSelector, useDispatch } from 'react-redux';
@@ -148,7 +150,13 @@ const MarkerHeatmap = ({ experimentId }) => {
         },
       ));
     }
-  }, [config]);
+  }, [
+    config?.nMarkerGenes,
+    JSON.stringify(config?.groupedTracks),
+    config?.selectedCellSet,
+    config?.selectedPoints,
+    config?.selectedGenes,
+  ]);
 
   useConditionalEffect(() => {
     const expectedConditions = (
@@ -266,6 +274,7 @@ const MarkerHeatmap = ({ experimentId }) => {
             option: {
               positions: 'horizontal-vertical',
             },
+            defaultTitle: 'Cluster ID',
           },
         },
       ],
@@ -315,7 +324,7 @@ const MarkerHeatmap = ({ experimentId }) => {
           showGeneTable={config.selectedGenes?.length > 0}
         />
         <div style={{ paddingTop: '10px' }}>
-          <p>Gene labels:</p>
+          <p><strong>Gene labels:</strong></p>
           <Radio.Group
             onChange={
               (e) => userUpdatedPlotWithChanges({ showGeneLabels: e.target.value })
@@ -325,6 +334,26 @@ const MarkerHeatmap = ({ experimentId }) => {
             <Radio value>Show</Radio>
             <Radio value={false}>Hide</Radio>
           </Radio.Group>
+          {config.showGeneLabels && (
+            <Form style={{ marginTop: '15px' }}>
+              <Form.Item
+                label='Font Size'
+                labelCol={{ span: 5, style: { textAlign: 'left' } }}
+                wrapperCol={{ span: 19 }}
+                style={{ marginBottom: 0 }}
+              >
+                <Slider
+                  value={config.geneLabelSize || 10}
+                  min={6}
+                  max={20}
+                  onChange={(value) => {
+                    userUpdatedPlotWithChanges({ geneLabelSize: value });
+                  }}
+                  marks={{ 6: 6, 20: 20 }}
+                />
+              </Form.Item>
+            </Form>
+          )}
         </div>
       </Panel>
       <Panel header='Select data' key='select-data'>
@@ -347,6 +376,38 @@ const MarkerHeatmap = ({ experimentId }) => {
       </Panel>
       <Panel header='Metadata tracks' key='metadata-tracks'>
         <HeatmapMetadataTracksSettings componentType={plotUuid} />
+        <div style={{ paddingTop: '15px' }}>
+          <p><strong>Metadata labels:</strong></p>
+          <Radio.Group
+            onChange={
+              (e) => userUpdatedPlotWithChanges({ showMetadataLabels: e.target.value })
+            }
+            value={config.showMetadataLabels}
+          >
+            <Radio value>Show</Radio>
+            <Radio value={false}>Hide</Radio>
+          </Radio.Group>
+          {config.showMetadataLabels && (
+            <Form style={{ marginTop: '15px' }}>
+              <Form.Item
+                label='Font Size:'
+                labelCol={{ span: 5, style: { textAlign: 'left' } }}
+                wrapperCol={{ span: 19 }}
+                style={{ marginBottom: 0 }}
+              >
+                <Slider
+                  value={config.metadataLabelSize || 10}
+                  min={6}
+                  max={20}
+                  onChange={(value) => {
+                    userUpdatedPlotWithChanges({ metadataLabelSize: value });
+                  }}
+                  marks={{ 6: 6, 20: 20 }}
+                />
+              </Form.Item>
+            </Form>
+          )}
+        </div>
       </Panel>
       <Panel header='Group by' key='group-by'>
         <HeatmapGroupBySettings componentType={plotUuid} />

@@ -73,6 +73,8 @@ const generateSpec = (config, plotData, numPCs) => {
         gridOpacity: (config.axes.gridOpacity / 20),
         labelAngle: config.axes.xAxisRotateLabels ? 45 : 0,
         labelAlign: config.axes.xAxisRotateLabels ? 'left' : 'center',
+        labels: config.axes.xAxisLabels,
+        ticks: config.axes.xAxisLabels,
       },
       {
         orient: 'left',
@@ -91,6 +93,8 @@ const generateSpec = (config, plotData, numPCs) => {
         titleColor: config.colour.masterColour,
         offset: config.axes.offset,
         gridOpacity: (config.axes.gridOpacity / 20),
+        labels: config.axes.yAxisLabels,
+        ticks: config.axes.yAxisLabels,
       },
     ],
 
@@ -130,13 +134,13 @@ const generateSpec = (config, plotData, numPCs) => {
       },
     ],
     title:
-      {
-        text: config.title.text,
-        anchor: config.title.anchor,
-        font: config.title.font,
-        fontSize: config.title.fontSize,
-        dx: config.title.dx,
-      },
+    {
+      text: config.title.text,
+      anchor: config.title.anchor,
+      font: config.title.font,
+      fontSize: config.title.fontSize,
+      dx: config.title.dx,
+    },
   };
 };
 

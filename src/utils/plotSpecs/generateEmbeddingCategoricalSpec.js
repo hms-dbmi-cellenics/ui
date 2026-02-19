@@ -106,7 +106,7 @@ const generateSpec = (config, method, plotData, cellSetLegendsData) => {
   plotData = plotData.filter((entry) => entry.cellSetKey);
 
   if (config?.legend.enabled) {
-    const positionIsRight = config.legend.position === 'right';
+    const positionIsLeftRight = ['left', 'right'].includes(config.legend.position);
 
     // Approximate the size of each name.
     // All names can have that size or less, so can use it calculate the amount of columns
@@ -128,16 +128,20 @@ const generateSpec = (config, method, plotData, cellSetLegendsData) => {
       cellSetLegendsData.map((legendData) => legendData.name.length * characterSizeHorizontal),
     );
 
-    // only 20 rows per column if the legend is on the right
-    const legendColumns = positionIsRight
+    // vertical layout for left/right, horizontal for top/bottom
+    const legendColumns = positionIsLeftRight
       ? Math.ceil(cellSetLegendsData.length / maxLegendItemsPerCol)
       : Math.floor((config.dimensions.width) / legendSize);
-    const labelLimit = positionIsRight ? 0 : legendSize;
+    const labelLimit = positionIsLeftRight ? 0 : legendSize;
+
+    const legendTitle = config.legend.defaultValues?.includes('title')
+      ? 'Cluster Name'
+      : config?.legend.title;
 
     legend = [
       {
         fill: 'cellSetLabelColors',
-        title: config?.legend.title || 'Cluster Name',
+        title: legendTitle,
         titleColor: config?.colour.masterColour,
         type: 'symbol',
         orient: config?.legend.position,
@@ -151,10 +155,16 @@ const generateSpec = (config, method, plotData, cellSetLegendsData) => {
                 scale: 'sampleToName', field: 'label',
               },
               fill: { value: config?.colour.masterColour },
+              fontSize: { value: config.legend.labelFontSize || 11 },
+            },
+          },
+          title: {
+            update: {
+              fontSize: { value: config.legend.titleFontSize || 12 },
             },
           },
         },
-        direction: 'horizontal',
+        direction: positionIsLeftRight ? 'vertical' : 'horizontal',
         labelFont: config?.fontStyle.font,
         titleFont: config?.fontStyle.font,
         symbolLimit: 0,
@@ -234,7 +244,7 @@ const generateSpec = (config, method, plotData, cellSetLegendsData) => {
         grid: true,
         domain: true,
         orient: 'bottom',
-        title: config?.axes.xAxisText ?? `${method} 1`,
+        title: config?.axes.defaultValues?.includes('x') ? `${method.toUpperCase()}1` : config?.axes.xAxisText,
         titleFont: config?.fontStyle.font,
         labelFont: config?.fontStyle.font,
         labelColor: config?.colour.masterColour,
@@ -249,8 +259,8 @@ const generateSpec = (config, method, plotData, cellSetLegendsData) => {
         domainWidth: config?.axes.domainWidth,
         labelAngle: config.axes.xAxisRotateLabels ? 45 : 0,
         labelAlign: config.axes.xAxisRotateLabels ? 'left' : 'center',
-        ticks: config?.axes.enabled === false ? false : undefined,
-        labels: config?.axes.enabled === false ? false : undefined,
+        ticks: config?.axes.xAxisLabels === false ? false : undefined,
+        labels: config?.axes.xAxisLabels === false ? false : undefined,
       },
       {
         scale: 'y',
@@ -263,7 +273,7 @@ const generateSpec = (config, method, plotData, cellSetLegendsData) => {
         gridWidth: (config?.axes.gridWidth / 20),
         tickColor: config?.colour.masterColour,
         offset: config?.axes.offset,
-        title: config?.axes.yAxisText ?? `${method} 2`,
+        title: config?.axes.defaultValues?.includes('y') ? `${method.toUpperCase()}2` : config?.axes.yAxisText,
         titleFont: config?.fontStyle.font,
         labelFont: config?.fontStyle.font,
         labelColor: config?.colour.masterColour,
@@ -271,8 +281,8 @@ const generateSpec = (config, method, plotData, cellSetLegendsData) => {
         titleColor: config?.colour.masterColour,
         labelFontSize: config?.axes.labelFontSize,
         domainWidth: config?.axes.domainWidth,
-        ticks: config?.axes.enabled === false ? false : undefined,
-        labels: config?.axes.enabled === false ? false : undefined,
+        ticks: config?.axes.yAxisLabels === false ? false : undefined,
+        labels: config?.axes.yAxisLabels === false ? false : undefined,
       },
     ],
     marks,

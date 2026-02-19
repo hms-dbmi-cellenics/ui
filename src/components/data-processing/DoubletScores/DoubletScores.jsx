@@ -5,7 +5,7 @@ import { generateDataProcessingPlotUuid } from 'utils/generateCustomPlotUuid';
 import PlotLayout from 'components/data-processing/PlotLayout';
 import generateSpec from 'utils/plotSpecs/generateDoubletScoreHistogram';
 import BasicFilterPlot
-from 'components/plots/BasicFilterPlot';
+  from 'components/plots/BasicFilterPlot';
 import CalculationConfig from './CalculationConfig';
 
 const DoubletScores = ({
@@ -33,6 +33,18 @@ const DoubletScores = ({
     {
       panelTitle: 'Plot Dimensions',
       controls: ['dimensions'],
+    },
+    {
+      panelTitle: 'Legend',
+      controls: [{
+        name: 'legend',
+        props: {
+          option: {
+            positions: 'top-bottom',
+          },
+          defaultTitle: 'Doublet Score',
+        },
+      }],
     },
     {
       panelTitle: 'Axes',

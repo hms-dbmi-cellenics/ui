@@ -14,17 +14,34 @@ const generateSpec = (config, method, plotData) => {
   let legend = [];
 
   if (config.legend.enabled) {
+    const positionIsLeftRight = ['left', 'right'].includes(config.legend.position);
+    const legendTitle = config.legend.defaultValues?.includes('title')
+      ? config.shownGene
+      : (config.legend.title ? config.legend.title : null);
     legend = [
       {
         fill: 'color',
         type: 'symbol',
         orient: config.legend.position,
-        title: config.shownGene,
+        title: legendTitle,
         labelColor: config.colour.masterColour,
         titleColor: config.colour.masterColour,
         symbolType: 'circle',
         symbolSize: 100,
         offset: 40,
+        direction: positionIsLeftRight ? 'vertical' : 'horizontal',
+        encode: {
+          labels: {
+            update: {
+              fontSize: { value: config.legend.labelFontSize || 11 },
+            },
+          },
+          title: {
+            update: {
+              fontSize: { value: config.legend.titleFontSize || 12 },
+            },
+          },
+        },
       }];
   }
   return {
@@ -78,14 +95,14 @@ const generateSpec = (config, method, plotData) => {
         grid: true,
         domain: true,
         orient: 'bottom',
-        title: config.axes.xAxisText ?? `${method} 1`,
+        title: config?.axes.defaultValues?.includes('x') ? `${method.toUpperCase()}1` : config?.axes.xAxisText,
         titleFont: config.fontStyle.font,
         labelFont: config.fontStyle.font,
         labelColor: config.colour.masterColour,
         tickColor: config.colour.masterColour,
         gridColor: config.colour.masterColour,
         gridOpacity: (config.axes.gridOpacity / 20),
-        gridWidth: (config.gridWidth / 20),
+        gridWidth: (config.axes.gridWidth / 20),
         offset: config.axes.offset,
         titleFontSize: config.axes.titleFontSize,
         titleColor: config.colour.masterColour,
@@ -93,8 +110,8 @@ const generateSpec = (config, method, plotData) => {
         domainWidth: config.axes.domainWidth,
         labelAngle: config.axes.xAxisRotateLabels ? 45 : 0,
         labelAlign: config.axes.xAxisRotateLabels ? 'left' : 'center',
-        ticks: config?.axes.enabled === false ? false : undefined,
-        labels: config?.axes.enabled === false ? false : undefined,
+        ticks: config?.axes.xAxisLabels === false ? false : undefined,
+        labels: config?.axes.xAxisLabels === false ? false : undefined,
       },
       {
         scale: 'y',
@@ -107,7 +124,7 @@ const generateSpec = (config, method, plotData) => {
         gridWidth: (config.axes.gridWidth / 20),
         tickColor: config.colour.masterColour,
         offset: config.axes.offset,
-        title: config.axes.yAxisText ?? `${method} 2`,
+        title: config?.axes.defaultValues?.includes('y') ? `${method.toUpperCase()}2` : config?.axes.yAxisText,
         titleFont: config.fontStyle.font,
         labelFont: config.fontStyle.font,
         labelColor: config.colour.masterColour,
@@ -115,8 +132,8 @@ const generateSpec = (config, method, plotData) => {
         titleColor: config.colour.masterColour,
         labelFontSize: config.axes.labelFontSize,
         domainWidth: config.axes.domainWidth,
-        ticks: config?.axes.enabled === false ? false : undefined,
-        labels: config?.axes.enabled === false ? false : undefined,
+        ticks: config?.axes.yAxisLabels === false ? false : undefined,
+        labels: config?.axes.yAxisLabels === false ? false : undefined,
       },
     ],
     marks: [

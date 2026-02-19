@@ -59,7 +59,15 @@ const CellSizeDistribution = ({
   const plotStylingControlsConfig = [
     {
       panelTitle: 'Legend',
-      controls: ['legend'],
+      controls: [{
+        name: 'legend',
+        props: {
+          option: {
+            positions: 'top-bottom',
+          },
+          defaultTitle: 'Quality',
+        },
+      }],
     },
     {
       panelTitle: 'Plot Dimensions',

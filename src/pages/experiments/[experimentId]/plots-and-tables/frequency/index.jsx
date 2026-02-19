@@ -113,6 +113,7 @@ const FrequencyPlotPage = ({ experimentId }) => {
             option: {
               positions: 'top-bottom',
             },
+            defaultTitle: 'Cell Set',
           },
         },
       ],
