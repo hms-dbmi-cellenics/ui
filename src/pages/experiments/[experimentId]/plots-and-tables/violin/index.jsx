@@ -2,9 +2,14 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
-import ViolinControls from 'components/plots/styling/violin/ViolinControls';
+import {
+  Collapse, Radio, Form, Slider, Skeleton,
+} from 'antd';
 import _ from 'lodash';
 import { loadGeneExpression } from 'redux/actions/genes';
+import SelectData from 'components/plots/styling/SelectData';
+import MultiViewGenesEditor from 'components/plots/styling/MultiViewGenesEditor';
+import GeneSearchBar from 'components/plots/GeneSearchBar';
 
 import {
   updatePlotConfig,
@@ -16,6 +21,8 @@ import ViolinPlotMain from 'components/plots/ViolinPlotMain';
 import { getCellSets, getPlotConfigs } from 'redux/selectors';
 import { plotNames, plotUuids, plotTypes } from 'utils/constants';
 import MultiViewGenesGrid from 'components/plots/MultiViewGenesGrid';
+
+const { Panel } = Collapse;
 
 const plotUuid = plotUuids.VIOLIN_PLOT;
 const plotType = plotTypes.VIOLIN_PLOT;
@@ -112,18 +119,60 @@ const ViolinIndex = ({ experimentId }) => {
   };
 
   const renderExtraPanels = () => (
-    <ViolinControls
-      config={selectedConfig}
-      onUpdateConditional={updateAll ? updateAllWithChanges : updatePlotWithChanges}
-      updateAll={updateAll}
-      setUpdateAll={setUpdateAll}
-      selectedPlotUuid={selectedPlotUuid}
-      setSelectedPlotUuid={setSelectedPlotUuid}
-      cellSets={cellSets}
-      shownGenes={shownGenes}
-      experimentId={experimentId}
-      changeSelectedPlotGene={changeSelectedPlotGene}
-    />
+    <>
+      <Panel header='Gene selection' key='gene-selection'>
+        <GeneSearchBar
+          onSelect={changeSelectedPlotGene}
+          allowMultiple={false}
+          buttonText='Search'
+        />
+      </Panel>
+      <Panel header='View multiple plots' key='view-multiple-plots'>
+        <MultiViewGenesEditor
+          updateAll={updateAll}
+          experimentId={experimentId}
+          setUpdateAll={setUpdateAll}
+          plotUuid={plotUuid}
+          plotType={plotType}
+          selectedPlotUuid={selectedPlotUuid}
+          setSelectedPlotUuid={setSelectedPlotUuid}
+          shownGenes={shownGenes}
+        />
+      </Panel>
+      <Panel header='Select data' key='select-data'>
+        <SelectData
+          config={selectedConfig}
+          onUpdate={updateAll ? updateAllWithChanges : updatePlotWithChanges}
+          cellSets={cellSets}
+          firstSelectionText='Select the cell sets or metadata that cells are grouped by (determines the x-axis)'
+        />
+      </Panel>
+      <Panel header='Data transformation' key='data-transformation'>
+        {selectedConfig ? (
+          <div>
+            <Form.Item>
+              <p>Transform Gene Expression</p>
+              <Radio.Group
+                onChange={(e) => updateAll ? updateAllWithChanges({ normalised: e.target.value }) : updatePlotWithChanges({ normalised: e.target.value })}
+                value={selectedConfig.normalised}
+              >
+                <Radio value='raw'>Raw values</Radio>
+                <Radio value='zScore'>Z-score</Radio>
+              </Radio.Group>
+            </Form.Item>
+            <Form.Item label='Bandwidth Adjustment'>
+              <Slider
+                value={selectedConfig.kdeBandwidth}
+                min={0}
+                max={1}
+                onChange={(val) => updateAll ? updateAllWithChanges({ kdeBandwidth: val }) : updatePlotWithChanges({ kdeBandwidth: val })}
+                step={0.05}
+              />
+            </Form.Item>
+          </div>
+        ) : <Skeleton.Input style={{ width: 200 }} active />}
+      </Panel>
+    </>
   );
 
   const renderPlot = (plotUuidToRender) => (
