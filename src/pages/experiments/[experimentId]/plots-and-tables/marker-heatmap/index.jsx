@@ -337,7 +337,7 @@ const MarkerHeatmap = ({ experimentId }) => {
           {config.showGeneLabels && (
             <Form style={{ marginTop: '15px' }}>
               <Form.Item
-                label='Size'
+                label='Font Size'
                 labelCol={{ span: 5, style: { textAlign: 'left' } }}
                 wrapperCol={{ span: 19 }}
                 style={{ marginBottom: 0 }}

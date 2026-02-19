@@ -95,9 +95,9 @@ const LegendEditor = (props) => {
 
             <Form.Item
               label='Title Text:'
-              labelCol={{ span: 5, style: { textAlign: 'left' } }}
+              labelCol={{ span: 8, style: { textAlign: 'left' } }}
               wrapperCol={{ span: 19 }}
-              style={{ marginBottom: 0 }}
+              style={{ marginBottom: '15px' }}
             >
               <Input
                 value={displayTitle || ''}
@@ -112,8 +112,8 @@ const LegendEditor = (props) => {
 
             <Form.Item
               label='Title Font Size:'
-              labelCol={{ span: 10, style: { textAlign: 'left' } }}
-              wrapperCol={{ span: 14 }}
+              labelCol={{ span: 8, style: { textAlign: 'left' } }}
+              wrapperCol={{ span: 16 }}
               style={{ marginBottom: 0 }}
             >
               <Slider
@@ -128,8 +128,8 @@ const LegendEditor = (props) => {
             </Form.Item>
             <Form.Item
               label='Label Font Size:'
-              labelCol={{ span: 10, style: { textAlign: 'left' } }}
-              wrapperCol={{ span: 14 }}
+              labelCol={{ span: 8, style: { textAlign: 'left' } }}
+              wrapperCol={{ span: 16 }}
               style={{ marginBottom: 0, marginTop: '15px' }}
             >
               <Slider
