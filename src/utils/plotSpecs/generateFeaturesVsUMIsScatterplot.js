@@ -107,7 +107,7 @@ const generateSpec = (config, plotData, expConfig) => {
       {
         scale: 'x',
         grid: true,
-        domain: false,
+        domain: true,
         orient: 'bottom',
         tickCount: 5,
         zindex: 1,
@@ -126,7 +126,7 @@ const generateSpec = (config, plotData, expConfig) => {
       {
         scale: 'y',
         grid: true,
-        domain: false,
+        domain: true,
         orient: 'left',
         titlePadding: 5,
         zindex: 1,
