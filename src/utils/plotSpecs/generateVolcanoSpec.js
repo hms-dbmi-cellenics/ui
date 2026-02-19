@@ -28,8 +28,9 @@ const generateSpec = (configSrc, plotData) => {
     ? { data: 'data', field: 'neglogpvalue' }
     : [config.axesRanges.yMin, config.axesRanges.yMax];
 
-  // adding gene labels above the set Y value only for the significant genes
-  const geneLabelsEquation = `datum.logFC !== 'NA' && (datum.neglogpvalue >${config.textThresholdValue} && (datum.status == 'Upregulated' || datum.status == 'Downregulated'))`;
+  // adding gene labels for significant genes above the p-value threshold
+  const labelNeglogpValue = -Math.log10(config.labelPvalueThreshold);
+  const geneLabelsEquation = `datum.logFC !== 'NA' && (datum.neglogpvalue > ${labelNeglogpValue} && (datum.status == 'Upregulated' || datum.status == 'Downregulated'))`;
 
   let legend = [];
   if (config.legend.enabled) {

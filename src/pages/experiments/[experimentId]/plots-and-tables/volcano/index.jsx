@@ -3,6 +3,8 @@ import {
   Collapse,
   Skeleton,
   Empty,
+  Form,
+  InputNumber,
 } from 'antd';
 import { useSelector, useDispatch } from 'react-redux';
 import dayjs from 'dayjs';
@@ -129,15 +131,30 @@ const VolcanoPlotPage = (props) => {
       controls: ['markers'],
     },
     {
-      panelTitle: 'Add labels',
-      controls: [{
-        name: 'volcanoLabels',
-        props: {
-          min: 0,
-          max: maxYAxis + 5,
-        },
-      },
-      ],
+      panelTitle: 'Gene labels',
+      controls: [],
+      header: (
+        <></>
+      ),
+      footer: (
+        <Form
+          size='small'
+          labelCol={{ span: 12, style: { textAlign: 'left' } }}
+          wrapperCol={{ span: 12 }}
+        >
+          <Form.Item
+            label='P-value Threshold:'
+          >
+            <InputNumber
+              min={0}
+              max={1}
+              step={0.01}
+              value={config?.labelPvalueThreshold !== undefined ? config.labelPvalueThreshold : 0.05}
+              onChange={(val) => updatePlotWithChanges({ labelPvalueThreshold: val })}
+            />
+          </Form.Item>
+        </Form>
+      ),
     },
     {
       panelTitle: 'Legend',

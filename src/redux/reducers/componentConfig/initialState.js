@@ -265,6 +265,7 @@ const volcanoInitialConfig = {
   logFoldChangeThresholdColor: '#ff0000',
   pvalueThresholdColor: '#ff0000',
   textThresholdValue: 240,
+  labelPvalueThreshold: 0.05,
   strokeOpa: 1,
   strokeCol: '#000000',
 };
