@@ -24,21 +24,21 @@ const generatePadding = (plotConfig, numClusters) => {
   const legendPadding = (paddingPosition, currentLegendPosition) => {
     if (currentLegendPosition !== paddingPosition) return 0;
 
-    const isPositionRight = currentLegendPosition === 'right';
+    const positionIsLeftOrRight = currentLegendPosition === 'left' || currentLegendPosition === 'right';
 
     const maxLegendItemsPerCol = Math.floor(
       (plotConfig.dimensions.height - xTickSize - (2 * paddingSize))
       / characterSizeVertical,
     );
 
-    const numClustersPerLineOrColumn = isPositionRight
+    const numClustersPerLineOrColumn = positionIsLeftOrRight
       ? Math.ceil(maxLegendItemsPerCol)
       : Math.ceil(plotConfig.dimensions.width / maxLabelLength);
 
-    const paddingPerLine = isPositionRight ? maxLabelLength : maxLabelHeight;
+    const paddingPerLine = positionIsLeftOrRight ? maxLabelLength : maxLabelHeight;
 
     const numLines = Math.ceil(numClusters / numClustersPerLineOrColumn);
-    const titleHeight = isPositionRight ? 0 : maxLabelHeight;
+    const titleHeight = positionIsLeftOrRight ? 0 : maxLabelHeight;
     const legendHeight = numLines * paddingPerLine;
 
     return legendHeight + titleHeight;
@@ -48,7 +48,7 @@ const generatePadding = (plotConfig, numClusters) => {
     top: defaultPadding.top + legendPadding('top', legendPosition) + axesOffset,
     right: defaultPadding.right + legendPadding('right', legendPosition) + axesOffset,
     bottom: defaultPadding.bottom + legendPadding('bottom', legendPosition) + axesOffset,
-    left: defaultPadding.left + axesOffset,
+    left: defaultPadding.left + legendPadding('left', legendPosition) + axesOffset,
   };
 
   return padding;
@@ -315,17 +315,17 @@ const insertClusterColorsSpec = (
   cellSetLegendsData,
 ) => {
   if (config?.legend.enabled) {
-    const positionIsRight = config.legend.position === 'right';
+    const positionIsLeftOrRight = config.legend.position === 'left' || config.legend.position === 'right';
 
     const maxLegendItemsPerCol = Math.floor(
       (config.dimensions.height - xTickSize - (2 * paddingSize))
       / characterSizeVertical,
     );
 
-    const legendColumns = positionIsRight
+    const legendColumns = positionIsLeftOrRight
       ? Math.ceil(cellSetLegendsData.length / maxLegendItemsPerCol)
       : Math.floor(config.dimensions.width / maxLabelLength);
-    const labelLimit = positionIsRight ? maxLabelLength : 0;
+    const labelLimit = positionIsLeftOrRight ? maxLabelLength : 0;
 
     spec.scales = [
       ...spec.scales,
@@ -370,7 +370,7 @@ const insertClusterColorsSpec = (
             },
           },
         },
-        direction: positionIsRight ? 'vertical' : 'horizontal',
+        direction: positionIsLeftOrRight ? 'vertical' : 'horizontal',
         labelFont: config?.fontStyle.font,
         titleFont: config?.fontStyle.font,
         columns: legendColumns,
