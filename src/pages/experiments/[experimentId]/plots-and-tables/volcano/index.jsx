@@ -159,6 +159,17 @@ const VolcanoPlotPage = (props) => {
               </Typography.Text>
             </div>
           </Form.Item>
+          <p style={{ marginTop: '15px' }}><strong>Text Size</strong></p>
+          <Form.Item
+            label='Font Size:'
+          >
+            <InputNumber
+              min={8}
+              max={24}
+              value={config?.labels.size !== undefined ? config.labels.size : 18}
+              onChange={(val) => updatePlotWithChanges({ labels: { ...config.labels, size: val } })}
+            />
+          </Form.Item>
         </Form>
       ),
     },

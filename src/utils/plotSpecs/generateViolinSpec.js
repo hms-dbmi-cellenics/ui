@@ -355,8 +355,11 @@ const generateSpec = (config, plotData) => {
                   value: config.marker.size,
                 },
                 strokeWidth: {
-                  value: 0,
+                  value: 1,
                 },
+                stroke: config.marker.outline
+                  ? { value: '#000000' }
+                  : { signal: "data('groupCfg')[0][parent.group].color" },
                 opacity: {
                   value: 1,
                 },
@@ -433,6 +436,14 @@ const generateSpec = (config, plotData) => {
         labelColor: config?.colour.masterColour,
         columns: legendColumns,
         labelLimit,
+        encode: {
+          symbols: {
+            update: {
+              stroke: config.marker.outline ? { value: '#000000' } : 'fill',
+              strokeWidth: { value: 1 },
+            },
+          },
+        },
       },
     ];
   }
