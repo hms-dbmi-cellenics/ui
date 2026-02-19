@@ -93,8 +93,12 @@ const LegendEditor = (props) => {
               </>
             ) : <></>}
 
-            <p><strong>Title:</strong></p>
-            <Form.Item>
+            <Form.Item
+              label='Title:'
+              labelCol={{ span: 5, style: { textAlign: 'left' } }}
+              wrapperCol={{ span: 19 }}
+              style={{ marginBottom: 0 }}
+            >
               <Input
                 value={displayTitle || ''}
                 onChange={(e) => onUpdate({
@@ -106,9 +110,8 @@ const LegendEditor = (props) => {
               />
             </Form.Item>
 
-            <p><strong>Font Sizes:</strong></p>
             <Form.Item
-              label='Title'
+              label='Title Font Size:'
               labelCol={{ span: 5, style: { textAlign: 'left' } }}
               wrapperCol={{ span: 19 }}
               style={{ marginBottom: 0 }}
@@ -124,7 +127,7 @@ const LegendEditor = (props) => {
               />
             </Form.Item>
             <Form.Item
-              label='Label'
+              label='Label Font Size:'
               labelCol={{ span: 5, style: { textAlign: 'left' } }}
               wrapperCol={{ span: 19 }}
               style={{ marginBottom: 0 }}
