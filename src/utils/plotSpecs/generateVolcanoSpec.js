@@ -40,12 +40,12 @@ const generateSpec = (configSrc, plotData) => {
         encode: {
           title: {
             update: {
-              fontSize: 14,
+              fontSize: config.legend.titleFontSize || 14,
             },
           },
           labels: {
             update: {
-              fontSize: { value: 12 },
+              fontSize: { value: config.legend.labelFontSize || 12 },
               fill: { value: config.colour.masterColour },
             },
           },
