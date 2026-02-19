@@ -312,6 +312,7 @@ const violinConfig = {
     ...legendBaseState,
     enabled: false,
     title: '',
+    defaultValues: [],
   },
   dimensions: {
     ...dimensionsBaseState,
