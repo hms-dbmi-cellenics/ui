@@ -213,8 +213,7 @@ const generateSpec = (configSrc, plotData) => {
             strokeWidth: config.marker.outline ? 1 : 0,
             strokeOpacity: config.strokeOpa,
             stroke: {
-              scale: 'color',
-              field: 'status',
+              value: config.strokeCol,
             },
             fillOpacity: config.marker.opacity / 10,
             fill: {
