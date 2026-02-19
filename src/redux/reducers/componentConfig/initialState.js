@@ -233,6 +233,7 @@ const volcanoInitialConfig = {
     ...markerBaseState,
     showOpacity: false,
     size: 32,
+    outline: false,
   },
   axes: {
     ...axesBaseState,
