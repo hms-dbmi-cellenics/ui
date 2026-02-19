@@ -62,7 +62,7 @@ const markerBaseState = {
   showOpacity: true,
   opacity: 5,
   size: 5,
-  outline: true,
+  outline: false,
 };
 
 const labelBaseState = {
