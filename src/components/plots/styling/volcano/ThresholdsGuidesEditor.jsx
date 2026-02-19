@@ -96,7 +96,7 @@ const ThresholdsGuidesEditor = (props) => {
 
         {colorPickerOptions.map(({ config: configName, name: text }) => (
           <Form.Item
-            key={configName}
+            key={`${configName}-${config[configName]}`}
             label={`${text}:`}
             labelCol={{ span: 9, style: { textAlign: 'left' } }}
             wrapperCol={{ span: 14 }}
