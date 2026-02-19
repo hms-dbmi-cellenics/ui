@@ -14,7 +14,6 @@ const renderWindow = (tile, width, height, style) => {
       maxHeight: height || '100%',
       padding: layout.PANEL_PADDING,
       overflow: 'auto',
-      boxSizing: 'border-box',
       ...style,
     }}
     >
