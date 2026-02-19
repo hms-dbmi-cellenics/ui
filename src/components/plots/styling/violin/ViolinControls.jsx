@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import {
   Collapse, Radio, Form, Slider, Skeleton,
@@ -25,14 +25,8 @@ const ViolinControls = (props) => {
     changeSelectedPlotGene,
   } = props;
 
-  const [activeKey, setActiveKey] = useState(['view-multiple-plots']);
-
-  const handleChangeActiveKey = (key) => {
-    setActiveKey(Array.isArray(key) ? key : [key]);
-  };
-
   return (
-    <Collapse accordion activeKey={activeKey} onChange={handleChangeActiveKey}>
+    <Collapse accordion defaultActiveKey='view-multiple-plots'>
       <Panel header='Gene selection' key='gene-selection'>
         <GeneSearchBar
           onSelect={changeSelectedPlotGene}
