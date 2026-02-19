@@ -98,6 +98,8 @@ const ThresholdsGuidesEditor = (props) => {
           <Form.Item
             key={configName}
             label={`${text}:`}
+            labelCol={{ span: 8, style: { textAlign: 'left', paddingRight: '20px' } }}
+            wrapperCol={{ span: 16 }}
           >
             <ColorPicker
               onColorChange={((color) => {
@@ -106,6 +108,7 @@ const ThresholdsGuidesEditor = (props) => {
                 });
               })}
               color={config[configName]}
+              size='small'
             />
           </Form.Item>
         ))}
