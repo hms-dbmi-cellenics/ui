@@ -10,7 +10,7 @@ const { Panel } = Collapse;
 
 const AxesWithRangesDesign = (props) => {
   const {
-    config, onUpdate, hideAxisLabelsToggle = false, embeddingMethod,
+    config, onUpdate, hideAxisLabelsToggle = false, embeddingMethod, defaultXAxisText = '', defaultYAxisText = '',
   } = props;
   const hideXRange = typeof config.axesRanges.xAxisAuto === 'undefined';
 
@@ -40,6 +40,8 @@ const AxesWithRangesDesign = (props) => {
         onUpdate={onUpdate}
         showAxisLabelsToggle={!hideAxisLabelsToggle}
         embeddingMethod={embeddingMethod}
+        defaultXAxisText={defaultXAxisText}
+        defaultYAxisText={defaultYAxisText}
       />
       <Collapse>
         <Panel header='Axes Ranges'>
@@ -159,6 +161,8 @@ AxesWithRangesDesign.propTypes = {
   onUpdate: PropTypes.func.isRequired,
   hideAxisLabelsToggle: PropTypes.bool,
   embeddingMethod: PropTypes.string,
+  defaultXAxisText: PropTypes.string,
+  defaultYAxisText: PropTypes.string,
 };
 
 export default AxesWithRangesDesign;

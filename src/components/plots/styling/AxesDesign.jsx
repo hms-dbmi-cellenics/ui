@@ -7,12 +7,13 @@ import {
 import useUpdateThrottled from 'utils/customHooks/useUpdateThrottled';
 
 const AxesDesign = (props) => {
-  const { onUpdate, config, showAxisLabelsToggle = true, embeddingMethod } = props;
+  const { onUpdate, config, showAxisLabelsToggle = true, embeddingMethod, defaultXAxisText: propDefaultX = '', defaultYAxisText: propDefaultY = '' } = props;
   const [newConfig, handleChange] = useUpdateThrottled(onUpdate, config, 200);
 
   // Calculate default values based on embedding method (uppercase, no space)
-  const defaultXAxisText = embeddingMethod ? `${embeddingMethod.toUpperCase()}1` : '';
-  const defaultYAxisText = embeddingMethod ? `${embeddingMethod.toUpperCase()}2` : '';
+  // Or use provided props if embeddingMethod is not available
+  const defaultXAxisText = embeddingMethod ? `${embeddingMethod.toUpperCase()}1` : propDefaultX;
+  const defaultYAxisText = embeddingMethod ? `${embeddingMethod.toUpperCase()}2` : propDefaultY;
 
   // Show default only if axis is still marked as using default, otherwise show actual config value
   const displayXAxisText = config.axes.defaultValues?.includes('x')
@@ -149,6 +150,8 @@ AxesDesign.propTypes = {
   config: PropTypes.object.isRequired,
   showAxisLabelsToggle: PropTypes.bool,
   embeddingMethod: PropTypes.string,
+  defaultXAxisText: PropTypes.string,
+  defaultYAxisText: PropTypes.string,
 };
 
 export default AxesDesign;
