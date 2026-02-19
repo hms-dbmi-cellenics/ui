@@ -9,6 +9,7 @@ exports[`generateData generate spec returns the right data 1`] = `
   },
   "axes": [
     {
+      "grid": true,
       "gridColor": "#000000",
       "gridOpacity": 0,
       "gridWidth": 0.5,
@@ -38,6 +39,7 @@ exports[`generateData generate spec returns the right data 1`] = `
           },
         },
       },
+      "grid": true,
       "gridColor": "#000000",
       "gridOpacity": 0,
       "gridWidth": 0.5,
@@ -160,14 +162,20 @@ exports[`generateData generate spec returns the right data 1`] = `
   "legends": [
     {
       "columns": 1,
-      "direction": "horizontal",
+      "direction": "vertical",
       "fill": "legend",
+      "labelColor": "#000000",
       "labelFont": "sans-serif",
+      "labelFontSize": 11,
       "labelLimit": 0,
       "offset": 40,
       "orient": "right",
       "symbolSize": 100,
       "symbolType": "circle",
+      "title": "Custom cell sets",
+      "titleColor": "#000000",
+      "titleFont": "sans-serif",
+      "titleFontSize": 12,
       "type": "symbol",
     },
   ],

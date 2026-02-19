@@ -63,6 +63,9 @@ const PlotLayout = ({
   );
 
   const isConfigEqual = (currentConfig, initialConfig) => {
+    // Guard against undefined or null initialConfig
+    if (!initialConfig) return false;
+
     const removeDefaultValues = (obj) => {
       if (!obj || typeof obj !== 'object') return obj;
       const cleaned = { ...obj };

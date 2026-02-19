@@ -4,6 +4,10 @@ exports[`ViolinIndex Adds a new plot to multi view: new-config 1`] = `
 {
   "config": {
     "axes": {
+      "defaultValues": [
+        "x",
+        "y",
+      ],
       "domainWidth": 1,
       "gridOpacity": 0,
       "gridWidth": 10,
@@ -47,9 +51,15 @@ exports[`ViolinIndex Adds a new plot to multi view: new-config 1`] = `
     },
     "legend": {
       "colour": "#000000",
+      "defaultValues": [
+        "title",
+      ],
       "enabled": false,
+      "labelFontSize": 11,
       "position": "right",
       "showAlert": false,
+      "title": "",
+      "titleFontSize": 12,
     },
     "marker": {
       "opacity": 5,

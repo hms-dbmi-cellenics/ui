@@ -33,7 +33,7 @@ exports[`loadPlotConfig Loads config properly 1`] = `
     },
     "dimensions": {
       "height": 400,
-      "width": 530,
+      "width": 650,
     },
     "fontStyle": {
       "colour": "#000000",
@@ -45,9 +45,15 @@ exports[`loadPlotConfig Loads config properly 1`] = `
     },
     "legend": {
       "colour": "#000000",
+      "defaultValues": [
+        "title",
+      ],
       "enabled": true,
+      "labelFontSize": 11,
       "position": "right",
       "showAlert": false,
+      "title": "",
+      "titleFontSize": 12,
     },
     "marker": {
       "opacity": 5,
@@ -112,7 +118,7 @@ exports[`loadPlotConfig Loads default initial config for plots if plot config is
     },
     "dimensions": {
       "height": 400,
-      "width": 530,
+      "width": 650,
     },
     "fontStyle": {
       "colour": "#000000",
@@ -124,9 +130,15 @@ exports[`loadPlotConfig Loads default initial config for plots if plot config is
     },
     "legend": {
       "colour": "#000000",
+      "defaultValues": [
+        "title",
+      ],
       "enabled": true,
+      "labelFontSize": 11,
       "position": "right",
       "showAlert": false,
+      "title": "",
+      "titleFontSize": 12,
     },
     "marker": {
       "opacity": 5,

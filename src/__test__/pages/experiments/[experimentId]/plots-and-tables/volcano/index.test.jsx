@@ -122,7 +122,7 @@ describe('Volcano plot page', () => {
     expect(screen.getByText(/Axes and margins/i)).toBeInTheDocument();
     expect(screen.getByText(/Colours/i)).toBeInTheDocument();
     expect(screen.getByText(/Markers/i)).toBeInTheDocument();
-    expect(screen.getByText(/Add labels/i)).toBeInTheDocument();
+    expect(screen.getByText(/Gene labels/i)).toBeInTheDocument();
     expect(screen.getByText(/Legend/i)).toBeInTheDocument();
     expect(screen.getByText(/Export as CSV/i)).toBeInTheDocument();
   });

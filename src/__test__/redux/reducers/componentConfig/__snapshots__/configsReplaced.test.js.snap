@@ -162,6 +162,10 @@ exports[`configsReplaced Replaces existing state 1`] = `
   "ViolinMain": {
     "config": {
       "axes": {
+        "defaultValues": [
+          "x",
+          "y",
+        ],
         "domainWidth": 2,
         "gridOpacity": 0,
         "gridWidth": 10,
@@ -205,9 +209,15 @@ exports[`configsReplaced Replaces existing state 1`] = `
       },
       "legend": {
         "colour": "#000000",
+        "defaultValues": [
+          "title",
+        ],
         "enabled": false,
+        "labelFontSize": 11,
         "position": "top",
         "showAlert": false,
+        "title": "",
+        "titleFontSize": 12,
       },
       "marker": {
         "opacity": 5,
@@ -240,6 +250,10 @@ exports[`configsReplaced Replaces existing state 1`] = `
   "ViolinMain-0": {
     "config": {
       "axes": {
+        "defaultValues": [
+          "x",
+          "y",
+        ],
         "domainWidth": 2,
         "gridOpacity": 0,
         "gridWidth": 10,
@@ -283,9 +297,15 @@ exports[`configsReplaced Replaces existing state 1`] = `
       },
       "legend": {
         "colour": "#000000",
+        "defaultValues": [
+          "title",
+        ],
         "enabled": false,
+        "labelFontSize": 11,
         "position": "top",
         "showAlert": false,
+        "title": "",
+        "titleFontSize": 12,
       },
       "marker": {
         "opacity": 5,
@@ -363,9 +383,15 @@ exports[`configsReplaced Replaces existing state 1`] = `
       },
       "legend": {
         "colour": "#000000",
+        "defaultValues": [
+          "title",
+        ],
         "enabled": true,
+        "labelFontSize": 11,
         "position": "top",
         "showAlert": false,
+        "title": "",
+        "titleFontSize": 12,
       },
       "marker": {
         "opacity": 5,
@@ -435,11 +461,16 @@ exports[`configsReplaced Replaces existing state 1`] = `
       },
       "legend": {
         "colour": "#000000",
+        "defaultValues": [
+          "title",
+        ],
         "enabled": true,
+        "labelFontSize": 11,
         "offset": 40,
         "position": "top",
         "showAlert": false,
         "title": "Cell Set",
+        "titleFontSize": 12,
       },
       "marker": {
         "opacity": 5,
@@ -531,9 +562,15 @@ exports[`configsReplaced Replaces existing state 1`] = `
       },
       "legend": {
         "colour": "#000000",
+        "defaultValues": [
+          "title",
+        ],
         "enabled": true,
+        "labelFontSize": 11,
         "position": "top",
         "showAlert": false,
+        "title": "",
+        "titleFontSize": 12,
       },
       "marker": {
         "opacity": 5,
