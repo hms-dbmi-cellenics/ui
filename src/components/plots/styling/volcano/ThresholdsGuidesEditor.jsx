@@ -1,53 +1,15 @@
-import React, { useState } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import {
-  Form, InputNumber, Checkbox, Space, Select, Typography,
+  Form, InputNumber, Checkbox, Space, Typography,
 } from 'antd';
 import _ from 'lodash';
 import ColorPicker from 'components/ColorPicker';
 
-const { Option } = Select;
 const { Text } = Typography;
-
-const ColorPickerOption = (props) => {
-  // See the z index here:
-  // https://github.com/ant-design/ant-design/blob/master/components/style/themes/default.less#L332
-  // This ensures that the color selector is on top of any dropdown it may be embedded into.
-  const COLOR_PICKER_Z_INDEX = 1050;
-
-  const {
-    onUpdate, configType, text, config,
-  } = props;
-
-  return (
-    <Space>
-      <span>
-        {text}
-      </span>
-      <ColorPicker
-        onColorChange={((color) => {
-          onUpdate({
-            [configType]: color,
-          });
-        })}
-        color={config[configType]}
-        zIndex={COLOR_PICKER_Z_INDEX}
-      />
-    </Space>
-  );
-};
-
-ColorPickerOption.propTypes = {
-  onUpdate: PropTypes.func.isRequired,
-  config: PropTypes.object.isRequired,
-  configType: PropTypes.string.isRequired,
-  text: PropTypes.string.isRequired,
-};
 
 const ThresholdsGuidesEditor = (props) => {
   const { onUpdate, config } = props;
-
-  const [colorPickerOpen, setColorPickerOpen] = useState(false);
 
   const colorPickerOptions = [
     {
@@ -66,16 +28,12 @@ const ThresholdsGuidesEditor = (props) => {
     <>
       <Form
         size='small'
-        labelCol={{ span: 12 }}
-        wrapperCol={{ span: 12 }}
+        labelCol={{ span: 8, style: { textAlign: 'left' } }}
+        wrapperCol={{ span: 16 }}
       >
         <p><strong>Significance Thresholds</strong></p>
         <Form.Item
-          label={(
-            <span>
-              Adjusted p-value
-            </span>
-          )}
+          label='Adjusted p-value:'
         >
           <Space direction='vertical' style={{ width: '100%' }}>
             <Space>
@@ -104,13 +62,7 @@ const ThresholdsGuidesEditor = (props) => {
         </Form.Item>
 
         <Form.Item
-          label={(
-            <span>
-              Fold change
-              {' '}
-              <em>(log)</em>
-            </span>
-          )}
+          label='Fold change (log):'
         >
           <Space>
             <InputNumber
@@ -132,7 +84,7 @@ const ThresholdsGuidesEditor = (props) => {
 
         <p><strong>Guideline Design</strong></p>
         <Form.Item
-          label='Width'
+          label='Width:'
         >
           <InputNumber
             min={1}
@@ -141,29 +93,22 @@ const ThresholdsGuidesEditor = (props) => {
             onChange={(val) => debouncedUpdate({ thresholdGuideWidth: val })}
           />
         </Form.Item>
-        <Form.Item
-          label='Colors'
-        >
-          <Select
-            value='Browse...'
-            style={{ width: 200 }}
-            onChange={() => false}
-            open={colorPickerOpen}
-            onFocus={() => setColorPickerOpen(true)}
-            onBlur={() => setColorPickerOpen(false)}
+        
+        {colorPickerOptions.map(({ config: configName, name: text }) => (
+          <Form.Item
+            key={configName}
+            label={`${text}:`}
           >
-            {colorPickerOptions.map(({ config: configName, name: text }) => (
-              <Option value={configName}>
-                <ColorPickerOption
-                  text={text}
-                  config={config}
-                  onUpdate={onUpdate}
-                  configType={configName}
-                />
-              </Option>
-            ))}
-          </Select>
-        </Form.Item>
+            <ColorPicker
+              onColorChange={((color) => {
+                onUpdate({
+                  [configName]: color,
+                });
+              })}
+              color={config[configName]}
+            />
+          </Form.Item>
+        ))}
       </Form>
     </>
   );
