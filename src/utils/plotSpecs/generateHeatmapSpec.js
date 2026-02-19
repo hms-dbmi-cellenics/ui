@@ -219,6 +219,7 @@ const generateSpec = (config, groupName, data, displayLabels = true) => {
         scale: 'yTrack',
         domain: false,
         labels: config.showMetadataLabels,
+        ticks: config.showMetadataLabels,
         labelFontSize: config.metadataLabelSize || 10,
         encode: {
           labels: {
