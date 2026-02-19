@@ -28,7 +28,7 @@ const ThresholdsGuidesEditor = (props) => {
     <>
       <Form
         size='small'
-        labelCol={{ span: 8, style: { textAlign: 'left' } }}
+        labelCol={{ span: 9, style: { textAlign: 'left' } }}
         wrapperCol={{ span: 16 }}
       >
         <p><strong>Significance Thresholds</strong></p>
@@ -93,13 +93,13 @@ const ThresholdsGuidesEditor = (props) => {
             onChange={(val) => debouncedUpdate({ thresholdGuideWidth: val })}
           />
         </Form.Item>
-        
+
         {colorPickerOptions.map(({ config: configName, name: text }) => (
           <Form.Item
             key={configName}
             label={`${text}:`}
-            labelCol={{ span: 8, style: { textAlign: 'left', paddingRight: '20px' } }}
-            wrapperCol={{ span: 16 }}
+            labelCol={{ span: 9, style: { textAlign: 'left' } }}
+            wrapperCol={{ span: 14 }}
           >
             <ColorPicker
               onColorChange={((color) => {
