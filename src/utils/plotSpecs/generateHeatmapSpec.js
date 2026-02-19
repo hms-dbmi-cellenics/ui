@@ -13,6 +13,11 @@ const generateSpec = (config, groupName, data, displayLabels = true) => {
     ? { orient: 'left' }
     : { orient: 'bottom', direction: 'horizontal' };
 
+  // Use defaultTitle if 'title' is in defaultValues, otherwise use custom title
+  const categoricalLegendTitle = config.legend.defaultValues?.includes('title')
+    ? groupName
+    : config.legend.title;
+
   const legend = [
     {
       fill: 'color',
@@ -56,7 +61,7 @@ const generateSpec = (config, groupName, data, displayLabels = true) => {
 
     legend.push({
       fill: 'cellSetColors',
-      title: groupName,
+      title: categoricalLegendTitle,
       type: 'symbol',
       orient: 'right',
       columns: numVerticalLegendColumns,

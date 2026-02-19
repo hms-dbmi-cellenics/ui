@@ -176,6 +176,7 @@ const heatmapInitialConfig = {
     ...legendBaseState,
     show: true,
     position: 'horizontal',
+    defaultValues: ['title'],
   },
   dimensions: {
     ...dimensionsBaseState,

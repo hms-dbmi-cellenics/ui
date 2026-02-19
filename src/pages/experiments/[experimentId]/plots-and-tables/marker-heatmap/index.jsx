@@ -272,6 +272,7 @@ const MarkerHeatmap = ({ experimentId }) => {
             option: {
               positions: 'horizontal-vertical',
             },
+            defaultTitle: 'Cluster ID',
           },
         },
       ],
