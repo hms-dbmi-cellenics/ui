@@ -315,6 +315,7 @@ const violinConfig = {
     ...axesBaseState,
     offset: 0,
     xAxisRotateLabels: true,
+    yAxisText: 'Z-Score of Expression',
   },
   axesRanges: {
     yAxisAuto: true,

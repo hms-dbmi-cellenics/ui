@@ -7,13 +7,12 @@ import {
 import useUpdateThrottled from 'utils/customHooks/useUpdateThrottled';
 
 const AxesDesign = (props) => {
-  const { onUpdate, config, showAxisLabelsToggle = true, embeddingMethod, defaultXAxisTextProp = '', defaultYAxisTextProp = '' } = props;
+  const { onUpdate, config, showAxisLabelsToggle = true, embeddingMethod } = props;
   const [newConfig, handleChange] = useUpdateThrottled(onUpdate, config, 200);
 
   // Calculate default values based on embedding method (uppercase, no space)
-  // Or use provided defaults if embeddingMethod is not available
-  const defaultXAxisText = embeddingMethod ? `${embeddingMethod.toUpperCase()}1` : defaultXAxisTextProp;
-  const defaultYAxisText = embeddingMethod ? `${embeddingMethod.toUpperCase()}2` : defaultYAxisTextProp;
+  const defaultXAxisText = embeddingMethod ? `${embeddingMethod.toUpperCase()}1` : '';
+  const defaultYAxisText = embeddingMethod ? `${embeddingMethod.toUpperCase()}2` : '';
 
   // Show default only if axis is still marked as using default, otherwise show actual config value
   const displayXAxisText = config.axes.defaultValues?.includes('x')
@@ -64,7 +63,6 @@ const AxesDesign = (props) => {
       <Form.Item label='X-Axis Title'>
         <Input
           value={displayXAxisText}
-          placeholder={defaultXAxisText}
           onChange={(e) => handleChange({
             axes: {
               xAxisText: e.target.value,
@@ -77,7 +75,6 @@ const AxesDesign = (props) => {
       <Form.Item label='Y-Axis Title'>
         <Input
           value={displayYAxisText}
-          placeholder={defaultYAxisText}
           onChange={(e) => handleChange({
             axes: {
               yAxisText: e.target.value,
@@ -152,8 +149,6 @@ AxesDesign.propTypes = {
   config: PropTypes.object.isRequired,
   showAxisLabelsToggle: PropTypes.bool,
   embeddingMethod: PropTypes.string,
-  defaultXAxisTextProp: PropTypes.string,
-  defaultYAxisTextProp: PropTypes.string,
 };
 
 export default AxesDesign;

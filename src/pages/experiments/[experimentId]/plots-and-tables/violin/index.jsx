@@ -83,13 +83,7 @@ const ViolinIndex = ({ experimentId }) => {
     },
     {
       panelTitle: 'Axes and margins',
-      controls: [{
-        name: 'axesWithRanges',
-        props: {
-          defaultXAxisTextProp: 'Groups/Samples',
-          defaultYAxisTextProp: 'Expression',
-        },
-      }],
+      controls: ['axesWithRanges'],
     },
     {
       panelTitle: 'Markers',
