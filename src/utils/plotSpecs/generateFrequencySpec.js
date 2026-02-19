@@ -23,6 +23,7 @@ const generateSpec = (config, plotData, xNamesToDisplay, yNamesToDisplay) => {
   let plotDataReversed = [];
   if (config.legend.enabled) {
     const positionIsRight = config.legend.position === 'right';
+    const positionIsLeftOrRight = config.legend.position === 'left' || config.legend.position === 'right';
     plotDataReversed = plotData.slice().reverse();
 
     // Approximate the size of each name.
@@ -76,7 +77,7 @@ const generateSpec = (config, plotData, xNamesToDisplay, yNamesToDisplay) => {
             },
           },
         },
-        direction: 'horizontal',
+        direction: positionIsLeftOrRight ? 'vertical' : 'horizontal',
         labelFont: config.fontStyle.font,
         titleFont: config.fontStyle.font,
         columns: legendColumns,
