@@ -11,11 +11,13 @@ const renderWindow = (tile, width, height, style) => {
 
   return (
     <div style={{
+      height: height || '100%',
       padding: layout.PANEL_PADDING,
       overflow: 'auto',
       display: 'flex',
       flexDirection: 'column',
       minHeight: 0,
+      boxSizing: 'border-box',
       ...style,
     }}
     >
