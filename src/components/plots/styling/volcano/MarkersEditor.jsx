@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Form } from 'antd';
-import ColorBrowser from '../ColorBrowser';
+import ColorPicker from '../ColorPicker';
 
 const MarkersEditor = (props) => {
   const { onUpdate, config } = props;
@@ -9,30 +9,41 @@ const MarkersEditor = (props) => {
   const colorPickerOptions = [
     {
       config: 'significantDownregulatedColor',
-      name: 'Significantly downregulated genes',
+      name: 'Significantly Downregulated Genes',
     },
     {
       config: 'significantUpregulatedColor',
-      name: 'Significantly upregulated genes',
+      name: 'Significantly Upregulated Genes',
     },
     {
       config: 'noDifferenceColor',
-      name: 'Genes with no significant difference',
+      name: 'Genes With No Significant Difference',
     },
   ];
 
   return (
     <Form
       size='small'
-      labelCol={{ span: 6 }}
-      wrapperCol={{ span: 18 }}
+      labelCol={{ span: 8, style: { textAlign: 'left' } }}
+      wrapperCol={{ span: 16 }}
     >
       <p><strong>Markers</strong></p>
-      <Form.Item
-        label='Colors'
-      >
-        <ColorBrowser onUpdate={onUpdate} colorPickerOptions={colorPickerOptions} config={config} />
-      </Form.Item>
+      {colorPickerOptions.map(({ config: configName, name: text }) => (
+        <Form.Item
+          key={`${configName}-${config[configName]}`}
+          label={`${text}:`}
+        >
+          <ColorPicker
+            onColorChange={((color) => {
+              onUpdate({
+                [configName]: color,
+              });
+            })}
+            color={config[configName]}
+            size='small'
+          />
+        </Form.Item>
+      ))}
     </Form>
   );
 };
