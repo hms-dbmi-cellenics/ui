@@ -6,6 +6,7 @@ import {
   Form,
   InputNumber,
   Typography,
+  Slider,
 } from 'antd';
 import { useSelector, useDispatch } from 'react-redux';
 import dayjs from 'dayjs';
@@ -163,11 +164,12 @@ const VolcanoPlotPage = (props) => {
           <Form.Item
             label='Font Size:'
           >
-            <InputNumber
+            <Slider
               min={8}
               max={24}
-              value={config?.labels.size !== undefined ? config.labels.size : 18}
+              value={config?.labels.size !== undefined ? config.labels.size : 11}
               onChange={(val) => updatePlotWithChanges({ labels: { ...config.labels, size: val } })}
+              marks={{ 8: 8, 24: 24 }}
             />
           </Form.Item>
         </Form>

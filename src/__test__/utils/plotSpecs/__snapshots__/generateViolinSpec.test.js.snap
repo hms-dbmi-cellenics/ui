@@ -163,18 +163,6 @@ exports[`generateData generate spec returns the right data 1`] = `
     {
       "columns": 1,
       "direction": "vertical",
-      "encode": {
-        "symbols": {
-          "update": {
-            "stroke": {
-              "value": "#000000",
-            },
-            "strokeWidth": {
-              "value": 1,
-            },
-          },
-        },
-      },
       "fill": "legend",
       "labelColor": "#000000",
       "labelFont": "sans-serif",
@@ -287,11 +275,8 @@ exports[`generateData generate spec returns the right data 1`] = `
               "size": {
                 "value": 5,
               },
-              "stroke": {
-                "value": "#000000",
-              },
               "strokeWidth": {
-                "value": 1,
+                "value": 0,
               },
               "x": {
                 "field": "x",

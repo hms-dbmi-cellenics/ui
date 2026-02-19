@@ -47,7 +47,7 @@ exports[`ViolinIndex Adds a new plot to multi view: new-config 1`] = `
     ],
     "labels": {
       "enabled": true,
-      "size": 18,
+      "size": 11,
     },
     "legend": {
       "colour": "#000000",

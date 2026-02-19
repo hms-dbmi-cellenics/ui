@@ -133,7 +133,7 @@ exports[`updateConfig Checking if fields changed 1`] = `
       "labelPvalueThreshold": 0.05,
       "labels": {
         "enabled": true,
-        "size": 18,
+        "size": 11,
       },
       "legend": {
         "colour": "#000000",

@@ -41,7 +41,7 @@ exports[`loadPlotConfig Loads config properly 1`] = `
     },
     "labels": {
       "enabled": true,
-      "size": 18,
+      "size": 11,
     },
     "legend": {
       "colour": "#000000",
@@ -126,7 +126,7 @@ exports[`loadPlotConfig Loads default initial config for plots if plot config is
     },
     "labels": {
       "enabled": true,
-      "size": 18,
+      "size": 11,
     },
     "legend": {
       "colour": "#000000",

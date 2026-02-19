@@ -236,7 +236,7 @@ const generateSpec = (configSrc, plotData) => {
             y: { scale: 'y', field: 'neglogpvalue' },
 
             fill: { value: config.colour.masterColour },
-            fontSize: { value: config.labels.size },
+            fontSize: { value: config.labels.size || 11 },
             text: { field: 'gene_names' },
           },
         },
