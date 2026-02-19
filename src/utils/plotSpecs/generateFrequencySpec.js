@@ -22,7 +22,6 @@ const generateSpec = (config, plotData, xNamesToDisplay, yNamesToDisplay) => {
   let legend = [];
   let plotDataReversed = [];
   if (config.legend.enabled) {
-    const positionIsRight = config.legend.position === 'right';
     const positionIsLeftOrRight = config.legend.position === 'left' || config.legend.position === 'right';
     plotDataReversed = plotData.slice().reverse();
 
@@ -45,14 +44,14 @@ const generateSpec = (config, plotData, xNamesToDisplay, yNamesToDisplay) => {
       yNamesToDisplay.map((legendName) => legendName.length * characterSizeHorizontal),
     );
 
-    const legendColumns = positionIsRight
+    const legendColumns = positionIsLeftOrRight
       ? Math.ceil(yNamesToDisplay.length / maxLegendItemsPerCol)
       : Math.floor((config.dimensions.width) / legendSize);
-    const labelLimit = positionIsRight ? 0 : legendSize;
+    const labelLimit = positionIsLeftOrRight ? 0 : legendSize;
 
     legend = [
       {
-        fill: positionIsRight ? 'cellSetColorsReversed' : 'cellSetColors',
+        fill: positionIsLeftOrRight ? 'cellSetColorsReversed' : 'cellSetColors',
         title: legendTitle,
         titleColor: config.colour.masterColour,
         type: 'symbol',
@@ -64,7 +63,7 @@ const generateSpec = (config, plotData, xNamesToDisplay, yNamesToDisplay) => {
           labels: {
             update: {
               text: {
-                scale: positionIsRight ? 'yCellSetKeyReversed' : 'yCellSetKey',
+                scale: positionIsLeftOrRight ? 'yCellSetKeyReversed' : 'yCellSetKey',
                 field: 'label',
               },
               fill: { value: config.colour.masterColour },
