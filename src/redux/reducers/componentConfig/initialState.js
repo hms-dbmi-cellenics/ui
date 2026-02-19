@@ -237,7 +237,7 @@ const volcanoInitialConfig = {
   axes: {
     ...axesBaseState,
     xAxisText: 'log fold change',
-    yAxisText: '-log10(adj p-value)',
+    yAxisText: '-log₁₀(adj p-value)',
     gridOpacity: 5,
     offset: 0,
   },
