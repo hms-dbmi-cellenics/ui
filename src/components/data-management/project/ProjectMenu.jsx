@@ -32,6 +32,7 @@ const ProjectMenu = () => {
       <Space>
         <Button
           data-test-id={integrationTestConstants.ids.ADD_SAMPLES_BUTTON}
+          type={activeExperiment?.sampleIds.length === 0 ? 'primary' : 'default'}
           onClick={() => setUploadModalVisible(true)}
           disabled={isSubsetted}
         >

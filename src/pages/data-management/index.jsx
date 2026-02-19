@@ -48,7 +48,7 @@ const DataManagementPage = () => {
   useEffect(() => {
     if (!activeExperimentId
       || !activeExperiment
-       || privacyPolicyIsNotAccepted(user, domainName)
+      || privacyPolicyIsNotAccepted(user, domainName)
     ) return;
 
     dispatch(loadProcessingSettings(activeExperimentId));

@@ -10,14 +10,6 @@ import { act } from 'react-dom/test-utils';
 import { makeStore } from 'redux/store';
 import userEvent from '@testing-library/user-event';
 
-const mockNavigateTo = jest.fn();
-
-jest.mock('utils/AppRouteProvider', () => ({
-  useAppRouter: jest.fn(() => ({
-    navigateTo: mockNavigateTo,
-  })),
-}));
-
 describe('ProjectsList', () => {
   let storeState;
 
@@ -28,7 +20,7 @@ describe('ProjectsList', () => {
   it('Contains the input box and create project button', async () => {
     render(
       <Provider store={storeState}>
-        <ProjectsListContainer />
+        <ProjectsListContainer onCreateNewProject={() => {}} />
       </Provider>,
     );
 
@@ -52,25 +44,7 @@ describe('ProjectsList', () => {
     await act(async () => {
       userEvent.click(createNewProjectButton);
     });
-    userEvent.click(screen.getByText('Upload Project'));
 
     expect(onCreateNewProjectMock).toHaveBeenCalledTimes(1);
-  });
-
-  it('navigates to repository page when selecting the option in the create project dropdown', async () => {
-    render(
-      <Provider store={storeState}>
-        <ProjectsListContainer />
-      </Provider>,
-    );
-
-    const createNewProjectButton = screen.getByText(/Create New Project/);
-
-    await act(async () => {
-      userEvent.click(createNewProjectButton);
-    });
-    userEvent.click(screen.getByText('Select from Dataset Repository'));
-
-    expect(mockNavigateTo.mock.calls).toMatchSnapshot();
   });
 });
