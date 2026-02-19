@@ -54,7 +54,10 @@ const generateSpec = (configSrc, plotData) => {
           },
           symbols: {
             update: {
-              stroke: 'transparent',
+              stroke: config.marker.outline
+                ? { value: config.strokeCol }
+                : { scale: 'color' },
+              strokeWidth: { value: 1 },
               shape: { value: config.marker.shape },
             },
           },
