@@ -57,11 +57,15 @@ const PlotStyling = (props) => {
   const buildForm = (configObj) => configObj.map((el) => {
     // Build component object from component
 
-    if (Object.getOwnPropertyDescriptor(el, 'controls') && el.controls.length > 0) {
+    const hasControls = Object.getOwnPropertyDescriptor(el, 'controls') && el.controls.length > 0;
+    const hasFooter = Object.getOwnPropertyDescriptor(el, 'footer') && el.footer;
+    const hasHeader = Object.getOwnPropertyDescriptor(el, 'header') && el.header;
+
+    if (hasControls || hasFooter || hasHeader) {
       return (
         <Panel header={el.panelTitle} key={formatPanelKey(el.panelTitle)}>
           {el.header}
-          {el.controls.map((control) => {
+          {hasControls && el.controls.map((control) => {
             // If control is a string, no prop is passed
             if (_.isString(control)) {
               return ComponentMapping[control]({});

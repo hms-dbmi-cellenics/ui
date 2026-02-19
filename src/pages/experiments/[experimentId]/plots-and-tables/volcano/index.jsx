@@ -133,17 +133,15 @@ const VolcanoPlotPage = (props) => {
     {
       panelTitle: 'Gene labels',
       controls: [],
-      header: (
-        <></>
-      ),
       footer: (
         <Form
           size='small'
           labelCol={{ span: 12, style: { textAlign: 'left' } }}
           wrapperCol={{ span: 12 }}
         >
+          <p><strong>Label Threshold</strong></p>
           <Form.Item
-            label='P-value Threshold:'
+            label='P-value:'
           >
             <InputNumber
               min={0}
