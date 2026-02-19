@@ -210,15 +210,17 @@ const generateSpec = (configSrc, plotData) => {
             y: { scale: 'y', field: 'neglogpvalue' },
             size: { value: config.marker.size },
             shape: { value: config.marker.shape },
-            strokeWidth: config.marker.outline ? 1 : 0,
-            strokeOpacity: config.strokeOpa,
-            stroke: {
-              value: config.strokeCol,
-            },
             fillOpacity: config.marker.opacity / 10,
             fill: {
               scale: 'color',
               field: 'status',
+            },
+          },
+          update: {
+            strokeWidth: { value: config.marker.outline ? 1 : 0 },
+            strokeOpacity: { value: config.strokeOpa },
+            stroke: {
+              value: config.strokeCol,
             },
           },
         },
