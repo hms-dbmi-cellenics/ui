@@ -17,7 +17,6 @@ const renderWindow = (tile, width, height, style) => {
       display: 'flex',
       flexDirection: 'column',
       minHeight: 0,
-      boxSizing: 'border-box',
       ...style,
     }}
     >
