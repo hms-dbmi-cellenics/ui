@@ -112,8 +112,8 @@ const LegendEditor = (props) => {
 
             <Form.Item
               label='Title Font Size:'
-              labelCol={{ span: 5, style: { textAlign: 'left' } }}
-              wrapperCol={{ span: 19 }}
+              labelCol={{ span: 10, style: { textAlign: 'left' } }}
+              wrapperCol={{ span: 14 }}
               style={{ marginBottom: 0 }}
             >
               <Slider
@@ -128,8 +128,8 @@ const LegendEditor = (props) => {
             </Form.Item>
             <Form.Item
               label='Label Font Size:'
-              labelCol={{ span: 5, style: { textAlign: 'left' } }}
-              wrapperCol={{ span: 19 }}
+              labelCol={{ span: 10, style: { textAlign: 'left' } }}
+              wrapperCol={{ span: 14 }}
               style={{ marginBottom: 0, marginTop: '15px' }}
             >
               <Slider
