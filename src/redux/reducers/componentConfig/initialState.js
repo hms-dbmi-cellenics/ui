@@ -606,7 +606,7 @@ const cellSizeDistributionHistogram = {
   },
   dimensions: {
     ...dimensionsBaseState,
-    width: 530,
+    width: 650,
     height: 400,
   },
   axes: {
@@ -634,7 +634,7 @@ const cellSizeDistributionKneePlot = {
   },
   dimensions: {
     ...dimensionsBaseState,
-    width: 530,
+    width: 650,
     height: 400,
   },
   axes: {
@@ -666,7 +666,7 @@ const mitochondrialFractionHistogram = {
   },
   dimensions: {
     ...dimensionsBaseState,
-    width: 530,
+    width: 650,
     height: 400,
   },
   axes: {
@@ -695,7 +695,7 @@ const mitochondrialFractionLogHistogram = {
   },
   dimensions: {
     ...dimensionsBaseState,
-    width: 530,
+    width: 650,
     height: 400,
   },
   axes: {
@@ -724,7 +724,7 @@ const classifierKneePlot = {
   },
   dimensions: {
     ...dimensionsBaseState,
-    width: 530,
+    width: 650,
     height: 400,
   },
   axes: {
@@ -757,7 +757,7 @@ const classifierEmptyDropsPlot = {
   },
   dimensions: {
     ...dimensionsBaseState,
-    width: 630,
+    width: 650,
     height: 500,
   },
   axes: {
@@ -789,8 +789,8 @@ const featuresVsUMIsScatterplot = {
   },
   axes: {
     ...axesBaseState,
-    xAxisText: 'log10 [molecule counts]',
-    yAxisText: 'log10 [gene counts]',
+    xAxisText: 'log10 (molecule counts)',
+    yAxisText: 'log10 (gene counts)',
     gridOpacity: 10,
   },
   axesRanges: axesRangesBaseState,
@@ -813,7 +813,7 @@ const doubletScoreHistogram = {
   },
   dimensions: {
     ...dimensionsBaseState,
-    width: 530,
+    width: 650,
     height: 400,
   },
   axes: {

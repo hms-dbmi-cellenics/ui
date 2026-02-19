@@ -14,17 +14,22 @@ const generateSpec = (config, method, plotData) => {
   let legend = [];
 
   if (config.legend.enabled) {
+    const positionIsLeftRight = ['left', 'right'].includes(config.legend.position);
+    const legendTitle = config.legend.defaultValues?.includes('title')
+      ? config.shownGene
+      : config.legend.title;
     legend = [
       {
         fill: 'color',
         type: 'symbol',
         orient: config.legend.position,
-        title: config.shownGene,
+        title: legendTitle,
         labelColor: config.colour.masterColour,
         titleColor: config.colour.masterColour,
         symbolType: 'circle',
         symbolSize: 100,
         offset: 40,
+        direction: positionIsLeftRight ? 'vertical' : 'horizontal',
       }];
   }
   return {

@@ -134,10 +134,14 @@ const generateSpec = (config, method, plotData, cellSetLegendsData) => {
       : Math.floor((config.dimensions.width) / legendSize);
     const labelLimit = positionIsLeftRight ? 0 : legendSize;
 
+    const legendTitle = config.legend.defaultValues?.includes('title')
+      ? 'Cluster Name'
+      : config?.legend.title;
+
     legend = [
       {
         fill: 'cellSetLabelColors',
-        title: config?.legend.title || 'Cluster Name',
+        title: legendTitle,
         titleColor: config?.colour.masterColour,
         type: 'symbol',
         orient: config?.legend.position,

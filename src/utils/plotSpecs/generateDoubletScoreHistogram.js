@@ -10,10 +10,21 @@ const generateSpec = (config, plotData) => {
     ? { data: 'binned', field: 'count' }
     : [config.axesRanges.yMin, config.axesRanges.yMax];
 
+  const defaultLegendTitle = 'Doublet Score';
+  const legendTitle = config.legend.defaultValues?.includes('title')
+    ? defaultLegendTitle
+    : config.legend.title;
+
+  const legendDirection = ['top', 'bottom'].includes(config.legend.position)
+    ? 'horizontal'
+    : 'vertical';
   legend = !config.legend.enabled ? {} : [
     {
       fill: 'color',
       orient: config.legend.position,
+      direction: legendDirection,
+      title: legendTitle,
+      padding: 4,
       encode: {
         title: {
           update: {
@@ -132,6 +143,8 @@ const generateSpec = (config, plotData) => {
         gridOpacity: config.axes.gridOpacity / 20,
         labelAngle: config.axes.xAxisRotateLabels ? 45 : 0,
         labelAlign: config.axes.xAxisRotateLabels ? 'left' : 'center',
+        labels: config.axes.xAxisLabels,
+        ticks: config.axes.xAxisLabels,
       },
       {
         orient: 'left',
@@ -146,6 +159,8 @@ const generateSpec = (config, plotData) => {
         labelFontSize: config.axes.labelFontSize,
         offset: config.axes.offset,
         gridOpacity: config.axes.gridOpacity / 20,
+        labels: config.axes.yAxisLabels,
+        ticks: config.axes.yAxisLabels,
       },
     ],
     marks: [

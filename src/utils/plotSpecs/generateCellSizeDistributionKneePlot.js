@@ -21,13 +21,23 @@ const generateSpec = (config, plotData) => {
     ? { data: 'plotData', field: 'u' }
     : [Math.max(config.axesRanges.yMin, 1), config.axesRanges.yMax];
 
+  const defaultLegendTitle = 'Quality';
+  const legendTitle = config.legend.defaultValues?.includes('title')
+    ? defaultLegendTitle
+    : config.legend.title;
+  const legendDirection = ['top', 'bottom'].includes(config.legend.position)
+    ? 'horizontal'
+    : 'vertical';
+
   legend = !config.legend.enabled ? null : [
     {
       fill: 'color',
       orient: config.legend.position,
-      title: 'Quality',
+      direction: legendDirection,
+      title: legendTitle,
       labelFont: config.fontStyle.font,
       titleFont: config.fontStyle.font,
+      padding: 4,
       encode: {
         title: {
           update: {
@@ -145,6 +155,8 @@ const generateSpec = (config, plotData) => {
         gridOpacity: config.axes.gridOpacity / 20,
         labelAngle: config.axes.xAxisRotateLabels ? 45 : 0,
         labelAlign: config.axes.xAxisRotateLabels ? 'left' : 'center',
+        labels: config.axes.xAxisLabels,
+        ticks: config.axes.xAxisLabels,
       },
       {
         orient: 'left',
@@ -158,6 +170,8 @@ const generateSpec = (config, plotData) => {
         labelFontSize: config.axes.labelFontSize,
         offset: config.axes.offset,
         gridOpacity: config.axes.gridOpacity / 20,
+        labels: config.axes.yAxisLabels,
+        ticks: config.axes.yAxisLabels,
       },
     ],
 

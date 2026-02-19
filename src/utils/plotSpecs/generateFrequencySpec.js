@@ -15,6 +15,10 @@ const generateSpec = (config, plotData, xNamesToDisplay, yNamesToDisplay) => {
     ? yAutoDomain
     : [Math.max(config.axesRanges.yMin, 0), yManualMax];
 
+  const defaultLegendTitle = 'Cell Set';
+  const legendTitle = config.legend.defaultValues?.includes('title')
+    ? defaultLegendTitle
+    : config.legend.title;
   let legend = [];
   let plotDataReversed = [];
   if (config.legend.enabled) {
@@ -48,7 +52,7 @@ const generateSpec = (config, plotData, xNamesToDisplay, yNamesToDisplay) => {
     legend = [
       {
         fill: positionIsRight ? 'cellSetColorsReversed' : 'cellSetColors',
-        title: 'Cell Set',
+        title: legendTitle,
         titleColor: config.colour.masterColour,
         type: 'symbol',
         orient: config.legend.position,
