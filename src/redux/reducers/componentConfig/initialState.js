@@ -268,6 +268,7 @@ const frequencyInitialConfig = {
   legend: {
     ...legendBaseState,
     title: 'Cell Set',
+    defaultValues: ['title'],
     offset: 0,
   },
   labels: labelBaseState,
