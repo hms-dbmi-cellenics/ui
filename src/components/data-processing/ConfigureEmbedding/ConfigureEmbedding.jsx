@@ -3,7 +3,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import _ from 'lodash';
 import PropTypes from 'prop-types';
 import {
-  Row, Col, PageHeader, Radio, Collapse, Empty, Alert, Space,
+  Row, Col, PageHeader, Radio, Collapse, Empty, Alert, Space, Button, Divider,
 } from 'antd';
 import SelectData from 'components/plots/styling/embedding-continuous/SelectData';
 
@@ -17,7 +17,9 @@ import {
   updatePlotConfig,
   loadPlotConfig,
   savePlotConfig,
+  resetPlotConfig,
 } from 'redux/actions/componentConfig';
+import { initialPlotConfigStates } from 'redux/reducers/componentConfig/initialState';
 
 import PlotStyling from 'components/plots/styling/PlotStyling';
 import loadCellMeta from 'redux/actions/cellMeta';
@@ -49,6 +51,7 @@ const ConfigureEmbedding = (props) => {
   };
 
   const [plotColouring, setPlotColouring] = useState(initialPlotColouring.embedding);
+  const [isResetDisabled, setIsResetDisabled] = useState(true);
 
   const dispatch = useDispatch();
   const debounceSave = useCallback(
@@ -403,6 +406,42 @@ const ConfigureEmbedding = (props) => {
     debounceSave(currentPlot.plotUuid);
   };
 
+  const isConfigEqual = (currentConfig, initialConfig) => {
+    const removeDefaultValues = (obj) => {
+      if (!obj || typeof obj !== 'object') return obj;
+      const cleaned = { ...obj };
+      delete cleaned.defaultValues;
+      return cleaned;
+    };
+
+    const isEqual = Object.keys(initialConfig).every((key) => {
+      // By pass plot data because we want to compare settings not data
+      if (key === 'plotData') return true;
+      if (initialConfig.keepValuesOnReset?.includes(key)) return true;
+      if (currentConfig[key] && typeof currentConfig[key] === 'object' && initialConfig[key] && typeof initialConfig[key] === 'object') {
+        // For nested objects, exclude defaultValues from comparison as it's metadata about defaults
+        const currentObj = removeDefaultValues(currentConfig[key]);
+        const initialObj = removeDefaultValues(initialConfig[key]);
+        return JSON.stringify(currentObj) === JSON.stringify(initialObj);
+      }
+
+      return currentConfig[key] === initialConfig[key];
+    });
+
+    return isEqual;
+  };
+
+  useEffect(() => {
+    if (!selectedConfig || !currentPlot) return;
+
+    const initialConfig = initialPlotConfigStates[currentPlot.plotType];
+    setIsResetDisabled(isConfigEqual(selectedConfig, initialConfig));
+  }, [selectedConfig]);
+
+  const onClickReset = () => {
+    dispatch(resetPlotConfig(experimentId, currentPlot.plotUuid, currentPlot.plotType));
+  };
+
   const renderExtraControlPanels = () => (
     <Panel header='Select data' key='select-data' collapsible={controlsDisabledForViolin && 'disabled'}>
       <SelectData
@@ -515,6 +554,15 @@ const ConfigureEmbedding = (props) => {
                 onUpdate={updatePlotWithChanges}
                 extraPanels={renderExtraControlPanels()}
               />
+              <Divider />
+              <Button
+                type='default'
+                disabled={isResetDisabled}
+                block
+                onClick={onClickReset}
+              >
+                Reset Plot
+              </Button>
             </Panel>
           </Collapse>
         </Col>
