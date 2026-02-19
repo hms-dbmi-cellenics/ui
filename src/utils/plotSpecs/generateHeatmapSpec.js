@@ -6,6 +6,7 @@ const generateSpec = (config, groupName, data, displayLabels = true) => {
       domain: false,
       orient: 'left',
       scale: 'y',
+      labelFontSize: config.geneLabelSize || 10,
     },
   ] : [];
 

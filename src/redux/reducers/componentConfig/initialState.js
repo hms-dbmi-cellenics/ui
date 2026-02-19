@@ -202,6 +202,7 @@ const heatmapInitialConfig = {
   groupedTracks: ['sample', 'louvain'],
   expressionValue: 'raw',
   truncatedValues: true,
+  geneLabelSize: 10,
 };
 
 // PLOTS & TABLES - Marker heatmap

@@ -5,6 +5,8 @@ import {
   Empty,
   Radio,
   Space,
+  Slider,
+  Form,
 } from 'antd';
 import _ from 'lodash';
 import { useSelector, useDispatch } from 'react-redux';
@@ -332,6 +334,25 @@ const MarkerHeatmap = ({ experimentId }) => {
             <Radio value>Show</Radio>
             <Radio value={false}>Hide</Radio>
           </Radio.Group>
+          {config.showGeneLabels && (
+            <Form style={{ marginTop: '15px' }}>
+              <Form.Item
+                label='Gene Label Size'
+                labelCol={{ span: 12, style: { textAlign: 'left' } }}
+                wrapperCol={{ span: 12 }}
+              >
+                <Slider
+                  value={config.geneLabelSize || 10}
+                  min={6}
+                  max={20}
+                  onChange={(value) => {
+                    userUpdatedPlotWithChanges({ geneLabelSize: value });
+                  }}
+                  marks={{ 6: 6, 20: 20 }}
+                />
+              </Form.Item>
+            </Form>
+          )}
         </div>
       </Panel>
       <Panel header='Select data' key='select-data'>
