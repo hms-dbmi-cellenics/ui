@@ -98,18 +98,15 @@ const ThresholdsGuidesEditor = (props) => {
           <Form.Item
             key={configName}
             label={`${text}:`}
-            style={{ marginBottom: '12px' }}
           >
-            <div style={{ width: '75px' }}>
-              <ColorPicker
-                onColorChange={((color) => {
-                  onUpdate({
-                    [configName]: color,
-                  });
-                })}
-                color={config[configName]}
-              />
-            </div>
+            <ColorPicker
+              onColorChange={((color) => {
+                onUpdate({
+                  [configName]: color,
+                });
+              })}
+              color={config[configName]}
+            />
           </Form.Item>
         ))}
       </Form>
