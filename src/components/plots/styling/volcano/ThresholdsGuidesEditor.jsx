@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {
-  Form, Slider, Checkbox, Space, Typography,
+  Form, Slider, InputNumber, Checkbox, Space, Typography,
 } from 'antd';
 import _ from 'lodash';
 import ColorPicker from 'components/ColorPicker';
