@@ -480,7 +480,11 @@ const embeddingPreviewByCellSetsInitialConfig = {
 // EMBEDDING PREVIEW - Config for fraction of mitochondrial reads
 const embeddingPreviewMitochondrialContentInitialConfig = {
   spec: '1.0.0',
-  legend: legendBaseState,
+  legend: {
+    ...legendBaseState,
+    title: 'Mitochondrial fraction',
+    defaultValues: ['title'],
+  },
   dimensions: {
     ...dimensionsBaseState,
     width: 700,
@@ -508,7 +512,11 @@ const embeddingPreviewMitochondrialContentInitialConfig = {
 // EMBEDDING PREVIEW - Config for doublet score
 const embeddingPreviewDoubletScoreInitialConfig = {
   spec: '1.0.0',
-  legend: legendBaseState,
+  legend: {
+    ...legendBaseState,
+    title: 'Doublet score',
+    defaultValues: ['title'],
+  },
   dimensions: {
     ...dimensionsBaseState,
     width: 700,
@@ -534,7 +542,11 @@ const embeddingPreviewDoubletScoreInitialConfig = {
 
 const embeddingPreviewNumOfGenesInitialConfig = {
   spec: '1.0.0',
-  legend: legendBaseState,
+  legend: {
+    ...legendBaseState,
+    title: 'Number of genes',
+    defaultValues: ['title'],
+  },
   dimensions: {
     ...dimensionsBaseState,
     width: 700,
@@ -559,7 +571,11 @@ const embeddingPreviewNumOfGenesInitialConfig = {
 };
 const embeddingPreviewNumOfUmisInitialConfig = {
   spec: '1.0.0',
-  legend: legendBaseState,
+  legend: {
+    ...legendBaseState,
+    title: 'Number of UMIs',
+    defaultValues: ['title'],
+  },
   dimensions: {
     ...dimensionsBaseState,
     width: 700,

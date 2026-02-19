@@ -39,6 +39,9 @@ const ConfigureEmbedding = (props) => {
 
   const cellSets = useSelector(getCellSets());
   const cellMeta = useSelector((state) => state.cellMeta);
+  const embeddingSettings = useSelector(
+    (state) => state.experimentSettings.originalProcessing?.configureEmbedding?.embeddingSettings,
+  );
 
   const initialPlotColouring = {
     embedding: 'cellCluster',
@@ -98,6 +101,15 @@ const ConfigureEmbedding = (props) => {
   ];
   const continuousEmbStylingControls = [
     {
+      panelTitle: 'Axes and margins',
+      controls: [{
+        name: 'axesWithRanges',
+        props: {
+          embeddingMethod: embeddingSettings?.method,
+        },
+      }],
+    },
+    {
       panelTitle: 'Colours',
       controls: ['colourScheme', 'colourInversion'],
     },
@@ -116,7 +128,6 @@ const ConfigureEmbedding = (props) => {
           option: {
             positions: 'top-bottom',
           },
-          defaultTitle: 'Gene',
         },
       }],
     },
@@ -166,11 +177,24 @@ const ConfigureEmbedding = (props) => {
 
   const renderContinuousEmbedding = (colouring, config, actions) => {
     const { loading, data: plotData, error } = cellMeta[colouring];
+    const colourTitles = {
+      mitochondrialContent: 'Mitochondrial fraction',
+      doubletScores: 'Doublet score',
+      numOfGenes: 'Number of genes',
+      numOfUmis: 'Number of UMIs',
+    };
+    const modifiedConfig = {
+      ...config,
+      legend: {
+        ...config.legend,
+        defaultValues: config.legend.defaultValues || ['title'],
+      },
+    };
     return (
       <ContinuousEmbeddingPlot
         experimentId={experimentId}
         plotData={plotData}
-        config={config}
+        config={modifiedConfig}
         loading={loading}
         error={error}
         reloadPlotData={() => dispatch(loadCellMeta(experimentId, colouring))}
