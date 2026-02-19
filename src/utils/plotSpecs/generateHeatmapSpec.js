@@ -25,12 +25,16 @@ const generateSpec = (config, groupName, data, displayLabels = true) => {
       encode: {
         labels: {
           update: {
+            fill: { value: config?.colour.masterColour },
             fontSize: { value: config?.legend.labelFontSize || 11 },
+            fillOpacity: { value: 1 },
           },
         },
         title: {
           update: {
+            fill: { value: config?.colour.masterColour },
             fontSize: { value: config?.legend.titleFontSize || 12 },
+            fillOpacity: { value: 1 },
           },
         },
       },
@@ -66,11 +70,14 @@ const generateSpec = (config, groupName, data, displayLabels = true) => {
             text: { scale: 'cellSetNames', field: 'label' },
             fill: { value: config?.colour.masterColour },
             fontSize: { value: config?.legend.labelFontSize || 11 },
+            fillOpacity: { value: 1 },
           },
         },
         title: {
           update: {
+            fill: { value: config?.colour.masterColour },
             fontSize: { value: config?.legend.titleFontSize || 12 },
+            fillOpacity: { value: 1 },
           },
         },
       },

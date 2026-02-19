@@ -148,7 +148,13 @@ const MarkerHeatmap = ({ experimentId }) => {
         },
       ));
     }
-  }, [config?.nMarkerGenes, config?.groupedTracks, config?.selectedCellSet, config?.selectedPoints, config?.selectedGenes]);
+  }, [
+    config?.nMarkerGenes,
+    JSON.stringify(config?.groupedTracks),
+    config?.selectedCellSet,
+    config?.selectedPoints,
+    config?.selectedGenes,
+  ]);
 
   useConditionalEffect(() => {
     const expectedConditions = (
