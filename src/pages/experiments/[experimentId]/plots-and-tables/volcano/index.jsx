@@ -144,6 +144,9 @@ const VolcanoPlotPage = (props) => {
       controls: [{
         name: 'legend',
         props: {
+          option: {
+            positions: 'top-bottom',
+          },
           showTitleInput: false,
         },
       }],

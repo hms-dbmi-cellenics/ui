@@ -33,10 +33,12 @@ const generateSpec = (configSrc, plotData) => {
 
   let legend = [];
   if (config.legend.enabled) {
+    const positionIsLeftOrRight = config.legend.position === 'left' || config.legend.position === 'right';
     legend = [
       {
         fill: 'color',
         orient: config.legend.position,
+        direction: positionIsLeftOrRight ? 'vertical' : 'horizontal',
         encode: {
           title: {
             update: {
