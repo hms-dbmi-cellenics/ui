@@ -29,13 +29,13 @@ const generateSpec = (config, plotData) => {
       encode: {
         title: {
           update: {
-            fontSize: { value: 14 },
+            fontSize: { value: config.legend.titleFontSize || 12 },
           },
         },
         labels: {
           interactive: true,
           update: {
-            fontSize: { value: 12 },
+            fontSize: { value: config.legend.labelFontSize || 11 },
             fill: { value: 'black' },
           },
         },

@@ -30,6 +30,18 @@ const generateSpec = (config, method, plotData) => {
         symbolSize: 100,
         offset: 40,
         direction: positionIsLeftRight ? 'vertical' : 'horizontal',
+        encode: {
+          labels: {
+            update: {
+              fontSize: { value: config.legend.labelFontSize || 11 },
+            },
+          },
+          title: {
+            update: {
+              fontSize: { value: config.legend.titleFontSize || 12 },
+            },
+          },
+        },
       }];
   }
   return {

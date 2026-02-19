@@ -5,6 +5,8 @@ const legendBaseState = {
   colour: '#000000',
   title: '',
   defaultValues: ['title'],
+  titleFontSize: 12,
+  labelFontSize: 11,
 };
 
 const dimensionsBaseState = {
