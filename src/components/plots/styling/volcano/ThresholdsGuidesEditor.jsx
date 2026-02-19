@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {
-  Form, InputNumber, Checkbox, Space, Typography,
+  Form, Slider, Checkbox, Space, Typography,
 } from 'antd';
 import _ from 'lodash';
 import ColorPicker from 'components/ColorPicker';
@@ -36,13 +36,17 @@ const ThresholdsGuidesEditor = (props) => {
           label='Adjusted p-value:'
         >
           <Space direction='vertical' style={{ width: '100%' }}>
-            <Space>
-              <InputNumber
+            <Space direction='vertical' style={{ width: '100%' }}>
+              <Slider
                 min={0.00001}
+                max={1}
                 value={config.adjPvalueThreshold}
                 step={0.01}
-                type='number'
                 onChange={(val) => debouncedUpdate({ adjPvalueThreshold: val })}
+                marks={{
+                  0.00001: '0',
+                  1: '1',
+                }}
               />
               <Checkbox
                 checked={config.showpvalueThresholdGuides}
@@ -64,12 +68,17 @@ const ThresholdsGuidesEditor = (props) => {
         <Form.Item
           label='Fold change (log):'
         >
-          <Space>
-            <InputNumber
+          <Space direction='vertical' style={{ width: '100%' }}>
+            <Slider
               min={0.01}
-              step={0.01}
+              max={5}
               value={config.logFoldChangeThreshold}
+              step={0.01}
               onChange={(val) => debouncedUpdate({ logFoldChangeThreshold: val })}
+              marks={{
+                0.01: '0',
+                5: '5',
+              }}
             />
             <Checkbox
               checked={config.showLogFoldChangeThresholdGuides}
