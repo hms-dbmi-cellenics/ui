@@ -54,7 +54,7 @@ const ThresholdsGuidesEditor = (props) => {
               </Checkbox>
             </Space>
             <Text type='secondary'>
-              -log10(adj p-value) =
+              -log₁₀(adj p-value) =
               {' '}
               {config.adjPvalueThreshold > 0 ? (-Math.log10(config.adjPvalueThreshold)).toPrecision(3) : 'Infinity'}
             </Text>

@@ -153,7 +153,7 @@ const VolcanoPlotPage = (props) => {
                 onChange={(val) => updatePlotWithChanges({ labelPvalueThreshold: val })}
               />
               <Typography.Text type='secondary'>
-                -log10(adj p-value) =
+                -log₁₀(adj p-value) =
                 {' '}
                 {(config?.labelPvalueThreshold !== undefined ? config.labelPvalueThreshold : 0.05) > 0 ? (-Math.log10(config?.labelPvalueThreshold !== undefined ? config.labelPvalueThreshold : 0.05)).toPrecision(3) : 'Infinity'}
               </Typography.Text>
