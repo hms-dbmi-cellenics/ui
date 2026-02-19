@@ -4,7 +4,7 @@ import {
   Skeleton,
   Empty,
   Form,
-  Slider,
+  InputNumber,
   Typography,
 } from 'antd';
 import { useSelector, useDispatch } from 'react-redux';
@@ -145,16 +145,12 @@ const VolcanoPlotPage = (props) => {
             label='P-value:'
           >
             <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-              <Slider
+              <InputNumber
                 min={0.00001}
                 max={1}
                 step={0.01}
                 value={config?.labelPvalueThreshold !== undefined ? config.labelPvalueThreshold : 0.05}
                 onChange={(val) => updatePlotWithChanges({ labelPvalueThreshold: val })}
-                marks={{
-                  0.00001: '0',
-                  1: '1',
-                }}
               />
               <Typography.Text type='secondary'>
                 -log10(p-value) =
