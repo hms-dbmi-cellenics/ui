@@ -421,7 +421,7 @@ const generateSpec = (config, plotData) => {
         type: 'symbol',
         symbolType: 'circle',
         symbolSize: 100,
-        title: config.legend.title || plotData.settings.groupingName,
+        title: config.legend.title ? config.legend.title : null,
         titleFont: config?.fontStyle.font,
         titleFontSize: config?.legend.titleFontSize,
         titleColor: config?.colour.masterColour,

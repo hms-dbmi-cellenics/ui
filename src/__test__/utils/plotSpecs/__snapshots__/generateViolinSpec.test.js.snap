@@ -172,7 +172,7 @@ exports[`generateData generate spec returns the right data 1`] = `
       "orient": "right",
       "symbolSize": 100,
       "symbolType": "circle",
-      "title": "Custom cell sets",
+      "title": null,
       "titleColor": "#000000",
       "titleFont": "sans-serif",
       "titleFontSize": 12,
