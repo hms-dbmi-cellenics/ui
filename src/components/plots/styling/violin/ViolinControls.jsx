@@ -25,10 +25,14 @@ const ViolinControls = (props) => {
     changeSelectedPlotGene,
   } = props;
 
-  const [activeKey, setActiveKey] = useState('view-multiple-plots');
+  const [activeKey, setActiveKey] = useState(['view-multiple-plots']);
+
+  const handleChangeActiveKey = (key) => {
+    setActiveKey(Array.isArray(key) ? key : [key]);
+  };
 
   return (
-    <Collapse accordion activeKey={activeKey} onChange={setActiveKey}>
+    <Collapse accordion activeKey={activeKey} onChange={handleChangeActiveKey}>
       <Panel header='Gene selection' key='gene-selection'>
         <GeneSearchBar
           onSelect={changeSelectedPlotGene}
