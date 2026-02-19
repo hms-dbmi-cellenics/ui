@@ -338,8 +338,9 @@ const MarkerHeatmap = ({ experimentId }) => {
             <Form style={{ marginTop: '15px' }}>
               <Form.Item
                 label='Size'
-                labelCol={{ span: 12, style: { textAlign: 'left' } }}
-                wrapperCol={{ span: 12 }}
+                labelCol={{ span: 5, style: { textAlign: 'left' } }}
+                wrapperCol={{ span: 19 }}
+                style={{ marginBottom: 0 }}
               >
                 <Slider
                   value={config.geneLabelSize || 10}
@@ -390,8 +391,9 @@ const MarkerHeatmap = ({ experimentId }) => {
             <Form style={{ marginTop: '15px' }}>
               <Form.Item
                 label='Size'
-                labelCol={{ span: 12, style: { textAlign: 'left' } }}
-                wrapperCol={{ span: 12 }}
+                labelCol={{ span: 5, style: { textAlign: 'left' } }}
+                wrapperCol={{ span: 19 }}
+                style={{ marginBottom: 0 }}
               >
                 <Slider
                   value={config.metadataLabelSize || 10}
