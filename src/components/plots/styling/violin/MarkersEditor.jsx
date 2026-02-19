@@ -19,8 +19,8 @@ const MarkersEditor = (props) => {
         <p><strong>Toggle Markers:</strong></p>
         <Form.Item>
           <Radio.Group
-            onChange={(e) => handleChange({ selectedPointsVisible: e.target.value === 'show' })}
-            value={newConfig.selectedPointsVisible ? 'show' : 'hide'}
+            onChange={(e) => onUpdate({ selectedPointsVisible: e.target.value === 'show' })}
+            value={config.selectedPointsVisible ? 'show' : 'hide'}
           >
             <Radio value='show'>Show</Radio>
             <Radio value='hide'>Hide</Radio>
@@ -52,11 +52,11 @@ const MarkersEditor = (props) => {
             marks={{ 1: 1, 10: 10 }}
           />
         </Form.Item>
-        <p><strong>Toggle Statistics:</strong></p>
+        <p><strong>Toggle Median & Interquartile Range:</strong></p>
         <Form.Item>
           <Radio.Group
-            onChange={(e) => handleChange({ statisticsVisible: e.target.value === 'show' })}
-            value={newConfig.statisticsVisible ? 'show' : 'hide'}
+            onChange={(e) => onUpdate({ statisticsVisible: e.target.value === 'show' })}
+            value={config.statisticsVisible ? 'show' : 'hide'}
           >
             <Radio value='show'>Show</Radio>
             <Radio value='hide'>Hide</Radio>
