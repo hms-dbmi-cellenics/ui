@@ -463,7 +463,7 @@ const embeddingPreviewByCellSetsInitialConfig = {
     xAxisText: null,
     yAxisText: null,
     defaultValues: ['x', 'y'],
-    offset: 10,
+    offset: 0,
   },
   axesRanges: axesRangesBaseState,
   title: {
