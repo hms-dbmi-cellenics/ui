@@ -1,7 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Radio, Form, Input } from 'antd';
+import { Radio, Form, Input, Slider, Space } from 'antd';
 import _ from 'lodash';
+import useUpdateThrottled from 'utils/customHooks/useUpdateThrottled';
 
 const defaultOption = {
   positions: 'corners',
@@ -15,6 +16,8 @@ const LegendEditor = (props) => {
   let { option } = props;
 
   option = option ?? defaultOption;
+
+  const [newConfig, handleChange] = useUpdateThrottled(onUpdate, config);
 
   // Display title - show default if 'title' is in defaultValues, otherwise show custom title
   const displayTitle = config.legend.defaultValues?.includes('title')
@@ -100,6 +103,38 @@ const LegendEditor = (props) => {
                     defaultValues: _.without(config.legend.defaultValues, 'title'),
                   },
                 })}
+              />
+            </Form.Item>
+
+            <p><strong>Font Sizes:</strong></p>
+            <Form.Item
+              label='Title Font Size'
+              labelCol={{ span: 12, style: { textAlign: 'left' } }}
+              wrapperCol={{ span: 12 }}
+            >
+              <Slider
+                value={newConfig.legend.titleFontSize || 12}
+                min={8}
+                max={24}
+                onChange={(value) => {
+                  handleChange({ legend: { titleFontSize: value } });
+                }}
+                marks={{ 8: 8, 24: 24 }}
+              />
+            </Form.Item>
+            <Form.Item
+              label='Label Font Size'
+              labelCol={{ span: 12, style: { textAlign: 'left' } }}
+              wrapperCol={{ span: 12 }}
+            >
+              <Slider
+                value={newConfig.legend.labelFontSize || 11}
+                min={8}
+                max={24}
+                onChange={(value) => {
+                  handleChange({ legend: { labelFontSize: value } });
+                }}
+                marks={{ 8: 8, 24: 24 }}
               />
             </Form.Item>
           </>

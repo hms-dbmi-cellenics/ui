@@ -67,6 +67,12 @@ const generateSpec = (config, plotData, xNamesToDisplay, yNamesToDisplay) => {
                 field: 'label',
               },
               fill: { value: config.colour.masterColour },
+              fontSize: { value: config.legend.labelFontSize || 11 },
+            },
+          },
+          title: {
+            update: {
+              fontSize: { value: config.legend.titleFontSize || 12 },
             },
           },
         },

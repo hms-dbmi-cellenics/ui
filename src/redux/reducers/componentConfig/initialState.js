@@ -269,6 +269,8 @@ const frequencyInitialConfig = {
     ...legendBaseState,
     title: 'Cell Set',
     defaultValues: ['title'],
+    titleFontSize: 12,
+    labelFontSize: 11,
     offset: 0,
   },
   labels: labelBaseState,
@@ -897,6 +899,8 @@ const dataIntegrationFrequencyInitialConfig = {
     ...legendBaseState,
     title: 'Sample',
     defaultValues: ['title'],
+    titleFontSize: 12,
+    labelFontSize: 11,
     offset: 0,
   },
   dimensions: {
