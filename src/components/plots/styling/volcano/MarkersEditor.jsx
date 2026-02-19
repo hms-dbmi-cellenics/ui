@@ -9,15 +9,15 @@ const MarkersEditor = (props) => {
   const colorPickerOptions = [
     {
       config: 'significantDownregulatedColor',
-      name: 'Significantly Downregulated Genes',
+      name: 'Downregulated',
     },
     {
       config: 'significantUpregulatedColor',
-      name: 'Significantly Upregulated Genes',
+      name: 'Upregulated',
     },
     {
       config: 'noDifferenceColor',
-      name: 'Genes With No Significant Difference',
+      name: 'No difference',
     },
   ];
 
