@@ -121,15 +121,13 @@ const PlotContainer = (props) => {
   );
 
   const renderDefaultControlPanel = (height) => (
-    <div style={{ height, overflowY: 'auto', display: 'flex', flexDirection: 'column', minHeight: 0 }}>
-      <PlotStyling
-        formConfig={plotStylingConfig}
-        config={config}
-        onUpdate={onUpdate ?? defaultOnUpdate}
-        extraPanels={extraControlPanels}
-        defaultActiveKey={defaultActiveKey}
-      />
-    </div>
+    <PlotStyling
+      formConfig={plotStylingConfig}
+      config={config}
+      onUpdate={onUpdate ?? defaultOnUpdate}
+      extraPanels={extraControlPanels}
+      defaultActiveKey={defaultActiveKey}
+    />
   );
 
   const TILE_MAP = {

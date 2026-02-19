@@ -13,6 +13,9 @@ const renderWindow = (tile, width, height, style) => {
     <div style={{
       padding: layout.PANEL_PADDING,
       overflow: 'auto',
+      display: 'flex',
+      flexDirection: 'column',
+      minHeight: 0,
       ...style,
     }}
     >
