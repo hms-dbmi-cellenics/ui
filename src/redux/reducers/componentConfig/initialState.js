@@ -304,7 +304,7 @@ const violinConfig = {
   spec: '1.0.0',
   legend: {
     ...legendBaseState,
-    enabled: false,
+    enabled: true,
   },
   dimensions: {
     ...dimensionsBaseState,

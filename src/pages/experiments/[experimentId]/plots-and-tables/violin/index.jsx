@@ -120,6 +120,7 @@ const ViolinIndex = ({ experimentId }) => {
           option: {
             positions: 'top-bottom',
           },
+          defaultTitle: selectedConfig?.shownGene || 'Gene',
         },
       }],
     },
