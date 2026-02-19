@@ -14,11 +14,11 @@ const ThresholdsGuidesEditor = (props) => {
   const colorPickerOptions = [
     {
       config: 'pvalueThresholdColor',
-      name: 'p-value guide',
+      name: 'P-value Guide',
     },
     {
       config: 'logFoldChangeThresholdColor',
-      name: 'fold change guide',
+      name: 'Fold Change Guide',
     },
   ];
 
