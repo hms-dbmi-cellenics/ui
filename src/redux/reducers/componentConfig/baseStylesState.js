@@ -3,6 +3,8 @@ const legendBaseState = {
   showAlert: false,
   position: 'right',
   colour: '#000000',
+  title: '',
+  defaultValues: ['title'],
 };
 
 const dimensionsBaseState = {

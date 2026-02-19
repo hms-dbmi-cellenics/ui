@@ -47,12 +47,22 @@ const PlotContainer = (props) => {
   };
 
   const isConfigEqual = (currentConfig, initialConfig) => {
+    const removeDefaultValues = (obj) => {
+      if (!obj || typeof obj !== 'object') return obj;
+      const cleaned = { ...obj };
+      delete cleaned.defaultValues;
+      return cleaned;
+    };
+
     const isEqual = Object.keys(initialConfig).every((key) => {
       // By pass plot data because we want to compare settings not data
       if (key === 'plotData') return true;
       if (initialConfig.keepValuesOnReset?.includes(key)) return true;
-      if (typeof currentConfig[key] === 'object') {
-        return JSON.stringify(currentConfig[key]) === JSON.stringify(initialConfig[key]);
+      if (currentConfig[key] && typeof currentConfig[key] === 'object' && initialConfig[key] && typeof initialConfig[key] === 'object') {
+        // For nested objects, exclude defaultValues from comparison as it's metadata about defaults
+        const currentObj = removeDefaultValues(currentConfig[key]);
+        const initialObj = removeDefaultValues(initialConfig[key]);
+        return JSON.stringify(currentObj) === JSON.stringify(initialObj);
       }
 
       return currentConfig[key] === initialConfig[key];

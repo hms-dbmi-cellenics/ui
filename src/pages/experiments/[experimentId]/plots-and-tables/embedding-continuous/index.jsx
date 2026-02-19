@@ -89,7 +89,15 @@ const ContinuousEmbeddingPage = ({ experimentId }) => {
     },
     {
       panelTitle: 'Legend',
-      controls: ['legend'],
+      controls: [{
+        name: 'legend',
+        props: {
+          option: {
+            positions: 'top-bottom',
+          },
+          defaultTitle: plotConfigs[selectedPlotUuid]?.shownGene || 'Gene',
+        },
+      }],
     },
   ];
 

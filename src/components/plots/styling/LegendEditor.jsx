@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Radio, Form } from 'antd';
+import { Radio, Form, Input } from 'antd';
+import _ from 'lodash';
 
 const defaultOption = {
   positions: 'corners',
@@ -8,12 +9,17 @@ const defaultOption = {
 
 const LegendEditor = (props) => {
   const {
-    onUpdate, config,
+    onUpdate, config, defaultTitle,
   } = props;
 
   let { option } = props;
 
   option = option ?? defaultOption;
+
+  // Display title - show default if 'title' is in defaultValues, otherwise show custom title
+  const displayTitle = config.legend.defaultValues?.includes('title')
+    ? defaultTitle
+    : config.legend.title;
 
   const positions = {
     corners: {
@@ -69,7 +75,7 @@ const LegendEditor = (props) => {
                 }
               </Radio.Group>
             </Form.Item>
-            { config.legend.direction ? (
+            {config.legend.direction ? (
               <>
                 <p><strong>Direction</strong></p>
                 <Form.Item>
@@ -83,6 +89,19 @@ const LegendEditor = (props) => {
                 </Form.Item>
               </>
             ) : <></>}
+
+            <p><strong>Title:</strong></p>
+            <Form.Item>
+              <Input
+                value={displayTitle || ''}
+                onChange={(e) => onUpdate({
+                  legend: {
+                    title: e.target.value,
+                    defaultValues: _.without(config.legend.defaultValues, 'title'),
+                  },
+                })}
+              />
+            </Form.Item>
           </>
         )
       }
@@ -95,10 +114,12 @@ LegendEditor.propTypes = {
   onUpdate: PropTypes.func.isRequired,
   option: PropTypes.object,
   config: PropTypes.object.isRequired,
+  defaultTitle: PropTypes.string,
 };
 
 LegendEditor.defaultProps = {
   option: defaultOption,
+  defaultTitle: null,
 };
 
 export default LegendEditor;

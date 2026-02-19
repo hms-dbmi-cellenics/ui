@@ -87,6 +87,7 @@ const ConfigureEmbedding = (props) => {
           option: {
             positions: 'top-bottom',
           },
+          defaultTitle: 'Cluster Name',
         },
       }],
     },
@@ -109,7 +110,15 @@ const ConfigureEmbedding = (props) => {
     },
     {
       panelTitle: 'Legend',
-      controls: ['legend'],
+      controls: [{
+        name: 'legend',
+        props: {
+          option: {
+            positions: 'top-bottom',
+          },
+          defaultTitle: 'Gene',
+        },
+      }],
     },
   ];
   const violinStylingControls = [

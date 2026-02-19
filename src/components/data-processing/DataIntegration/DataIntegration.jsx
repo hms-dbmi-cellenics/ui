@@ -69,6 +69,7 @@ const DataIntegration = (props) => {
               },
               selectedCellSet: 'sample',
               axes: {
+                ...config.axes,
                 defaultValues: [],
               },
             }}
@@ -121,10 +122,6 @@ const DataIntegration = (props) => {
         />,
       },
       {
-        panelTitle: 'Markers',
-        controls: ['markers'],
-      },
-      {
         panelTitle: 'Legend',
         controls: [{
           name: 'legend',
@@ -132,8 +129,13 @@ const DataIntegration = (props) => {
             option: {
               positions: 'top-bottom',
             },
+            defaultTitle: 'Cell Set',
           },
         }],
+      },
+      {
+        panelTitle: 'Markers',
+        controls: ['markers'],
       },
       {
         panelTitle: 'Labels',
@@ -157,6 +159,7 @@ const DataIntegration = (props) => {
             option: {
               positions: 'top-bottom',
             },
+            defaultTitle: 'Sample Name',
           },
         }],
       },

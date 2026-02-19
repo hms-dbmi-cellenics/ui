@@ -113,6 +113,7 @@ const EmbeddingCategoricalPage = ({ experimentId }) => {
           option: {
             positions: 'top-bottom',
           },
+          defaultTitle: 'Cluster Name',
         },
       }],
     },
