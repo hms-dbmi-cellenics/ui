@@ -17,7 +17,7 @@ const generateSpec = (config, method, plotData) => {
     const positionIsLeftRight = ['left', 'right'].includes(config.legend.position);
     const legendTitle = config.legend.defaultValues?.includes('title')
       ? config.shownGene
-      : config.legend.title;
+      : (config.legend.title ? config.legend.title : null);
     legend = [
       {
         fill: 'color',

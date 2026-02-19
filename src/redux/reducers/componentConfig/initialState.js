@@ -93,7 +93,10 @@ const spatialCategoricalInitialConfig = {
 // PLOTS & TABLES - Continuous Embedding
 const embeddingContinuousInitialConfig = {
   spec: '1.0.0',
-  legend: legendBaseState,
+  legend: {
+    ...legendBaseState,
+    defaultValues: [],
+  },
   dimensions: {
     ...dimensionsBaseState,
     width: 700,
