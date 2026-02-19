@@ -203,6 +203,8 @@ const heatmapInitialConfig = {
   expressionValue: 'raw',
   truncatedValues: true,
   geneLabelSize: 10,
+  showMetadataLabels: true,
+  metadataLabelSize: 10,
 };
 
 // PLOTS & TABLES - Marker heatmap

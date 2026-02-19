@@ -375,6 +375,37 @@ const MarkerHeatmap = ({ experimentId }) => {
       </Panel>
       <Panel header='Metadata tracks' key='metadata-tracks'>
         <HeatmapMetadataTracksSettings componentType={plotUuid} />
+        <div style={{ paddingTop: '15px' }}>
+          <p>Metadata labels:</p>
+          <Radio.Group
+            onChange={
+              (e) => userUpdatedPlotWithChanges({ showMetadataLabels: e.target.value })
+            }
+            value={config.showMetadataLabels}
+          >
+            <Radio value>Show</Radio>
+            <Radio value={false}>Hide</Radio>
+          </Radio.Group>
+          {config.showMetadataLabels && (
+            <Form style={{ marginTop: '15px' }}>
+              <Form.Item
+                label='Metadata Label Size'
+                labelCol={{ span: 12, style: { textAlign: 'left' } }}
+                wrapperCol={{ span: 12 }}
+              >
+                <Slider
+                  value={config.metadataLabelSize || 10}
+                  min={6}
+                  max={20}
+                  onChange={(value) => {
+                    userUpdatedPlotWithChanges({ metadataLabelSize: value });
+                  }}
+                  marks={{ 6: 6, 20: 20 }}
+                />
+              </Form.Item>
+            </Form>
+          )}
+        </div>
       </Panel>
       <Panel header='Group by' key='group-by'>
         <HeatmapGroupBySettings componentType={plotUuid} />

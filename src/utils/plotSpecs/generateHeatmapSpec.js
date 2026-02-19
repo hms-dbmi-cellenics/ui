@@ -218,6 +218,8 @@ const generateSpec = (config, groupName, data, displayLabels = true) => {
         orient: 'left',
         scale: 'yTrack',
         domain: false,
+        labels: config.showMetadataLabels,
+        labelFontSize: config.metadataLabelSize || 10,
         encode: {
           labels: {
             update: {
