@@ -225,7 +225,10 @@ const volcanoInitialConfig = {
     position: 'right',
     direction: 'vertical',
   },
-  dimensions: dimensionsBaseState,
+  dimensions: {
+    ...dimensionsBaseState,
+    width: 600,
+  },
   marker: {
     ...markerBaseState,
     showOpacity: false,
