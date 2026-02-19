@@ -11,9 +11,10 @@ const renderWindow = (tile, width, height, style) => {
 
   return (
     <div style={{
-      maxHeight: height || '100%',
+      height: '100%',
       padding: layout.PANEL_PADDING,
       overflow: 'auto',
+      boxSizing: 'border-box',
       ...style,
     }}
     >
