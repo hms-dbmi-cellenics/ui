@@ -324,7 +324,7 @@ const MarkerHeatmap = ({ experimentId }) => {
           showGeneTable={config.selectedGenes?.length > 0}
         />
         <div style={{ paddingTop: '10px' }}>
-          <p>Gene labels:</p>
+          <p><strong>Gene labels:</strong></p>
           <Radio.Group
             onChange={
               (e) => userUpdatedPlotWithChanges({ showGeneLabels: e.target.value })
@@ -337,7 +337,7 @@ const MarkerHeatmap = ({ experimentId }) => {
           {config.showGeneLabels && (
             <Form style={{ marginTop: '15px' }}>
               <Form.Item
-                label='Gene Label Size'
+                label='Size'
                 labelCol={{ span: 12, style: { textAlign: 'left' } }}
                 wrapperCol={{ span: 12 }}
               >
@@ -376,7 +376,7 @@ const MarkerHeatmap = ({ experimentId }) => {
       <Panel header='Metadata tracks' key='metadata-tracks'>
         <HeatmapMetadataTracksSettings componentType={plotUuid} />
         <div style={{ paddingTop: '15px' }}>
-          <p>Metadata labels:</p>
+          <p><strong>Metadata labels:</strong></p>
           <Radio.Group
             onChange={
               (e) => userUpdatedPlotWithChanges({ showMetadataLabels: e.target.value })
@@ -389,7 +389,7 @@ const MarkerHeatmap = ({ experimentId }) => {
           {config.showMetadataLabels && (
             <Form style={{ marginTop: '15px' }}>
               <Form.Item
-                label='Metadata Label Size'
+                label='Size'
                 labelCol={{ span: 12, style: { textAlign: 'left' } }}
                 wrapperCol={{ span: 12 }}
               >
