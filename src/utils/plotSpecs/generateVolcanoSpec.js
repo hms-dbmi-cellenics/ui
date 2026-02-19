@@ -217,11 +217,11 @@ const generateSpec = (configSrc, plotData) => {
             },
           },
           update: {
-            strokeWidth: { value: config.marker.outline ? 1 : 0 },
-            strokeOpacity: { value: config.marker.outline ? config.strokeOpa : 0 },
-            stroke: {
-              value: config.strokeCol,
-            },
+            strokeWidth: { value: 1 },
+            strokeOpacity: { value: config.strokeOpa },
+            stroke: config.marker.outline
+              ? { value: config.strokeCol }
+              : { scale: 'color', field: 'status' },
           },
         },
       },
