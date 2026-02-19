@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Form } from 'antd';
-import ColorPicker from '../ColorPicker';
+import ColorPicker from '../../../ColorPicker';
 
 const MarkersEditor = (props) => {
   const { onUpdate, config } = props;
