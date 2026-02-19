@@ -68,6 +68,16 @@ const ViolinIndex = ({ experimentId }) => {
     updateMultiViewWithChanges({ nrows: 1, ncols: 1, plotUuids: [`${plotUuid}-0`] });
   };
 
+  // Get the grouping name for X-axis default
+  const groupingName = selectedConfig?.selectedCellSet
+    ? cellSets.properties?.[selectedConfig.selectedCellSet]?.name
+    : 'Cell Set';
+
+  // Get Y-axis default based on normalisation
+  const yAxisDefault = selectedConfig?.normalised === 'zScore'
+    ? 'Z-Score of Expression'
+    : 'Raw Expression';
+
   const plotStylingConfig = [
     {
       panelTitle: 'Main schema',
@@ -90,7 +100,13 @@ const ViolinIndex = ({ experimentId }) => {
     },
     {
       panelTitle: 'Axes and margins',
-      controls: ['axesWithRanges'],
+      controls: [{
+        name: 'axesWithRanges',
+        props: {
+          defaultXAxisText: groupingName,
+          defaultYAxisText: yAxisDefault,
+        },
+      }],
     },
     {
       panelTitle: 'Markers',
