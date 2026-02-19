@@ -137,8 +137,8 @@ const VolcanoPlotPage = (props) => {
       footer: (
         <Form
           size='small'
-          labelCol={{ span: 12, style: { textAlign: 'left' } }}
-          wrapperCol={{ span: 12 }}
+          labelCol={{ span: 8, style: { textAlign: 'left' } }}
+          wrapperCol={{ span: 16 }}
         >
           <p><strong>Label Threshold</strong></p>
           <Form.Item
