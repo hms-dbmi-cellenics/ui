@@ -398,13 +398,13 @@ const generateSpec = (config, plotData) => {
     const groupNames = groups.map((id) => plotData.groups[id].name);
     const groupColors = groups.map((id) => plotData.groups[id].color);
 
-    const positionIsRight = config.legend.position === 'right';
+    const positionIsLeftOrRight = config.legend.position === 'left' || config.legend.position === 'right';
 
-    const legendColumns = positionIsRight
+    const legendColumns = positionIsLeftOrRight
       ? Math.ceil(groups.length / 20)
       : Math.floor(config.dimensions.width / 85);
-    const labelLimit = positionIsRight ? 0 : 85;
-    if (positionIsRight) {
+    const labelLimit = positionIsLeftOrRight ? 0 : 85;
+    if (positionIsLeftOrRight) {
       const plotWidthIndex = spec.signals.findIndex((item) => item.name === 'plotWidth');
       spec.signals[plotWidthIndex].value = plotWidth * 0.85;
     }
@@ -427,7 +427,7 @@ const generateSpec = (config, plotData) => {
         titleColor: config?.colour.masterColour,
         orient: config?.legend.position,
         offset: 40,
-        direction: 'horizontal',
+        direction: positionIsLeftOrRight ? 'vertical' : 'horizontal',
         labelFont: config?.fontStyle.font,
         labelFontSize: config?.legend.labelFontSize,
         labelColor: config?.colour.masterColour,
