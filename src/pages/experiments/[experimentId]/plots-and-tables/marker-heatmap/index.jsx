@@ -390,7 +390,7 @@ const MarkerHeatmap = ({ experimentId }) => {
           {config.showMetadataLabels && (
             <Form style={{ marginTop: '15px' }}>
               <Form.Item
-                label='Size'
+                label='Font Size:'
                 labelCol={{ span: 5, style: { textAlign: 'left' } }}
                 wrapperCol={{ span: 19 }}
                 style={{ marginBottom: 0 }}
