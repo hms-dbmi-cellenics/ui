@@ -119,3 +119,93 @@ describe('generateData', () => {
     expect(spec).toMatchSnapshot();
   });
 });
+
+describe('Legend title improvements', () => {
+  it('should use provided legend title when set', () => {
+    const data = {
+      groups: {
+        'group-1': { name: 'Group 1', color: '#3957ff' },
+      },
+      cells: [{ group: 'group-1', y: 1, x: 0.5 }],
+      settings: { groupingName: 'Custom cell sets' },
+    };
+    const config = {
+      ...initialPlotConfigStates.violin,
+      legend: {
+        ...initialPlotConfigStates.violin.legend,
+        title: 'Custom Title',
+      },
+    };
+
+    const spec = generateSpec(config, data);
+    const legendTitle = spec.legends[0].title;
+
+    expect(legendTitle).toBe('Custom Title');
+  });
+
+  it('should show null legend title when title is empty string', () => {
+    const data = {
+      groups: {
+        'group-1': { name: 'Group 1', color: '#3957ff' },
+      },
+      cells: [{ group: 'group-1', y: 1, x: 0.5 }],
+      settings: { groupingName: 'Custom cell sets' },
+    };
+    const config = {
+      ...initialPlotConfigStates.violin,
+      legend: {
+        ...initialPlotConfigStates.violin.legend,
+        title: '',
+      },
+    };
+
+    const spec = generateSpec(config, data);
+    const legendTitle = spec.legends[0].title;
+
+    expect(legendTitle).toBeNull();
+  });
+
+  it('should not fallback to groupingName when title is deleted', () => {
+    const data = {
+      groups: {
+        'group-1': { name: 'Group 1', color: '#3957ff' },
+      },
+      cells: [{ group: 'group-1', y: 1, x: 0.5 }],
+      settings: { groupingName: 'Custom cell sets' },
+    };
+    const config = {
+      ...initialPlotConfigStates.violin,
+      legend: {
+        ...initialPlotConfigStates.violin.legend,
+        title: '',
+      },
+    };
+
+    const spec = generateSpec(config, data);
+    const legendTitle = spec.legends[0].title;
+
+    expect(legendTitle).not.toBe(data.settings.groupingName);
+  });
+});
+
+describe('Legend defaultValues', () => {
+  it('should have empty defaultValues array by default', () => {
+    const config = initialPlotConfigStates.violin;
+    expect(config.legend.defaultValues).toEqual([]);
+  });
+
+  it('should not show default legend title on initial load', () => {
+    const data = {
+      groups: {
+        'group-1': { name: 'Group 1', color: '#3957ff' },
+      },
+      cells: [{ group: 'group-1', y: 1, x: 0.5 }],
+      settings: { groupingName: 'Custom cell sets' },
+    };
+    const config = initialPlotConfigStates.violin;
+    const spec = generateSpec(config, data);
+
+    const legendTitle = spec.legends[0].title;
+    expect(legendTitle).toBeFalsy();
+  });
+});
