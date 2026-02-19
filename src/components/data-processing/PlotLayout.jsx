@@ -126,7 +126,6 @@ const PlotLayout = ({
   const onClickReset = () => {
     const { plotUuid, plotType } = plots[selectedPlot];
     dispatch(resetPlotConfig(experimentId, plotUuid, plotType));
-    onConfigChange();
   };
 
   const renderPlot = () => {
