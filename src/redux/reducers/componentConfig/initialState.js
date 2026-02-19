@@ -222,8 +222,8 @@ const volcanoInitialConfig = {
   spec: '1.0.0',
   legend: {
     ...legendBaseState,
-    position: 'bottom-right',
-    direction: 'horizontal',
+    position: 'right',
+    direction: 'vertical',
   },
   dimensions: dimensionsBaseState,
   marker: {
