@@ -101,15 +101,6 @@ const ConfigureEmbedding = (props) => {
   ];
   const continuousEmbStylingControls = [
     {
-      panelTitle: 'Axes and margins',
-      controls: [{
-        name: 'axesWithRanges',
-        props: {
-          embeddingMethod: embeddingSettings?.method,
-        },
-      }],
-    },
-    {
       panelTitle: 'Colours',
       controls: ['colourScheme', 'colourInversion'],
     },
@@ -333,7 +324,12 @@ const ConfigureEmbedding = (props) => {
     },
     {
       panelTitle: 'Axes and margins',
-      controls: ['axesWithRanges'],
+      controls: [{
+        name: 'axesWithRanges',
+        props: {
+          embeddingMethod: embeddingSettings?.method,
+        },
+      }],
     },
     ...currentPlot.plotStyling,
   ];
