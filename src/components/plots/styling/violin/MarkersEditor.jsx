@@ -1,22 +1,13 @@
-import React, { useCallback } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import {
   Form, Radio, Slider, Space,
 } from 'antd';
-import _ from 'lodash';
 import useUpdateThrottled from 'utils/customHooks/useUpdateThrottled';
 
 const MarkersEditor = (props) => {
   const { onUpdate, config } = props;
-  const [newConfig, handleChange] = useUpdateThrottled(onUpdate, config.marker);
-
-  const handleToggleMarkers = useCallback((value) => {
-    onUpdate({ selectedPointsVisible: value === 'show' });
-  }, [onUpdate]);
-
-  const handleToggleStatistics = useCallback((value) => {
-    onUpdate({ statisticsVisible: value === 'show' });
-  }, [onUpdate]);
+  const [newConfig, handleChange] = useUpdateThrottled(onUpdate, config);
 
   return (
     <Space direction='vertical' style={{ width: '100%' }}>
@@ -28,7 +19,7 @@ const MarkersEditor = (props) => {
         <p><strong>Toggle Markers:</strong></p>
         <Form.Item>
           <Radio.Group
-            onChange={(e) => handleToggleMarkers(e.target.value)}
+            onChange={(e) => onUpdate({ selectedPointsVisible: e.target.value === 'show' })}
             value={config.selectedPointsVisible ? 'show' : 'hide'}
           >
             <Radio value='show'>Show</Radio>
@@ -39,11 +30,11 @@ const MarkersEditor = (props) => {
           label='Point Size'
         >
           <Slider
-            value={newConfig.size}
+            value={newConfig.marker.size}
             min={1}
             max={100}
             onChange={(value) => {
-              handleChange({ size: value });
+              handleChange({ marker: { size: value } });
             }}
             marks={{ 1: 1, 100: 100 }}
           />
@@ -52,11 +43,11 @@ const MarkersEditor = (props) => {
           label='Point Fill Opacity'
         >
           <Slider
-            value={newConfig.opacity}
+            value={newConfig.marker.opacity}
             min={1}
             max={10}
             onChange={(value) => {
-              handleChange({ opacity: value });
+              handleChange({ marker: { opacity: value } });
             }}
             marks={{ 1: 1, 10: 10 }}
           />
@@ -64,7 +55,7 @@ const MarkersEditor = (props) => {
         <p><strong>Toggle Median & Interquartile Range:</strong></p>
         <Form.Item>
           <Radio.Group
-            onChange={(e) => handleToggleStatistics(e.target.value)}
+            onChange={(e) => onUpdate({ statisticsVisible: e.target.value === 'show' })}
             value={config.statisticsVisible ? 'show' : 'hide'}
           >
             <Radio value='show'>Show</Radio>
