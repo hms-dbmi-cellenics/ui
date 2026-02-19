@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import {
-  Row, Col, Space, Skeleton, Divider, Collapse,
+  Row, Col, Space, Skeleton, Divider, Collapse, Button,
 } from 'antd';
 import { useSelector, useDispatch } from 'react-redux';
 import _ from 'lodash';
@@ -13,7 +13,9 @@ import {
   updatePlotConfig,
   loadPlotConfig,
   savePlotConfig,
+  resetPlotConfig,
 } from 'redux/actions/componentConfig';
+import { initialPlotConfigStates } from 'redux/reducers/componentConfig/initialState';
 
 const { Panel } = Collapse;
 
@@ -38,6 +40,7 @@ const PlotLayout = ({
   const dispatch = useDispatch();
   const [plot, setPlot] = useState(null);
   const [selectedPlot, setSelectedPlot] = useState(Object.keys(plots)[0]);
+  const [isResetDisabled, setIsResetDisabled] = useState(true);
 
   const selectedPlotConfig = useSelector(
     (state) => state.componentConfig[plots[selectedPlot].plotUuid]?.config,
@@ -58,6 +61,34 @@ const PlotLayout = ({
   const debounceSave = useCallback(
     _.debounce((plotUuid) => dispatch(savePlotConfig(experimentId, plotUuid)), 2000), [],
   );
+
+  const isConfigEqual = (currentConfig, initialConfig) => {
+    // Guard against undefined or null initialConfig
+    if (!initialConfig) return false;
+
+    const removeDefaultValues = (obj) => {
+      if (!obj || typeof obj !== 'object') return obj;
+      const cleaned = { ...obj };
+      delete cleaned.defaultValues;
+      return cleaned;
+    };
+
+    const isEqual = Object.keys(initialConfig).every((key) => {
+      // By pass plot data because we want to compare settings not data
+      if (key === 'plotData') return true;
+      if (initialConfig.keepValuesOnReset?.includes(key)) return true;
+      if (currentConfig[key] && typeof currentConfig[key] === 'object' && initialConfig[key] && typeof initialConfig[key] === 'object') {
+        // For nested objects, exclude defaultValues from comparison as it's metadata about defaults
+        const currentObj = removeDefaultValues(currentConfig[key]);
+        const initialObj = removeDefaultValues(initialConfig[key]);
+        return JSON.stringify(currentObj) === JSON.stringify(initialObj);
+      }
+
+      return currentConfig[key] === initialConfig[key];
+    });
+
+    return isEqual;
+  };
 
   const updatePlotWithChanges = (obj) => {
     dispatch(updatePlotConfig(plots[selectedPlot].plotUuid, obj));
@@ -87,6 +118,19 @@ const PlotLayout = ({
       setPlot(plots[selectedPlot].plot(newConfig, selectedPlotData, allowedPlotActions));
     }
   }, [filterSettings, selectedConfig, selectedPlotData]);
+
+  useEffect(() => {
+    if (!selectedConfig || !plots[selectedPlot]) return;
+
+    const initialConfig = initialPlotConfigStates[plots[selectedPlot].plotType];
+    setIsResetDisabled(isConfigEqual(selectedConfig, initialConfig));
+  }, [selectedConfig]);
+
+  const onClickReset = () => {
+    const { plotUuid, plotType } = plots[selectedPlot];
+    dispatch(resetPlotConfig(experimentId, plotUuid, plotType));
+  };
+
   const renderPlot = () => {
     // Spinner for main window
     if (!selectedPlotConfig || !selectedPlotData || stepHadErrors) {
@@ -172,6 +216,15 @@ const PlotLayout = ({
                 config={selectedPlotConfig}
                 onUpdate={updatePlotWithChanges}
               />
+              <Divider />
+              <Button
+                type='default'
+                disabled={isResetDisabled}
+                block
+                onClick={onClickReset}
+              >
+                Reset Plot
+              </Button>
             </Panel>
           </Collapse>
         </Col>

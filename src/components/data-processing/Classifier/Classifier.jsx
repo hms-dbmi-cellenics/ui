@@ -52,6 +52,18 @@ const Classifier = ({
       controls: ['dimensions'],
     },
     {
+      panelTitle: 'Legend',
+      controls: [{
+        name: 'legend',
+        props: {
+          option: {
+            positions: 'top-bottom',
+          },
+          defaultTitle: 'FDR Threshold',
+        },
+      }],
+    },
+    {
       panelTitle: 'Axes',
       controls: ['axesWithRanges'],
     },

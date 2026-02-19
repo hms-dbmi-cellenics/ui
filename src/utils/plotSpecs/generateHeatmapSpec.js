@@ -6,12 +6,18 @@ const generateSpec = (config, groupName, data, displayLabels = true) => {
       domain: false,
       orient: 'left',
       scale: 'y',
+      labelFontSize: config.geneLabelSize || 10,
     },
   ] : [];
 
   const orientation = config.legend.position === 'vertical'
     ? { orient: 'left' }
     : { orient: 'bottom', direction: 'horizontal' };
+
+  // Use defaultTitle if 'title' is in defaultValues, otherwise use custom title
+  const categoricalLegendTitle = config.legend.defaultValues?.includes('title')
+    ? groupName
+    : config.legend.title;
 
   const legend = [
     {
@@ -22,6 +28,22 @@ const generateSpec = (config, groupName, data, displayLabels = true) => {
       titleFont: config.fontStyle.font,
       gradientLength: { signal: 'width' },
       labelSeparation: { signal: 'width' },
+      encode: {
+        labels: {
+          update: {
+            fill: { value: config?.colour.masterColour },
+            fontSize: { value: config?.legend.labelFontSize || 11 },
+            fillOpacity: { value: 1 },
+          },
+        },
+        title: {
+          update: {
+            fill: { value: config?.colour.masterColour },
+            fontSize: { value: config?.legend.titleFontSize || 12 },
+            fillOpacity: { value: 1 },
+          },
+        },
+      },
       ...orientation,
     },
   ];
@@ -40,7 +62,7 @@ const generateSpec = (config, groupName, data, displayLabels = true) => {
 
     legend.push({
       fill: 'cellSetColors',
-      title: groupName,
+      title: categoricalLegendTitle,
       type: 'symbol',
       orient: 'right',
       columns: numVerticalLegendColumns,
@@ -52,6 +74,16 @@ const generateSpec = (config, groupName, data, displayLabels = true) => {
         labels: {
           update: {
             text: { scale: 'cellSetNames', field: 'label' },
+            fill: { value: config?.colour.masterColour },
+            fontSize: { value: config?.legend.labelFontSize || 11 },
+            fillOpacity: { value: 1 },
+          },
+        },
+        title: {
+          update: {
+            fill: { value: config?.colour.masterColour },
+            fontSize: { value: config?.legend.titleFontSize || 12 },
+            fillOpacity: { value: 1 },
           },
         },
       },
@@ -186,6 +218,9 @@ const generateSpec = (config, groupName, data, displayLabels = true) => {
         orient: 'left',
         scale: 'yTrack',
         domain: false,
+        labels: config.showMetadataLabels,
+        ticks: config.showMetadataLabels,
+        labelFontSize: config.metadataLabelSize || 10,
         encode: {
           labels: {
             update: {

@@ -15,10 +15,14 @@ const generateSpec = (config, plotData, xNamesToDisplay, yNamesToDisplay) => {
     ? yAutoDomain
     : [Math.max(config.axesRanges.yMin, 0), yManualMax];
 
+  const defaultLegendTitle = 'Cell Set';
+  const legendTitle = config.legend.defaultValues?.includes('title')
+    ? defaultLegendTitle
+    : config.legend.title;
   let legend = [];
   let plotDataReversed = [];
   if (config.legend.enabled) {
-    const positionIsRight = config.legend.position === 'right';
+    const positionIsLeftOrRight = config.legend.position === 'left' || config.legend.position === 'right';
     plotDataReversed = plotData.slice().reverse();
 
     // Approximate the size of each name.
@@ -40,15 +44,15 @@ const generateSpec = (config, plotData, xNamesToDisplay, yNamesToDisplay) => {
       yNamesToDisplay.map((legendName) => legendName.length * characterSizeHorizontal),
     );
 
-    const legendColumns = positionIsRight
+    const legendColumns = positionIsLeftOrRight
       ? Math.ceil(yNamesToDisplay.length / maxLegendItemsPerCol)
       : Math.floor((config.dimensions.width) / legendSize);
-    const labelLimit = positionIsRight ? 0 : legendSize;
+    const labelLimit = positionIsLeftOrRight ? 0 : legendSize;
 
     legend = [
       {
-        fill: positionIsRight ? 'cellSetColorsReversed' : 'cellSetColors',
-        title: 'Cell Set',
+        fill: positionIsLeftOrRight ? 'cellSetColorsReversed' : 'cellSetColors',
+        title: legendTitle,
         titleColor: config.colour.masterColour,
         type: 'symbol',
         orient: config.legend.position,
@@ -59,14 +63,20 @@ const generateSpec = (config, plotData, xNamesToDisplay, yNamesToDisplay) => {
           labels: {
             update: {
               text: {
-                scale: positionIsRight ? 'yCellSetKeyReversed' : 'yCellSetKey',
+                scale: positionIsLeftOrRight ? 'yCellSetKeyReversed' : 'yCellSetKey',
                 field: 'label',
               },
               fill: { value: config.colour.masterColour },
+              fontSize: { value: config.legend.labelFontSize || 11 },
+            },
+          },
+          title: {
+            update: {
+              fontSize: { value: config.legend.titleFontSize || 12 },
             },
           },
         },
-        direction: 'horizontal',
+        direction: positionIsLeftOrRight ? 'vertical' : 'horizontal',
         labelFont: config.fontStyle.font,
         titleFont: config.fontStyle.font,
         columns: legendColumns,
@@ -171,6 +181,8 @@ const generateSpec = (config, plotData, xNamesToDisplay, yNamesToDisplay) => {
         domainWidth: config.axes.domainWidth,
         labelAngle: config.axes.xAxisRotateLabels ? 45 : 0,
         labelAlign: config.axes.xAxisRotateLabels ? 'left' : 'center',
+        ticks: config?.axes.xAxisLabels === false ? false : undefined,
+        labels: config?.axes.xAxisLabels === false ? false : undefined,
         encode: {
           labels: {
             update: {
@@ -196,6 +208,8 @@ const generateSpec = (config, plotData, xNamesToDisplay, yNamesToDisplay) => {
         titleColor: config.colour.masterColour,
         labelFontSize: config.axes.labelFontSize,
         domainWidth: config.axes.domainWidth,
+        ticks: config?.axes.yAxisLabels === false ? false : undefined,
+        labels: config?.axes.yAxisLabels === false ? false : undefined,
       },
     ],
     marks: [

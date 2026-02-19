@@ -107,7 +107,7 @@ const generateSpec = (config, plotData, expConfig) => {
       {
         scale: 'x',
         grid: true,
-        domain: false,
+        domain: true,
         orient: 'bottom',
         tickCount: 5,
         zindex: 1,
@@ -120,11 +120,13 @@ const generateSpec = (config, plotData, expConfig) => {
         gridOpacity: (config.axes.gridOpacity / 20),
         labelAngle: config.axes.xAxisRotateLabels ? 45 : 0,
         labelAlign: config.axes.xAxisRotateLabels ? 'left' : 'center',
+        labels: config.axes.xAxisLabels,
+        ticks: config.axes.xAxisLabels,
       },
       {
         scale: 'y',
         grid: true,
-        domain: false,
+        domain: true,
         orient: 'left',
         titlePadding: 5,
         zindex: 1,
@@ -135,6 +137,8 @@ const generateSpec = (config, plotData, expConfig) => {
         labelFontSize: config.axes.labelFontSize,
         offset: config.axes.offset,
         gridOpacity: (config.axes.gridOpacity / 20),
+        labels: config.axes.yAxisLabels,
+        ticks: config.axes.yAxisLabels,
       },
     ],
 

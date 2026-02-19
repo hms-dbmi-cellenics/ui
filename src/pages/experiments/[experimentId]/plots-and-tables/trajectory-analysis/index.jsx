@@ -140,7 +140,12 @@ const TrajectoryAnalysisPage = ({ experimentId }) => {
     },
     {
       panelTitle: 'Axes and margins',
-      controls: ['axesWithRanges'],
+      controls: [{
+        name: 'axesWithRanges',
+        props: {
+          embeddingMethod: 'UMAP',
+        },
+      }],
     },
     {
       panelTitle: 'Colours',
@@ -218,7 +223,7 @@ const TrajectoryAnalysisPage = ({ experimentId }) => {
 
     return (
       <Space direction='vertical'>
-        { showLegendAlert && numLegendItems > MAX_LEGEND_ITEMS && <PlotLegendAlert />}
+        {showLegendAlert && numLegendItems > MAX_LEGEND_ITEMS && <PlotLegendAlert />}
         <TrajectoryAnalysisPlot
           ref={resetZoomRef}
           experimentId={experimentId}

@@ -13,6 +13,7 @@ import SelectData from 'components/plots/styling/embedding-continuous/SelectData
 import Header from 'components/Header';
 import PlotContainer from 'components/plots/PlotContainer';
 import { loadGeneExpression } from 'redux/actions/genes';
+import { loadProcessingSettings } from 'redux/actions/experimentSettings';
 
 import {
   updatePlotConfig,
@@ -33,6 +34,11 @@ const ContinuousEmbeddingPage = ({ experimentId }) => {
   const dispatch = useDispatch();
   const config = useSelector((state) => state.componentConfig[multiViewUuid]?.config);
   const cellSets = useSelector(getCellSets());
+
+  const embeddingSettings = useSelector(
+    (state) => state.experimentSettings.originalProcessing?.configureEmbedding?.embeddingSettings,
+  );
+
   const multiViewConfig = useSelector((state) => state.componentConfig[multiViewUuid]?.config);
   const multiViewPlotUuids = multiViewConfig?.plotUuids;
   const plotConfigs = useSelector(getPlotConfigs(multiViewPlotUuids));
@@ -42,6 +48,7 @@ const ContinuousEmbeddingPage = ({ experimentId }) => {
 
   useEffect(() => {
     dispatch(loadCellSets(experimentId));
+    dispatch(loadProcessingSettings(experimentId));
   }, []);
 
   const plotStylingConfig = [
@@ -65,7 +72,12 @@ const ContinuousEmbeddingPage = ({ experimentId }) => {
     },
     {
       panelTitle: 'Axes and margins',
-      controls: ['axesWithRanges'],
+      controls: [{
+        name: 'axesWithRanges',
+        props: {
+          embeddingMethod: embeddingSettings?.method,
+        },
+      }],
     },
     {
       panelTitle: 'Colours',
@@ -77,7 +89,15 @@ const ContinuousEmbeddingPage = ({ experimentId }) => {
     },
     {
       panelTitle: 'Legend',
-      controls: ['legend'],
+      controls: [{
+        name: 'legend',
+        props: {
+          option: {
+            positions: 'top-bottom',
+          },
+          defaultTitle: plotConfigs[selectedPlotUuid]?.shownGene || 'Gene',
+        },
+      }],
     },
   ];
 

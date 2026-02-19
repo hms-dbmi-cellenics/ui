@@ -12,22 +12,29 @@ const generateSpec = (config, plotData) => {
     ? { data: 'plotData', field: 'cellSize' }
     : [config.axesRanges.yMin, config.axesRanges.yMax];
 
+  const defaultLegendTitle = 'Status';
+  const legendTitle = config.legend.defaultValues?.includes('title')
+    ? defaultLegendTitle
+    : config.legend.title;
+
   legend = !config.legend.enabled ? null : [
     {
       fill: 'color',
       orient: config.legend.position,
+      title: legendTitle,
       labelFont: config.fontStyle.font,
       titleFont: config.fontStyle.font,
+      padding: 4,
       encode: {
         title: {
           update: {
-            fontSize: { value: 14 },
+            fontSize: { value: config.legend.titleFontSize || 12 },
           },
         },
         labels: {
           interactive: true,
           update: {
-            fontSize: { value: 12 },
+            fontSize: { value: config.legend.labelFontSize || 11 },
             fill: { value: 'black' },
           },
         },
@@ -113,6 +120,8 @@ const generateSpec = (config, plotData) => {
         gridOpacity: (config.axes.gridOpacity / 20),
         labelAngle: config.axes.xAxisRotateLabels ? 45 : 0,
         labelAlign: config.axes.xAxisRotateLabels ? 'left' : 'center',
+        labels: config.axes.xAxisLabels,
+        ticks: config.axes.xAxisLabels,
       },
       {
         orient: 'left',
@@ -127,6 +136,8 @@ const generateSpec = (config, plotData) => {
         labelFontSize: config.axes.labelFontSize,
         offset: config.axes.offset,
         gridOpacity: (config.axes.gridOpacity / 20),
+        labels: config.axes.yAxisLabels,
+        ticks: config.axes.yAxisLabels,
       },
     ],
     marks: [

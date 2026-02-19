@@ -46,6 +46,14 @@ const generateSpec = (config, { FDR }, plotData) => {
     ? { data: 'plotData', field: 'u' }
     : [Math.max(config.axesRanges.yMin, 1), config.axesRanges.yMax];
 
+  const defaultLegendTitle = 'FDR Threshold';
+  const legendTitle = config.legend.defaultValues?.includes('title')
+    ? defaultLegendTitle
+    : config.legend.title;
+  const legendDirection = ['top', 'bottom'].includes(config.legend.position)
+    ? 'horizontal'
+    : 'vertical';
+
   legend = !config.legend.enabled ? null : [
     {
       fill: 'keep',
@@ -58,8 +66,13 @@ const generateSpec = (config, { FDR }, plotData) => {
         labels: {
           interactive: true,
           update: {
-            fontSize: { value: 12 },
+            fontSize: { value: config.legend.labelFontSize || 11 },
             fill: { value: 'black' },
+          },
+        },
+        title: {
+          update: {
+            fontSize: { value: config.legend.titleFontSize || 12 },
           },
         },
       },
@@ -67,7 +80,8 @@ const generateSpec = (config, { FDR }, plotData) => {
     {
       fill: 'color',
       orient: config.legend.position,
-      title: 'FDR Threshold',
+      direction: legendDirection,
+      title: legendTitle,
       labelFont: config.fontStyle.font,
       titleFont: config.fontStyle.font,
       padding: 4,
@@ -193,6 +207,8 @@ const generateSpec = (config, { FDR }, plotData) => {
         gridOpacity: { value: config.axes.gridOpacity / 20 },
         labelAngle: config.axes.xAxisRotateLabels ? 45 : 0,
         labelAlign: config.axes.xAxisRotateLabels ? 'left' : 'center',
+        labels: config.axes.xAxisLabels,
+        ticks: config.axes.xAxisLabels,
       },
       {
         orient: 'left',
@@ -206,6 +222,8 @@ const generateSpec = (config, { FDR }, plotData) => {
         labelFontSize: { value: config.axes.labelFontSize },
         offset: { value: config.axes.offset },
         gridOpacity: { value: config.axes.gridOpacity / 20 },
+        labels: config.axes.yAxisLabels,
+        ticks: config.axes.yAxisLabels,
       },
     ],
 

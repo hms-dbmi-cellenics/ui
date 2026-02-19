@@ -47,7 +47,12 @@ const MitochondrialContent = (props) => {
   const plotStylingControlsConfig = [
     {
       panelTitle: 'Legend',
-      controls: ['legend'],
+      controls: [{
+        name: 'legend',
+        props: {
+          defaultTitle: 'Status',
+        },
+      }],
     },
     {
       panelTitle: 'Plot Dimensions',

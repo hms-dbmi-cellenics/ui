@@ -3,7 +3,7 @@ import React, {
 } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import {
-  Row, Col, Radio, PageHeader, Collapse, Alert, Empty, Space,
+  Row, Col, Radio, PageHeader, Collapse, Alert, Empty, Space, Button, Divider,
 } from 'antd';
 import _ from 'lodash';
 import PropTypes from 'prop-types';
@@ -16,7 +16,9 @@ import {
   updatePlotConfig,
   loadPlotConfig,
   savePlotConfig,
+  resetPlotConfig,
 } from 'redux/actions/componentConfig';
+import { initialPlotConfigStates } from 'redux/reducers/componentConfig/initialState';
 
 import CategoricalEmbeddingPlot from 'components/plots/CategoricalEmbeddingPlot';
 import FrequencyPlot from 'components/plots/FrequencyPlot';
@@ -40,6 +42,7 @@ const DataIntegration = (props) => {
 
   const [selectedPlot, setSelectedPlot] = useState(isUnisample ? 'elbow' : 'embedding');
   const [plot, setPlot] = useState(null);
+  const [isResetDisabled, setIsResetDisabled] = useState(true);
 
   const filterName = 'dataIntegration';
   const configureEmbeddingFilterName = 'configureEmbedding';
@@ -69,6 +72,7 @@ const DataIntegration = (props) => {
               },
               selectedCellSet: 'sample',
               axes: {
+                ...config.axes,
                 defaultValues: [],
               },
             }}
@@ -121,10 +125,6 @@ const DataIntegration = (props) => {
         />,
       },
       {
-        panelTitle: 'Markers',
-        controls: ['markers'],
-      },
-      {
         panelTitle: 'Legend',
         controls: [{
           name: 'legend',
@@ -132,8 +132,13 @@ const DataIntegration = (props) => {
             option: {
               positions: 'top-bottom',
             },
+            defaultTitle: 'Cell Set',
           },
         }],
+      },
+      {
+        panelTitle: 'Markers',
+        controls: ['markers'],
       },
       {
         panelTitle: 'Labels',
@@ -157,6 +162,7 @@ const DataIntegration = (props) => {
             option: {
               positions: 'top-bottom',
             },
+            defaultTitle: 'Sample Name',
           },
         }],
       },
@@ -221,6 +227,42 @@ const DataIntegration = (props) => {
   const updatePlotWithChanges = (obj) => {
     dispatch(updatePlotConfig(activePlotUuid, obj));
     debounceSave(activePlotUuid);
+  };
+
+  const isConfigEqual = (currentConfig, initialConfig) => {
+    const removeDefaultValues = (obj) => {
+      if (!obj || typeof obj !== 'object') return obj;
+      const cleaned = { ...obj };
+      delete cleaned.defaultValues;
+      return cleaned;
+    };
+
+    const isEqual = Object.keys(initialConfig).every((key) => {
+      // By pass plot data because we want to compare settings not data
+      if (key === 'plotData') return true;
+      if (initialConfig.keepValuesOnReset?.includes(key)) return true;
+      if (currentConfig[key] && typeof currentConfig[key] === 'object' && initialConfig[key] && typeof initialConfig[key] === 'object') {
+        // For nested objects, exclude defaultValues from comparison as it's metadata about defaults
+        const currentObj = removeDefaultValues(currentConfig[key]);
+        const initialObj = removeDefaultValues(initialConfig[key]);
+        return JSON.stringify(currentObj) === JSON.stringify(initialObj);
+      }
+
+      return currentConfig[key] === initialConfig[key];
+    });
+
+    return isEqual;
+  };
+
+  useEffect(() => {
+    if (!selectedConfig || !plots[selectedPlot]) return;
+
+    const initialConfig = initialPlotConfigStates[activePlotType];
+    setIsResetDisabled(isConfigEqual(selectedConfig, initialConfig));
+  }, [selectedConfig]);
+
+  const onClickReset = () => {
+    dispatch(resetPlotConfig(experimentId, activePlotUuid, activePlotType));
   };
 
   useEffect(() => {
@@ -341,6 +383,15 @@ const DataIntegration = (props) => {
                 config={selectedConfig}
                 onUpdate={updatePlotWithChanges}
               />
+              <Divider />
+              <Button
+                type='default'
+                disabled={isResetDisabled}
+                block
+                onClick={onClickReset}
+              >
+                Reset Plot
+              </Button>
             </Panel>
           </Collapse>
         </Col>

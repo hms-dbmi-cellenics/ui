@@ -3,6 +3,11 @@ import {
   Collapse,
   Skeleton,
   Empty,
+  Form,
+  InputNumber,
+  Typography,
+  Slider,
+  Radio,
 } from 'antd';
 import { useSelector, useDispatch } from 'react-redux';
 import dayjs from 'dayjs';
@@ -115,7 +120,10 @@ const VolcanoPlotPage = (props) => {
     },
     {
       panelTitle: 'Axes and margins',
-      controls: ['axesWithRanges'],
+      controls: [{
+        name: 'axesWithRanges',
+        props: { hideAxisLabelsToggle: true },
+      }],
     },
     {
       panelTitle: 'Colours',
@@ -126,19 +134,69 @@ const VolcanoPlotPage = (props) => {
       controls: ['markers'],
     },
     {
-      panelTitle: 'Add labels',
-      controls: [{
-        name: 'volcanoLabels',
-        props: {
-          min: 0,
-          max: maxYAxis + 5,
-        },
-      },
-      ],
+      panelTitle: 'Gene labels',
+      controls: [],
+      footer: (
+        <Form
+          size='small'
+          labelCol={{ span: 8, style: { textAlign: 'left' } }}
+          wrapperCol={{ span: 16 }}
+        >
+          <p><strong>Toggle Labels</strong></p>
+          <Form.Item>
+            <Radio.Group
+              onChange={(e) => updatePlotWithChanges({ labels: { ...config.labels, enabled: e.target.value } })}
+              value={config?.labels.enabled !== undefined ? config.labels.enabled : true}
+            >
+              <Radio value>Show</Radio>
+              <Radio value={false}>Hide</Radio>
+            </Radio.Group>
+          </Form.Item>
+          <p style={{ marginTop: '15px' }}><strong>Label Threshold</strong></p>
+          <Form.Item
+            label='Adjusted p-value:'
+          >
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              <InputNumber
+                min={0.00001}
+                max={1}
+                step={0.01}
+                value={config?.labelPvalueThreshold !== undefined ? config.labelPvalueThreshold : 0.05}
+                onChange={(val) => updatePlotWithChanges({ labelPvalueThreshold: val })}
+              />
+              <Typography.Text type='secondary'>
+                -log₁₀(adj p-value) =
+                {' '}
+                {(config?.labelPvalueThreshold !== undefined ? config.labelPvalueThreshold : 0.05) > 0 ? (-Math.log10(config?.labelPvalueThreshold !== undefined ? config.labelPvalueThreshold : 0.05)).toPrecision(3) : 'Infinity'}
+              </Typography.Text>
+            </div>
+          </Form.Item>
+          <p style={{ marginTop: '15px' }}><strong>Text Size</strong></p>
+          <Form.Item
+            label='Font Size:'
+          >
+            <Slider
+              min={8}
+              max={24}
+              value={config?.labels.size !== undefined ? config.labels.size : 11}
+              onChange={(val) => updatePlotWithChanges({ labels: { ...config.labels, size: val } })}
+              marks={{ 8: 8, 24: 24 }}
+            />
+          </Form.Item>
+        </Form>
+      ),
     },
     {
       panelTitle: 'Legend',
-      controls: ['legend'],
+      controls: [{
+        name: 'legend',
+        props: {
+          option: {
+            positions: 'top-bottom',
+          },
+          showTitleInput: false,
+        },
+      }],
     },
   ];
 

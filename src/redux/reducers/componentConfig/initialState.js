@@ -25,8 +25,6 @@ const embeddingCategoricalInitialConfig = {
   },
   axes: {
     ...axesBaseState,
-    xAxisText: null,
-    yAxisText: null,
     defaultValues: ['x', 'y'],
     offset: 0,
   },
@@ -60,8 +58,6 @@ const spatialCategoricalInitialConfig = {
   },
   axes: {
     ...axesBaseState,
-    xAxisText: null,
-    yAxisText: null,
     defaultValues: ['x', 'y'],
     offset: 0,
   },
@@ -97,7 +93,10 @@ const spatialCategoricalInitialConfig = {
 // PLOTS & TABLES - Continuous Embedding
 const embeddingContinuousInitialConfig = {
   spec: '1.0.0',
-  legend: legendBaseState,
+  legend: {
+    ...legendBaseState,
+    defaultValues: [],
+  },
   dimensions: {
     ...dimensionsBaseState,
     width: 700,
@@ -105,10 +104,8 @@ const embeddingContinuousInitialConfig = {
   },
   axes: {
     ...axesBaseState,
-    xAxisText: null,
-    yAxisText: null,
     defaultValues: ['x', 'y'],
-    offset: 10,
+    offset: 0,
   },
   axesRanges: axesRangesBaseState,
   title: {
@@ -139,8 +136,6 @@ const spatialFeatureInitialConfig = {
   },
   axes: {
     ...axesBaseState,
-    xAxisText: null,
-    yAxisText: null,
     defaultValues: ['x', 'y'],
     offset: 0,
   },
@@ -184,6 +179,8 @@ const heatmapInitialConfig = {
     ...legendBaseState,
     show: true,
     position: 'horizontal',
+    direction: undefined,
+    defaultValues: ['title'],
   },
   dimensions: {
     ...dimensionsBaseState,
@@ -209,6 +206,9 @@ const heatmapInitialConfig = {
   groupedTracks: ['sample', 'louvain'],
   expressionValue: 'raw',
   truncatedValues: true,
+  geneLabelSize: 10,
+  showMetadataLabels: true,
+  metadataLabelSize: 10,
 };
 
 // PLOTS & TABLES - Marker heatmap
@@ -226,20 +226,24 @@ const volcanoInitialConfig = {
   spec: '1.0.0',
   legend: {
     ...legendBaseState,
-    position: 'bottom-right',
+    position: 'right',
   },
-  dimensions: dimensionsBaseState,
+  dimensions: {
+    ...dimensionsBaseState,
+    width: 600,
+  },
   marker: {
     ...markerBaseState,
     showOpacity: false,
     size: 32,
+    outline: false,
   },
   axes: {
     ...axesBaseState,
     xAxisText: 'log fold change',
-    yAxisText: '-log10(adj p-value)',
+    yAxisText: '-log₁₀(adj p-value)',
     gridOpacity: 5,
-    offset: 10,
+    offset: 0,
   },
   axesRanges: axesRangesBaseState,
   title: titleBaseState,
@@ -265,6 +269,7 @@ const volcanoInitialConfig = {
   logFoldChangeThresholdColor: '#ff0000',
   pvalueThresholdColor: '#ff0000',
   textThresholdValue: 240,
+  labelPvalueThreshold: 0.05,
   strokeOpa: 1,
   strokeCol: '#000000',
 };
@@ -276,7 +281,8 @@ const frequencyInitialConfig = {
   legend: {
     ...legendBaseState,
     title: 'Cell Set',
-    offset: 40,
+    defaultValues: ['title'],
+    offset: 0,
   },
   labels: labelBaseState,
   dimensions: dimensionsBaseState,
@@ -288,7 +294,7 @@ const frequencyInitialConfig = {
     xAxisText: 'Samples',
     yAxisText: 'Proportion',
     xAxisRotateLabels: true,
-    offset: 10,
+    offset: 0,
   },
   axesRanges: {
     yAxisAuto: true,
@@ -308,6 +314,8 @@ const violinConfig = {
   legend: {
     ...legendBaseState,
     enabled: false,
+    title: '',
+    defaultValues: [],
   },
   dimensions: {
     ...dimensionsBaseState,
@@ -316,8 +324,9 @@ const violinConfig = {
   },
   axes: {
     ...axesBaseState,
-    offset: 10,
+    offset: 0,
     xAxisRotateLabels: true,
+    defaultValues: ['x', 'y'],
   },
   axesRanges: {
     yAxisAuto: true,
@@ -394,8 +403,6 @@ const trajectoryAnalysisInitialConfig = {
   },
   axes: {
     ...axesBaseState,
-    xAxisText: null,
-    yAxisText: null,
     defaultValues: ['x', 'y'],
   },
   axesRanges: axesRangesBaseState,
@@ -439,7 +446,7 @@ const embeddingPreviewBySampleInitialConfig = {
     xAxisText: null,
     yAxisText: null,
     defaultValues: ['x', 'y'],
-    offset: 10,
+    offset: 0,
   },
   axesRanges: axesRangesBaseState,
   title: {
@@ -473,7 +480,7 @@ const embeddingPreviewByCellSetsInitialConfig = {
     xAxisText: null,
     yAxisText: null,
     defaultValues: ['x', 'y'],
-    offset: 10,
+    offset: 0,
   },
   axesRanges: axesRangesBaseState,
   title: {
@@ -494,7 +501,11 @@ const embeddingPreviewByCellSetsInitialConfig = {
 // EMBEDDING PREVIEW - Config for fraction of mitochondrial reads
 const embeddingPreviewMitochondrialContentInitialConfig = {
   spec: '1.0.0',
-  legend: legendBaseState,
+  legend: {
+    ...legendBaseState,
+    title: 'Mitochondrial fraction',
+    defaultValues: ['title'],
+  },
   dimensions: {
     ...dimensionsBaseState,
     width: 700,
@@ -502,10 +513,8 @@ const embeddingPreviewMitochondrialContentInitialConfig = {
   },
   axes: {
     ...axesBaseState,
-    xAxisText: null,
-    yAxisText: null,
     defaultValues: ['x', 'y'],
-    offset: 10,
+    offset: 0,
   },
   axesRanges: axesRangesBaseState,
   title: {
@@ -524,7 +533,11 @@ const embeddingPreviewMitochondrialContentInitialConfig = {
 // EMBEDDING PREVIEW - Config for doublet score
 const embeddingPreviewDoubletScoreInitialConfig = {
   spec: '1.0.0',
-  legend: legendBaseState,
+  legend: {
+    ...legendBaseState,
+    title: 'Doublet score',
+    defaultValues: ['title'],
+  },
   dimensions: {
     ...dimensionsBaseState,
     width: 700,
@@ -532,10 +545,8 @@ const embeddingPreviewDoubletScoreInitialConfig = {
   },
   axes: {
     ...axesBaseState,
-    xAxisText: null,
-    yAxisText: null,
     defaultValues: ['x', 'y'],
-    offset: 10,
+    offset: 0,
   },
   axesRanges: axesRangesBaseState,
   title: {
@@ -552,7 +563,11 @@ const embeddingPreviewDoubletScoreInitialConfig = {
 
 const embeddingPreviewNumOfGenesInitialConfig = {
   spec: '1.0.0',
-  legend: legendBaseState,
+  legend: {
+    ...legendBaseState,
+    title: 'Number of genes',
+    defaultValues: ['title'],
+  },
   dimensions: {
     ...dimensionsBaseState,
     width: 700,
@@ -560,10 +575,8 @@ const embeddingPreviewNumOfGenesInitialConfig = {
   },
   axes: {
     ...axesBaseState,
-    xAxisText: null,
-    yAxisText: null,
     defaultValues: ['x', 'y'],
-    offset: 10,
+    offset: 0,
   },
   axesRanges: axesRangesBaseState,
   title: {
@@ -579,7 +592,11 @@ const embeddingPreviewNumOfGenesInitialConfig = {
 };
 const embeddingPreviewNumOfUmisInitialConfig = {
   spec: '1.0.0',
-  legend: legendBaseState,
+  legend: {
+    ...legendBaseState,
+    title: 'Number of UMIs',
+    defaultValues: ['title'],
+  },
   dimensions: {
     ...dimensionsBaseState,
     width: 700,
@@ -587,10 +604,8 @@ const embeddingPreviewNumOfUmisInitialConfig = {
   },
   axes: {
     ...axesBaseState,
-    xAxisText: null,
-    yAxisText: null,
     defaultValues: ['x', 'y'],
-    offset: 10,
+    offset: 0,
   },
   axesRanges: axesRangesBaseState,
   title: {
@@ -628,7 +643,7 @@ const cellSizeDistributionHistogram = {
   },
   dimensions: {
     ...dimensionsBaseState,
-    width: 530,
+    width: 650,
     height: 400,
   },
   axes: {
@@ -656,7 +671,7 @@ const cellSizeDistributionKneePlot = {
   },
   dimensions: {
     ...dimensionsBaseState,
-    width: 530,
+    width: 650,
     height: 400,
   },
   axes: {
@@ -688,7 +703,7 @@ const mitochondrialFractionHistogram = {
   },
   dimensions: {
     ...dimensionsBaseState,
-    width: 530,
+    width: 650,
     height: 400,
   },
   axes: {
@@ -717,7 +732,7 @@ const mitochondrialFractionLogHistogram = {
   },
   dimensions: {
     ...dimensionsBaseState,
-    width: 530,
+    width: 650,
     height: 400,
   },
   axes: {
@@ -746,7 +761,7 @@ const classifierKneePlot = {
   },
   dimensions: {
     ...dimensionsBaseState,
-    width: 530,
+    width: 650,
     height: 400,
   },
   axes: {
@@ -779,7 +794,7 @@ const classifierEmptyDropsPlot = {
   },
   dimensions: {
     ...dimensionsBaseState,
-    width: 630,
+    width: 650,
     height: 500,
   },
   axes: {
@@ -811,8 +826,8 @@ const featuresVsUMIsScatterplot = {
   },
   axes: {
     ...axesBaseState,
-    xAxisText: 'log10 [molecule counts]',
-    yAxisText: 'log10 [gene counts]',
+    xAxisText: 'log10 (molecule counts)',
+    yAxisText: 'log10 (gene counts)',
     gridOpacity: 10,
   },
   axesRanges: axesRangesBaseState,
@@ -835,7 +850,7 @@ const doubletScoreHistogram = {
   },
   dimensions: {
     ...dimensionsBaseState,
-    width: 530,
+    width: 650,
     height: 400,
   },
   axes: {
@@ -871,7 +886,7 @@ const dataIntegrationEmbeddingInitialConfig = {
     xAxisText: '',
     yAxisText: '',
     defaultValues: ['x', 'y'],
-    offset: 10,
+    offset: 0,
   },
   axesRanges: axesRangesBaseState,
   title: {
@@ -897,7 +912,8 @@ const dataIntegrationFrequencyInitialConfig = {
   legend: {
     ...legendBaseState,
     title: 'Sample',
-    offset: 10,
+    defaultValues: ['title'],
+    offset: 0,
   },
   dimensions: {
     ...dimensionsBaseState,
@@ -910,7 +926,7 @@ const dataIntegrationFrequencyInitialConfig = {
     xAxisText: 'Louvain clusters',
     yAxisText: 'Proportion',
     xAxisRotateLabels: true,
-    offset: 10,
+    offset: 0,
   },
   axesRanges: {
     yAxisAuto: true,

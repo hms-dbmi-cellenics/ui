@@ -28,30 +28,38 @@ const generateSpec = (configSrc, plotData) => {
     ? { data: 'data', field: 'neglogpvalue' }
     : [config.axesRanges.yMin, config.axesRanges.yMax];
 
-  // adding gene labels above the set Y value only for the significant genes
-  const geneLabelsEquation = `datum.logFC !== 'NA' && (datum.neglogpvalue >${config.textThresholdValue} && (datum.status == 'Upregulated' || datum.status == 'Downregulated'))`;
+  // adding gene labels for significant genes above the p-value threshold
+  const labelNeglogpValue = -Math.log10(config.labelPvalueThreshold);
+  const geneLabelsEquation = (config.labels.enabled !== false)
+    ? `datum.logFC !== 'NA' && (datum.neglogpvalue > ${labelNeglogpValue} && (datum.status == 'Upregulated' || datum.status == 'Downregulated'))`
+    : 'false';
 
   let legend = [];
   if (config.legend.enabled) {
+    const positionIsLeftOrRight = config.legend.position === 'left' || config.legend.position === 'right';
     legend = [
       {
         fill: 'color',
         orient: config.legend.position,
+        direction: positionIsLeftOrRight ? 'vertical' : 'horizontal',
         encode: {
           title: {
             update: {
-              fontSize: 14,
+              fontSize: config.legend.titleFontSize || 14,
             },
           },
           labels: {
             update: {
-              fontSize: { value: 12 },
+              fontSize: { value: config.legend.labelFontSize || 12 },
               fill: { value: config.colour.masterColour },
             },
           },
           symbols: {
             update: {
-              stroke: 'transparent',
+              stroke: config.marker.outline
+                ? { value: config.strokeCol }
+                : { scale: 'color' },
+              strokeWidth: { value: 1 },
               shape: { value: config.marker.shape },
             },
           },
@@ -208,17 +216,18 @@ const generateSpec = (configSrc, plotData) => {
             y: { scale: 'y', field: 'neglogpvalue' },
             size: { value: config.marker.size },
             shape: { value: config.marker.shape },
-            strokeWidth: 1,
-            strokeOpacity: config.strokeOpa,
-            stroke: {
-              scale: 'color',
-              field: 'status',
-            },
             fillOpacity: config.marker.opacity / 10,
             fill: {
               scale: 'color',
               field: 'status',
             },
+          },
+          update: {
+            strokeWidth: { value: 1 },
+            strokeOpacity: { value: config.strokeOpa },
+            stroke: config.marker.outline
+              ? { value: config.strokeCol }
+              : { scale: 'color', field: 'status' },
           },
         },
       },
@@ -232,6 +241,7 @@ const generateSpec = (configSrc, plotData) => {
             y: { scale: 'y', field: 'neglogpvalue' },
 
             fill: { value: config.colour.masterColour },
+            fontSize: { value: config.labels.size || 11 },
             text: { field: 'gene_names' },
           },
         },

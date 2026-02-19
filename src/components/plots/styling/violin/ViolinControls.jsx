@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {
-  Collapse, Radio, Form, Slider, Skeleton,
+  Radio, Form, Slider, Skeleton, Collapse,
 } from 'antd';
 import SelectData from 'components/plots/styling/SelectData';
 import MultiViewGenesEditor from 'components/plots/styling/MultiViewGenesEditor';
@@ -26,7 +26,7 @@ const ViolinControls = (props) => {
   } = props;
 
   return (
-    <Collapse accordion defaultActiveKey='view-multiple-plots'>
+    <>
       <Panel header='Gene selection' key='gene-selection'>
         <GeneSearchBar
           onSelect={changeSelectedPlotGene}
@@ -79,7 +79,7 @@ const ViolinControls = (props) => {
           </div>
         ) : <Skeleton.Input style={{ width: 200 }} active />}
       </Panel>
-    </Collapse>
+    </>
   );
 };
 

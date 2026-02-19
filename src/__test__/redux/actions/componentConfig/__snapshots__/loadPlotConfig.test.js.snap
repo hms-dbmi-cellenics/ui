@@ -5,14 +5,15 @@ exports[`loadPlotConfig Loads config properly 1`] = `
   "config": {
     "axes": {
       "domainWidth": 1,
-      "enabled": true,
       "gridOpacity": 0,
       "gridWidth": 10,
       "labelFontSize": 12,
       "offset": 0,
       "titleFontSize": 13,
+      "xAxisLabels": true,
       "xAxisRotateLabels": false,
       "xAxisText": "#UMIs in cell",
+      "yAxisLabels": true,
       "yAxisText": "#UMIs * #Cells",
     },
     "axesRanges": {
@@ -32,7 +33,7 @@ exports[`loadPlotConfig Loads config properly 1`] = `
     },
     "dimensions": {
       "height": 400,
-      "width": 530,
+      "width": 650,
     },
     "fontStyle": {
       "colour": "#000000",
@@ -40,13 +41,19 @@ exports[`loadPlotConfig Loads config properly 1`] = `
     },
     "labels": {
       "enabled": true,
-      "size": 18,
+      "size": 11,
     },
     "legend": {
       "colour": "#000000",
+      "defaultValues": [
+        "title",
+      ],
       "enabled": true,
+      "labelFontSize": 11,
       "position": "right",
       "showAlert": false,
+      "title": "",
+      "titleFontSize": 12,
     },
     "marker": {
       "opacity": 5,
@@ -83,14 +90,15 @@ exports[`loadPlotConfig Loads default initial config for plots if plot config is
   "config": {
     "axes": {
       "domainWidth": 1,
-      "enabled": true,
       "gridOpacity": 0,
       "gridWidth": 10,
       "labelFontSize": 12,
       "offset": 0,
       "titleFontSize": 13,
+      "xAxisLabels": true,
       "xAxisRotateLabels": false,
       "xAxisText": "#UMIs in cell",
+      "yAxisLabels": true,
       "yAxisText": "#UMIs * #Cells",
     },
     "axesRanges": {
@@ -110,7 +118,7 @@ exports[`loadPlotConfig Loads default initial config for plots if plot config is
     },
     "dimensions": {
       "height": 400,
-      "width": 530,
+      "width": 650,
     },
     "fontStyle": {
       "colour": "#000000",
@@ -118,13 +126,19 @@ exports[`loadPlotConfig Loads default initial config for plots if plot config is
     },
     "labels": {
       "enabled": true,
-      "size": 18,
+      "size": 11,
     },
     "legend": {
       "colour": "#000000",
+      "defaultValues": [
+        "title",
+      ],
       "enabled": true,
+      "labelFontSize": 11,
       "position": "right",
       "showAlert": false,
+      "title": "",
+      "titleFontSize": 12,
     },
     "marker": {
       "opacity": 5,
