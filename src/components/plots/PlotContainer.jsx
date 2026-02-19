@@ -121,7 +121,7 @@ const PlotContainer = (props) => {
   );
 
   const renderDefaultControlPanel = (height) => (
-    <div style={{ height, overflowY: 'auto' }}>
+    <div style={{ height, overflowY: 'auto', display: 'flex', flexDirection: 'column', minHeight: 0 }}>
       <PlotStyling
         formConfig={plotStylingConfig}
         config={config}
