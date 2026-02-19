@@ -22,6 +22,18 @@ const generateSpec = (config, groupName, data, displayLabels = true) => {
       titleFont: config.fontStyle.font,
       gradientLength: { signal: 'width' },
       labelSeparation: { signal: 'width' },
+      encode: {
+        labels: {
+          update: {
+            fontSize: { value: config?.legend.labelFontSize || 11 },
+          },
+        },
+        title: {
+          update: {
+            fontSize: { value: config?.legend.titleFontSize || 12 },
+          },
+        },
+      },
       ...orientation,
     },
   ];
@@ -52,6 +64,13 @@ const generateSpec = (config, groupName, data, displayLabels = true) => {
         labels: {
           update: {
             text: { scale: 'cellSetNames', field: 'label' },
+            fill: { value: config?.colour.masterColour },
+            fontSize: { value: config?.legend.labelFontSize || 11 },
+          },
+        },
+        title: {
+          update: {
+            fontSize: { value: config?.legend.titleFontSize || 12 },
           },
         },
       },
