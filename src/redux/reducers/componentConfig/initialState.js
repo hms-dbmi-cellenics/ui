@@ -426,8 +426,10 @@ const embeddingPreviewBySampleInitialConfig = {
   },
   axes: {
     ...axesBaseState,
+    xAxisText: null,
+    yAxisText: null,
     defaultValues: ['x', 'y'],
-    offset: 0,
+    offset: 10,
   },
   axesRanges: axesRangesBaseState,
   title: {
@@ -458,8 +460,10 @@ const embeddingPreviewByCellSetsInitialConfig = {
   },
   axes: {
     ...axesBaseState,
+    xAxisText: null,
+    yAxisText: null,
     defaultValues: ['x', 'y'],
-    offset: 0,
+    offset: 10,
   },
   axesRanges: axesRangesBaseState,
   title: {
