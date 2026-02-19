@@ -7,6 +7,7 @@ import {
   InputNumber,
   Typography,
   Slider,
+  Radio,
 } from 'antd';
 import { useSelector, useDispatch } from 'react-redux';
 import dayjs from 'dayjs';
@@ -141,7 +142,17 @@ const VolcanoPlotPage = (props) => {
           labelCol={{ span: 8, style: { textAlign: 'left' } }}
           wrapperCol={{ span: 16 }}
         >
-          <p><strong>Label Threshold</strong></p>
+          <p><strong>Toggle Labels</strong></p>
+          <Form.Item>
+            <Radio.Group
+              onChange={(e) => updatePlotWithChanges({ labels: { ...config.labels, enabled: e.target.value } })}
+              value={config?.labels.enabled !== undefined ? config.labels.enabled : true}
+            >
+              <Radio value>Show</Radio>
+              <Radio value={false}>Hide</Radio>
+            </Radio.Group>
+          </Form.Item>
+          <p style={{ marginTop: '15px' }}><strong>Label Threshold</strong></p>
           <Form.Item
             label='Adjusted p-value:'
           >
