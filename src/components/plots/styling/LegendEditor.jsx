@@ -112,22 +112,24 @@ const LegendEditor = (props) => {
               </Form.Item>
             )}
 
-            <Form.Item
-              label='Title Font Size:'
-              labelCol={{ span: 8, style: { textAlign: 'left' } }}
-              wrapperCol={{ span: 16 }}
-              style={{ marginBottom: 0 }}
-            >
-              <Slider
-                value={newConfig.legend.titleFontSize || 12}
-                min={8}
-                max={24}
-                onChange={(value) => {
-                  handleChange({ legend: { titleFontSize: value } });
-                }}
-                marks={{ 8: 8, 24: 24 }}
-              />
-            </Form.Item>
+            {showTitleInput && (
+              <Form.Item
+                label='Title Font Size:'
+                labelCol={{ span: 8, style: { textAlign: 'left' } }}
+                wrapperCol={{ span: 16 }}
+                style={{ marginBottom: 0 }}
+              >
+                <Slider
+                  value={newConfig.legend.titleFontSize || 12}
+                  min={8}
+                  max={24}
+                  onChange={(value) => {
+                    handleChange({ legend: { titleFontSize: value } });
+                  }}
+                  marks={{ 8: 8, 24: 24 }}
+                />
+              </Form.Item>
+            )}
             <Form.Item
               label='Label Font Size:'
               labelCol={{ span: 8, style: { textAlign: 'left' } }}
