@@ -10,7 +10,7 @@ const defaultOption = {
 
 const LegendEditor = (props) => {
   const {
-    onUpdate, config, defaultTitle,
+    onUpdate, config, defaultTitle, showTitleInput = true,
   } = props;
 
   let { option } = props;
@@ -93,22 +93,24 @@ const LegendEditor = (props) => {
               </>
             ) : <></>}
 
-            <Form.Item
-              label='Title Text:'
-              labelCol={{ span: 8, style: { textAlign: 'left' } }}
-              wrapperCol={{ span: 19 }}
-              style={{ marginBottom: '15px' }}
-            >
-              <Input
-                value={displayTitle || ''}
-                onChange={(e) => onUpdate({
-                  legend: {
-                    title: e.target.value,
-                    defaultValues: _.without(config.legend.defaultValues, 'title'),
-                  },
-                })}
-              />
-            </Form.Item>
+            {showTitleInput && (
+              <Form.Item
+                label='Title Text:'
+                labelCol={{ span: 8, style: { textAlign: 'left' } }}
+                wrapperCol={{ span: 19 }}
+                style={{ marginBottom: '15px' }}
+              >
+                <Input
+                  value={displayTitle || ''}
+                  onChange={(e) => onUpdate({
+                    legend: {
+                      title: e.target.value,
+                      defaultValues: _.without(config.legend.defaultValues, 'title'),
+                    },
+                  })}
+                />
+              </Form.Item>
+            )}
 
             <Form.Item
               label='Title Font Size:'
