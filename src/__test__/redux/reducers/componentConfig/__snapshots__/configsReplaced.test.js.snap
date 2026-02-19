@@ -209,9 +209,7 @@ exports[`configsReplaced Replaces existing state 1`] = `
       },
       "legend": {
         "colour": "#000000",
-        "defaultValues": [
-          "title",
-        ],
+        "defaultValues": [],
         "enabled": false,
         "labelFontSize": 11,
         "position": "top",
@@ -297,9 +295,7 @@ exports[`configsReplaced Replaces existing state 1`] = `
       },
       "legend": {
         "colour": "#000000",
-        "defaultValues": [
-          "title",
-        ],
+        "defaultValues": [],
         "enabled": false,
         "labelFontSize": 11,
         "position": "top",
