@@ -7,15 +7,6 @@ import endUserMessages from 'utils/endUserMessages';
 const resetPlotConfig = (experimentId, plotUuid, plotType) => async (dispatch) => {
   const defaultConfig = initialPlotConfigStates[plotType];
 
-  // Reset Redux state immediately so UI updates right away
-  dispatch({
-    type: RESET_CONFIG,
-    payload: {
-      plotUuid,
-      config: defaultConfig,
-    },
-  });
-
   try {
     await fetchAPI(
       `/v2/experiments/${experimentId}/plots/${plotUuid}`,
@@ -27,6 +18,14 @@ const resetPlotConfig = (experimentId, plotUuid, plotType) => async (dispatch) =
         body: JSON.stringify({ config: defaultConfig }),
       },
     );
+
+    dispatch({
+      type: RESET_CONFIG,
+      payload: {
+        plotUuid,
+        config: defaultConfig,
+      },
+    });
   } catch (e) {
     handleError(e, endUserMessages.ERROR_SAVING_PLOT_CONFIG);
 

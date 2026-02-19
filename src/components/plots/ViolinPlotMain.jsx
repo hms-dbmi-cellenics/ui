@@ -49,7 +49,7 @@ const ViolinPlotMain = (props) => {
         setPlotSpec(generateSpec(config, generatedPlotData));
       }
     }
-  }, [experimentId, config?.shownGene, config?.selectedCellSet, config?.selectedPoints, config?.normalised, config?.kdeBandwidth, config?.selectedPointsVisible, config?.statisticsVisible, JSON.stringify(config?.axes), JSON.stringify(config?.legend), JSON.stringify(config?.title), JSON.stringify(config?.fontStyle), JSON.stringify(config?.colour), JSON.stringify(config?.dimensions), JSON.stringify(config?.marker), JSON.stringify(config?.labels), JSON.stringify(config?.axesRanges), expression.error, expression.matrix, cellSets]);
+  }, [experimentId, config, expression, cellSets]);
 
   const render = () => {
     if (cellSets.error) {
