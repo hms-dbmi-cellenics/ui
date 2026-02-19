@@ -895,6 +895,7 @@ const dataIntegrationFrequencyInitialConfig = {
   legend: {
     ...legendBaseState,
     title: 'Sample',
+    defaultValues: ['title'],
     offset: 0,
   },
   dimensions: {
