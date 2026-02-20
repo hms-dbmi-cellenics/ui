@@ -121,11 +121,19 @@ const CellSetsTool = (props) => {
   const handleHideNotSelected = useCallback(() => {
     // Get all cell set keys from properties
     const allCellSetKeys = Object.keys(properties);
+    
+    // Convert selectedCellSetKeys to a Set for efficient lookup
+    const selectedSet = new Set(selectedCellSetKeys);
 
     // Determine which sets to hide
-    const cellSetsToHide = selectedCellSetKeys.length > 0
-      ? allCellSetKeys.filter((key) => !selectedCellSetKeys.includes(key))
-      : allCellSetKeys;
+    let cellSetsToHide;
+    if (selectedSet.size > 0) {
+      // If cells are selected, hide everything not selected
+      cellSetsToHide = allCellSetKeys.filter((key) => !selectedSet.has(key));
+    } else {
+      // If nothing selected, hide all
+      cellSetsToHide = allCellSetKeys;
+    }
 
     // Hide the appropriate cell sets
     cellSetsToHide.forEach((key) => {
