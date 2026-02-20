@@ -141,8 +141,21 @@ const CellSetsTool = (props) => {
       // Skip selected cell sets themselves
       if (selectedSet.has(key)) return;
 
-      // Skip root nodes (no parentNodeKey)
-      if (properties[key]?.parentNodeKey === undefined) return;
+      // Check if this is a root node (no parent)
+      let isRootNode = properties[key]?.parentNodeKey === undefined;
+
+      // Also check hierarchy if not found in properties
+      if (isRootNode) {
+        for (const rootNode of hierarchy) {
+          if (rootNode.children?.some(child => child.key === key)) {
+            isRootNode = false;
+            break;
+          }
+        }
+      }
+
+      // Skip root nodes
+      if (isRootNode) return;
 
       // Check if this cell set has any overlap with selected cells
       const cellIds = properties[key]?.cellIds;
@@ -164,7 +177,7 @@ const CellSetsTool = (props) => {
         dispatch(setCellSetHiddenStatus(key));
       }
     });
-  }, [selectedCellSetKeys, properties, hidden, dispatch]);
+  }, [selectedCellSetKeys, properties, hidden, dispatch, hierarchy]);
 
   /**
    * Renders the content inside the tool. Can be a skeleton during loading
