@@ -121,14 +121,13 @@ const domainSpecificContent = {
     containerIds: biomageContainerIds,
     HelpButton: (
       <>
+        {reusedContent.HelpButton.BiomageUserGuide}
+        <br />
         Ask questions about how to use Cellenics and make feature requests on the
         {' '}
         <a href='https://community.biomage.net/' target='_blank' rel='noreferrer'>Cellenics community forum</a>
         !
         The Biomage team will reply to your message as soon as possible.
-        <br />
-        <br />
-        {reusedContent.HelpButton.TutorialVideos}
       </>
     ),
     HeaderExtraButton: (
