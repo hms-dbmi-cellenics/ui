@@ -544,15 +544,6 @@ const ConfigureEmbedding = (props) => {
         </Col>
 
         <Col flex='1 0px' style={{ minWidth: '300px' }}>
-          {Boolean(changedQCFilters.size) && (
-            <Alert
-              message='Your changes are not yet applied. To update the plots, click Run.'
-              type='warning'
-              showIcon
-              style={{ marginBottom: '1rem' }}
-            />
-          )}
-
           <Collapse defaultActiveKey={['plot-selector']}>
             <Panel header='Plot view' key='plot-selector'>
               <Space direction='vertical'>
@@ -608,6 +599,15 @@ const ConfigureEmbedding = (props) => {
               >
                 Reset Plot
               </Button>
+
+              {Boolean(changedQCFilters.size) && (
+                <Alert
+                  message='Your changes are not yet applied. To update the plots, click Run.'
+                  type='warning'
+                  showIcon
+                  style={{ marginTop: '1rem' }}
+                />
+              )}
             </Panel>
           </Collapse>
         </Col>
