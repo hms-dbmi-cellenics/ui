@@ -33,7 +33,7 @@ const ThresholdsGuidesEditor = (props) => {
               step={0.001}
               value={config.adjPvalueThreshold}
               onUpdate={(val) => debouncedUpdate({ adjPvalueThreshold: val })}
-              sliderWidth={300}
+              sliderWidth={200}
             />
             <Checkbox
               checked={config.showpvalueThresholdGuides}
@@ -75,7 +75,7 @@ const ThresholdsGuidesEditor = (props) => {
               step={0.01}
               value={config.logFoldChangeThreshold}
               onUpdate={(val) => debouncedUpdate({ logFoldChangeThreshold: val })}
-              sliderWidth={300}
+              sliderWidth={200}
             />
             <Checkbox
               checked={config.showLogFoldChangeThresholdGuides}
@@ -106,7 +106,7 @@ const ThresholdsGuidesEditor = (props) => {
             step={0.5}
             value={config.thresholdGuideWidth}
             onUpdate={(val) => debouncedUpdate({ thresholdGuideWidth: val })}
-            sliderWidth={300}
+            sliderWidth={200}
           />
         </Form.Item>
       </Form>
