@@ -159,7 +159,11 @@ const CalculationConfig = (props) => {
   );
 
   return (
-    <Form size='small'>
+    <Form
+      size='small'
+      labelCol={{ span: 12 }}
+      wrapperCol={{ span: 12 }}
+    >
 
       <Collapse defaultActiveKey='data-integration'>
         <Panel header='Data Integration' key='data-integration'>
