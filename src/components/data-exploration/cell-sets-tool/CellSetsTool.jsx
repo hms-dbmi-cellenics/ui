@@ -141,17 +141,22 @@ const CellSetsTool = (props) => {
     // Convert selectedCellSetKeys to a Set for O(1) lookup
     const selectedSet = new Set(selectedCellSetKeys);
 
-    // Only hide cell sets that:
-    // 1. Belong to one of the parent groups we're filtering
-    // 2. Are not currently selected
-    const cellSetsToHide = Object.keys(properties).filter((key) => {
+    // Process all cell sets in the affected parent groups
+    Object.keys(properties).forEach((key) => {
       const parentKey = properties[key]?.parentNodeKey;
-      return parentKey && parentKeysOfSelected.has(parentKey) && !selectedSet.has(key);
-    });
+      const isInAffectedGroup = parentKey && parentKeysOfSelected.has(parentKey);
+      
+      if (!isInAffectedGroup) return;
 
-    // Hide the appropriate cell sets
-    cellSetsToHide.forEach((key) => {
-      if (!hidden.has(key)) {
+      const isSelected = selectedSet.has(key);
+      const isCurrentlyHidden = hidden.has(key);
+
+      // Hide unselected items that aren't already hidden
+      if (!isSelected && !isCurrentlyHidden) {
+        dispatch(setCellSetHiddenStatus(key));
+      }
+      // Unhide selected items that are currently hidden
+      else if (isSelected && isCurrentlyHidden) {
         dispatch(setCellSetHiddenStatus(key));
       }
     });
