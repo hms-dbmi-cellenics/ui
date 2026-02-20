@@ -234,20 +234,23 @@ const CalculationConfig = (props) => {
   }
 
   return (
-    <Collapse defaultActiveKey={['embedding-settings', 'clustering-settings']}>
-      <Panel header='Embedding settings' key='embedding-settings' collapsible={disabled && 'disabled'}>
-        <Form size='small' disabled={disabled} labelCol={{ span: 10, style: { textAlign: 'left' } }} wrapperCol={{ span: 14 }}>
-          {Boolean(changedQCFilters.size) && (
-            <Form.Item labelCol={{ span: 24 }} wrapperCol={{ span: 24 }}>
-              <Alert message='Your changes are not yet applied. To update the plots, click Run.' type='warning' showIcon />
-            </Form.Item>
-          )}
-
-          <Form.Item
-            label={(
-              <span>
-                Method&nbsp;
-                <Tooltip overlay={(
+    <>
+      {Boolean(changedQCFilters.size) && (
+        <Alert
+          message='Your changes are not yet applied. To update the plots, click Run.'
+          type='warning'
+          showIcon
+          style={{ marginBottom: '1rem' }}
+        />
+      )}
+      <Collapse defaultActiveKey={['embedding-settings', 'clustering-settings']}>
+        <Panel header='Embedding settings' key='embedding-settings' collapsible={disabled && 'disabled'}>
+          <Form size='small' disabled={disabled} labelCol={{ span: 10, style: { textAlign: 'left' } }} wrapperCol={{ span: 14 }}>
+            <Form.Item
+              label={(
+                <span>
+                  Method&nbsp;
+                  <Tooltip overlay={(
                   <span>
                     {EMBEDD_METHOD_TEXT}
                     More info for
@@ -377,6 +380,7 @@ const CalculationConfig = (props) => {
         </Form>
       </Panel>
     </Collapse>
+    </>
   );
 };
 
