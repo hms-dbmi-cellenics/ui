@@ -9,6 +9,7 @@ import {
   Slider,
   Radio,
 } from 'antd';
+import SliderWithInput from 'components/SliderWithInput';
 import { useSelector, useDispatch } from 'react-redux';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
@@ -157,12 +158,12 @@ const VolcanoPlotPage = (props) => {
             label='Adjusted p-value:'
           >
             <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-              <InputNumber
+              <SliderWithInput
                 min={0.00001}
                 max={1}
-                step={0.01}
+                step={0.001}
                 value={config?.labelPvalueThreshold !== undefined ? config.labelPvalueThreshold : 0.05}
-                onChange={(val) => updatePlotWithChanges({ labelPvalueThreshold: val })}
+                onUpdate={(val) => updatePlotWithChanges({ labelPvalueThreshold: val })}
               />
               <Typography.Text type='secondary'>
                 -log₁₀(adj p-value) =
