@@ -136,32 +136,30 @@ const CellSetsTool = (props) => {
       }
     });
 
-    // Hide cell sets that contain any cells outside the selection
-    // Keep visible cell sets that are fully contained within the selection
+    // Hide cell sets that have no overlap with selected cells
+    // Keep visible cell sets that overlap or are selected
     Object.keys(properties).forEach((key) => {
-      // Skip selected cell sets themselves
+      // Skip selected cell sets
       if (selectedSet.has(key)) return;
       
       // Skip root nodes (no parentNodeKey and no cellIds)
       const hasParent = properties[key]?.parentNodeKey !== undefined;
       if (!hasParent) return;
 
-      // Check if ALL cells in this set are within the selected cells
+      // Check if this cell set overlaps with selected cells
       const cellIds = properties[key]?.cellIds;
-      let isFullyContained = true;
+      let hasOverlap = false;
       
       if (cellIds && cellIds.size > 0) {
         for (const cellId of cellIds) {
-          if (!selectedCellIds.has(cellId)) {
-            isFullyContained = false;
+          if (selectedCellIds.has(cellId)) {
+            hasOverlap = true;
             break;
           }
         }
-      } else {
-        isFullyContained = false; // Empty cell sets should be hidden
       }
 
-      const shouldBeHidden = !isFullyContained;
+      const shouldBeHidden = !hasOverlap;
       const isCurrentlyHidden = hidden.has(key);
       
       if (shouldBeHidden !== isCurrentlyHidden) {
