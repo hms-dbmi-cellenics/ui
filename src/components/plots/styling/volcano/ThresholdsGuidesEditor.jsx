@@ -35,18 +35,6 @@ const ThresholdsGuidesEditor = (props) => {
               onUpdate={(val) => debouncedUpdate({ adjPvalueThreshold: val })}
               sliderWidth={200}
             />
-          </div>
-        </Form.Item>
-        <Form.Item
-          labelCol={{ span: 5 }}
-          wrapperCol={{ span: 19 }}
-        >
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <Text type='secondary'>
-              -log₁₀(adj p-value) =
-              {' '}
-              {config.adjPvalueThreshold > 0 ? (-Math.log10(config.adjPvalueThreshold)).toPrecision(3) : 'Infinity'}
-            </Text>
             <ColorPicker
               onColorChange={((color) => {
                 onUpdate({
@@ -64,6 +52,16 @@ const ThresholdsGuidesEditor = (props) => {
             />
           </div>
         </Form.Item>
+        <Form.Item
+          labelCol={{ span: 5 }}
+          wrapperCol={{ span: 19 }}
+        >
+          <Text type='secondary'>
+            -log₁₀(adj p-value) =
+            {' '}
+            {config.adjPvalueThreshold > 0 ? (-Math.log10(config.adjPvalueThreshold)).toPrecision(3) : 'Infinity'}
+          </Text>
+        </Form.Item>
 
         <p><strong>Fold Change Threshold</strong></p>
         <Form.Item
@@ -79,13 +77,6 @@ const ThresholdsGuidesEditor = (props) => {
               onUpdate={(val) => debouncedUpdate({ logFoldChangeThreshold: val })}
               sliderWidth={200}
             />
-          </div>
-        </Form.Item>
-        <Form.Item
-          labelCol={{ span: 5 }}
-          wrapperCol={{ span: 19 }}
-        >
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
             <ColorPicker
               onColorChange={((color) => {
                 onUpdate({
@@ -110,9 +101,9 @@ const ThresholdsGuidesEditor = (props) => {
           wrapperCol={{ span: 19 }}
         >
           <SliderWithInput
-            min={1}
-            max={10}
-            step={0.5}
+            min={0.1}
+            max={2}
+            step={0.1}
             value={config.thresholdGuideWidth}
             onUpdate={(val) => debouncedUpdate({ thresholdGuideWidth: val })}
             sliderWidth={200}
