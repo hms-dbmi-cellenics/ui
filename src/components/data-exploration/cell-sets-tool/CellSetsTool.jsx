@@ -123,49 +123,14 @@ const CellSetsTool = (props) => {
       return;
     }
 
-    // Find parent groups of all selected cell sets
-    const parentKeysOfSelected = new Set();
-    selectedCellSetKeys.forEach((key) => {
-      // Try to get parentNodeKey from properties first
-      let parentKey = properties[key]?.parentNodeKey;
-      
-      // If not found, search in hierarchy
-      if (!parentKey) {
-        for (const rootNode of hierarchy) {
-          if (rootNode.children?.some(child => child.key === key)) {
-            parentKey = rootNode.key;
-            break;
-          }
-        }
-      }
-      
-      if (parentKey) {
-        parentKeysOfSelected.add(parentKey);
-      }
-    });
-
-    if (parentKeysOfSelected.size === 0) {
-      return;
-    }
-
     const selectedSet = new Set(selectedCellSetKeys);
 
-    // Get all cell sets in affected parent groups and toggle visibility
+    // Hide all unselected cell sets (globally, not just within parent groups)
+    // Skip root nodes (which have no parentNodeKey and no cellIds)
     Object.keys(properties).forEach((key) => {
-      // Try to get parentNodeKey from properties first
-      let parentKey = properties[key]?.parentNodeKey;
+      const hasParent = properties[key]?.parentNodeKey !== undefined;
       
-      // If not found, search in hierarchy
-      if (!parentKey) {
-        for (const rootNode of hierarchy) {
-          if (rootNode.children?.some(child => child.key === key)) {
-            parentKey = rootNode.key;
-            break;
-          }
-        }
-      }
-      
-      if (!parentKey || !parentKeysOfSelected.has(parentKey)) return;
+      if (!hasParent) return; // Skip root nodes
 
       const shouldBeHidden = !selectedSet.has(key);
       const isCurrentlyHidden = hidden.has(key);
@@ -174,7 +139,7 @@ const CellSetsTool = (props) => {
         dispatch(setCellSetHiddenStatus(key));
       }
     });
-  }, [selectedCellSetKeys, properties, hidden, dispatch, hierarchy]);
+  }, [selectedCellSetKeys, properties, hidden, dispatch]);
 
   /**
    * Renders the content inside the tool. Can be a skeleton during loading
