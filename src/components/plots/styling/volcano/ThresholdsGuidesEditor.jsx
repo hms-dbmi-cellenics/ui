@@ -1,10 +1,11 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {
-  Form, InputNumber, Checkbox, Space, Typography,
+  Form, Checkbox, Space, Typography,
 } from 'antd';
 import _ from 'lodash';
 import ColorPicker from 'components/ColorPicker';
+import SliderWithInput from 'components/SliderWithInput';
 
 const { Text } = Typography;
 
@@ -37,12 +38,12 @@ const ThresholdsGuidesEditor = (props) => {
         >
           <Space direction='vertical' style={{ width: '100%' }}>
             <Space>
-              <InputNumber
+              <SliderWithInput
                 min={0.00001}
+                max={0.1}
+                step={0.001}
                 value={config.adjPvalueThreshold}
-                step={0.01}
-                type='number'
-                onChange={(val) => debouncedUpdate({ adjPvalueThreshold: val })}
+                onUpdate={(val) => debouncedUpdate({ adjPvalueThreshold: val })}
               />
               <Checkbox
                 checked={config.showpvalueThresholdGuides}
@@ -65,11 +66,12 @@ const ThresholdsGuidesEditor = (props) => {
           label='Fold change (log):'
         >
           <Space>
-            <InputNumber
+            <SliderWithInput
               min={0.01}
+              max={5}
               step={0.01}
               value={config.logFoldChangeThreshold}
-              onChange={(val) => debouncedUpdate({ logFoldChangeThreshold: val })}
+              onUpdate={(val) => debouncedUpdate({ logFoldChangeThreshold: val })}
             />
             <Checkbox
               checked={config.showLogFoldChangeThresholdGuides}
@@ -86,11 +88,12 @@ const ThresholdsGuidesEditor = (props) => {
         <Form.Item
           label='Width:'
         >
-          <InputNumber
+          <SliderWithInput
             min={1}
+            max={10}
+            step={0.5}
             value={config.thresholdGuideWidth}
-            type='number'
-            onChange={(val) => debouncedUpdate({ thresholdGuideWidth: val })}
+            onUpdate={(val) => debouncedUpdate({ thresholdGuideWidth: val })}
           />
         </Form.Item>
 
