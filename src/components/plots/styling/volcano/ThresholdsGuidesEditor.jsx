@@ -34,16 +34,16 @@ const ThresholdsGuidesEditor = (props) => {
       >
         <p><strong>Significance Thresholds</strong></p>
         <Form.Item
-          label='Adjusted p-value:'
+          label='-log₁₀(adj p-value):'
         >
           <Space direction='vertical' style={{ width: '100%' }}>
             <Space>
               <SliderWithInput
-                min={0.00001}
-                max={0.1}
-                step={0.001}
-                value={config.adjPvalueThreshold}
-                onUpdate={(val) => debouncedUpdate({ adjPvalueThreshold: val })}
+                min={0.3}
+                max={5}
+                step={0.1}
+                value={config.adjPvalueThreshold > 0 ? -Math.log10(config.adjPvalueThreshold) : 5}
+                onUpdate={(val) => debouncedUpdate({ adjPvalueThreshold: Math.pow(10, -val) })}
               />
               <Checkbox
                 checked={config.showpvalueThresholdGuides}
@@ -55,9 +55,9 @@ const ThresholdsGuidesEditor = (props) => {
               </Checkbox>
             </Space>
             <Text type='secondary'>
-              -log₁₀(adj p-value) =
+              Adjusted p-value =
               {' '}
-              {config.adjPvalueThreshold > 0 ? (-Math.log10(config.adjPvalueThreshold)).toPrecision(3) : 'Infinity'}
+              {config.adjPvalueThreshold > 0 ? config.adjPvalueThreshold.toExponential(2) : '> 0.5'}
             </Text>
           </Space>
         </Form.Item>
