@@ -27,6 +27,7 @@ import {
   reorderCellSet,
   updateCellSetProperty,
   updateCellSetSelected,
+  setCellSetHiddenStatus,
 } from 'redux/actions/cellSets';
 import { runSubsetExperiment } from 'redux/actions/pipeline';
 import { getCellSets } from 'redux/selectors';
@@ -117,6 +118,30 @@ const CellSetsTool = (props) => {
     dispatch(updateCellSetSelected(keys));
   }, [experimentId]);
 
+  const handleHideNotSelected = useCallback(() => {
+    // Get all cell sets from hierarchy
+    const allCellSetKeys = new Set();
+    hierarchy.forEach((cellClass) => {
+      if (cellClass.children) {
+        cellClass.children.forEach((cellSet) => {
+          allCellSetKeys.add(cellSet.key);
+        });
+      }
+    });
+
+    // Determine which sets to hide
+    const cellSetsToHide = selectedCellSetKeys.length > 0
+      ? Array.from(allCellSetKeys).filter((key) => !selectedCellSetKeys.includes(key))
+      : Array.from(allCellSetKeys);
+
+    // Hide the appropriate cell sets
+    cellSetsToHide.forEach((key) => {
+      if (!hidden.has(key)) {
+        dispatch(setCellSetHiddenStatus(key));
+      }
+    });
+  }, [selectedCellSetKeys, hierarchy, hidden, dispatch]);
+
   /**
    * Renders the content inside the tool. Can be a skeleton during loading
    * or a hierarchical tree listing all cell sets.
@@ -166,6 +191,13 @@ const CellSetsTool = (props) => {
           <Text type='primary' id='selectedCellSets'>
             {`${selectedCellsCount} cell${selectedCellsCount === 1 ? '' : 's'} selected`}
           </Text>
+          <Button
+            type='link'
+            size='small'
+            onClick={handleHideNotSelected}
+          >
+            {selectedCellSetKeys.length > 0 ? 'Hide Not Selected' : 'Hide All'}
+          </Button>
         </Space>
       );
     }
