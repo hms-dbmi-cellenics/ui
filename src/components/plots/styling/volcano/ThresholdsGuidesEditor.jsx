@@ -35,26 +35,22 @@ const ThresholdsGuidesEditor = (props) => {
         <p><strong>Adjusted p-value:</strong></p>
         <Form.Item>
           <Space direction='vertical' style={{ width: '100%' }}>
-            <div style={{ display: 'flex', gap: '8px', width: '100%' }}>
-              <div style={{ flex: 1 }}>
-                <SliderWithInput
-                  min={0.00001}
-                  max={0.5}
-                  step={0.001}
-                  value={config.adjPvalueThreshold}
-                  onUpdate={(val) => debouncedUpdate({ adjPvalueThreshold: val })}
-                />
-              </div>
-              <Checkbox
-                checked={config.showpvalueThresholdGuides}
-                onChange={(e) => {
-                  onUpdate({ showpvalueThresholdGuides: e.target.checked });
-                }}
-                style={{ whiteSpace: 'nowrap' }}
-              >
-                Show Guideline
-              </Checkbox>
-            </div>
+            <SliderWithInput
+              min={0.00001}
+              max={0.5}
+              step={0.001}
+              value={config.adjPvalueThreshold}
+              onUpdate={(val) => debouncedUpdate({ adjPvalueThreshold: val })}
+            />
+            <Checkbox
+              checked={config.showpvalueThresholdGuides}
+              onChange={(e) => {
+                onUpdate({ showpvalueThresholdGuides: e.target.checked });
+              }}
+              style={{ whiteSpace: 'nowrap' }}
+            >
+              Show Guideline
+            </Checkbox>
             <Text type='secondary'>
               -log₁₀(adj p-value) =
               {' '}
@@ -65,7 +61,7 @@ const ThresholdsGuidesEditor = (props) => {
 
         <p><strong>Fold change (log):</strong></p>
         <Form.Item>
-          <Space>
+          <Space direction='vertical' style={{ width: '100%' }}>
             <SliderWithInput
               min={0.01}
               max={5}
