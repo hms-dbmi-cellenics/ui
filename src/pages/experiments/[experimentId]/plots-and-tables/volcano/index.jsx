@@ -93,7 +93,7 @@ const VolcanoPlotPage = (props) => {
   const currentConfig = useRef(null);
 
   useEffect(() => {
-    if (config && !_.isEqual(currentConfig.current !== config)) {
+    if (config && !_.isEqual(currentConfig.current, config)) {
       currentConfig.current = config;
       setSpec(generateSpec(config, plotData));
     }

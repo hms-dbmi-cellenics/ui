@@ -43,10 +43,12 @@ const generateSpec = (configSrc, plotData) => {
         orient: config.legend.position,
         direction: positionIsLeftOrRight ? 'vertical' : 'horizontal',
         title: config.legend.title === '' ? null : config.legend.title,
+        titleColor: config.colour.masterColour,
         encode: {
           title: {
             update: {
               fontSize: config.legend.titleFontSize || 14,
+              fill: { value: config.colour.masterColour },
             },
           },
           labels: {
