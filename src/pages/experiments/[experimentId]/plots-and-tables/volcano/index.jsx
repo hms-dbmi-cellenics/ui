@@ -8,6 +8,7 @@ import {
   Typography,
   Slider,
   Radio,
+  Checkbox,
 } from 'antd';
 import SliderWithInput from 'components/SliderWithInput';
 import { useSelector, useDispatch } from 'react-redux';
@@ -143,29 +144,27 @@ const VolcanoPlotPage = (props) => {
           labelCol={{ span: 8, style: { textAlign: 'left' } }}
           wrapperCol={{ span: 16 }}
         >
-          <p><strong>Toggle Labels</strong></p>
-          <Form.Item>
-            <Radio.Group
-              onChange={(e) => updatePlotWithChanges({ labels: { ...config.labels, enabled: e.target.value } })}
-              value={config?.labels.enabled !== undefined ? config.labels.enabled : true}
-            >
-              <Radio value>Show</Radio>
-              <Radio value={false}>Hide</Radio>
-            </Radio.Group>
-          </Form.Item>
-          <p style={{ marginTop: '15px' }}><strong>Adjusted P-value Threshold</strong></p>
+          <p><strong>Adjusted P-value Threshold</strong></p>
           <Form.Item
             labelCol={{ span: 5, style: { textAlign: 'left' } }}
             wrapperCol={{ span: 19 }}
           >
-            <SliderWithInput
-              min={0.00001}
-              max={0.5}
-              step={0.001}
-              value={config?.labelPvalueThreshold !== undefined ? config.labelPvalueThreshold : 0.05}
-              onUpdate={(val) => updatePlotWithChanges({ labelPvalueThreshold: val })}
-              sliderWidth={200}
-            />
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <SliderWithInput
+                min={0.00001}
+                max={0.5}
+                step={0.001}
+                value={config?.labelPvalueThreshold !== undefined ? config.labelPvalueThreshold : 0.05}
+                onUpdate={(val) => updatePlotWithChanges({ labelPvalueThreshold: val })}
+                sliderWidth={200}
+              />
+              <Checkbox
+                checked={config?.labels.enabled !== undefined ? config.labels.enabled : true}
+                onChange={(e) => {
+                  updatePlotWithChanges({ labels: { ...config.labels, enabled: e.target.checked } });
+                }}
+              />
+            </div>
           </Form.Item>
           <Form.Item
             labelCol={{ span: 5 }}
