@@ -9,7 +9,7 @@ import {
   Alert, Button, Skeleton, Space, Tabs, Tooltip, Typography,
 } from 'antd';
 import {
-  BlockOutlined, MergeCellsOutlined, SplitCellsOutlined, EyeInvisibleFilled
+  BlockOutlined, MergeCellsOutlined, SplitCellsOutlined, EyeInvisibleOutlined
 } from '@ant-design/icons';
 
 import SubsetCellSetsOperation from 'components/data-exploration/cell-sets-tool/SubsetCellSetsOperation';
@@ -132,31 +132,21 @@ const CellSetsTool = (props) => {
       }
     });
 
-    // If selected items don't belong to any groups, do nothing
-    // (e.g., if only root nodes are selected)
     if (parentKeysOfSelected.size === 0) {
       return;
     }
 
-    // Convert selectedCellSetKeys to a Set for O(1) lookup
     const selectedSet = new Set(selectedCellSetKeys);
 
-    // Process all cell sets in the affected parent groups
+    // Get all cell sets in affected parent groups and toggle visibility
     Object.keys(properties).forEach((key) => {
       const parentKey = properties[key]?.parentNodeKey;
-      const isInAffectedGroup = parentKey && parentKeysOfSelected.has(parentKey);
+      if (!parentKey || !parentKeysOfSelected.has(parentKey)) return;
 
-      if (!isInAffectedGroup) return;
-
-      const isSelected = selectedSet.has(key);
+      const shouldBeHidden = !selectedSet.has(key);
       const isCurrentlyHidden = hidden.has(key);
 
-      // Hide unselected items that aren't already hidden
-      if (!isSelected && !isCurrentlyHidden) {
-        dispatch(setCellSetHiddenStatus(key));
-      }
-      // Unhide selected items that are currently hidden
-      else if (isSelected && isCurrentlyHidden) {
+      if (shouldBeHidden !== isCurrentlyHidden) {
         dispatch(setCellSetHiddenStatus(key));
       }
     });
@@ -210,9 +200,8 @@ const CellSetsTool = (props) => {
           />
           <Tooltip title='Hide all cells not currently selected'>
             <Button
-              type='text'
               size='small'
-              icon={<EyeInvisibleFilled />}
+              icon={<EyeInvisibleOutlined />}
               onClick={handleHideNotSelected}
             />
           </Tooltip>
