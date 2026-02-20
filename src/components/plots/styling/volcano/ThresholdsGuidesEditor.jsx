@@ -33,9 +33,8 @@ const ThresholdsGuidesEditor = (props) => {
         wrapperCol={{ span: 16 }}
       >
         <p><strong>Significance Thresholds</strong></p>
-        <Form.Item
-          label='Adjusted p-value:'
-        >
+        <p><strong>Adjusted p-value</strong></p>
+        <Form.Item>
           <Space direction='vertical' style={{ width: '100%' }}>
             <Space>
               <SliderWithInput
@@ -62,9 +61,8 @@ const ThresholdsGuidesEditor = (props) => {
           </Space>
         </Form.Item>
 
-        <Form.Item
-          label='Fold change (log):'
-        >
+        <p><strong>Fold change (log)</strong></p>
+        <Form.Item>
           <Space>
             <SliderWithInput
               min={0.01}
