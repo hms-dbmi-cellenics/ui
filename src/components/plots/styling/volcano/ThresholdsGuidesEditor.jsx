@@ -26,14 +26,14 @@ const ThresholdsGuidesEditor = (props) => {
           labelCol={{ span: 5, style: { textAlign: 'left' } }}
           wrapperCol={{ span: 19 }}
         >
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flex: 1 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
             <SliderWithInput
               min={0.00001}
               max={0.5}
               step={0.001}
               value={config.adjPvalueThreshold}
               onUpdate={(val) => debouncedUpdate({ adjPvalueThreshold: val })}
-              containerStyle={{ flex: 1 }}
+              sliderWidth={300}
             />
             <Checkbox
               checked={config.showpvalueThresholdGuides}
@@ -68,14 +68,14 @@ const ThresholdsGuidesEditor = (props) => {
           labelCol={{ span: 5, style: { textAlign: 'left' } }}
           wrapperCol={{ span: 19 }}
         >
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flex: 1 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
             <SliderWithInput
               min={0.01}
               max={5}
               step={0.01}
               value={config.logFoldChangeThreshold}
               onUpdate={(val) => debouncedUpdate({ logFoldChangeThreshold: val })}
-              containerStyle={{ flex: 1 }}
+              sliderWidth={300}
             />
             <Checkbox
               checked={config.showLogFoldChangeThresholdGuides}
@@ -106,7 +106,7 @@ const ThresholdsGuidesEditor = (props) => {
             step={0.5}
             value={config.thresholdGuideWidth}
             onUpdate={(val) => debouncedUpdate({ thresholdGuideWidth: val })}
-            containerStyle={{ flex: 1, width: '100%' }}
+            sliderWidth={300}
           />
         </Form.Item>
       </Form>
