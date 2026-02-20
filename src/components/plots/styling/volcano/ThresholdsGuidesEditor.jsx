@@ -21,9 +21,8 @@ const ThresholdsGuidesEditor = (props) => {
         labelCol={{ span: 9, style: { textAlign: 'left' } }}
         wrapperCol={{ span: 16 }}
       >
-        <p><strong>Adjusted p-value:</strong></p>
+        <p><strong>Adjusted P-value Threshold</strong></p>
         <Form.Item
-          label='Threshold:'
           labelCol={{ span: 5, style: { textAlign: 'left' } }}
           wrapperCol={{ span: 19 }}
         >
@@ -63,9 +62,8 @@ const ThresholdsGuidesEditor = (props) => {
           </Text>
         </Form.Item>
 
-        <p><strong>Fold change (log):</strong></p>
+        <p><strong>Fold Change Threshold</strong></p>
         <Form.Item
-          label='Threshold:'
           labelCol={{ span: 5, style: { textAlign: 'left' } }}
           wrapperCol={{ span: 19 }}
         >
@@ -95,11 +93,10 @@ const ThresholdsGuidesEditor = (props) => {
           </div>
         </Form.Item>
 
-        <p><strong>Guideline Design</strong></p>
+        <p><strong>Guideline Width</strong></p>
         <Form.Item
-          label='Width:'
-          labelCol={{ span: 9, style: { textAlign: 'left' } }}
-          wrapperCol={{ span: 15 }}
+          labelCol={{ span: 5, style: { textAlign: 'left' } }}
+          wrapperCol={{ span: 19 }}
         >
           <SliderWithInput
             min={1}
