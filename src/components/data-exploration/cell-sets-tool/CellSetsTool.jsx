@@ -175,6 +175,14 @@ const CellSetsTool = (props) => {
       }
     });
   }, [selectedCellSetKeys, properties, hidden, dispatch, hierarchy]);
+
+  /**
+   * Renders the content inside the tool. Can be a skeleton during loading
+   * or a hierarchical tree listing all cell sets.
+   */
+  const renderContent = () => {
+    let operations = null;
+
     if (selectedCellSetKeys.length > 0) {
       operations = (
         <Space style={{ marginBottom: '10px' }}>
