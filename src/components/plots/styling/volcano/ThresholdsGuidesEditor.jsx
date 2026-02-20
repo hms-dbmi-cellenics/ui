@@ -46,31 +46,27 @@ const ThresholdsGuidesEditor = (props) => {
           </Text>
         </Form.Item>
         <Form.Item
-          label='Show Guideline:'
+          label='Show:'
           labelCol={{ span: 9, style: { textAlign: 'left' } }}
           wrapperCol={{ span: 15 }}
         >
-          <Checkbox
-            checked={config.showpvalueThresholdGuides}
-            onChange={(e) => {
-              onUpdate({ showpvalueThresholdGuides: e.target.checked });
-            }}
-          />
-        </Form.Item>
-        <Form.Item
-          label='Guide Color:'
-          labelCol={{ span: 9, style: { textAlign: 'left' } }}
-          wrapperCol={{ span: 15 }}
-        >
-          <ColorPicker
-            onColorChange={((color) => {
-              onUpdate({
-                pvalueThresholdColor: color,
-              });
-            })}
-            color={config.pvalueThresholdColor}
-            size='small'
-          />
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <Checkbox
+              checked={config.showpvalueThresholdGuides}
+              onChange={(e) => {
+                onUpdate({ showpvalueThresholdGuides: e.target.checked });
+              }}
+            />
+            <ColorPicker
+              onColorChange={((color) => {
+                onUpdate({
+                  pvalueThresholdColor: color,
+                });
+              })}
+              color={config.pvalueThresholdColor}
+              size='small'
+            />
+          </div>
         </Form.Item>
 
         <p><strong>Fold change (log):</strong></p>
@@ -88,31 +84,27 @@ const ThresholdsGuidesEditor = (props) => {
           />
         </Form.Item>
         <Form.Item
-          label='Show Guideline:'
+          label='Show:'
           labelCol={{ span: 9, style: { textAlign: 'left' } }}
           wrapperCol={{ span: 15 }}
         >
-          <Checkbox
-            checked={config.showLogFoldChangeThresholdGuides}
-            onChange={(e) => {
-              onUpdate({ showLogFoldChangeThresholdGuides: e.target.checked });
-            }}
-          />
-        </Form.Item>
-        <Form.Item
-          label='Guide Color:'
-          labelCol={{ span: 9, style: { textAlign: 'left' } }}
-          wrapperCol={{ span: 15 }}
-        >
-          <ColorPicker
-            onColorChange={((color) => {
-              onUpdate({
-                logFoldChangeThresholdColor: color,
-              });
-            })}
-            color={config.logFoldChangeThresholdColor}
-            size='small'
-          />
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <Checkbox
+              checked={config.showLogFoldChangeThresholdGuides}
+              onChange={(e) => {
+                onUpdate({ showLogFoldChangeThresholdGuides: e.target.checked });
+              }}
+            />
+            <ColorPicker
+              onColorChange={((color) => {
+                onUpdate({
+                  logFoldChangeThresholdColor: color,
+                });
+              })}
+              color={config.logFoldChangeThresholdColor}
+              size='small'
+            />
+          </div>
         </Form.Item>
 
         <p><strong>Guideline Design</strong></p>
