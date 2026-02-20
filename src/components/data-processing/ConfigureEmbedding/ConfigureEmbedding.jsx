@@ -102,6 +102,39 @@ const ConfigureEmbedding = (props) => {
       controls: ['labels'],
     },
   ];
+  const sampleEmbStylingControls = [
+    {
+      panelTitle: 'Colour inversion',
+      controls: ['colourInversion'],
+      footer: <Alert
+        message='Changing plot colours is not available here. Use the Cell sets and Metadata tool in Data Exploration to customise cell set and metadata colours'
+        type='info'
+      />,
+    },
+    {
+      panelTitle: 'Markers',
+      controls: [{
+        name: 'markers',
+        props: { showShapeType: false },
+      }],
+    },
+    {
+      panelTitle: 'Legend',
+      controls: [{
+        name: 'legend',
+        props: {
+          option: {
+            positions: 'top-bottom',
+          },
+          defaultTitle: 'Sample Name',
+        },
+      }],
+    },
+    {
+      panelTitle: 'Labels',
+      controls: ['labels'],
+    },
+  ];
   const continuousEmbStylingControls = [
     {
       panelTitle: 'Colours',
@@ -226,7 +259,7 @@ const ConfigureEmbedding = (props) => {
         embedding: {
           plotUuid: generateDataProcessingPlotUuid(null, filterName, 1),
           plotType: 'embeddingPreviewBySample',
-          plotStyling: categoricalEmbStylingControls,
+          plotStyling: sampleEmbStylingControls,
           plot: (config, actions) => renderCategoricalEmbedding({
             ...config,
             legend: {
