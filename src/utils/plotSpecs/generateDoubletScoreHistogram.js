@@ -13,12 +13,12 @@ const generateSpec = (config, plotData) => {
   const defaultLegendTitle = 'Doublet Score';
   const legendTitle = config.legend.defaultValues?.includes('title')
     ? defaultLegendTitle
-    : config.legend.title;
+    : (config.legend.title === '' ? null : config.legend.title);
 
   const legendDirection = ['top', 'bottom'].includes(config.legend.position)
     ? 'horizontal'
     : 'vertical';
-  legend = !config.legend.enabled ? {} : [
+  legend = !config.legend.enabled ? null : [
     {
       fill: 'color',
       orient: config.legend.position,

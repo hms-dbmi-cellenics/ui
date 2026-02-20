@@ -68,7 +68,7 @@ const DataIntegration = (props) => {
               ...config,
               legend: {
                 ...config.legend,
-                title: 'Sample Name',
+                defaultLegendTitle: 'Sample Name',
               },
               selectedCellSet: 'sample',
               axes: {
@@ -91,7 +91,13 @@ const DataIntegration = (props) => {
           {config?.legend?.showAlert && <PlotLegendAlert />}
           <FrequencyPlot
             experimentId={experimentId}
-            config={config}
+            config={{
+              ...config,
+              legend: {
+                ...config.legend,
+                defaultLegendTitle: 'Sample Name',
+              },
+            }}
             actions={actions}
           />
         </Space>
@@ -132,7 +138,7 @@ const DataIntegration = (props) => {
             option: {
               positions: 'top-bottom',
             },
-            defaultTitle: 'Cell Set',
+            defaultTitle: 'Sample Name',
           },
         }],
       },

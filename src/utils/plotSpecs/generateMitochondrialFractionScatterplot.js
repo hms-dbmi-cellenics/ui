@@ -15,7 +15,7 @@ const generateSpec = (config, plotData) => {
   const defaultLegendTitle = 'Status';
   const legendTitle = config.legend.defaultValues?.includes('title')
     ? defaultLegendTitle
-    : config.legend.title;
+    : (config.legend.title === '' ? null : config.legend.title);
 
   legend = !config.legend.enabled ? null : [
     {
