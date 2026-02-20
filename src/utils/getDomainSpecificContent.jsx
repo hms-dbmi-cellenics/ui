@@ -20,6 +20,47 @@ const reusedContent = {
         <br />
       </>
     ),
+    TutorialVideos: (
+      <>
+        Quick-start tutorial videos:
+        <ul style={{ lineHeight: '1.8' }}>
+          <li>
+            <a href='https://www.youtube.com/watch?v=LXIhiIyxHME' target='_blank' rel='noreferrer'>
+              Full Demo
+            </a>
+          </li>
+          <li>
+            <a href='https://www.youtube.com/watch?v=aTkBEK3L-KI' target='_blank' rel='noreferrer'>
+              Data Upload and Management
+            </a>
+          </li>
+          <li>
+            <a href='https://www.youtube.com/watch?v=0pwXUMMGnlA' target='_blank' rel='noreferrer'>
+              Data Processing
+            </a>
+          </li>
+          <li>
+            <a href='https://www.youtube.com/watch?v=JKd_nhroAUc' target='_blank' rel='noreferrer'>
+              Data Exploration
+            </a>
+          </li>
+          <li>
+            <a href='https://www.youtube.com/watch?v=SP5rzpBnqCI' target='_blank' rel='noreferrer'>
+              Plots and Tables
+            </a>
+          </li>
+        </ul>
+        <br />
+        In-depth
+        {' '}
+        <a href='https://www.youtube.com/watch?v=cL2WPeXy19U' target='_blank' rel='noreferrer'>
+          recorded workshop
+        </a>
+        {' '}
+        (~2hours)
+        <br />
+      </>
+    ),
     OneToOneSupport: (
       <>
         For 1-2-1 support with your analysis, contact
@@ -58,7 +99,13 @@ const domainSpecificContent = {
       [Environment.STAGING]: 'lMoIVl5D',
       [Environment.DEVELOPMENT]: 'uMEoPBAl',
     },
-    HelpButton: reusedContent.HelpButton.OneToOneSupport,
+    HelpButton: (
+      <>
+        {reusedContent.HelpButton.TutorialVideos}
+        <br />
+        {reusedContent.HelpButton.OneToOneSupport}
+      </>
+    ),
     matomoName: 'cellenics',
     guidanceFileLink: 'https://drive.google.com/file/d/1VPaB-yofuExinY2pXyGEEx-w39_OPubO/view',
     helpMessage: (
@@ -74,14 +121,13 @@ const domainSpecificContent = {
     containerIds: biomageContainerIds,
     HelpButton: (
       <>
+        {reusedContent.HelpButton.BiomageUserGuide}
+        <br />
         Ask questions about how to use Cellenics and make feature requests on the
         {' '}
         <a href='https://community.biomage.net/' target='_blank' rel='noreferrer'>Cellenics community forum</a>
         !
         The Biomage team will reply to your message as soon as possible.
-        <br />
-        <br />
-        {reusedContent.HelpButton.BiomageUserGuide}
       </>
     ),
     HeaderExtraButton: (
@@ -104,7 +150,7 @@ const domainSpecificContent = {
     containerIds: biomageContainerIds,
     HelpButton: (
       <>
-        {reusedContent.HelpButton.BiomageUserGuide}
+        {reusedContent.HelpButton.TutorialVideos}
       </>
     ),
     ExtraLogoText: reusedContent.ExtraLogoText,

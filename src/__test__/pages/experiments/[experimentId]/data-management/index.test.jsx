@@ -119,7 +119,6 @@ describe('Data Management page', () => {
     await act(async () => {
       userEvent.click(newProjectButton);
     });
-    fireEvent.click(screen.getByText('Upload Project'));
 
     expect(screen.getByLabelText(/new project name/i)).toBeInTheDocument();
 

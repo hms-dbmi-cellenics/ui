@@ -10,12 +10,15 @@ import ProjectDetails from 'components/data-management/project/ProjectDetails';
 import { loadProcessingSettings } from 'redux/actions/experimentSettings';
 import loadBackendStatus from 'redux/actions/backendStatus/loadBackendStatus';
 import { loadSamples } from 'redux/actions/samples';
+import { AppRouteProvider, useAppRouter } from 'utils/AppRouteProvider';
+import { modules } from 'utils/constants';
 import ExampleExperimentsSpace from 'components/data-management/ExampleExperimentsSpace';
 import Loader from 'components/Loader';
 import { privacyPolicyIsNotAccepted } from 'utils/deploymentInfo';
 
 const DataManagementPage = () => {
   const dispatch = useDispatch();
+  const { navigateTo } = useAppRouter();
 
   const samples = useSelector((state) => state.samples);
 
@@ -48,7 +51,7 @@ const DataManagementPage = () => {
   useEffect(() => {
     if (!activeExperimentId
       || !activeExperiment
-       || privacyPolicyIsNotAccepted(user, domainName)
+      || privacyPolicyIsNotAccepted(user, domainName)
     ) return;
 
     dispatch(loadProcessingSettings(activeExperimentId));
@@ -75,7 +78,12 @@ const DataManagementPage = () => {
       toolbarControls: [],
       component: (width, height) => {
         if (!activeExperimentId) {
-          return <ExampleExperimentsSpace introductionText='You have no projects yet.' />;
+          return (
+            <ExampleExperimentsSpace
+              introductionText='You have no projects yet.'
+              buttonType='primary'
+            />
+          );
         }
 
         if (!activeExperiment) {

@@ -69,6 +69,7 @@ const SamplesTable = forwardRef((props, ref) => {
   const [sampleNames, setSampleNames] = useState(new Set());
   const DragHandle = sortableHandle(() => <MenuOutlined style={{ cursor: 'grab', color: '#999' }} />);
 
+  const [uploadModalVisible, setUploadModalVisible] = useState(false);
   const [samplesLoaded, setSamplesLoaded] = useState(false);
 
   const initialTableColumns = useMemo(() => {

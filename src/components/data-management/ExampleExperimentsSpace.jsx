@@ -8,7 +8,7 @@ import { modules } from 'utils/constants';
 
 const { Paragraph } = Typography;
 
-const ExampleExperimentsSpace = ({ introductionText, imageStyle }) => {
+const ExampleExperimentsSpace = ({ introductionText, imageStyle, buttonType }) => {
   const { navigateTo } = useAppRouter();
 
   return (
@@ -20,7 +20,7 @@ const ExampleExperimentsSpace = ({ introductionText, imageStyle }) => {
             {introductionText}
           </Paragraph>
           <Button
-            type='primary'
+            type={buttonType}
             block
             onClick={() => { navigateTo(modules.REPOSITORY); }}
           >
@@ -35,11 +35,13 @@ const ExampleExperimentsSpace = ({ introductionText, imageStyle }) => {
 ExampleExperimentsSpace.defaultProps = {
   introductionText: '',
   imageStyle: {},
+  buttonType: 'default',
 };
 
 ExampleExperimentsSpace.propTypes = {
   introductionText: PropTypes.string,
   imageStyle: PropTypes.object,
+  buttonType: PropTypes.string,
 };
 
 export default ExampleExperimentsSpace;
