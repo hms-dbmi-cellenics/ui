@@ -36,6 +36,16 @@ const ThresholdsGuidesEditor = (props) => {
           />
         </Form.Item>
         <Form.Item
+          labelCol={{ span: 9 }}
+          wrapperCol={{ span: 15 }}
+        >
+          <Text type='secondary'>
+            -log₁₀(adj p-value) =
+            {' '}
+            {config.adjPvalueThreshold > 0 ? (-Math.log10(config.adjPvalueThreshold)).toPrecision(3) : 'Infinity'}
+          </Text>
+        </Form.Item>
+        <Form.Item
           label='Show Guideline:'
           labelCol={{ span: 9, style: { textAlign: 'left' } }}
           wrapperCol={{ span: 15 }}
@@ -61,17 +71,6 @@ const ThresholdsGuidesEditor = (props) => {
             color={config.pvalueThresholdColor}
             size='small'
           />
-        </Form.Item>
-        <Form.Item
-          label='Display:'
-          labelCol={{ span: 9, style: { textAlign: 'left' } }}
-          wrapperCol={{ span: 15 }}
-        >
-          <Text type='secondary'>
-            -log₁₀(adj p-value) =
-            {' '}
-            {config.adjPvalueThreshold > 0 ? (-Math.log10(config.adjPvalueThreshold)).toPrecision(3) : 'Infinity'}
-          </Text>
         </Form.Item>
 
         <p><strong>Fold change (log):</strong></p>
