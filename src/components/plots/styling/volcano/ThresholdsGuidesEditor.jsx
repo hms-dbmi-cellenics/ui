@@ -47,12 +47,6 @@ const ThresholdsGuidesEditor = (props) => {
               {' '}
               {config.adjPvalueThreshold > 0 ? (-Math.log10(config.adjPvalueThreshold)).toPrecision(3) : 'Infinity'}
             </Text>
-            <Checkbox
-              checked={config.showpvalueThresholdGuides}
-              onChange={(e) => {
-                onUpdate({ showpvalueThresholdGuides: e.target.checked });
-              }}
-            />
             <ColorPicker
               onColorChange={((color) => {
                 onUpdate({
@@ -61,6 +55,12 @@ const ThresholdsGuidesEditor = (props) => {
               })}
               color={config.pvalueThresholdColor}
               size='small'
+            />
+            <Checkbox
+              checked={config.showpvalueThresholdGuides}
+              onChange={(e) => {
+                onUpdate({ showpvalueThresholdGuides: e.target.checked });
+              }}
             />
           </div>
         </Form.Item>
@@ -79,12 +79,13 @@ const ThresholdsGuidesEditor = (props) => {
               onUpdate={(val) => debouncedUpdate({ logFoldChangeThreshold: val })}
               sliderWidth={200}
             />
-            <Checkbox
-              checked={config.showLogFoldChangeThresholdGuides}
-              onChange={(e) => {
-                onUpdate({ showLogFoldChangeThresholdGuides: e.target.checked });
-              }}
-            />
+          </div>
+        </Form.Item>
+        <Form.Item
+          labelCol={{ span: 5 }}
+          wrapperCol={{ span: 19 }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
             <ColorPicker
               onColorChange={((color) => {
                 onUpdate({
@@ -93,6 +94,12 @@ const ThresholdsGuidesEditor = (props) => {
               })}
               color={config.logFoldChangeThresholdColor}
               size='small'
+            />
+            <Checkbox
+              checked={config.showLogFoldChangeThresholdGuides}
+              onChange={(e) => {
+                onUpdate({ showLogFoldChangeThresholdGuides: e.target.checked });
+              }}
             />
           </div>
         </Form.Item>
