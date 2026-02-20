@@ -8,7 +8,7 @@ const HelpButton = () => {
   const menuItems = [
     {
       label: (
-        <Card size='small' style={{ padding: '1em', width: '265px' }}>
+        <Card size='small' style={{ padding: '1em', width: '380px' }}>
           {getDomainSpecificContent('HelpButton')}
         </Card>
       ),
