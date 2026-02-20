@@ -6,7 +6,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 
 import {
-  Alert, Button, Skeleton, Space, Tabs, Typography,
+  Alert, Button, Skeleton, Space, Tabs, Tooltip, Typography,
 } from 'antd';
 import {
   BlockOutlined, MergeCellsOutlined, SplitCellsOutlined, EyeInvisibleFilled
@@ -167,22 +167,9 @@ const CellSetsTool = (props) => {
    * or a hierarchical tree listing all cell sets.
    */
   const renderContent = () => {
-    let showSelectedOnlyButton = null;
     let operations = null;
 
     if (selectedCellSetKeys.length > 0) {
-      showSelectedOnlyButton = (
-        <div style={{ marginBottom: '10px' }}>
-          <Button
-            type='default'
-            size='small'
-            onClick={handleHideNotSelected}
-          >
-            Hide Unselected Cells
-          </Button>
-        </div>
-      );
-
       operations = (
         <Space style={{ marginBottom: '10px' }}>
           <SubsetCellSetsOperation
@@ -221,6 +208,14 @@ const CellSetsTool = (props) => {
             ariaLabel='Complement of selected'
             helpTitle='Create new cell set from the complement of the selected sets in the current tab.'
           />
+          <Tooltip title='Hide all cells not currently selected'>
+            <Button
+              type='text'
+              size='small'
+              icon={<EyeInvisibleFilled />}
+              onClick={handleHideNotSelected}
+            />
+          </Tooltip>
           <Text type='primary' id='selectedCellSets'>
             {`${selectedCellsCount} cell${selectedCellsCount === 1 ? '' : 's'} selected`}
           </Text>
@@ -234,7 +229,6 @@ const CellSetsTool = (props) => {
         label: 'Cell sets',
         children: (
           <>
-            {showSelectedOnlyButton}
             {operations}
             <HierarchicalTree
               experimentId={experimentId}
