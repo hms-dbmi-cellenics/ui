@@ -53,7 +53,7 @@ const generateSpec = (config, method, imageData, plotData, cellSetLegendsData) =
     legend = [
       {
         fill: 'cellSetLabelColors',
-        title: config?.legend.title || 'Cluster Name',
+        title: config?.legend.title === '' ? null : (config?.legend.title || 'Cluster Name'),
         titleColor: config?.colour.masterColour,
         type: 'symbol',
         orient: config?.legend.position,
