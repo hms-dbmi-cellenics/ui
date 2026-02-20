@@ -126,7 +126,19 @@ const CellSetsTool = (props) => {
     // Find parent groups of all selected cell sets
     const parentKeysOfSelected = new Set();
     selectedCellSetKeys.forEach((key) => {
-      const parentKey = properties[key]?.parentNodeKey;
+      // Try to get parentNodeKey from properties first
+      let parentKey = properties[key]?.parentNodeKey;
+      
+      // If not found, search in hierarchy
+      if (!parentKey) {
+        for (const rootNode of hierarchy) {
+          if (rootNode.children?.some(child => child.key === key)) {
+            parentKey = rootNode.key;
+            break;
+          }
+        }
+      }
+      
       if (parentKey) {
         parentKeysOfSelected.add(parentKey);
       }
@@ -140,25 +152,29 @@ const CellSetsTool = (props) => {
 
     // Get all cell sets in affected parent groups and toggle visibility
     Object.keys(properties).forEach((key) => {
-      const parentKey = properties[key]?.parentNodeKey;
+      // Try to get parentNodeKey from properties first
+      let parentKey = properties[key]?.parentNodeKey;
+      
+      // If not found, search in hierarchy
+      if (!parentKey) {
+        for (const rootNode of hierarchy) {
+          if (rootNode.children?.some(child => child.key === key)) {
+            parentKey = rootNode.key;
+            break;
+          }
+        }
+      }
+      
       if (!parentKey || !parentKeysOfSelected.has(parentKey)) return;
 
       const shouldBeHidden = !selectedSet.has(key);
       const isCurrentlyHidden = hidden.has(key);
-
+      
       if (shouldBeHidden !== isCurrentlyHidden) {
         dispatch(setCellSetHiddenStatus(key));
       }
     });
-  }, [selectedCellSetKeys, properties, hidden, dispatch]);
-
-  /**
-   * Renders the content inside the tool. Can be a skeleton during loading
-   * or a hierarchical tree listing all cell sets.
-   */
-  const renderContent = () => {
-    let operations = null;
-
+  }, [selectedCellSetKeys, properties, hidden, dispatch, hierarchy]);
     if (selectedCellSetKeys.length > 0) {
       operations = (
         <Space style={{ marginBottom: '10px' }}>
