@@ -36,9 +36,6 @@ const CalculationConfig = (props) => {
   const dispatch = useDispatch();
 
   const data = useSelector((state) => state.experimentSettings.processing[FILTER_UUID]);
-  const changedQCFilters = useSelector(
-    (state) => state.experimentSettings.processing.meta.changedQCFilters,
-  );
 
   const { method: clusteringMethod } = data?.clusteringSettings || {};
   const { method: embeddingMethod } = data?.embeddingSettings || {};
@@ -234,16 +231,7 @@ const CalculationConfig = (props) => {
   }
 
   return (
-    <>
-      {Boolean(changedQCFilters.size) && (
-        <Alert
-          message='Your changes are not yet applied. To update the plots, click Run.'
-          type='warning'
-          showIcon
-          style={{ marginBottom: '1rem' }}
-        />
-      )}
-      <Collapse defaultActiveKey={['embedding-settings', 'clustering-settings']}>
+    <Collapse defaultActiveKey={['embedding-settings', 'clustering-settings']}>
         <Panel header='Embedding settings' key='embedding-settings' collapsible={disabled && 'disabled'}>
           <Form size='small' disabled={disabled} labelCol={{ span: 10, style: { textAlign: 'left' } }} wrapperCol={{ span: 14 }}>
             <Form.Item
@@ -380,7 +368,6 @@ const CalculationConfig = (props) => {
         </Form>
       </Panel>
     </Collapse>
-    </>
   );
 };
 
