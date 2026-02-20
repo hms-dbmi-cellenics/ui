@@ -161,8 +161,6 @@ const CalculationConfig = (props) => {
   return (
     <Form
       size='small'
-      labelCol={{ span: 12 }}
-      wrapperCol={{ span: 12 }}
     >
 
       <Collapse defaultActiveKey='data-integration'>
@@ -188,7 +186,7 @@ const CalculationConfig = (props) => {
             )
           }
 
-          <div style={{ paddingLeft: '1rem' }}>
+          <div>
             <Form.Item
               label='Method:'
             >
@@ -231,7 +229,7 @@ const CalculationConfig = (props) => {
               </Tooltip>
             </p>
           </Form.Item>
-          <div style={{ paddingLeft: '1rem' }}>
+          <div>
             <Form.Item label='Number of Principal Components'>
               <InputNumber
                 value={numPCs}
@@ -315,7 +313,7 @@ const CalculationConfig = (props) => {
               </Tooltip>
             </p>
           </Form.Item>
-          <div style={{ paddingLeft: '1rem' }}>
+          <div>
 
             <Form.Item label={(
               <span>
