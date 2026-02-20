@@ -155,20 +155,20 @@ const VolcanoPlotPage = (props) => {
           </Form.Item>
           <p style={{ marginTop: '15px' }}><strong>Label Threshold</strong></p>
           <Form.Item
-            label='-log₁₀(adj p-value):'
+            label='Adjusted p-value:'
           >
             <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
               <SliderWithInput
-                min={0.3}
-                max={5}
-                step={0.1}
-                value={config?.labelPvalueThreshold !== undefined && config.labelPvalueThreshold > 0 ? -Math.log10(config.labelPvalueThreshold) : 1.301}
-                onUpdate={(val) => updatePlotWithChanges({ labelPvalueThreshold: Math.pow(10, -val) })}
+                min={0.00001}
+                max={0.5}
+                step={0.001}
+                value={config?.labelPvalueThreshold !== undefined ? config.labelPvalueThreshold : 0.05}
+                onUpdate={(val) => updatePlotWithChanges({ labelPvalueThreshold: val })}
               />
               <Typography.Text type='secondary'>
-                Adjusted p-value =
+                -log₁₀(adj p-value) =
                 {' '}
-                {config?.labelPvalueThreshold !== undefined && config.labelPvalueThreshold > 0 ? config.labelPvalueThreshold.toExponential(2) : '0.05'}
+                {(config?.labelPvalueThreshold !== undefined ? config.labelPvalueThreshold : 0.05) > 0 ? (-Math.log10(config?.labelPvalueThreshold !== undefined ? config.labelPvalueThreshold : 0.05)).toPrecision(3) : 'Infinity'}
               </Typography.Text>
             </div>
           </Form.Item>
