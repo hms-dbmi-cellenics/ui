@@ -124,7 +124,7 @@ const CellSetsTool = (props) => {
     }
 
     const selectedSet = new Set(selectedCellSetKeys);
-    
+
     // Get the union of all cells in selected cell sets
     const selectedCellIds = new Set();
     selectedCellSetKeys.forEach((key) => {
@@ -136,20 +136,18 @@ const CellSetsTool = (props) => {
       }
     });
 
-    // Hide cell sets that have no overlap with selected cells
-    // Keep visible cell sets that overlap or are selected
+    // Hide all cell sets that have no overlap with selected cells
     Object.keys(properties).forEach((key) => {
-      // Skip selected cell sets
+      // Skip selected cell sets themselves
       if (selectedSet.has(key)) return;
-      
-      // Skip root nodes (no parentNodeKey and no cellIds)
-      const hasParent = properties[key]?.parentNodeKey !== undefined;
-      if (!hasParent) return;
 
-      // Check if this cell set overlaps with selected cells
+      // Skip root nodes (no parentNodeKey)
+      if (properties[key]?.parentNodeKey === undefined) return;
+
+      // Check if this cell set has any overlap with selected cells
       const cellIds = properties[key]?.cellIds;
       let hasOverlap = false;
-      
+
       if (cellIds && cellIds.size > 0) {
         for (const cellId of cellIds) {
           if (selectedCellIds.has(cellId)) {
@@ -161,7 +159,7 @@ const CellSetsTool = (props) => {
 
       const shouldBeHidden = !hasOverlap;
       const isCurrentlyHidden = hidden.has(key);
-      
+
       if (shouldBeHidden !== isCurrentlyHidden) {
         dispatch(setCellSetHiddenStatus(key));
       }
