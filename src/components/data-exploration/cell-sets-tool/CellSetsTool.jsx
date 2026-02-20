@@ -119,21 +119,35 @@ const CellSetsTool = (props) => {
   }, [experimentId]);
 
   const handleHideNotSelected = useCallback(() => {
-    // Get all cell set keys from properties
-    const allCellSetKeys = Object.keys(properties);
-    
-    // Convert selectedCellSetKeys to a Set for efficient lookup
+    if (selectedCellSetKeys.length === 0) {
+      return;
+    }
+
+    // Find parent groups of all selected cell sets
+    const parentKeysOfSelected = new Set();
+    selectedCellSetKeys.forEach((key) => {
+      const parentKey = properties[key]?.parentNodeKey;
+      if (parentKey) {
+        parentKeysOfSelected.add(parentKey);
+      }
+    });
+
+    // If selected items don't belong to any groups, do nothing
+    // (e.g., if only root nodes are selected)
+    if (parentKeysOfSelected.size === 0) {
+      return;
+    }
+
+    // Convert selectedCellSetKeys to a Set for O(1) lookup
     const selectedSet = new Set(selectedCellSetKeys);
 
-    // Determine which sets to hide
-    let cellSetsToHide;
-    if (selectedSet.size > 0) {
-      // If cells are selected, hide everything not selected
-      cellSetsToHide = allCellSetKeys.filter((key) => !selectedSet.has(key));
-    } else {
-      // If nothing selected, hide all
-      cellSetsToHide = allCellSetKeys;
-    }
+    // Only hide cell sets that:
+    // 1. Belong to one of the parent groups we're filtering
+    // 2. Are not currently selected
+    const cellSetsToHide = Object.keys(properties).filter((key) => {
+      const parentKey = properties[key]?.parentNodeKey;
+      return parentKey && parentKeysOfSelected.has(parentKey) && !selectedSet.has(key);
+    });
 
     // Hide the appropriate cell sets
     cellSetsToHide.forEach((key) => {
