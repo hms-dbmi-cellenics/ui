@@ -29,12 +29,24 @@ const ThresholdsGuidesEditor = (props) => {
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
             <SliderWithInput
               min={0.00001}
-              max={0.5}
+              max={0.25}
               step={0.001}
               value={config.adjPvalueThreshold}
               onUpdate={(val) => debouncedUpdate({ adjPvalueThreshold: val })}
               sliderWidth={200}
             />
+          </div>
+        </Form.Item>
+        <Form.Item
+          labelCol={{ span: 5 }}
+          wrapperCol={{ span: 19 }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <Text type='secondary'>
+              -log₁₀(adj p-value) =
+              {' '}
+              {config.adjPvalueThreshold > 0 ? (-Math.log10(config.adjPvalueThreshold)).toPrecision(3) : 'Infinity'}
+            </Text>
             <Checkbox
               checked={config.showpvalueThresholdGuides}
               onChange={(e) => {
@@ -51,16 +63,6 @@ const ThresholdsGuidesEditor = (props) => {
               size='small'
             />
           </div>
-        </Form.Item>
-        <Form.Item
-          labelCol={{ span: 5 }}
-          wrapperCol={{ span: 19 }}
-        >
-          <Text type='secondary'>
-            -log₁₀(adj p-value) =
-            {' '}
-            {config.adjPvalueThreshold > 0 ? (-Math.log10(config.adjPvalueThreshold)).toPrecision(3) : 'Infinity'}
-          </Text>
         </Form.Item>
 
         <p><strong>Fold Change Threshold</strong></p>
