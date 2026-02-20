@@ -20,7 +20,7 @@ describe('ProjectsList', () => {
   it('Contains the input box and create project button', async () => {
     render(
       <Provider store={storeState}>
-        <ProjectsListContainer onCreateNewProject={() => {}} />
+        <ProjectsListContainer onCreateNewProject={() => { }} />
       </Provider>,
     );
 
