@@ -50,11 +50,6 @@ const generateSpec = (configSrc, plotData) => {
         labelFontSize: config?.legend.labelFontSize,
         labelColor: config?.colour.masterColour,
         encode: {
-          title: {
-            update: {
-              fontSize: config.legend.titleFontSize || 14,
-            },
-          },
           labels: {
             update: {
               fontSize: { value: config.legend.labelFontSize || 12 },
