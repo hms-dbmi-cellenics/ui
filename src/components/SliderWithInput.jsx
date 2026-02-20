@@ -10,7 +10,7 @@ import useUpdateThrottled from 'utils/customHooks/useUpdateThrottled';
 
 const SliderWithInput = (props) => {
   const {
-    min, max, value, onUpdate, disabled, step,
+    min, max, value, onUpdate, disabled, step, containerStyle,
   } = props;
 
   const [, handleChange] = useUpdateThrottled(onUpdate, value);
@@ -28,7 +28,7 @@ const SliderWithInput = (props) => {
   const stepToSet = step ?? max / 200;
 
   return (
-    <Space align='start'>
+    <Space align='start' style={{ flex: 1, ...containerStyle }}>
       <Slider
         value={localValue}
         min={min}
@@ -38,7 +38,7 @@ const SliderWithInput = (props) => {
         step={stepToSet}
         disabled={disabled}
         style={{
-          minWidth: 100, display: 'inline-block', flexGrow: 100, margin: '0.5em',
+          minWidth: 100, display: 'inline-block', flexGrow: 1, flex: 1, margin: '0.5em',
         }}
       />
 
@@ -74,11 +74,13 @@ SliderWithInput.propTypes = {
   onUpdate: PropTypes.func.isRequired,
   disabled: PropTypes.bool,
   step: PropTypes.number,
+  containerStyle: PropTypes.object,
 };
 
 SliderWithInput.defaultProps = {
   disabled: false,
   step: null,
+  containerStyle: {},
 };
 
 export default SliderWithInput;
