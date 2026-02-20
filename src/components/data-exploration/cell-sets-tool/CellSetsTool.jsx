@@ -9,7 +9,7 @@ import {
   Alert, Button, Skeleton, Space, Tabs, Typography,
 } from 'antd';
 import {
-  BlockOutlined, MergeCellsOutlined, SplitCellsOutlined,
+  BlockOutlined, MergeCellsOutlined, SplitCellsOutlined, EyeInvisibleFilled
 } from '@ant-design/icons';
 
 import SubsetCellSetsOperation from 'components/data-exploration/cell-sets-tool/SubsetCellSetsOperation';
@@ -145,7 +145,7 @@ const CellSetsTool = (props) => {
     Object.keys(properties).forEach((key) => {
       const parentKey = properties[key]?.parentNodeKey;
       const isInAffectedGroup = parentKey && parentKeysOfSelected.has(parentKey);
-      
+
       if (!isInAffectedGroup) return;
 
       const isSelected = selectedSet.has(key);
@@ -172,15 +172,15 @@ const CellSetsTool = (props) => {
 
     if (selectedCellSetKeys.length > 0) {
       showSelectedOnlyButton = (
-        <Space style={{ marginBottom: '10px' }}>
+        <div style={{ marginBottom: '10px' }}>
           <Button
             type='default'
             size='small'
             onClick={handleHideNotSelected}
           >
-            Show Selected Only
+            Hide Unselected Cells
           </Button>
-        </Space>
+        </div>
       );
 
       operations = (
