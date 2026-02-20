@@ -153,28 +153,34 @@ const VolcanoPlotPage = (props) => {
               <Radio value={false}>Hide</Radio>
             </Radio.Group>
           </Form.Item>
-          <p style={{ marginTop: '15px' }}><strong>Label Threshold</strong></p>
+          <p style={{ marginTop: '15px' }}><strong>Adjusted P-value Threshold</strong></p>
           <Form.Item
-            label='Adjusted p-value:'
+            labelCol={{ span: 5, style: { textAlign: 'left' } }}
+            wrapperCol={{ span: 19 }}
           >
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-              <SliderWithInput
-                min={0.00001}
-                max={0.5}
-                step={0.001}
-                value={config?.labelPvalueThreshold !== undefined ? config.labelPvalueThreshold : 0.05}
-                onUpdate={(val) => updatePlotWithChanges({ labelPvalueThreshold: val })}
-              />
-              <Typography.Text type='secondary'>
-                -log₁₀(adj p-value) =
-                {' '}
-                {(config?.labelPvalueThreshold !== undefined ? config.labelPvalueThreshold : 0.05) > 0 ? (-Math.log10(config?.labelPvalueThreshold !== undefined ? config.labelPvalueThreshold : 0.05)).toPrecision(3) : 'Infinity'}
-              </Typography.Text>
-            </div>
+            <SliderWithInput
+              min={0.00001}
+              max={0.5}
+              step={0.001}
+              value={config?.labelPvalueThreshold !== undefined ? config.labelPvalueThreshold : 0.05}
+              onUpdate={(val) => updatePlotWithChanges({ labelPvalueThreshold: val })}
+              sliderWidth={200}
+            />
+          </Form.Item>
+          <Form.Item
+            labelCol={{ span: 5 }}
+            wrapperCol={{ span: 19 }}
+          >
+            <Typography.Text type='secondary'>
+              -log₁₀(adj p-value) =
+              {' '}
+              {(config?.labelPvalueThreshold !== undefined ? config.labelPvalueThreshold : 0.05) > 0 ? (-Math.log10(config?.labelPvalueThreshold !== undefined ? config.labelPvalueThreshold : 0.05)).toPrecision(3) : 'Infinity'}
+            </Typography.Text>
           </Form.Item>
           <p style={{ marginTop: '15px' }}><strong>Text Size</strong></p>
           <Form.Item
-            label='Font Size:'
+            labelCol={{ span: 5, style: { textAlign: 'left' } }}
+            wrapperCol={{ span: 19 }}
           >
             <Slider
               min={8}
@@ -182,6 +188,7 @@ const VolcanoPlotPage = (props) => {
               value={config?.labels.size !== undefined ? config.labels.size : 11}
               onChange={(val) => updatePlotWithChanges({ labels: { ...config.labels, size: val } })}
               marks={{ 8: 8, 24: 24 }}
+              style={{ width: 200 }}
             />
           </Form.Item>
         </Form>
