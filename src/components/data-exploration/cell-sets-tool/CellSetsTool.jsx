@@ -167,9 +167,22 @@ const CellSetsTool = (props) => {
    * or a hierarchical tree listing all cell sets.
    */
   const renderContent = () => {
+    let showSelectedOnlyButton = null;
     let operations = null;
 
     if (selectedCellSetKeys.length > 0) {
+      showSelectedOnlyButton = (
+        <Space style={{ marginBottom: '10px' }}>
+          <Button
+            type='default'
+            size='small'
+            onClick={handleHideNotSelected}
+          >
+            Show Selected Only
+          </Button>
+        </Space>
+      );
+
       operations = (
         <Space style={{ marginBottom: '10px' }}>
           <SubsetCellSetsOperation
@@ -211,13 +224,6 @@ const CellSetsTool = (props) => {
           <Text type='primary' id='selectedCellSets'>
             {`${selectedCellsCount} cell${selectedCellsCount === 1 ? '' : 's'} selected`}
           </Text>
-          <Button
-            type='link'
-            size='small'
-            onClick={handleHideNotSelected}
-          >
-            {selectedCellSetKeys.length > 0 ? 'Hide Not Selected' : 'Hide All'}
-          </Button>
         </Space>
       );
     }
@@ -228,6 +234,7 @@ const CellSetsTool = (props) => {
         label: 'Cell sets',
         children: (
           <>
+            {showSelectedOnlyButton}
             {operations}
             <HierarchicalTree
               experimentId={experimentId}
