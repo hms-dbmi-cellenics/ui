@@ -98,7 +98,6 @@ const LegendEditor = (props) => {
                 label='Title Text:'
                 labelCol={{ span: 8, style: { textAlign: 'left' } }}
                 wrapperCol={{ span: 19 }}
-                style={{ marginBottom: '15px' }}
               >
                 <Input
                   value={displayTitle || ''}
@@ -114,7 +113,7 @@ const LegendEditor = (props) => {
 
             {showTitleInput && (
               <Form.Item
-                label='Title Font Size:'
+                label='Title Size:'
                 labelCol={{ span: 8, style: { textAlign: 'left' } }}
                 wrapperCol={{ span: 16 }}
                 style={{ marginBottom: 0 }}
@@ -131,7 +130,7 @@ const LegendEditor = (props) => {
               </Form.Item>
             )}
             <Form.Item
-              label='Label Font Size:'
+              label='Label Size:'
               labelCol={{ span: 8, style: { textAlign: 'left' } }}
               wrapperCol={{ span: 16 }}
               style={{ marginBottom: 0, marginTop: '15px' }}
