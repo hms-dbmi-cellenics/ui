@@ -3,14 +3,6 @@ import _ from 'lodash';
 const generateSpec = (configSrc, plotData) => {
   const config = _.cloneDeep(configSrc);
 
-  const logFoldChangeThresholdColor = config.showLogFoldChangeThresholdGuides
-    ? config.logFoldChangeThresholdColor
-    : '#ffffff00';
-
-  const pvalueThresholdColor = config.showpvalueThresholdGuides
-    ? config.pvalueThresholdColor
-    : '#ffffff00';
-
   if (config.colour.toggleInvert === '#000000') {
     config.colour.reverseColourBar = true;
     config.colour.masterColour = '#FFFFFF';
@@ -75,6 +67,131 @@ const generateSpec = (configSrc, plotData) => {
       },
     ];
   }
+
+  // Build marks array conditionally based on guidelines
+  const baseMarks = [
+    {
+      type: 'symbol',
+      clip: true,
+      from: { data: 'data' },
+      encode: {
+        enter: {
+          x: { scale: 'x', field: 'logFC' },
+          y: { scale: 'y', field: 'neglogpvalue' },
+          size: { value: config.marker.size },
+          shape: { value: config.marker.shape },
+          fillOpacity: config.marker.opacity / 10,
+          fill: {
+            scale: 'color',
+            field: 'status',
+          },
+        },
+        update: {
+          strokeWidth: { value: 1 },
+          strokeOpacity: { value: config.strokeOpa },
+          stroke: config.marker.outline
+            ? { value: config.strokeCol }
+            : { scale: 'color', field: 'status' },
+        },
+      },
+    },
+    {
+      type: 'text',
+      clip: true,
+      from: { data: 'dex2' },
+      encode: {
+        enter: {
+          x: { scale: 'x', field: 'logFC' },
+          y: { scale: 'y', field: 'neglogpvalue' },
+
+          fill: { value: config.colour.masterColour },
+          fontSize: { value: config.labels.size || 11 },
+          text: { field: 'gene_names' },
+        },
+      },
+      transform: [
+        {
+          type: 'label',
+          size: { signal: '[width + 60, height]' },
+        }],
+    },
+  ];
+
+  // Add fold change threshold rules only if guidelines are shown
+  if (config.showLogFoldChangeThresholdGuides) {
+    baseMarks.push(
+      {
+        type: 'rule',
+        clip: true,
+        encode: {
+          enter: {
+            x: {
+              scale: 'x',
+              value: config.logFoldChangeThreshold,
+              round: true,
+            },
+            y: 0,
+            y2: { field: { group: 'height' } },
+            stroke: {
+              value: config.logFoldChangeThresholdColor,
+            },
+            strokeWidth: {
+              value: config.thresholdGuideWidth,
+            },
+          },
+        },
+      },
+      {
+        type: 'rule',
+        clip: true,
+        encode: {
+          enter: {
+            x: {
+              scale: 'x',
+              value: config.logFoldChangeThreshold * -1,
+              round: true,
+            },
+            y: 0,
+            y2: { field: { group: 'height' } },
+            stroke: {
+              value: config.logFoldChangeThresholdColor,
+            },
+            strokeWidth: {
+              value: config.thresholdGuideWidth,
+            },
+          },
+        },
+      },
+    );
+  }
+
+  // Add p-value threshold rule only if guidelines are shown
+  if (config.showpvalueThresholdGuides) {
+    baseMarks.push(
+      {
+        type: 'rule',
+        clip: true,
+        encode: {
+          enter: {
+            y: {
+              scale: 'y',
+              value: -Math.log10(config.adjPvalueThreshold),
+              round: true,
+            },
+            x: 0,
+            x2: { field: { group: 'width' } },
+            stroke: {
+              value: config.pvalueThresholdColor,
+            },
+            strokeWidth: {
+              value: config.thresholdGuideWidth,
+            },
+          },
+        },
+      },
+    );
+  }
+
   const spec = {
     $schema: 'https://vega.github.io/schema/vega/v5.json',
     width: config.dimensions.width,
@@ -207,117 +324,7 @@ const generateSpec = (configSrc, plotData) => {
       fontSize: config.title.fontSize,
     },
 
-    marks: [
-      {
-        type: 'symbol',
-        clip: true,
-        from: { data: 'data' },
-        encode: {
-          enter: {
-            x: { scale: 'x', field: 'logFC' },
-            y: { scale: 'y', field: 'neglogpvalue' },
-            size: { value: config.marker.size },
-            shape: { value: config.marker.shape },
-            fillOpacity: config.marker.opacity / 10,
-            fill: {
-              scale: 'color',
-              field: 'status',
-            },
-          },
-          update: {
-            strokeWidth: { value: 1 },
-            strokeOpacity: { value: config.strokeOpa },
-            stroke: config.marker.outline
-              ? { value: config.strokeCol }
-              : { scale: 'color', field: 'status' },
-          },
-        },
-      },
-      {
-        type: 'text',
-        clip: true,
-        from: { data: 'dex2' },
-        encode: {
-          enter: {
-            x: { scale: 'x', field: 'logFC' },
-            y: { scale: 'y', field: 'neglogpvalue' },
-
-            fill: { value: config.colour.masterColour },
-            fontSize: { value: config.labels.size || 11 },
-            text: { field: 'gene_names' },
-          },
-        },
-        transform: [
-          {
-            type: 'label',
-            size: { signal: '[width + 60, height]' },
-          }]
-        ,
-      },
-      {
-        type: 'rule',
-        clip: true,
-        encode: {
-          enter: {
-            x: {
-              scale: 'x',
-              value: config.logFoldChangeThreshold,
-              round: true,
-            },
-            y: 0,
-            y2: { field: { group: 'height' } },
-            stroke: {
-              value: logFoldChangeThresholdColor,
-            },
-            strokeWidth: {
-              value: config.thresholdGuideWidth,
-            },
-          },
-        },
-      },
-      {
-        type: 'rule',
-        clip: true,
-        encode: {
-          enter: {
-            x: {
-              scale: 'x',
-              value: config.logFoldChangeThreshold * -1,
-              round: true,
-            },
-            y: 0,
-            y2: { field: { group: 'height' } },
-            stroke: {
-              value: logFoldChangeThresholdColor,
-            },
-            strokeWidth: {
-              value: config.thresholdGuideWidth,
-            },
-          },
-        },
-      },
-      {
-        type: 'rule',
-        clip: true,
-        encode: {
-          enter: {
-            y: {
-              scale: 'y',
-              value: -Math.log10(config.adjPvalueThreshold),
-              round: true,
-            },
-            x: 0,
-            x2: { field: { group: 'width' } },
-            stroke: {
-              value: pvalueThresholdColor,
-            },
-            strokeWidth: {
-              value: config.thresholdGuideWidth,
-            },
-          },
-        },
-      },
-    ],
+    marks: baseMarks,
 
     legends: legend,
   };
