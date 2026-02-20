@@ -12,17 +12,6 @@ const { Text } = Typography;
 const ThresholdsGuidesEditor = (props) => {
   const { onUpdate, config } = props;
 
-  const colorPickerOptions = [
-    {
-      config: 'pvalueThresholdColor',
-      name: 'P-value Guide',
-    },
-    {
-      config: 'logFoldChangeThresholdColor',
-      name: 'Fold Change Guide',
-    },
-  ];
-
   const debouncedUpdate = _.debounce((update) => { onUpdate(update); }, 300);
 
   return (
@@ -51,6 +40,22 @@ const ThresholdsGuidesEditor = (props) => {
             >
               Show Guideline
             </Checkbox>
+            <Form.Item
+              label='Guide Color:'
+              labelCol={{ span: 9, style: { textAlign: 'left' } }}
+              wrapperCol={{ span: 14 }}
+              style={{ marginBottom: 0 }}
+            >
+              <ColorPicker
+                onColorChange={((color) => {
+                  onUpdate({
+                    pvalueThresholdColor: color,
+                  });
+                })}
+                color={config.pvalueThresholdColor}
+                size='small'
+              />
+            </Form.Item>
             <Text type='secondary'>
               -log₁₀(adj p-value) =
               {' '}
@@ -78,6 +83,22 @@ const ThresholdsGuidesEditor = (props) => {
             >
               Show Guideline
             </Checkbox>
+            <Form.Item
+              label='Guide Color:'
+              labelCol={{ span: 9, style: { textAlign: 'left' } }}
+              wrapperCol={{ span: 14 }}
+              style={{ marginBottom: 0 }}
+            >
+              <ColorPicker
+                onColorChange={((color) => {
+                  onUpdate({
+                    logFoldChangeThresholdColor: color,
+                  });
+                })}
+                color={config.logFoldChangeThresholdColor}
+                size='small'
+              />
+            </Form.Item>
           </Space>
         </Form.Item>
 
@@ -93,25 +114,6 @@ const ThresholdsGuidesEditor = (props) => {
             onUpdate={(val) => debouncedUpdate({ thresholdGuideWidth: val })}
           />
         </Form.Item>
-
-        {colorPickerOptions.map(({ config: configName, name: text }) => (
-          <Form.Item
-            key={`${configName}-${config[configName]}`}
-            label={`${text}:`}
-            labelCol={{ span: 9, style: { textAlign: 'left' } }}
-            wrapperCol={{ span: 14 }}
-          >
-            <ColorPicker
-              onColorChange={((color) => {
-                onUpdate({
-                  [configName]: color,
-                });
-              })}
-              color={config[configName]}
-              size='small'
-            />
-          </Form.Item>
-        ))}
       </Form>
     </>
   );
