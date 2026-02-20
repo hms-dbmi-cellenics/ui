@@ -231,7 +231,7 @@ const ConfigureEmbedding = (props) => {
             ...config,
             legend: {
               ...config.legend,
-              title: 'Sample Name',
+              defaultLegendTitle: 'Sample Name',
             },
             selectedCellSet: 'sample',
           }, actions),
