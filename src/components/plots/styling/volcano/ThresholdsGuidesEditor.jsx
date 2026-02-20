@@ -23,6 +23,33 @@ const ThresholdsGuidesEditor = (props) => {
       >
         <p><strong>Adjusted p-value:</strong></p>
         <Form.Item
+          labelCol={{ span: 24 }}
+          wrapperCol={{ span: 24 }}
+          style={{ marginBottom: '12px' }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0px' }}>
+            <span>Show</span>
+            <Checkbox
+              checked={config.showpvalueThresholdGuides}
+              onChange={(e) => {
+                onUpdate({ showpvalueThresholdGuides: e.target.checked });
+              }}
+              style={{ marginLeft: '0px' }}
+            />
+            <span style={{ marginLeft: '12px' }}>Color:</span>
+            <ColorPicker
+              onColorChange={((color) => {
+                onUpdate({
+                  pvalueThresholdColor: color,
+                });
+              })}
+              color={config.pvalueThresholdColor}
+              size='small'
+              style={{ marginLeft: '6px' }}
+            />
+          </div>
+        </Form.Item>
+        <Form.Item
           label='Threshold:'
           labelCol={{ span: 9, style: { textAlign: 'left' } }}
           wrapperCol={{ span: 15 }}
@@ -45,31 +72,35 @@ const ThresholdsGuidesEditor = (props) => {
             {config.adjPvalueThreshold > 0 ? (-Math.log10(config.adjPvalueThreshold)).toPrecision(3) : 'Infinity'}
           </Text>
         </Form.Item>
+
+        <p><strong>Fold change (log):</strong></p>
         <Form.Item
-          label='Show:'
-          labelCol={{ span: 9, style: { textAlign: 'left' } }}
-          wrapperCol={{ span: 15 }}
+          labelCol={{ span: 24 }}
+          wrapperCol={{ span: 24 }}
+          style={{ marginBottom: '12px' }}
         >
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0px' }}>
+            <span>Show</span>
             <Checkbox
-              checked={config.showpvalueThresholdGuides}
+              checked={config.showLogFoldChangeThresholdGuides}
               onChange={(e) => {
-                onUpdate({ showpvalueThresholdGuides: e.target.checked });
+                onUpdate({ showLogFoldChangeThresholdGuides: e.target.checked });
               }}
+              style={{ marginLeft: '0px' }}
             />
+            <span style={{ marginLeft: '12px' }}>Color:</span>
             <ColorPicker
               onColorChange={((color) => {
                 onUpdate({
-                  pvalueThresholdColor: color,
+                  logFoldChangeThresholdColor: color,
                 });
               })}
-              color={config.pvalueThresholdColor}
+              color={config.logFoldChangeThresholdColor}
               size='small'
+              style={{ marginLeft: '6px' }}
             />
           </div>
         </Form.Item>
-
-        <p><strong>Fold change (log):</strong></p>
         <Form.Item
           label='Threshold:'
           labelCol={{ span: 9, style: { textAlign: 'left' } }}
@@ -82,29 +113,6 @@ const ThresholdsGuidesEditor = (props) => {
             value={config.logFoldChangeThreshold}
             onUpdate={(val) => debouncedUpdate({ logFoldChangeThreshold: val })}
           />
-        </Form.Item>
-        <Form.Item
-          label='Show:'
-          labelCol={{ span: 9, style: { textAlign: 'left' } }}
-          wrapperCol={{ span: 15 }}
-        >
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-            <Checkbox
-              checked={config.showLogFoldChangeThresholdGuides}
-              onChange={(e) => {
-                onUpdate({ showLogFoldChangeThresholdGuides: e.target.checked });
-              }}
-            />
-            <ColorPicker
-              onColorChange={((color) => {
-                onUpdate({
-                  logFoldChangeThresholdColor: color,
-                });
-              })}
-              color={config.logFoldChangeThresholdColor}
-              size='small'
-            />
-          </div>
         </Form.Item>
 
         <p><strong>Guideline Design</strong></p>
