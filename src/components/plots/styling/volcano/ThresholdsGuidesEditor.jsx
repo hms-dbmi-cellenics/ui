@@ -23,20 +23,24 @@ const ThresholdsGuidesEditor = (props) => {
       >
         <p><strong>Adjusted p-value:</strong></p>
         <Form.Item
-          labelCol={{ span: 24 }}
-          wrapperCol={{ span: 24 }}
-          style={{ marginBottom: '12px' }}
+          label='Threshold:'
+          labelCol={{ span: 5, style: { textAlign: 'left' } }}
+          wrapperCol={{ span: 19 }}
         >
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0px' }}>
-            <span>Show</span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <SliderWithInput
+              min={0.00001}
+              max={0.5}
+              step={0.001}
+              value={config.adjPvalueThreshold}
+              onUpdate={(val) => debouncedUpdate({ adjPvalueThreshold: val })}
+            />
             <Checkbox
               checked={config.showpvalueThresholdGuides}
               onChange={(e) => {
                 onUpdate({ showpvalueThresholdGuides: e.target.checked });
               }}
-              style={{ marginLeft: '0px' }}
             />
-            <span style={{ marginLeft: '12px' }}>Color:</span>
             <ColorPicker
               onColorChange={((color) => {
                 onUpdate({
@@ -45,26 +49,12 @@ const ThresholdsGuidesEditor = (props) => {
               })}
               color={config.pvalueThresholdColor}
               size='small'
-              style={{ marginLeft: '6px' }}
             />
           </div>
         </Form.Item>
         <Form.Item
-          label='Threshold:'
-          labelCol={{ span: 9, style: { textAlign: 'left' } }}
-          wrapperCol={{ span: 15 }}
-        >
-          <SliderWithInput
-            min={0.00001}
-            max={0.5}
-            step={0.001}
-            value={config.adjPvalueThreshold}
-            onUpdate={(val) => debouncedUpdate({ adjPvalueThreshold: val })}
-          />
-        </Form.Item>
-        <Form.Item
-          labelCol={{ span: 9 }}
-          wrapperCol={{ span: 15 }}
+          labelCol={{ span: 5 }}
+          wrapperCol={{ span: 19 }}
         >
           <Text type='secondary'>
             -log₁₀(adj p-value) =
@@ -75,20 +65,24 @@ const ThresholdsGuidesEditor = (props) => {
 
         <p><strong>Fold change (log):</strong></p>
         <Form.Item
-          labelCol={{ span: 24 }}
-          wrapperCol={{ span: 24 }}
-          style={{ marginBottom: '12px' }}
+          label='Threshold:'
+          labelCol={{ span: 5, style: { textAlign: 'left' } }}
+          wrapperCol={{ span: 19 }}
         >
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0px' }}>
-            <span>Show</span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <SliderWithInput
+              min={0.01}
+              max={5}
+              step={0.01}
+              value={config.logFoldChangeThreshold}
+              onUpdate={(val) => debouncedUpdate({ logFoldChangeThreshold: val })}
+            />
             <Checkbox
               checked={config.showLogFoldChangeThresholdGuides}
               onChange={(e) => {
                 onUpdate({ showLogFoldChangeThresholdGuides: e.target.checked });
               }}
-              style={{ marginLeft: '0px' }}
             />
-            <span style={{ marginLeft: '12px' }}>Color:</span>
             <ColorPicker
               onColorChange={((color) => {
                 onUpdate({
@@ -97,22 +91,8 @@ const ThresholdsGuidesEditor = (props) => {
               })}
               color={config.logFoldChangeThresholdColor}
               size='small'
-              style={{ marginLeft: '6px' }}
             />
           </div>
-        </Form.Item>
-        <Form.Item
-          label='Threshold:'
-          labelCol={{ span: 9, style: { textAlign: 'left' } }}
-          wrapperCol={{ span: 15 }}
-        >
-          <SliderWithInput
-            min={0.01}
-            max={5}
-            step={0.01}
-            value={config.logFoldChangeThreshold}
-            onUpdate={(val) => debouncedUpdate({ logFoldChangeThreshold: val })}
-          />
         </Form.Item>
 
         <p><strong>Guideline Design</strong></p>
