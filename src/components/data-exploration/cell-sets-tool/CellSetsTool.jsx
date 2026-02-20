@@ -9,7 +9,7 @@ import {
   Alert, Button, Skeleton, Space, Tabs, Tooltip, Typography,
 } from 'antd';
 import {
-  BlockOutlined, MergeCellsOutlined, SplitCellsOutlined, EyeInvisibleOutlined
+  BlockOutlined, MergeCellsOutlined, SplitCellsOutlined,
 } from '@ant-design/icons';
 
 import SubsetCellSetsOperation from 'components/data-exploration/cell-sets-tool/SubsetCellSetsOperation';
@@ -27,7 +27,6 @@ import {
   reorderCellSet,
   updateCellSetProperty,
   updateCellSetSelected,
-  setCellSetHiddenStatus,
 } from 'redux/actions/cellSets';
 import { runSubsetExperiment } from 'redux/actions/pipeline';
 import { getCellSets } from 'redux/selectors';
@@ -118,67 +117,6 @@ const CellSetsTool = (props) => {
     dispatch(updateCellSetSelected(keys));
   }, [experimentId]);
 
-  const handleHideNotSelected = useCallback(() => {
-    if (selectedCellSetKeys.length === 0) {
-      return;
-    }
-
-    const selectedSet = new Set(selectedCellSetKeys);
-
-    // Get the union of all cells in selected cell sets
-    const selectedCellIds = new Set();
-    selectedCellSetKeys.forEach((key) => {
-      const cellIds = properties[key]?.cellIds;
-      if (cellIds) {
-        cellIds.forEach((cellId) => {
-          selectedCellIds.add(cellId);
-        });
-      }
-    });
-
-    // Hide all cell sets that have no overlap with selected cells
-    Object.keys(properties).forEach((key) => {
-      // Skip selected cell sets themselves
-      if (selectedSet.has(key)) return;
-
-      // Check if this is a root node (no parent)
-      let isRootNode = properties[key]?.parentNodeKey === undefined;
-
-      // Also check hierarchy if not found in properties
-      if (isRootNode) {
-        for (const rootNode of hierarchy) {
-          if (rootNode.children?.some(child => child.key === key)) {
-            isRootNode = false;
-            break;
-          }
-        }
-      }
-
-      // Skip root nodes
-      if (isRootNode) return;
-
-      // Check if this cell set has any overlap with selected cells
-      const cellIds = properties[key]?.cellIds;
-      let hasOverlap = false;
-
-      if (cellIds && cellIds.size > 0) {
-        for (const cellId of cellIds) {
-          if (selectedCellIds.has(cellId)) {
-            hasOverlap = true;
-            break;
-          }
-        }
-      }
-
-      const shouldBeHidden = !hasOverlap;
-      const isCurrentlyHidden = hidden.has(key);
-
-      if (shouldBeHidden !== isCurrentlyHidden) {
-        dispatch(setCellSetHiddenStatus(key));
-      }
-    });
-  }, [selectedCellSetKeys, properties, hidden, dispatch, hierarchy]);
-
   /**
    * Renders the content inside the tool. Can be a skeleton during loading
    * or a hierarchical tree listing all cell sets.
@@ -225,13 +163,6 @@ const CellSetsTool = (props) => {
             ariaLabel='Complement of selected'
             helpTitle='Create new cell set from the complement of the selected sets in the current tab.'
           />
-          <Tooltip title='Hide all cells not currently selected'>
-            <Button
-              size='small'
-              icon={<EyeInvisibleOutlined />}
-              onClick={handleHideNotSelected}
-            />
-          </Tooltip>
           <Text type='primary' id='selectedCellSets'>
             {`${selectedCellsCount} cell${selectedCellsCount === 1 ? '' : 's'} selected`}
           </Text>
