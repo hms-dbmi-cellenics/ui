@@ -158,18 +158,6 @@ const VolcanoPlotPage = (props) => {
                 onUpdate={(val) => updatePlotWithChanges({ labelPvalueThreshold: val })}
                 sliderWidth={200}
               />
-            </div>
-          </Form.Item>
-          <Form.Item
-            labelCol={{ span: 5 }}
-            wrapperCol={{ span: 19 }}
-          >
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <Typography.Text type='secondary'>
-                -log₁₀(adj p-value) =
-                {' '}
-                {(config?.labelPvalueThreshold !== undefined ? config.labelPvalueThreshold : 0.05) > 0 ? (-Math.log10(config?.labelPvalueThreshold !== undefined ? config.labelPvalueThreshold : 0.05)).toPrecision(3) : 'Infinity'}
-              </Typography.Text>
               <Checkbox
                 checked={config?.labels.enabled !== undefined ? config.labels.enabled : true}
                 onChange={(e) => {
@@ -177,6 +165,16 @@ const VolcanoPlotPage = (props) => {
                 }}
               />
             </div>
+          </Form.Item>
+          <Form.Item
+            labelCol={{ span: 5 }}
+            wrapperCol={{ span: 19 }}
+          >
+            <Typography.Text type='secondary'>
+              -log₁₀(adj p-value) =
+              {' '}
+              {(config?.labelPvalueThreshold !== undefined ? config.labelPvalueThreshold : 0.05) > 0 ? (-Math.log10(config?.labelPvalueThreshold !== undefined ? config.labelPvalueThreshold : 0.05)).toPrecision(3) : 'Infinity'}
+            </Typography.Text>
           </Form.Item>
           <p style={{ marginTop: '15px' }}><strong>Text Size</strong></p>
           <Form.Item
