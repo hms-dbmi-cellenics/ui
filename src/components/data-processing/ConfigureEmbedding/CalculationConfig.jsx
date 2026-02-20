@@ -232,13 +232,13 @@ const CalculationConfig = (props) => {
 
   return (
     <Collapse defaultActiveKey={['embedding-settings', 'clustering-settings']}>
-        <Panel header='Embedding settings' key='embedding-settings' collapsible={disabled && 'disabled'}>
-          <Form size='small' disabled={disabled} labelCol={{ span: 10, style: { textAlign: 'left' } }} wrapperCol={{ span: 14 }}>
-            <Form.Item
-              label={(
-                <span>
-                  Method&nbsp;
-                  <Tooltip overlay={(
+      <Panel header='Embedding settings' key='embedding-settings' collapsible={disabled && 'disabled'}>
+        <Form size='small' disabled={disabled} labelCol={{ span: 9, style: { textAlign: 'left' } }} wrapperCol={{ span: 15 }}>
+          <Form.Item
+            label={(
+              <span>
+                Method&nbsp;
+                <Tooltip overlay={(
                   <span>
                     {EMBEDD_METHOD_TEXT}
                     More info for
@@ -289,7 +289,7 @@ const CalculationConfig = (props) => {
         </Form>
       </Panel>
       <Panel header='Clustering settings' key='clustering-settings' collapsible={disabled && 'disabled'}>
-        <Form size='small' labelCol={{ span: 7, style: { textAlign: 'left' } }} wrapperCol={{ span: 17 }}>
+        <Form size='small' labelCol={{ span: 9, style: { textAlign: 'left' } }} wrapperCol={{ span: 15 }}>
           <Form.Item label={(
             <span>
               Method&nbsp;

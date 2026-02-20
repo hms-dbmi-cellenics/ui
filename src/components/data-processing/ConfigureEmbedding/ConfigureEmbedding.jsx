@@ -580,8 +580,6 @@ const ConfigureEmbedding = (props) => {
             </Panel>
           </Collapse>
 
-          <CalculationConfig experimentId={experimentId} onConfigChange={onConfigChange} disabled={controlsDisabledForViolin} />
-
           {Boolean(changedQCFilters.size) && (
             <Alert
               message='Your changes are not yet applied. To update the plots, click Run.'
@@ -590,6 +588,8 @@ const ConfigureEmbedding = (props) => {
               style={{ marginBottom: '1rem', marginTop: '1rem' }}
             />
           )}
+
+          <CalculationConfig experimentId={experimentId} onConfigChange={onConfigChange} disabled={controlsDisabledForViolin} />
 
           <Collapse>
             <Panel header='Plot options' key='styling'>
