@@ -161,11 +161,13 @@ const CalculationConfig = (props) => {
   return (
     <Form
       size='small'
+      labelCol={{ span: 10, style: { textAlign: 'left' } }}
+      wrapperCol={{ span: 14 }}
     >
 
       <Collapse defaultActiveKey='data-integration'>
         <Panel header='Data Integration' key='data-integration'>
-          <Form.Item style={{ marginBottom: 0 }}>
+          <Form.Item style={{ marginBottom: 0 }} labelCol={{ span: 24 }} wrapperCol={{ span: 24 }}>
             <p>
               <strong style={{ marginRight: '0.5rem' }}>Data Integration Settings:</strong>
               <Tooltip title='Integration of multiple samples corrects for batch effect. These methods identify shared cell states that are present across different datasets, even if they were collected from different individuals, experimental conditions, technologies, or even species. The user selects the integration method and sets the controls, as appropriate. Harmony is selected as default.'>
@@ -221,7 +223,7 @@ const CalculationConfig = (props) => {
             />
 
           </div>
-          <Form.Item style={{ marginBottom: 0, marginTop: '1rem' }}>
+          <Form.Item style={{ marginBottom: 0, marginTop: '1rem' }} labelCol={{ span: 24 }} wrapperCol={{ span: 24 }}>
             <p>
               <strong style={{ marginRight: '0.5rem' }}>Dimensionality Reduction Settings:</strong>
               <Tooltip title='Dimensionality reduction is necessary to summarise and visualise single cell RNA-seq data. The most common method is Principal Component Analysis. The user sets the number of Principal Components (PCs). This is the number that explains the majority of the variation within the dataset (ideally >90%), and is typically set between 5 and 30.'>
@@ -230,7 +232,7 @@ const CalculationConfig = (props) => {
             </p>
           </Form.Item>
           <div>
-            <Form.Item label='Number of Principal Components'>
+            <Form.Item label='Principal Components'>
               <InputNumber
                 value={numPCs}
                 aria-label='Number of Principal Components'
@@ -248,7 +250,7 @@ const CalculationConfig = (props) => {
                 disabled={disabled}
               />
             </Form.Item>
-            <Form.Item label='Percent Variation Explained'>
+            <Form.Item label='Variation Explained'>
               <InputNumber
                 value={roundedVariationExplained()}
                 disabled={disabled}
@@ -258,7 +260,7 @@ const CalculationConfig = (props) => {
             <Form.Item
               label={(
                 <span>
-                  Exclude Gene Categories
+                  Excluded Genes
                   {' '}
                   <Tooltip
                     title='Normalization can be biased by certain gene categories such the ones listed here.
@@ -305,7 +307,7 @@ const CalculationConfig = (props) => {
       <Collapse>
         <Panel header='Downsampling Options' key='downsampling-options'>
           <Space direction='vertical' style={{ width: '100%' }} />
-          <Form.Item>
+          <Form.Item labelCol={{ span: 24 }} wrapperCol={{ span: 24 }}>
             <p>
               <strong style={{ marginRight: '0.5rem' }}>Downsampling settings:</strong>
               <Tooltip title='Large datasets (e.g. >100,000 cells) can be downsampled specifically for the integration step. This speeds up the time it takes to integrate large datasets using some methods (especially Seurat_v4 and FastMNN), and enables large datasets to successfully complete the pipeline. Once the data are integrated, the full data are available for downstream analysis and visualization.'>

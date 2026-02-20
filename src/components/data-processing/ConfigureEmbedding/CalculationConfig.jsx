@@ -113,7 +113,7 @@ const CalculationConfig = (props) => {
 
   const renderUMAPSettings = () => (
     <>
-      <Form.Item>
+      <Form.Item labelCol={{ span: 24 }} wrapperCol={{ span: 24 }}>
         <Text strong>Settings for UMAP:</Text>
       </Form.Item>
       <Form.Item label={(
@@ -175,7 +175,7 @@ const CalculationConfig = (props) => {
 
   const renderTSNESettings = () => (
     <>
-      <Form.Item>
+      <Form.Item labelCol={{ span: 24 }} wrapperCol={{ span: 24 }}>
         <Text strong>Settings for t-SNE:</Text>
       </Form.Item>
       <Form.Item label={(
@@ -236,7 +236,7 @@ const CalculationConfig = (props) => {
   return (
     <Collapse defaultActiveKey={['embedding-settings', 'clustering-settings']}>
       <Panel header='Embedding settings' key='embedding-settings' collapsible={disabled && 'disabled'}>
-        <Form size='small' disabled={disabled}>
+        <Form size='small' disabled={disabled} labelCol={{ span: 10, style: { textAlign: 'left' } }} wrapperCol={{ span: 14 }}>
           {Boolean(changedQCFilters.size) && (
             <Form.Item>
               <Alert message='Your changes are not yet applied. To update the plots, click Run.' type='warning' showIcon />
@@ -298,10 +298,10 @@ const CalculationConfig = (props) => {
         </Form>
       </Panel>
       <Panel header='Clustering settings' key='clustering-settings' collapsible={disabled && 'disabled'}>
-        <Form size='small'>
+        <Form size='small' labelCol={{ span: 7, style: { textAlign: 'left' } }} wrapperCol={{ span: 17 }}>
           <Form.Item label={(
             <span>
-              Clustering method&nbsp;
+              Method&nbsp;
               <Tooltip overlay={(
                 <span>
                   Louvain and Leiden are graph-based clustering methods which are the most popular
@@ -363,6 +363,7 @@ const CalculationConfig = (props) => {
               max={10}
               step={0.1}
               disabled={disabled}
+              sliderWidth={186}
               value={louvainSettings.resolution}
               onUpdate={(value) => updateSettings({
                 clusteringSettings: {
