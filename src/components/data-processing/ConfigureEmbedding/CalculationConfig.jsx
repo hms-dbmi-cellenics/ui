@@ -238,7 +238,7 @@ const CalculationConfig = (props) => {
       <Panel header='Embedding settings' key='embedding-settings' collapsible={disabled && 'disabled'}>
         <Form size='small' disabled={disabled} labelCol={{ span: 10, style: { textAlign: 'left' } }} wrapperCol={{ span: 14 }}>
           {Boolean(changedQCFilters.size) && (
-            <Form.Item>
+            <Form.Item labelCol={{ span: 24 }} wrapperCol={{ span: 24 }}>
               <Alert message='Your changes are not yet applied. To update the plots, click Run.' type='warning' showIcon />
             </Form.Item>
           )}
