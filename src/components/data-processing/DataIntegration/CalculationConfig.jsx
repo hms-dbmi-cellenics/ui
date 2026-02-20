@@ -165,7 +165,7 @@ const CalculationConfig = (props) => {
         <Panel header='Data Integration' key='data-integration'>
           <Form.Item style={{ marginBottom: 0 }}>
             <p>
-              <strong style={{ marginRight: '0.5rem' }}>Data integration settings:</strong>
+              <strong style={{ marginRight: '0.5rem' }}>Data Integration Settings:</strong>
               <Tooltip title='Integration of multiple samples corrects for batch effect. These methods identify shared cell states that are present across different datasets, even if they were collected from different individuals, experimental conditions, technologies, or even species. The user selects the integration method and sets the controls, as appropriate. Harmony is selected as default.'>
                 <QuestionCircleOutlined />
               </Tooltip>
@@ -221,7 +221,7 @@ const CalculationConfig = (props) => {
           </div>
           <Form.Item style={{ marginBottom: 0, marginTop: '1rem' }}>
             <p>
-              <strong style={{ marginRight: '0.5rem' }}>Dimensionality reduction settings:</strong>
+              <strong style={{ marginRight: '0.5rem' }}>Dimensionality Reduction Settings:</strong>
               <Tooltip title='Dimensionality reduction is necessary to summarise and visualise single cell RNA-seq data. The most common method is Principal Component Analysis. The user sets the number of Principal Components (PCs). This is the number that explains the majority of the variation within the dataset (ideally >90%), and is typically set between 5 and 30.'>
                 <QuestionCircleOutlined />
               </Tooltip>
@@ -246,7 +246,7 @@ const CalculationConfig = (props) => {
                 disabled={disabled}
               />
             </Form.Item>
-            <Form.Item label='% variation explained'>
+            <Form.Item label='Percent Variation Explained'>
               <InputNumber
                 value={roundedVariationExplained()}
                 disabled={disabled}
@@ -256,7 +256,7 @@ const CalculationConfig = (props) => {
             <Form.Item
               label={(
                 <span>
-                  Exclude genes categories
+                  Exclude Gene Categories
                   {' '}
                   <Tooltip
                     title='Normalization can be biased by certain gene categories such the ones listed here.
@@ -374,9 +374,9 @@ const CalculationConfig = (props) => {
 
               </Select>
             </Form.Item>
-            <Form.Item label='% of cells to keep'>
+            <Form.Item label='Percent of Cells to Keep'>
               <InputNumber
-                aria-label='% of cells to keep'
+                aria-label='Percent of Cells to Keep'
                 disabled={downsampling.method !== downsamplingMethods.GEOSKETCH}
                 value={downsampling.percentageToKeep}
                 max={100}

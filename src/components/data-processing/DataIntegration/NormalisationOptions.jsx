@@ -20,7 +20,7 @@ const NormalisationOptions = (props) => {
 
   return (
     <>
-      <Form.Item label='# of HVGs'>
+      <Form.Item label='Number of HVGs'>
         <InputNumber
           value={numGenes}
           step={100}
