@@ -354,7 +354,7 @@ const CalculationConfig = (props) => {
               max={10}
               step={0.1}
               disabled={disabled}
-              sliderWidth={186}
+              sliderWidth={152}
               value={louvainSettings.resolution}
               onUpdate={(value) => updateSettings({
                 clusteringSettings: {

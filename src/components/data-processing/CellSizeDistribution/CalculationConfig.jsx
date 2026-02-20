@@ -42,6 +42,7 @@ const CellSizeDistributionConfig = (props) => {
             disabled={disabled}
             max={highestUmi}
             min={0}
+            style={{ marginLeft: '2rem', width: '79px' }}
           />
         </Space>
       </Form.Item>
@@ -61,7 +62,7 @@ const CellSizeDistributionConfig = (props) => {
   );
 };
 CellSizeDistributionConfig.defaultProps = {
-  updateSettings: () => {},
+  updateSettings: () => { },
   config: {},
   disabled: false,
   highestUmi: null,
