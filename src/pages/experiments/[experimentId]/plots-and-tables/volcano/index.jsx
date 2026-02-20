@@ -194,7 +194,7 @@ const VolcanoPlotPage = (props) => {
           option: {
             positions: 'top-bottom',
           },
-          showTitleInput: false,
+          showTitleInput: true,
         },
       }],
     },

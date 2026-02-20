@@ -42,6 +42,7 @@ const generateSpec = (configSrc, plotData) => {
         fill: 'color',
         orient: config.legend.position,
         direction: positionIsLeftOrRight ? 'vertical' : 'horizontal',
+        title: config.legend.title === '' ? null : config.legend.title,
         encode: {
           title: {
             update: {
