@@ -40,23 +40,16 @@ const generateSpec = (configSrc, plotData) => {
     legend = [
       {
         fill: 'color',
+        title: config.legend.title === '' ? null : config.legend.title,
+        titleFont: config?.fontStyle.font,
+        titleFontSize: config?.legend.titleFontSize,
+        titleColor: config?.colour.masterColour,
         orient: config.legend.position,
         direction: positionIsLeftOrRight ? 'vertical' : 'horizontal',
-        title: config.legend.title === '' ? null : config.legend.title,
-        titleColor: config.colour.masterColour,
+        labelFont: config?.fontStyle.font,
+        labelFontSize: config?.legend.labelFontSize,
+        labelColor: config?.colour.masterColour,
         encode: {
-          title: {
-            update: {
-              fontSize: config.legend.titleFontSize || 14,
-              fill: { value: config.colour.masterColour },
-            },
-          },
-          labels: {
-            update: {
-              fontSize: { value: config.legend.labelFontSize || 12 },
-              fill: { value: config.colour.masterColour },
-            },
-          },
           symbols: {
             update: {
               stroke: config.marker.outline
