@@ -643,7 +643,7 @@ const cellSizeDistributionHistogram = {
   },
   dimensions: {
     ...dimensionsBaseState,
-    width: 650,
+    width: 750,
     height: 400,
   },
   axes: {
@@ -671,7 +671,7 @@ const cellSizeDistributionKneePlot = {
   },
   dimensions: {
     ...dimensionsBaseState,
-    width: 650,
+    width: 550,
     height: 400,
   },
   axes: {
