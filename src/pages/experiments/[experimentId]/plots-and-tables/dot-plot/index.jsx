@@ -74,7 +74,7 @@ const plotStylingConfig = [
           option: {
             positions: 'top-bottom',
           },
-          showTitleInput: true,
+          showTitleInput: false,
         },
       },
     ],
