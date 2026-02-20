@@ -119,20 +119,13 @@ const CellSetsTool = (props) => {
   }, [experimentId]);
 
   const handleHideNotSelected = useCallback(() => {
-    // Get all cell sets from hierarchy
-    const allCellSetKeys = new Set();
-    hierarchy.forEach((cellClass) => {
-      if (cellClass.children) {
-        cellClass.children.forEach((cellSet) => {
-          allCellSetKeys.add(cellSet.key);
-        });
-      }
-    });
+    // Get all cell set keys from properties
+    const allCellSetKeys = Object.keys(properties);
 
     // Determine which sets to hide
     const cellSetsToHide = selectedCellSetKeys.length > 0
-      ? Array.from(allCellSetKeys).filter((key) => !selectedCellSetKeys.includes(key))
-      : Array.from(allCellSetKeys);
+      ? allCellSetKeys.filter((key) => !selectedCellSetKeys.includes(key))
+      : allCellSetKeys;
 
     // Hide the appropriate cell sets
     cellSetsToHide.forEach((key) => {
@@ -140,7 +133,7 @@ const CellSetsTool = (props) => {
         dispatch(setCellSetHiddenStatus(key));
       }
     });
-  }, [selectedCellSetKeys, hierarchy, hidden, dispatch]);
+  }, [selectedCellSetKeys, properties, hidden, dispatch]);
 
   /**
    * Renders the content inside the tool. Can be a skeleton during loading
