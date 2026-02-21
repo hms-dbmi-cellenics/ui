@@ -33,7 +33,7 @@ exports[`loadPlotConfig Loads config properly 1`] = `
     },
     "dimensions": {
       "height": 400,
-      "width": 650,
+      "width": 750,
     },
     "fontStyle": {
       "colour": "#000000",
@@ -118,7 +118,7 @@ exports[`loadPlotConfig Loads default initial config for plots if plot config is
     },
     "dimensions": {
       "height": 400,
-      "width": 650,
+      "width": 750,
     },
     "fontStyle": {
       "colour": "#000000",

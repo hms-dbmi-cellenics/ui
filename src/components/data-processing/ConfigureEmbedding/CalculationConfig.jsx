@@ -36,6 +36,9 @@ const CalculationConfig = (props) => {
   const dispatch = useDispatch();
 
   const data = useSelector((state) => state.experimentSettings.processing[FILTER_UUID]);
+  const changedQCFilters = useSelector(
+    (state) => state.experimentSettings.processing.meta.changedQCFilters,
+  );
 
   const { method: clusteringMethod } = data?.clusteringSettings || {};
   const { method: embeddingMethod } = data?.embeddingSettings || {};
@@ -231,34 +234,90 @@ const CalculationConfig = (props) => {
   }
 
   return (
-    <Collapse defaultActiveKey={['embedding-settings', 'clustering-settings']}>
-      <Panel header='Embedding settings' key='embedding-settings' collapsible={disabled && 'disabled'}>
-        <Form size='small' disabled={disabled} labelCol={{ span: 9, style: { textAlign: 'left' } }} wrapperCol={{ span: 15 }}>
-          <Form.Item
-            label={(
+    <>
+      {changedQCFilters?.has(FILTER_UUID) && (
+        <Alert
+          message='Your changes are not yet applied. To update the plots, click Run.'
+          type='warning'
+          showIcon
+          style={{ marginBottom: '1rem' }}
+        />
+      )}
+      <Collapse defaultActiveKey={['embedding-settings', 'clustering-settings']}>
+        <Panel header='Embedding settings' key='embedding-settings' collapsible={disabled && 'disabled'}>
+          <Form size='small' disabled={disabled} labelCol={{ span: 9, style: { textAlign: 'left' } }} wrapperCol={{ span: 15 }}>
+            <Form.Item
+              label={(
+                <span>
+                  Method&nbsp;
+                  <Tooltip overlay={(
+                    <span>
+                      {EMBEDD_METHOD_TEXT}
+                      More info for
+                      <a
+                        href='https://satijalab.org/seurat/reference/runumap'
+                        target='_blank'
+                        rel='noreferrer'
+                      >
+                        {' '}
+                        <code>UMAP</code>
+                        {' '}
+                      </a>
+                      or
+                      <a
+                        href='https://satijalab.org/seurat/reference/runtsne'
+                        target='_blank'
+                        rel='noreferrer'
+                      >
+                        {' '}
+                        <code>t-SNE</code>
+                      </a>
+                    </span>
+                  )}
+                  >
+                    <QuestionCircleOutlined />
+                  </Tooltip>
+                </span>
+              )}
+            >
+              <Select
+                disabled={disabled}
+                value={embeddingMethod}
+                onChange={(value) => {
+                  updateSettings({
+                    embeddingSettings: {
+                      method: value,
+                    },
+                  });
+                }}
+              >
+                <Option value='umap'>UMAP</Option>
+                <Option value='tsne'>t-SNE</Option>
+              </Select>
+
+            </Form.Item>
+            {embeddingMethod === 'umap' && renderUMAPSettings()}
+            {embeddingMethod === 'tsne' && renderTSNESettings()}
+          </Form>
+        </Panel>
+        <Panel header='Clustering settings' key='clustering-settings' collapsible={disabled && 'disabled'}>
+          <Form size='small' labelCol={{ span: 9, style: { textAlign: 'left' } }} wrapperCol={{ span: 15 }}>
+            <Form.Item label={(
               <span>
                 Method&nbsp;
                 <Tooltip overlay={(
                   <span>
-                    {EMBEDD_METHOD_TEXT}
-                    More info for
+                    Louvain and Leiden are graph-based clustering methods which are the most popular
+                    clustering algorithm in scRNA-seq data analysis since they have been reported to have outperformed other
+                    clustering methods in many situations.
+                    They are also more efficient than other cluster methods which is crucial large scRNA-seq datasets.
                     <a
-                      href='https://satijalab.org/seurat/reference/runumap'
+                      href='https://en.wikipedia.org/wiki/Louvain_method'
                       target='_blank'
                       rel='noreferrer'
                     >
                       {' '}
-                      <code>UMAP</code>
-                      {' '}
-                    </a>
-                    or
-                    <a
-                      href='https://satijalab.org/seurat/reference/runtsne'
-                      target='_blank'
-                      rel='noreferrer'
-                    >
-                      {' '}
-                      <code>t-SNE</code>
+                      <code>here</code>
                     </a>
                   </span>
                 )}
@@ -267,107 +326,61 @@ const CalculationConfig = (props) => {
                 </Tooltip>
               </span>
             )}
-          >
-            <Select
-              disabled={disabled}
-              value={embeddingMethod}
-              onChange={(value) => {
-                updateSettings({
-                  embeddingSettings: {
-                    method: value,
-                  },
-                });
-              }}
             >
-              <Option value='umap'>UMAP</Option>
-              <Option value='tsne'>t-SNE</Option>
-            </Select>
-
-          </Form.Item>
-          {embeddingMethod === 'umap' && renderUMAPSettings()}
-          {embeddingMethod === 'tsne' && renderTSNESettings()}
-        </Form>
-      </Panel>
-      <Panel header='Clustering settings' key='clustering-settings' collapsible={disabled && 'disabled'}>
-        <Form size='small' labelCol={{ span: 9, style: { textAlign: 'left' } }} wrapperCol={{ span: 15 }}>
-          <Form.Item label={(
-            <span>
-              Method&nbsp;
-              <Tooltip overlay={(
-                <span>
-                  Louvain and Leiden are graph-based clustering methods which are the most popular
-                  clustering algorithm in scRNA-seq data analysis since they have been reported to have outperformed other
-                  clustering methods in many situations.
-                  They are also more efficient than other cluster methods which is crucial large scRNA-seq datasets.
-                  <a
-                    href='https://en.wikipedia.org/wiki/Louvain_method'
-                    target='_blank'
-                    rel='noreferrer'
-                  >
-                    {' '}
-                    <code>here</code>
-                  </a>
-                </span>
-              )}
+              <Select
+                value={clusteringMethod}
+                disabled={disabled}
+                onChange={(value) => {
+                  updateSettings({
+                    clusteringSettings: {
+                      method: value,
+                    },
+                  });
+                }}
               >
-                <QuestionCircleOutlined />
-              </Tooltip>
-            </span>
-          )}
-          >
-            <Select
-              value={clusteringMethod}
-              disabled={disabled}
-              onChange={(value) => {
-                updateSettings({
-                  clusteringSettings: {
-                    method: value,
-                  },
-                });
-              }}
-            >
-              <Option value='louvain'>Louvain</Option>
-              <Option value='leiden'>Leiden</Option>
-              <Option value='slm' disabled>
-                <Tooltip title='SLM metric is going to be supported on a future version of the platform.'>
-                  SLM
+                <Option value='louvain'>Louvain</Option>
+                <Option value='leiden'>Leiden</Option>
+                <Option value='slm' disabled>
+                  <Tooltip title='SLM metric is going to be supported on a future version of the platform.'>
+                    SLM
+                  </Tooltip>
+                </Option>
+              </Select>
+            </Form.Item>
+            <Form.Item label={(
+              <span>
+                Resolution&nbsp;
+                <Tooltip overlay={(
+                  <span>
+                    Resolution is a parameter for the Louvain community detection algorithm that alters the number of the recovered clusters. Smaller resolution recovers fewer clusters while larger resolution recovers more clusters. The default is 0.8.
+                  </span>
+                )}
+                >
+                  <QuestionCircleOutlined />
                 </Tooltip>
-              </Option>
-            </Select>
-          </Form.Item>
-          <Form.Item label={(
-            <span>
-              Resolution&nbsp;
-              <Tooltip overlay={(
-                <span>
-                  Resolution is a parameter for the Louvain community detection algorithm that alters the number of the recovered clusters. Smaller resolution recovers fewer clusters while larger resolution recovers more clusters. The default is 0.8.
-                </span>
-              )}
-              >
-                <QuestionCircleOutlined />
-              </Tooltip>
-            </span>
-          )}
-          >
-            <SliderWithInput
-              min={0}
-              max={10}
-              step={0.1}
-              disabled={disabled}
-              sliderWidth={152}
-              value={louvainSettings.resolution}
-              onUpdate={(value) => updateSettings({
-                clusteringSettings: {
-                  methodSettings: {
-                    louvain: { resolution: value },
+              </span>
+            )}
+            >
+              <SliderWithInput
+                min={0}
+                max={10}
+                step={0.1}
+                disabled={disabled}
+                sliderWidth={152}
+                value={louvainSettings.resolution}
+                onUpdate={(value) => updateSettings({
+                  clusteringSettings: {
+                    methodSettings: {
+                      louvain: { resolution: value },
+                    },
                   },
-                },
-              })}
-            />
-          </Form.Item>
-        </Form>
-      </Panel>
-    </Collapse>
+                })}
+              />
+            </Form.Item>
+          </Form>
+        </Panel>
+      </Collapse>
+    </>
   );
 };
 
