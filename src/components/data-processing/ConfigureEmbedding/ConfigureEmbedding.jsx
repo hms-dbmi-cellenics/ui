@@ -479,10 +479,9 @@ const ConfigureEmbedding = (props) => {
   };
 
   const renderExtraControlPanels = () => (
-    <Panel header='Select data' key='select-data' collapsible={controlsDisabledForViolin && 'disabled'}>
+    <Panel header='Select data' key='select-data'>
       <SelectData
         config={selectedConfig}
-        disabled={controlsDisabledForViolin}
         onUpdate={updatePlotWithChanges}
         cellSets={cellSets}
       />
@@ -589,7 +588,7 @@ const ConfigureEmbedding = (props) => {
             />
           )}
 
-          <CalculationConfig experimentId={experimentId} onConfigChange={onConfigChange} disabled={controlsDisabledForViolin} />
+          <CalculationConfig experimentId={experimentId} onConfigChange={onConfigChange} />
 
           <Collapse>
             <Panel header='Plot options' key='styling'>
