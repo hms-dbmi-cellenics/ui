@@ -11,11 +11,12 @@ const DisplayLabels = (props) => {
   } = props;
 
   return (
-    <Space direction='vertical' style={{ width: '80%' }}>
-      <p><strong>Display Gene Labels Above (-log10 pvalue)</strong></p>
+    <Space direction='vertical' style={{ width: '100%' }}>
+      <p><strong>Adjusted P-value Threshold</strong></p>
 
       <Form.Item
-        label='Min. -log10 pvalue'
+        labelCol={{ span: 5, style: { textAlign: 'left' } }}
+        wrapperCol={{ span: 19 }}
       >
         <SliderWithInput
           data-testid='thresholdInput'
@@ -25,6 +26,7 @@ const DisplayLabels = (props) => {
           onUpdate={(value) => {
             onUpdate({ textThresholdValue: value });
           }}
+          sliderWidth={200}
         />
       </Form.Item>
     </Space>

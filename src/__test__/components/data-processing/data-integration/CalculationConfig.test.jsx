@@ -114,7 +114,7 @@ describe('DataIntegration.CalculationConfig', () => {
 
     userEvent.click(screen.getByText('Downsampling Options'));
     expect(screen.getByText('No Downsampling')).toBeDefined();
-    const inputPercToKeep = screen.getByLabelText('% of cells to keep');
+    const inputPercToKeep = screen.getByLabelText('Percent of Cells to Keep');
     expect(inputPercToKeep).toBeDisabled();
   });
 
@@ -134,7 +134,7 @@ describe('DataIntegration.CalculationConfig', () => {
     userEvent.click(screen.getByText('Downsampling Options'));
 
     expect(screen.getByText('Geometric Sketching')).toBeDefined();
-    const input = screen.getByLabelText('% of cells to keep');
+    const input = screen.getByLabelText('Percent of Cells to Keep');
     expect(input.value).toEqual('12');
 
     userEvent.type(input, '{backspace}{backspace}3');

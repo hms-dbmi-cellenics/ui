@@ -49,7 +49,7 @@ const generateSpec = (config, { FDR }, plotData) => {
   const defaultLegendTitle = 'FDR Threshold';
   const legendTitle = config.legend.defaultValues?.includes('title')
     ? defaultLegendTitle
-    : config.legend.title;
+    : (config.legend.title === '' ? null : config.legend.title);
   const legendDirection = ['top', 'bottom'].includes(config.legend.position)
     ? 'horizontal'
     : 'vertical';

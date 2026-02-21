@@ -10,7 +10,7 @@ const defaultOption = {
 
 const LegendEditor = (props) => {
   const {
-    onUpdate, config, defaultTitle, showTitleInput = true,
+    onUpdate, config, defaultTitle, showTitleInput = true, showTitleSizeInput = true,
   } = props;
 
   let { option } = props;
@@ -98,7 +98,6 @@ const LegendEditor = (props) => {
                 label='Title Text:'
                 labelCol={{ span: 8, style: { textAlign: 'left' } }}
                 wrapperCol={{ span: 19 }}
-                style={{ marginBottom: '15px' }}
               >
                 <Input
                   value={displayTitle || ''}
@@ -114,7 +113,7 @@ const LegendEditor = (props) => {
 
             {showTitleInput && (
               <Form.Item
-                label='Title Font Size:'
+                label='Title Size:'
                 labelCol={{ span: 8, style: { textAlign: 'left' } }}
                 wrapperCol={{ span: 16 }}
                 style={{ marginBottom: 0 }}
@@ -130,8 +129,27 @@ const LegendEditor = (props) => {
                 />
               </Form.Item>
             )}
+
+            {!showTitleInput && showTitleSizeInput && (
+              <Form.Item
+                label='Title Size:'
+                labelCol={{ span: 8, style: { textAlign: 'left' } }}
+                wrapperCol={{ span: 16 }}
+                style={{ marginBottom: 0, marginTop: '15px' }}
+              >
+                <Slider
+                  value={newConfig.legend.titleFontSize || 12}
+                  min={8}
+                  max={24}
+                  onChange={(value) => {
+                    handleChange({ legend: { titleFontSize: value } });
+                  }}
+                  marks={{ 8: 8, 24: 24 }}
+                />
+              </Form.Item>
+            )}
             <Form.Item
-              label='Label Font Size:'
+              label='Label Size:'
               labelCol={{ span: 8, style: { textAlign: 'left' } }}
               wrapperCol={{ span: 16 }}
               style={{ marginBottom: 0, marginTop: '15px' }}

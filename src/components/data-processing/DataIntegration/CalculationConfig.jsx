@@ -11,6 +11,7 @@ import {
   Checkbox,
   Tooltip,
   Alert,
+  Typography,
 } from 'antd';
 
 import {
@@ -26,6 +27,7 @@ import NormalisationOptions from './NormalisationOptions';
 
 const { Option } = Select;
 const { Panel } = Collapse;
+const { Text } = Typography;
 
 const getDownsampling = (downsamplingConfig = {}) => {
   const { method = downsamplingMethods.NONE, methodSettings = {} } = downsamplingConfig;
@@ -159,17 +161,21 @@ const CalculationConfig = (props) => {
   );
 
   return (
-    <Form size='small'>
+    <Form
+      size='small'
+      labelCol={{ span: 10, style: { textAlign: 'left' } }}
+      wrapperCol={{ span: 14 }}
+    >
 
       <Collapse defaultActiveKey='data-integration'>
         <Panel header='Data Integration' key='data-integration'>
-          <Form.Item style={{ marginBottom: 0 }}>
-            <p>
-              <strong style={{ marginRight: '0.5rem' }}>Data integration settings:</strong>
+          <Form.Item labelCol={{ span: 24 }} wrapperCol={{ span: 24 }}>
+            <>
+              <Text strong>Data Integration Settings:</Text>
               <Tooltip title='Integration of multiple samples corrects for batch effect. These methods identify shared cell states that are present across different datasets, even if they were collected from different individuals, experimental conditions, technologies, or even species. The user selects the integration method and sets the controls, as appropriate. Harmony is selected as default.'>
-                <QuestionCircleOutlined />
+                <QuestionCircleOutlined style={{ marginLeft: '0.5rem' }} />
               </Tooltip>
-            </p>
+            </>
           </Form.Item>
 
           {
@@ -184,7 +190,7 @@ const CalculationConfig = (props) => {
             )
           }
 
-          <div style={{ paddingLeft: '1rem' }}>
+          <div>
             <Form.Item
               label='Method:'
             >
@@ -219,16 +225,16 @@ const CalculationConfig = (props) => {
             />
 
           </div>
-          <Form.Item style={{ marginBottom: 0, marginTop: '1rem' }}>
-            <p>
-              <strong style={{ marginRight: '0.5rem' }}>Dimensionality reduction settings:</strong>
+          <Form.Item style={{ marginTop: '1rem' }} labelCol={{ span: 24 }} wrapperCol={{ span: 24 }}>
+            <>
+              <Text strong>Dimensionality Reduction Settings:</Text>
               <Tooltip title='Dimensionality reduction is necessary to summarise and visualise single cell RNA-seq data. The most common method is Principal Component Analysis. The user sets the number of Principal Components (PCs). This is the number that explains the majority of the variation within the dataset (ideally >90%), and is typically set between 5 and 30.'>
-                <QuestionCircleOutlined />
+                <QuestionCircleOutlined style={{ marginLeft: '0.5rem' }} />
               </Tooltip>
-            </p>
+            </>
           </Form.Item>
-          <div style={{ paddingLeft: '1rem' }}>
-            <Form.Item label='Number of Principal Components'>
+          <div>
+            <Form.Item label='Principal Components'>
               <InputNumber
                 value={numPCs}
                 aria-label='Number of Principal Components'
@@ -246,7 +252,7 @@ const CalculationConfig = (props) => {
                 disabled={disabled}
               />
             </Form.Item>
-            <Form.Item label='% variation explained'>
+            <Form.Item label='Variation Explained'>
               <InputNumber
                 value={roundedVariationExplained()}
                 disabled={disabled}
@@ -256,7 +262,7 @@ const CalculationConfig = (props) => {
             <Form.Item
               label={(
                 <span>
-                  Exclude genes categories
+                  Excluded Genes
                   {' '}
                   <Tooltip
                     title='Normalization can be biased by certain gene categories such the ones listed here.
@@ -303,15 +309,15 @@ const CalculationConfig = (props) => {
       <Collapse>
         <Panel header='Downsampling Options' key='downsampling-options'>
           <Space direction='vertical' style={{ width: '100%' }} />
-          <Form.Item>
-            <p>
-              <strong style={{ marginRight: '0.5rem' }}>Downsampling settings:</strong>
+          <Form.Item labelCol={{ span: 24 }} wrapperCol={{ span: 24 }}>
+            <>
+              <Text strong>Downsampling settings:</Text>
               <Tooltip title='Large datasets (e.g. >100,000 cells) can be downsampled specifically for the integration step. This speeds up the time it takes to integrate large datasets using some methods (especially Seurat_v4 and FastMNN), and enables large datasets to successfully complete the pipeline. Once the data are integrated, the full data are available for downstream analysis and visualization.'>
-                <QuestionCircleOutlined />
+                <QuestionCircleOutlined style={{ marginLeft: '0.5rem' }} />
               </Tooltip>
-            </p>
+            </>
           </Form.Item>
-          <div style={{ paddingLeft: '1rem' }}>
+          <div>
 
             <Form.Item label={(
               <span>
@@ -374,9 +380,9 @@ const CalculationConfig = (props) => {
 
               </Select>
             </Form.Item>
-            <Form.Item label='% of cells to keep'>
+            <Form.Item label='Percent of Cells to Keep'>
               <InputNumber
-                aria-label='% of cells to keep'
+                aria-label='Percent of Cells to Keep'
                 disabled={downsampling.method !== downsamplingMethods.GEOSKETCH}
                 value={downsampling.percentageToKeep}
                 max={100}

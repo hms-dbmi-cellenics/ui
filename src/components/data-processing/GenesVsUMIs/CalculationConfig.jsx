@@ -142,11 +142,11 @@ const GenesVsUMIsConfig = (props) => {
   );
 };
 GenesVsUMIsConfig.defaultProps = {
-  updateSettings: () => {},
+  updateSettings: () => { },
   config: {},
   disabled: false,
   rerunRequired: false,
-  onQCRunClick: () => {},
+  onQCRunClick: () => { },
 };
 
 GenesVsUMIsConfig.propTypes = {

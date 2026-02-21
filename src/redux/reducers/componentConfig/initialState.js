@@ -643,7 +643,7 @@ const cellSizeDistributionHistogram = {
   },
   dimensions: {
     ...dimensionsBaseState,
-    width: 650,
+    width: 750,
     height: 400,
   },
   axes: {
@@ -671,7 +671,7 @@ const cellSizeDistributionKneePlot = {
   },
   dimensions: {
     ...dimensionsBaseState,
-    width: 650,
+    width: 550,
     height: 400,
   },
   axes: {
@@ -761,7 +761,7 @@ const classifierKneePlot = {
   },
   dimensions: {
     ...dimensionsBaseState,
-    width: 650,
+    width: 600,
     height: 400,
   },
   axes: {
@@ -799,8 +799,8 @@ const classifierEmptyDropsPlot = {
   },
   axes: {
     ...axesBaseState,
-    xAxisText: 'log10[ cell size (UMIs) ]',
-    yAxisText: 'FDR (emptyDrops)',
+    xAxisText: 'log₁₀(UMIs)',
+    yAxisText: 'False Discovery Rate',
     gridOpacity: 10,
   },
   axesRanges: axesRangesBaseState,
@@ -826,8 +826,8 @@ const featuresVsUMIsScatterplot = {
   },
   axes: {
     ...axesBaseState,
-    xAxisText: 'log10 (molecule counts)',
-    yAxisText: 'log10 (gene counts)',
+    xAxisText: 'log₁₀(molecule counts)',
+    yAxisText: 'log₁₀(gene counts)',
     gridOpacity: 10,
   },
   axesRanges: axesRangesBaseState,

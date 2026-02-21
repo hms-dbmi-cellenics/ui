@@ -135,8 +135,8 @@ const generateSpec = (config, method, plotData, cellSetLegendsData) => {
     const labelLimit = positionIsLeftRight ? 0 : legendSize;
 
     const legendTitle = config.legend.defaultValues?.includes('title')
-      ? 'Cluster Name'
-      : config?.legend.title;
+      ? (config?.legend.defaultLegendTitle || 'Cluster Name')
+      : (config?.legend.title === '' ? null : config?.legend.title);
 
     legend = [
       {

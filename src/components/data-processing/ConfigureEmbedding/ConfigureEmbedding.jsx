@@ -41,6 +41,9 @@ const ConfigureEmbedding = (props) => {
 
   const cellSets = useSelector(getCellSets());
   const cellMeta = useSelector((state) => state.cellMeta);
+  const changedQCFilters = useSelector(
+    (state) => state.experimentSettings.processing.meta.changedQCFilters,
+  );
   const embeddingSettings = useSelector(
     (state) => state.experimentSettings.originalProcessing?.configureEmbedding?.embeddingSettings,
   );
@@ -94,6 +97,39 @@ const ConfigureEmbedding = (props) => {
             positions: 'top-bottom',
           },
           defaultTitle: 'Cluster Name',
+        },
+      }],
+    },
+    {
+      panelTitle: 'Labels',
+      controls: ['labels'],
+    },
+  ];
+  const sampleEmbStylingControls = [
+    {
+      panelTitle: 'Colour inversion',
+      controls: ['colourInversion'],
+      footer: <Alert
+        message='Changing plot colours is not available here. Use the Cell sets and Metadata tool in Data Exploration to customise cell set and metadata colours'
+        type='info'
+      />,
+    },
+    {
+      panelTitle: 'Markers',
+      controls: [{
+        name: 'markers',
+        props: { showShapeType: false },
+      }],
+    },
+    {
+      panelTitle: 'Legend',
+      controls: [{
+        name: 'legend',
+        props: {
+          option: {
+            positions: 'top-bottom',
+          },
+          defaultTitle: 'Sample Name',
         },
       }],
     },
@@ -226,12 +262,12 @@ const ConfigureEmbedding = (props) => {
         embedding: {
           plotUuid: generateDataProcessingPlotUuid(null, filterName, 1),
           plotType: 'embeddingPreviewBySample',
-          plotStyling: categoricalEmbStylingControls,
+          plotStyling: sampleEmbStylingControls,
           plot: (config, actions) => renderCategoricalEmbedding({
             ...config,
             legend: {
               ...config.legend,
-              title: 'Sample Name',
+              defaultLegendTitle: 'Sample Name',
             },
             selectedCellSet: 'sample',
           }, actions),
@@ -443,10 +479,9 @@ const ConfigureEmbedding = (props) => {
   };
 
   const renderExtraControlPanels = () => (
-    <Panel header='Select data' key='select-data' collapsible={controlsDisabledForViolin && 'disabled'}>
+    <Panel header='Select data' key='select-data'>
       <SelectData
         config={selectedConfig}
-        disabled={controlsDisabledForViolin}
         onUpdate={updatePlotWithChanges}
         cellSets={cellSets}
       />
@@ -544,7 +579,17 @@ const ConfigureEmbedding = (props) => {
             </Panel>
           </Collapse>
 
-          <CalculationConfig experimentId={experimentId} onConfigChange={onConfigChange} disabled={controlsDisabledForViolin} />
+          {Boolean(changedQCFilters.size) && (
+            <Alert
+              message='Your changes are not yet applied. To update the plots, click Run.'
+              type='warning'
+              showIcon
+              style={{ marginBottom: '1rem', marginTop: '1rem' }}
+            />
+          )}
+
+          <CalculationConfig experimentId={experimentId} onConfigChange={onConfigChange} />
+
           <Collapse>
             <Panel header='Plot options' key='styling'>
               <div style={{ height: 8 }} />

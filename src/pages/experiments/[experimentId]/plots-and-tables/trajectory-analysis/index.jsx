@@ -165,6 +165,7 @@ const TrajectoryAnalysisPage = ({ experimentId }) => {
           option: {
             positions: 'top-bottom',
           },
+          defaultTitle: 'Clusters',
         },
       }],
     },

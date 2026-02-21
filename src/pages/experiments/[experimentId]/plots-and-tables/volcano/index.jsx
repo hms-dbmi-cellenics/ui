@@ -8,7 +8,9 @@ import {
   Typography,
   Slider,
   Radio,
+  Checkbox,
 } from 'antd';
+import SliderWithInput from 'components/SliderWithInput';
 import { useSelector, useDispatch } from 'react-redux';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
@@ -93,7 +95,7 @@ const VolcanoPlotPage = (props) => {
   const currentConfig = useRef(null);
 
   useEffect(() => {
-    if (config && !_.isEqual(currentConfig.current !== config)) {
+    if (config && !_.isEqual(currentConfig.current, config)) {
       currentConfig.current = config;
       setSpec(generateSpec(config, plotData));
     }
@@ -142,38 +144,42 @@ const VolcanoPlotPage = (props) => {
           labelCol={{ span: 8, style: { textAlign: 'left' } }}
           wrapperCol={{ span: 16 }}
         >
-          <p><strong>Toggle Labels</strong></p>
-          <Form.Item>
-            <Radio.Group
-              onChange={(e) => updatePlotWithChanges({ labels: { ...config.labels, enabled: e.target.value } })}
-              value={config?.labels.enabled !== undefined ? config.labels.enabled : true}
-            >
-              <Radio value>Show</Radio>
-              <Radio value={false}>Hide</Radio>
-            </Radio.Group>
-          </Form.Item>
-          <p style={{ marginTop: '15px' }}><strong>Label Threshold</strong></p>
+          <p><strong>Adjusted P-value Threshold</strong></p>
           <Form.Item
-            label='Adjusted p-value:'
+            labelCol={{ span: 5, style: { textAlign: 'left' } }}
+            wrapperCol={{ span: 19 }}
           >
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-              <InputNumber
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <SliderWithInput
                 min={0.00001}
-                max={1}
-                step={0.01}
+                max={0.25}
+                step={0.001}
                 value={config?.labelPvalueThreshold !== undefined ? config.labelPvalueThreshold : 0.05}
-                onChange={(val) => updatePlotWithChanges({ labelPvalueThreshold: val })}
+                onUpdate={(val) => updatePlotWithChanges({ labelPvalueThreshold: val })}
+                sliderWidth={200}
               />
-              <Typography.Text type='secondary'>
-                -log₁₀(adj p-value) =
-                {' '}
-                {(config?.labelPvalueThreshold !== undefined ? config.labelPvalueThreshold : 0.05) > 0 ? (-Math.log10(config?.labelPvalueThreshold !== undefined ? config.labelPvalueThreshold : 0.05)).toPrecision(3) : 'Infinity'}
-              </Typography.Text>
+              <Checkbox
+                checked={config?.labels.enabled !== undefined ? config.labels.enabled : true}
+                onChange={(e) => {
+                  updatePlotWithChanges({ labels: { ...config.labels, enabled: e.target.checked } });
+                }}
+              />
             </div>
+          </Form.Item>
+          <Form.Item
+            labelCol={{ span: 5 }}
+            wrapperCol={{ span: 19 }}
+          >
+            <Typography.Text type='secondary'>
+              -log₁₀(adj p-value) =
+              {' '}
+              {(config?.labelPvalueThreshold !== undefined ? config.labelPvalueThreshold : 0.05) > 0 ? (-Math.log10(config?.labelPvalueThreshold !== undefined ? config.labelPvalueThreshold : 0.05)).toPrecision(3) : 'Infinity'}
+            </Typography.Text>
           </Form.Item>
           <p style={{ marginTop: '15px' }}><strong>Text Size</strong></p>
           <Form.Item
-            label='Font Size:'
+            labelCol={{ span: 5, style: { textAlign: 'left' } }}
+            wrapperCol={{ span: 19 }}
           >
             <Slider
               min={8}
@@ -181,6 +187,7 @@ const VolcanoPlotPage = (props) => {
               value={config?.labels.size !== undefined ? config.labels.size : 11}
               onChange={(val) => updatePlotWithChanges({ labels: { ...config.labels, size: val } })}
               marks={{ 8: 8, 24: 24 }}
+              style={{ width: 200 }}
             />
           </Form.Item>
         </Form>
@@ -194,7 +201,7 @@ const VolcanoPlotPage = (props) => {
           option: {
             positions: 'top-bottom',
           },
-          showTitleInput: false,
+          showTitleInput: true,
         },
       }],
     },

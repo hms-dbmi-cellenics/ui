@@ -6,7 +6,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 
 import {
-  Alert, Button, Skeleton, Space, Tabs, Typography,
+  Alert, Button, Skeleton, Space, Tabs, Tooltip, Typography,
 } from 'antd';
 import {
   BlockOutlined, MergeCellsOutlined, SplitCellsOutlined,

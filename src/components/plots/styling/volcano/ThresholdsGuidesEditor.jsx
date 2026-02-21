@@ -1,26 +1,16 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {
-  Form, InputNumber, Checkbox, Space, Typography,
+  Form, Checkbox, Typography,
 } from 'antd';
 import _ from 'lodash';
 import ColorPicker from 'components/ColorPicker';
+import SliderWithInput from 'components/SliderWithInput';
 
 const { Text } = Typography;
 
 const ThresholdsGuidesEditor = (props) => {
   const { onUpdate, config } = props;
-
-  const colorPickerOptions = [
-    {
-      config: 'pvalueThresholdColor',
-      name: 'P-value Guide',
-    },
-    {
-      config: 'logFoldChangeThresholdColor',
-      name: 'Fold Change Guide',
-    },
-  ];
 
   const debouncedUpdate = _.debounce((update) => { onUpdate(update); }, 300);
 
@@ -31,87 +21,94 @@ const ThresholdsGuidesEditor = (props) => {
         labelCol={{ span: 9, style: { textAlign: 'left' } }}
         wrapperCol={{ span: 16 }}
       >
-        <p><strong>Significance Thresholds</strong></p>
+        <p><strong>Adjusted P-value Threshold</strong></p>
         <Form.Item
-          label='Adjusted p-value:'
+          labelCol={{ span: 5, style: { textAlign: 'left' } }}
+          wrapperCol={{ span: 19 }}
         >
-          <Space direction='vertical' style={{ width: '100%' }}>
-            <Space>
-              <InputNumber
-                min={0.00001}
-                value={config.adjPvalueThreshold}
-                step={0.01}
-                type='number'
-                onChange={(val) => debouncedUpdate({ adjPvalueThreshold: val })}
-              />
-              <Checkbox
-                checked={config.showpvalueThresholdGuides}
-                onChange={(e) => {
-                  onUpdate({ showpvalueThresholdGuides: e.target.checked });
-                }}
-              >
-                Show Guideline
-              </Checkbox>
-            </Space>
-            <Text type='secondary'>
-              -log₁₀(adj p-value) =
-              {' '}
-              {config.adjPvalueThreshold > 0 ? (-Math.log10(config.adjPvalueThreshold)).toPrecision(3) : 'Infinity'}
-            </Text>
-          </Space>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <SliderWithInput
+              min={0.00001}
+              max={0.25}
+              step={0.001}
+              value={config.adjPvalueThreshold}
+              onUpdate={(val) => debouncedUpdate({ adjPvalueThreshold: val })}
+              sliderWidth={200}
+            />
+            <ColorPicker
+              onColorChange={((color) => {
+                onUpdate({
+                  pvalueThresholdColor: color,
+                });
+              })}
+              color={config.pvalueThresholdColor}
+              size='small'
+            />
+            <Checkbox
+              checked={config.showpvalueThresholdGuides}
+              onChange={(e) => {
+                onUpdate({ showpvalueThresholdGuides: e.target.checked });
+              }}
+            />
+          </div>
+        </Form.Item>
+        <Form.Item
+          labelCol={{ span: 5 }}
+          wrapperCol={{ span: 19 }}
+        >
+          <Text type='secondary'>
+            -log₁₀(adj p-value) =
+            {' '}
+            {config.adjPvalueThreshold > 0 ? (-Math.log10(config.adjPvalueThreshold)).toPrecision(3) : 'Infinity'}
+          </Text>
         </Form.Item>
 
+        <p><strong>Fold Change Threshold</strong></p>
         <Form.Item
-          label='Fold change (log):'
+          labelCol={{ span: 5, style: { textAlign: 'left' } }}
+          wrapperCol={{ span: 19 }}
         >
-          <Space>
-            <InputNumber
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <SliderWithInput
               min={0.01}
+              max={5}
               step={0.01}
               value={config.logFoldChangeThreshold}
-              onChange={(val) => debouncedUpdate({ logFoldChangeThreshold: val })}
+              onUpdate={(val) => debouncedUpdate({ logFoldChangeThreshold: val })}
+              sliderWidth={200}
+            />
+            <ColorPicker
+              onColorChange={((color) => {
+                onUpdate({
+                  logFoldChangeThresholdColor: color,
+                });
+              })}
+              color={config.logFoldChangeThresholdColor}
+              size='small'
             />
             <Checkbox
               checked={config.showLogFoldChangeThresholdGuides}
               onChange={(e) => {
                 onUpdate({ showLogFoldChangeThresholdGuides: e.target.checked });
               }}
-            >
-              Show Guideline
-            </Checkbox>
-          </Space>
+            />
+          </div>
         </Form.Item>
 
-        <p><strong>Guideline Design</strong></p>
+        <p><strong>Guideline Width</strong></p>
         <Form.Item
-          label='Width:'
+          labelCol={{ span: 5, style: { textAlign: 'left' } }}
+          wrapperCol={{ span: 19 }}
         >
-          <InputNumber
-            min={1}
+          <SliderWithInput
+            min={0.1}
+            max={2}
+            step={0.1}
             value={config.thresholdGuideWidth}
-            type='number'
-            onChange={(val) => debouncedUpdate({ thresholdGuideWidth: val })}
+            onUpdate={(val) => debouncedUpdate({ thresholdGuideWidth: val })}
+            sliderWidth={200}
           />
         </Form.Item>
-
-        {colorPickerOptions.map(({ config: configName, name: text }) => (
-          <Form.Item
-            key={`${configName}-${config[configName]}`}
-            label={`${text}:`}
-            labelCol={{ span: 9, style: { textAlign: 'left' } }}
-            wrapperCol={{ span: 14 }}
-          >
-            <ColorPicker
-              onColorChange={((color) => {
-                onUpdate({
-                  [configName]: color,
-                });
-              })}
-              color={config[configName]}
-              size='small'
-            />
-          </Form.Item>
-        ))}
       </Form>
     </>
   );

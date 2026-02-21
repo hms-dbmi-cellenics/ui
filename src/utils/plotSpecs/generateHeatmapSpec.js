@@ -17,7 +17,7 @@ const generateSpec = (config, groupName, data, displayLabels = true) => {
   // Use defaultTitle if 'title' is in defaultValues, otherwise use custom title
   const categoricalLegendTitle = config.legend.defaultValues?.includes('title')
     ? groupName
-    : config.legend.title;
+    : (config.legend.title === '' ? null : config.legend.title);
 
   const legend = [
     {

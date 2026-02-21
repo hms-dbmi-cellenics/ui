@@ -344,10 +344,14 @@ const insertClusterColorsSpec = (
 
     spec.description = `${spec.description} showing clusters`;
 
+    const legendTitle = config.legend.defaultValues?.includes('title')
+      ? 'Clusters'
+      : (config.legend.title === '' ? null : config.legend.title);
+
     spec.legends = [
       {
         fill: 'cellSetLabelColors',
-        title: 'Clusters',
+        title: legendTitle,
         titleColor: config?.colour.masterColour,
         type: 'symbol',
         orient: config?.legend.position,
@@ -620,12 +624,16 @@ const insertPseudotimeSpec = (spec, config, pseudotime) => {
   ];
 
   if (config.legend.enabled) {
+    const pseudotimeLegendTitle = config.legend.defaultValues?.includes('title')
+      ? 'Pseudotime'
+      : (config.legend.title === '' ? null : config.legend.title);
+
     spec.legends = [
       {
         fill: 'pseudotimeScale',
         type: 'gradient',
         orient: config.legend.position,
-        title: 'Pseudotime',
+        title: pseudotimeLegendTitle,
         gradientLength: 100,
         labelColor: config.colour.masterColour,
         titleColor: config.colour.masterColour,
