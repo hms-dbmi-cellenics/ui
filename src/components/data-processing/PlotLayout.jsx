@@ -179,7 +179,7 @@ const PlotLayout = ({
   return (
     <>
       <Row gutter={16}>
-        <Col span={18}>
+        <Col span={17}>
           <Row>
             <Col flex='auto'>
               {renderPlot()}
@@ -195,7 +195,7 @@ const PlotLayout = ({
               : <Skeleton />}
           </Row>
         </Col>
-        <Col flex='1 0px'>
+        <Col span={7}>
           <Collapse defaultActiveKey='settings'>
             <Panel header='Filtering Settings' key='settings'>
               <CalculationConfigContainer

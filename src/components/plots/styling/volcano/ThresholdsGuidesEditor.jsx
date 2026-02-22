@@ -33,7 +33,7 @@ const ThresholdsGuidesEditor = (props) => {
               step={0.001}
               value={config.adjPvalueThreshold}
               onUpdate={(val) => debouncedUpdate({ adjPvalueThreshold: val })}
-              sliderWidth={200}
+              sliderWidth={150}
             />
             <ColorPicker
               onColorChange={((color) => {
@@ -75,7 +75,7 @@ const ThresholdsGuidesEditor = (props) => {
               step={0.01}
               value={config.logFoldChangeThreshold}
               onUpdate={(val) => debouncedUpdate({ logFoldChangeThreshold: val })}
-              sliderWidth={200}
+              sliderWidth={150}
             />
             <ColorPicker
               onColorChange={((color) => {
@@ -106,7 +106,7 @@ const ThresholdsGuidesEditor = (props) => {
             step={0.1}
             value={config.thresholdGuideWidth}
             onUpdate={(val) => debouncedUpdate({ thresholdGuideWidth: val })}
-            sliderWidth={200}
+            sliderWidth={150}
           />
         </Form.Item>
       </Form>

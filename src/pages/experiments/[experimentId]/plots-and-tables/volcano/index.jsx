@@ -14,7 +14,6 @@ import SliderWithInput from 'components/SliderWithInput';
 import { useSelector, useDispatch } from 'react-redux';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
-import _ from 'lodash';
 import ExportAsCSV from 'components/plots/ExportAsCSV';
 import PropTypes from 'prop-types';
 import Header from 'components/Header';
@@ -92,11 +91,8 @@ const VolcanoPlotPage = (props) => {
     setMaxYAxis(Math.round(maxNegativeLogpValue));
   }, [plotData]);
 
-  const currentConfig = useRef(null);
-
   useEffect(() => {
-    if (config && !_.isEqual(currentConfig.current, config)) {
-      currentConfig.current = config;
+    if (config) {
       setSpec(generateSpec(config, plotData));
     }
   }, [config, plotData]);

@@ -245,7 +245,10 @@ const CalculationConfig = (props) => {
       )}
       <Collapse defaultActiveKey={['embedding-settings', 'clustering-settings']}>
         <Panel header='Embedding settings' key='embedding-settings' collapsible={disabled && 'disabled'}>
-          <Form size='small' disabled={disabled} labelCol={{ span: 9, style: { textAlign: 'left' } }} wrapperCol={{ span: 15 }}>
+          <Form size='small'
+            disabled={disabled}
+            labelCol={{ span: 10, style: { textAlign: 'left' } }}
+            wrapperCol={{ span: 14 }}>
             <Form.Item
               label={(
                 <span>
@@ -301,7 +304,10 @@ const CalculationConfig = (props) => {
           </Form>
         </Panel>
         <Panel header='Clustering settings' key='clustering-settings' collapsible={disabled && 'disabled'}>
-          <Form size='small' labelCol={{ span: 9, style: { textAlign: 'left' } }} wrapperCol={{ span: 15 }}>
+          <Form
+            size='small'
+            labelCol={{ span: 10, style: { textAlign: 'left' } }}
+            wrapperCol={{ span: 14 }}>
             <Form.Item label={(
               <span>
                 Method&nbsp;
@@ -366,7 +372,7 @@ const CalculationConfig = (props) => {
                 max={10}
                 step={0.1}
                 disabled={disabled}
-                sliderWidth={152}
+                sliderWidth={118}
                 value={louvainSettings.resolution}
                 onUpdate={(value) => updateSettings({
                   clusteringSettings: {

@@ -536,13 +536,13 @@ const ConfigureEmbedding = (props) => {
         style={{ width: '100%', paddingRight: '0px' }}
       />
       <Row gutter={16}>
-        <Col flex='auto'>
+        <Col span={17}>
           <center>
             {renderPlot()}
           </center>
         </Col>
 
-        <Col flex='1 0px' style={{ minWidth: '300px' }}>
+        <Col span={7} style={{ minWidth: '300px' }}>
           <Collapse defaultActiveKey={['plot-selector']}>
             <Panel header='Plot view' key='plot-selector'>
               <Space direction='vertical'>

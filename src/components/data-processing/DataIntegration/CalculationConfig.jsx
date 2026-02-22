@@ -163,8 +163,8 @@ const CalculationConfig = (props) => {
   return (
     <Form
       size='small'
-      labelCol={{ span: 10, style: { textAlign: 'left' } }}
-      wrapperCol={{ span: 14 }}
+      labelCol={{ span: 12, style: { textAlign: 'left' } }}
+      wrapperCol={{ span: 12 }}
     >
 
       <Collapse defaultActiveKey='data-integration'>
@@ -234,7 +234,7 @@ const CalculationConfig = (props) => {
             </>
           </Form.Item>
           <div>
-            <Form.Item label='Principal Components'>
+            <Form.Item label='Principal components'>
               <InputNumber
                 value={numPCs}
                 aria-label='Number of Principal Components'
@@ -252,7 +252,7 @@ const CalculationConfig = (props) => {
                 disabled={disabled}
               />
             </Form.Item>
-            <Form.Item label='Variation Explained'>
+            <Form.Item label='Variation explained'>
               <InputNumber
                 value={roundedVariationExplained()}
                 disabled={disabled}
@@ -262,7 +262,7 @@ const CalculationConfig = (props) => {
             <Form.Item
               label={(
                 <span>
-                  Excluded Genes
+                  Excluded genes
                   {' '}
                   <Tooltip
                     title='Normalization can be biased by certain gene categories such the ones listed here.
@@ -288,7 +288,7 @@ const CalculationConfig = (props) => {
                   <Checkbox value='mitochondrial'>Mitochondrial</Checkbox>
                   <Checkbox value='cellCycle'>
                     <span>
-                      Cell cycle genes
+                      Cell cycle
                       {' '}
                       <Tooltip
                         title='Currently only available for human and mice species. Do not check this box if your cells are from a different species.'
@@ -380,9 +380,9 @@ const CalculationConfig = (props) => {
 
               </Select>
             </Form.Item>
-            <Form.Item label='Percent of Cells to Keep'>
+            <Form.Item label='Percent of cells to keep'>
               <InputNumber
-                aria-label='Percent of Cells to Keep'
+                aria-label='Percent of cells to keep'
                 disabled={downsampling.method !== downsamplingMethods.GEOSKETCH}
                 value={downsampling.percentageToKeep}
                 max={100}

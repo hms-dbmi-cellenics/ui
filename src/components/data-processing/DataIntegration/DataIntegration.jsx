@@ -356,13 +356,13 @@ const DataIntegration = (props) => {
         style={{ width: '100%', paddingRight: '0px' }}
       />
       <Row gutter={16}>
-        <Col flex='auto'>
+        <Col span={17}>
           <center>
             {renderPlot()}
           </center>
         </Col>
 
-        <Col flex='1 0px'>
+        <Col span={7}>
           <Collapse defaultActiveKey={['plot-selector']}>
             <Panel header='Plot view' key='plot-selector'>
               <Radio.Group onChange={(e) => setSelectedPlot(e.target.value)} value={selectedPlot}>
