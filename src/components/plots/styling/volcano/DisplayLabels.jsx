@@ -12,7 +12,7 @@ const DisplayLabels = (props) => {
 
   return (
     <Space direction='vertical' style={{ width: '100%' }}>
-      <p><strong>Adjusted P-value Threshold</strong></p>
+      <p><strong>Adjusted P-value Threshold:</strong></p>
 
       <Form.Item
         labelCol={{ span: 5, style: { textAlign: 'left' } }}

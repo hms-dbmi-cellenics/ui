@@ -21,7 +21,7 @@ const ThresholdsGuidesEditor = (props) => {
         labelCol={{ span: 9, style: { textAlign: 'left' } }}
         wrapperCol={{ span: 16 }}
       >
-        <p><strong>Adjusted P-value Threshold</strong></p>
+        <p><strong>Adjusted P-value Threshold:</strong></p>
         <Form.Item
           labelCol={{ span: 5, style: { textAlign: 'left' } }}
           wrapperCol={{ span: 19 }}
@@ -63,7 +63,7 @@ const ThresholdsGuidesEditor = (props) => {
           </Text>
         </Form.Item>
 
-        <p><strong>Fold Change Threshold</strong></p>
+        <p><strong>Fold Change Threshold:</strong></p>
         <Form.Item
           labelCol={{ span: 5, style: { textAlign: 'left' } }}
           wrapperCol={{ span: 19 }}
@@ -95,7 +95,7 @@ const ThresholdsGuidesEditor = (props) => {
           </div>
         </Form.Item>
 
-        <p><strong>Guideline Width</strong></p>
+        <p><strong>Guideline Width:</strong></p>
         <Form.Item
           labelCol={{ span: 5, style: { textAlign: 'left' } }}
           wrapperCol={{ span: 19 }}
