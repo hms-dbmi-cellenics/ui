@@ -265,7 +265,7 @@ const CalculationConfig = (props) => {
                   Excluded genes
                   {' '}
                   <Tooltip
-                    title='Normalization can be biased by certain gene categories such the ones listed here.
+                    title='Normalization can be biased by certain gene categories such as the ones listed here.
                     Checking them will ignore those categories.
                     For example, cell cycle genes should be removed if sampling timepoints occured throughout the day.
                     Those genes can otherwise introduce within-cell-type heterogeneity that can obscure the differences
