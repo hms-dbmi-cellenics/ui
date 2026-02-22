@@ -14,7 +14,6 @@ import SliderWithInput from 'components/SliderWithInput';
 import { useSelector, useDispatch } from 'react-redux';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
-import _ from 'lodash';
 import ExportAsCSV from 'components/plots/ExportAsCSV';
 import PropTypes from 'prop-types';
 import Header from 'components/Header';
@@ -92,11 +91,8 @@ const VolcanoPlotPage = (props) => {
     setMaxYAxis(Math.round(maxNegativeLogpValue));
   }, [plotData]);
 
-  const currentConfig = useRef(null);
-
   useEffect(() => {
-    if (config && !_.isEqual(currentConfig.current, config)) {
-      currentConfig.current = config;
+    if (config) {
       setSpec(generateSpec(config, plotData));
     }
   }, [config, plotData]);
@@ -144,7 +140,7 @@ const VolcanoPlotPage = (props) => {
           labelCol={{ span: 8, style: { textAlign: 'left' } }}
           wrapperCol={{ span: 16 }}
         >
-          <p><strong>Adjusted P-value Threshold</strong></p>
+          <p><strong>Adjusted P-value Threshold:</strong></p>
           <Form.Item
             labelCol={{ span: 5, style: { textAlign: 'left' } }}
             wrapperCol={{ span: 19 }}
@@ -176,7 +172,7 @@ const VolcanoPlotPage = (props) => {
               {(config?.labelPvalueThreshold !== undefined ? config.labelPvalueThreshold : 0.05) > 0 ? (-Math.log10(config?.labelPvalueThreshold !== undefined ? config.labelPvalueThreshold : 0.05)).toPrecision(3) : 'Infinity'}
             </Typography.Text>
           </Form.Item>
-          <p style={{ marginTop: '15px' }}><strong>Text Size</strong></p>
+          <p style={{ marginTop: '15px' }}><strong>Text Size:</strong></p>
           <Form.Item
             labelCol={{ span: 5, style: { textAlign: 'left' } }}
             wrapperCol={{ span: 19 }}

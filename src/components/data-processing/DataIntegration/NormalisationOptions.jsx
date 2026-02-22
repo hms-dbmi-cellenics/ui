@@ -20,7 +20,32 @@ const NormalisationOptions = (props) => {
 
   return (
     <>
-      <Form.Item label='Number of HVGs'>
+      <Form.Item label={(
+        <span>
+          Number of HVGs&nbsp;
+          <Tooltip overlay={(
+            <span>
+              Number of genes to mark as top highly variable genes (HVGs).
+              Integration as well as PCA is based on a sensible selection of HVGs.
+              Here, this number selects the top variable genes based on the "vst" method.
+              The default 2000 has been found to be a sensible for many cases.
+              Further info can be found
+              <a
+                href='https://satijalab.org/seurat/articles/integration_introduction.html'
+                target='_blank'
+                rel='noreferrer'
+              >
+                {' '}
+                <code>here</code>
+              </a>
+            </span>
+          )}
+          >
+            <QuestionCircleOutlined />
+          </Tooltip>
+        </span>
+      )}
+      >
         <InputNumber
           value={numGenes}
           step={100}
@@ -50,27 +75,6 @@ const NormalisationOptions = (props) => {
           })}
           disabled={disabled}
         />
-        {' '}
-        <Tooltip overlay={(
-          <span>
-            Number of genes to mark as top highly variable genes (HVGs).
-            Integration as well as PCA is based on a sensible selection of HVGs.
-            Here, this number selects the top variable genes based on the "vst" method.
-            The default 2000 has been found to be a sensible for many cases.
-            Further info can be found
-            <a
-              href='https://satijalab.org/seurat/articles/integration_introduction.html'
-              target='_blank'
-              rel='noreferrer'
-            >
-              {' '}
-              <code>here</code>
-            </a>
-          </span>
-        )}
-        >
-          <QuestionCircleOutlined />
-        </Tooltip>
       </Form.Item>
       <Form.Item label={(
         <span>

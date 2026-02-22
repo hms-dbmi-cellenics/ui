@@ -27,7 +27,7 @@ const MarkersEditor = (props) => {
       labelCol={{ span: 8, style: { textAlign: 'left' } }}
       wrapperCol={{ span: 16 }}
     >
-      <p><strong>Markers</strong></p>
+      <p><strong>Markers:</strong></p>
       {colorPickerOptions.map(({ config: configName, name: text }) => (
         <Form.Item
           key={`${configName}-${config[configName]}`}

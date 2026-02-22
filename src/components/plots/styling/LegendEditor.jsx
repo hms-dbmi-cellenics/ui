@@ -80,7 +80,7 @@ const LegendEditor = (props) => {
             </Form.Item>
             {config.legend.direction ? (
               <>
-                <p><strong>Direction</strong></p>
+                <p><strong>Direction:</strong></p>
                 <Form.Item>
                   <Radio.Group
                     onChange={(e) => onUpdate({ legend: { direction: e.target.value } })}

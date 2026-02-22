@@ -56,33 +56,35 @@ const GenesVsUMIsConfig = (props) => {
         </Space>
       )}
 
-      <Form.Item label={(
-        <span>
-          Fit type&nbsp;
-          <Tooltip overlay={(
-            <span>
-              A linear fit works well for most samples and is performed with `MASS::rlm`.
-              A spline fit is useful to prevent excluding samples that show a natural saturation
-              in the gene counts at high molecule counts and is performed with `splines::bs`.
-            </span>
-          )}
-          >
-            <InfoCircleOutlined />
-          </Tooltip>
-        </span>
-      )}
-      >
-        <Select
-          value={config.regressionType}
-          onChange={(val) => updateSettings({ regressionType: val })}
+      <Form size='small' labelCol={{ span: 12, style: { textAlign: 'left' } }} wrapperCol={{ span: 12 }}>
+        <Form.Item label={(
+          <span>
+            Fit type&nbsp;
+            <Tooltip overlay={(
+              <span>
+                A linear fit works well for most samples and is performed with `MASS::rlm`.
+                A spline fit is useful to prevent excluding samples that show a natural saturation
+                in the gene counts at high molecule counts and is performed with `splines::bs`.
+              </span>
+            )}
+            >
+              <InfoCircleOutlined />
+            </Tooltip>
+          </span>
+        )}
         >
-          <Option value='linear'>linear</Option>
-          <Option value='spline'>spline</Option>
-        </Select>
-      </Form.Item>
-      <Form.Item label='Prediction interval'>
-
-        <Tooltip title=' Regression of feature counts (genes) vs UMI counts (molecules) is performed for all cells in order to detect outliers.
+          <Select
+            value={config.regressionType}
+            onChange={(val) => updateSettings({ regressionType: val })}
+          >
+            <Option value='linear'>linear</Option>
+            <Option value='spline'>spline</Option>
+          </Select>
+        </Form.Item>
+        <Form.Item label={(
+          <span>
+            Prediction interval&nbsp;
+            <Tooltip title=' Regression of feature counts (genes) vs UMI counts (molecules) is performed for all cells in order to detect outliers.
             The ‘prediction interval’ is the stringency for defining outliers: it sets the prediction intervals calculated by the R `predict`
             where `level = prediction interval`. Prediction intervals represent the likelihood that the predicted value will be between the upper and
             lower limits of the prediction interval. Prediction intervals are similar to confidence intervals, but on top of the sampling uncertainty,
@@ -91,53 +93,61 @@ const GenesVsUMIsConfig = (props) => {
             Consequently, the size of the interval will be wider. The higher the prediction level, the less stringent we are when filtering the cells.
             Conversely, the lower the prediction level, the more stringent we are, and we exclude more cells that are far from the behaviour of the
             relationship between the number of genes and the number of UMIs/molecules.'
-        >
-          <InfoCircleOutlined />
-        </Tooltip>
+            >
+              <InfoCircleOutlined />
+            </Tooltip>
+          </span>
+        )}>
 
-        <Slider
-          value={newConfig.predictionInterval}
-          min={0}
-          max={0.99}
-          step={0.01}
-          disabled={disabled}
-          onChange={(val) => handleChange({ predictionInterval: val })}
-        />
-
-        <Radio.Group
-          value={config.predictionInterval}
-          onChange={(val) => updateSettings({ predictionInterval: val.target.value })}
-          disabled={disabled}
-        >
-          <Space direction='vertical'>
-            <Space direction='horizontal'>
-              <InputNumber
-                value={newConfig.predictionInterval || defaultPredictionInterval}
-                min={0}
-                max={0.999999}
-                disabled
-                step={0.01}
-              />
-            </Space>
-            <Radio value={0.999}>0.999</Radio>
-            <Radio value={0.9999}>0.9999</Radio>
-            <Radio value={0.99999}>0.99999</Radio>
-            <Radio value={0.999999}>0.999999</Radio>
-          </Space>
-        </Radio.Group>
-
-      </Form.Item>
-      <Form.Item label='p-value:'>
-        <Space direction='horizontal'>
-          <Tooltip title='The reported p-value is derived from the prediction interval: p-value = 1 - prediction interval.'>
-            <InfoCircleOutlined />
-          </Tooltip>
-          <InputNumber
-            value={getPLevelValue()}
-            disabled
+          <Slider
+            value={newConfig.predictionInterval}
+            min={0}
+            max={0.99}
+            step={0.01}
+            disabled={disabled}
+            onChange={(val) => handleChange({ predictionInterval: val })}
           />
-        </Space>
-      </Form.Item>
+
+          <Radio.Group
+            value={config.predictionInterval}
+            onChange={(val) => updateSettings({ predictionInterval: val.target.value })}
+            disabled={disabled}
+          >
+            <Space direction='vertical'>
+              <Space direction='horizontal'>
+                <InputNumber
+                  value={newConfig.predictionInterval || defaultPredictionInterval}
+                  min={0}
+                  max={0.999999}
+                  disabled
+                  step={0.01}
+                />
+              </Space>
+              <Radio value={0.999}>0.999</Radio>
+              <Radio value={0.9999}>0.9999</Radio>
+              <Radio value={0.99999}>0.99999</Radio>
+              <Radio value={0.999999}>0.999999</Radio>
+            </Space>
+          </Radio.Group>
+
+        </Form.Item>
+        <Form.Item label={(
+          <span>
+            P-value:&nbsp;
+            <Tooltip title='The reported p-value is derived from the prediction interval: p-value = 1 - prediction interval.'>
+              <InfoCircleOutlined />
+            </Tooltip>
+          </span>
+        )}
+        >
+          <Space direction='horizontal'>
+            <InputNumber
+              value={getPLevelValue()}
+              disabled
+            />
+          </Space>
+        </Form.Item>
+      </Form>
     </>
   );
 };

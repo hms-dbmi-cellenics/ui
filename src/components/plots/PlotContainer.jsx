@@ -155,7 +155,7 @@ const PlotContainer = (props) => {
     direction: tileDirection,
     first: PLOT,
     second: CONTROLS,
-    splitPercentage: 75,
+    splitPercentage: 73,
   };
 
   if (controlsOnly) {
