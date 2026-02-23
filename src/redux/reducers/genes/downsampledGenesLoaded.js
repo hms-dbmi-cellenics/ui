@@ -10,8 +10,6 @@ const downsampledGenesLoaded = (state, action) => {
     const {
       orderedGeneNames,
       rawExpression,
-      truncatedExpression,
-      zScore,
       stats,
       cellOrder,
     } = newGenes;
@@ -19,8 +17,6 @@ const downsampledGenesLoaded = (state, action) => {
     state.expression.downsampled.matrix.setGeneExpression(
       orderedGeneNames,
       rawExpression,
-      truncatedExpression,
-      zScore,
       stats,
     );
 

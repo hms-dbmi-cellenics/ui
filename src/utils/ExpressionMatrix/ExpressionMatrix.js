@@ -8,8 +8,6 @@ class ExpressionMatrix {
     this.geneIndexes = {};
 
     this.rawGeneExpressions = new SparseMatrix();
-    this.truncatedGeneExpressions = new SparseMatrix();
-    this.zScore = new SparseMatrix();
 
     this.stats = {
       rawMean: [],
@@ -23,12 +21,42 @@ class ExpressionMatrix {
     return this.#getExpression(geneSymbol, cellIndexes, this.rawGeneExpressions);
   }
 
+  /**
+   * Computes truncated expression on-the-fly by clamping raw expression
+   * values to [truncatedMin, truncatedMax] range for the gene.
+   * Truncated expressions are based on a 0.95 quantile threshold.
+   * @param {string} geneSymbol
+   * @param {undefined|number[]} cellIndexes
+   * @returns {number[]|undefined} Truncated expression values
+   */
   getTruncatedExpression(geneSymbol, cellIndexes = undefined) {
-    return this.#getExpression(geneSymbol, cellIndexes, this.truncatedGeneExpressions);
+    const rawExpression = this.getRawExpression(geneSymbol, cellIndexes);
+    if (!rawExpression) return undefined;
+
+    const { truncatedMin, truncatedMax } = this.getStats(geneSymbol);
+    if (truncatedMin === undefined || truncatedMax === undefined) return undefined;
+
+    return rawExpression.map((value) => Math.max(truncatedMin, Math.min(truncatedMax, value)));
   }
 
+  /**
+   * Computes z-score on-the-fly from raw expression using pre-computed
+   * mean and standard deviation: (value - mean) / stdev
+   * @param {string} geneSymbol
+   * @param {undefined|number[]} cellIndexes
+   * @returns {number[]|undefined} Z-score values
+   */
   getZScore(geneSymbol, cellIndexes = undefined) {
-    return this.#getExpression(geneSymbol, cellIndexes, this.zScore);
+    const rawExpression = this.getRawExpression(geneSymbol, cellIndexes);
+    if (!rawExpression) return undefined;
+
+    const { rawMean, rawStdev } = this.getStats(geneSymbol);
+    if (rawMean === undefined || rawStdev === undefined) return undefined;
+
+    // Avoid division by zero if stdev is 0
+    if (rawStdev === 0) return rawExpression.map(() => 0);
+
+    return rawExpression.map((value) => (value - rawMean) / rawStdev);
   }
 
   getStats(geneSymbol) {
@@ -62,10 +90,6 @@ class ExpressionMatrix {
    * to each row in the geneExpressions (in the same order)
    * @param {*} newRawGeneExpression A mathjs SparseMatrix with the
    *  raw gene expressions for each of the genes
-   * @param {*} newTruncatedGeneExpression A mathjs SparseMatrix with the
-   *  raw gene expressions for each of the genes
-   * @param {*} newZScore A mathjs SparseMatrix with the
-   *  zScore values for each of the genes
    * @param {*} newStats An object which with the stats for each gene's expression
    * Each key is a gene symbol,
    * Each value has this shape: {rawMean, rawStdev, truncatedMin, truncatedMax}
@@ -73,8 +97,6 @@ class ExpressionMatrix {
   pushGeneExpression(
     orderedNewGeneSymbols,
     newRawGeneExpression,
-    newTruncatedGeneExpression,
-    newZScore,
     newStats,
   ) {
     const [, genesCount] = this.rawGeneExpressions.size();
@@ -84,8 +106,6 @@ class ExpressionMatrix {
       this.setGeneExpression(
         orderedNewGeneSymbols,
         newRawGeneExpression,
-        newTruncatedGeneExpression,
-        newZScore,
         newStats,
       );
       return;
@@ -105,8 +125,6 @@ class ExpressionMatrix {
 
     // Add the expression only for the new genes (genesToAddIndexes)
     appendColumns(this.rawGeneExpressions, newRawGeneExpression, genesToAddIndexes);
-    appendColumns(this.truncatedGeneExpressions, newTruncatedGeneExpression, genesToAddIndexes);
-    appendColumns(this.zScore, newZScore, genesToAddIndexes);
 
     // Add new stats only for the genes that were added
     genesToAddIndexes.forEach((index) => {
@@ -120,13 +138,9 @@ class ExpressionMatrix {
   setGeneExpression = (
     orderedNewGeneSymbols,
     newRawGeneExpression,
-    newTruncatedGeneExpression,
-    newZScore,
     newStats,
   ) => {
     this.rawGeneExpressions = newRawGeneExpression;
-    this.truncatedGeneExpressions = newTruncatedGeneExpression;
-    this.zScore = newZScore;
     this.stats = newStats;
 
     this.geneIndexes = orderedNewGeneSymbols.reduce((acum, currentSymbol, index) => {

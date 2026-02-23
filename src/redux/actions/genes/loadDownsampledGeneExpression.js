@@ -66,8 +66,6 @@ const loadDownsampledGeneExpression = (
     const {
       orderedGeneNames,
       rawExpression: rawExpressionJson,
-      truncatedExpression: truncatedExpressionJson,
-      zScore: zScoreJson,
       stats,
       cellOrder,
     } = await fetchWork(
@@ -98,8 +96,6 @@ const loadDownsampledGeneExpression = (
     }
 
     const rawExpression = SparseMatrix.fromJSON(rawExpressionJson);
-    const truncatedExpression = SparseMatrix.fromJSON(truncatedExpressionJson);
-    const zScore = SparseMatrix.fromJSON(zScoreJson);
 
     dispatch({
       type: DOWNSAMPLED_GENES_EXPRESSION_LOADED,
@@ -110,8 +106,6 @@ const loadDownsampledGeneExpression = (
           orderedGeneNames,
           stats,
           rawExpression,
-          truncatedExpression,
-          zScore,
           cellOrder,
         },
       },

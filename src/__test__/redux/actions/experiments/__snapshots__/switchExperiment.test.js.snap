@@ -199,32 +199,6 @@ exports[`switch experiment  Then updates the experiment info 1`] = `
             "truncatedMax": [],
             "truncatedMin": [],
           },
-          "truncatedGeneExpressions": {
-            "datatype": undefined,
-            "index": [],
-            "mathjs": "SparseMatrix",
-            "ptr": [
-              0,
-            ],
-            "size": [
-              0,
-              0,
-            ],
-            "values": [],
-          },
-          "zScore": {
-            "datatype": undefined,
-            "index": [],
-            "mathjs": "SparseMatrix",
-            "ptr": [
-              0,
-            ],
-            "size": [
-              0,
-              0,
-            ],
-            "values": [],
-          },
         },
       },
       "full": {
@@ -251,32 +225,6 @@ exports[`switch experiment  Then updates the experiment info 1`] = `
             "rawStdev": [],
             "truncatedMax": [],
             "truncatedMin": [],
-          },
-          "truncatedGeneExpressions": {
-            "datatype": undefined,
-            "index": [],
-            "mathjs": "SparseMatrix",
-            "ptr": [
-              0,
-            ],
-            "size": [
-              0,
-              0,
-            ],
-            "values": [],
-          },
-          "zScore": {
-            "datatype": undefined,
-            "index": [],
-            "mathjs": "SparseMatrix",
-            "ptr": [
-              0,
-            ],
-            "size": [
-              0,
-              0,
-            ],
-            "values": [],
           },
         },
       },
@@ -630,32 +578,6 @@ exports[`switch experiment  switches the experiment to its initial values 1`] = 
             "truncatedMax": [],
             "truncatedMin": [],
           },
-          "truncatedGeneExpressions": {
-            "datatype": undefined,
-            "index": [],
-            "mathjs": "SparseMatrix",
-            "ptr": [
-              0,
-            ],
-            "size": [
-              0,
-              0,
-            ],
-            "values": [],
-          },
-          "zScore": {
-            "datatype": undefined,
-            "index": [],
-            "mathjs": "SparseMatrix",
-            "ptr": [
-              0,
-            ],
-            "size": [
-              0,
-              0,
-            ],
-            "values": [],
-          },
         },
       },
       "full": {
@@ -682,32 +604,6 @@ exports[`switch experiment  switches the experiment to its initial values 1`] = 
             "rawStdev": [],
             "truncatedMax": [],
             "truncatedMin": [],
-          },
-          "truncatedGeneExpressions": {
-            "datatype": undefined,
-            "index": [],
-            "mathjs": "SparseMatrix",
-            "ptr": [
-              0,
-            ],
-            "size": [
-              0,
-              0,
-            ],
-            "values": [],
-          },
-          "zScore": {
-            "datatype": undefined,
-            "index": [],
-            "mathjs": "SparseMatrix",
-            "ptr": [
-              0,
-            ],
-            "size": [
-              0,
-              0,
-            ],
-            "values": [],
           },
         },
       },

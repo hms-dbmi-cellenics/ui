@@ -136,32 +136,6 @@ exports[`ErrorPage Should post error to Slack if environment is production 1`] =
               "truncatedMax": [],
               "truncatedMin": [],
             },
-            "truncatedGeneExpressions": {
-              "datatype": undefined,
-              "index": [],
-              "mathjs": "SparseMatrix",
-              "ptr": [
-                0,
-              ],
-              "size": [
-                0,
-                0,
-              ],
-              "values": [],
-            },
-            "zScore": {
-              "datatype": undefined,
-              "index": [],
-              "mathjs": "SparseMatrix",
-              "ptr": [
-                0,
-              ],
-              "size": [
-                0,
-                0,
-              ],
-              "values": [],
-            },
           },
         },
         "full": {
@@ -188,32 +162,6 @@ exports[`ErrorPage Should post error to Slack if environment is production 1`] =
               "rawStdev": [],
               "truncatedMax": [],
               "truncatedMin": [],
-            },
-            "truncatedGeneExpressions": {
-              "datatype": undefined,
-              "index": [],
-              "mathjs": "SparseMatrix",
-              "ptr": [
-                0,
-              ],
-              "size": [
-                0,
-                0,
-              ],
-              "values": [],
-            },
-            "zScore": {
-              "datatype": undefined,
-              "index": [],
-              "mathjs": "SparseMatrix",
-              "ptr": [
-                0,
-              ],
-              "size": [
-                0,
-                0,
-              ],
-              "values": [],
             },
           },
         },
@@ -406,32 +354,6 @@ exports[`ErrorPage Should post error to Slack if environment is staging 1`] = `
               "truncatedMax": [],
               "truncatedMin": [],
             },
-            "truncatedGeneExpressions": {
-              "datatype": undefined,
-              "index": [],
-              "mathjs": "SparseMatrix",
-              "ptr": [
-                0,
-              ],
-              "size": [
-                0,
-                0,
-              ],
-              "values": [],
-            },
-            "zScore": {
-              "datatype": undefined,
-              "index": [],
-              "mathjs": "SparseMatrix",
-              "ptr": [
-                0,
-              ],
-              "size": [
-                0,
-                0,
-              ],
-              "values": [],
-            },
           },
         },
         "full": {
@@ -458,32 +380,6 @@ exports[`ErrorPage Should post error to Slack if environment is staging 1`] = `
               "rawStdev": [],
               "truncatedMax": [],
               "truncatedMin": [],
-            },
-            "truncatedGeneExpressions": {
-              "datatype": undefined,
-              "index": [],
-              "mathjs": "SparseMatrix",
-              "ptr": [
-                0,
-              ],
-              "size": [
-                0,
-                0,
-              ],
-              "values": [],
-            },
-            "zScore": {
-              "datatype": undefined,
-              "index": [],
-              "mathjs": "SparseMatrix",
-              "ptr": [
-                0,
-              ],
-              "size": [
-                0,
-                0,
-              ],
-              "values": [],
             },
           },
         },

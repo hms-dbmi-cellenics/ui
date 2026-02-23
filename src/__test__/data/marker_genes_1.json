@@ -18941,47 +18941,9 @@
       ]
   },
   "stats": {
-      "Ms4a4b": {
-          "rawMean": 2.0342,
-          "rawStdev": 1.3509,
-          "truncatedMin": 0,
-          "truncatedMax": 3.755
-      },
-      "S100a4": {
-          "rawMean": 1.5989,
-          "rawStdev": 1.6216,
-          "truncatedMin": 0,
-          "truncatedMax": 3.9599
-      },
-      "5830411N06Rik": {
-          "rawMean": 0.6293,
-          "rawStdev": 1.0236,
-          "truncatedMin": 0,
-          "truncatedMax": 2.6782
-      },
-      "Ccl5": {
-          "rawMean": 1.3205,
-          "rawStdev": 2.0962,
-          "truncatedMin": 0,
-          "truncatedMax": 5.5218
-      },
-      "Gzma": {
-          "rawMean": 0.5559,
-          "rawStdev": 1.4916,
-          "truncatedMin": 0,
-          "truncatedMax": 5.0996
-      },
-      "Lyz2": {
-          "rawMean": 0.312,
-          "rawStdev": 1.1898,
-          "truncatedMin": 0,
-          "truncatedMax": 4.198
-      },
-      "Cd74": {
-          "rawMean": 0.3653,
-          "rawStdev": 1.1008,
-          "truncatedMin": 0,
-          "truncatedMax": 3.0513
-      }
+      "rawMean": [2.0342, 1.5989, 0.6293, 1.3205, 0.5559, 0.312, 0.3653],
+      "rawStdev": [1.3509, 1.6216, 1.0236, 2.0962, 1.4916, 1.1898, 1.1008],
+      "truncatedMin": [0, 0, 0, 0, 0, 0, 0],
+      "truncatedMax": [3.755, 3.9599, 2.6782, 5.5218, 5.0996, 4.198, 3.0513]
   }
 }

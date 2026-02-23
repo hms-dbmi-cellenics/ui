@@ -60,34 +60,6 @@ exports[`loadMarkerGenes action dispatches appropriately on success 1`] = `
           1,
         ],
       },
-      "truncatedExpression": {
-        "datatype": undefined,
-        "index": [],
-        "mathjs": "SparseMatrix",
-        "ptr": [
-          0,
-          0,
-        ],
-        "size": [
-          1,
-          1,
-        ],
-        "values": [],
-      },
-      "zScore": {
-        "datatype": undefined,
-        "index": [],
-        "mathjs": "SparseMatrix",
-        "ptr": [
-          0,
-          0,
-        ],
-        "size": [
-          1,
-          1,
-        ],
-        "values": [],
-      },
     },
     "plotUuid": "interactiveHeatmap",
   },

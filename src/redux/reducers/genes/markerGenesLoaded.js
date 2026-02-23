@@ -9,8 +9,6 @@ const markerGenesLoaded = produce((draft, action) => {
     data: {
       orderedGeneNames,
       rawExpression,
-      truncatedExpression,
-      zScore,
       stats,
       cellOrder,
     },
@@ -21,8 +19,6 @@ const markerGenesLoaded = produce((draft, action) => {
   downsampledExpressionMatrix.setGeneExpression(
     orderedGeneNames,
     rawExpression,
-    truncatedExpression,
-    zScore,
     stats,
   );
 

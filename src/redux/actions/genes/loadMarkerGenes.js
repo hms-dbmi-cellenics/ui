@@ -48,8 +48,6 @@ const loadMarkerGenes = (
     const {
       orderedGeneNames,
       rawExpression: rawExpressionJson,
-      truncatedExpression: truncatedExpressionJson,
-      zScore: zScoreJson,
       stats,
       cellOrder,
     } = await fetchWork(
@@ -73,8 +71,6 @@ const loadMarkerGenes = (
     }
 
     const rawExpression = SparseMatrix.fromJSON(rawExpressionJson);
-    const truncatedExpression = SparseMatrix.fromJSON(truncatedExpressionJson);
-    const zScore = SparseMatrix.fromJSON(zScoreJson);
 
     dispatch({
       type: MARKER_GENES_LOADED,
@@ -83,8 +79,6 @@ const loadMarkerGenes = (
         data: {
           orderedGeneNames,
           rawExpression,
-          truncatedExpression,
-          zScore,
           stats,
           cellOrder,
         },
@@ -99,8 +93,6 @@ const loadMarkerGenes = (
           data: {
             orderedGeneNames: [],
             rawExpression: new SparseMatrix(),
-            truncatedExpression: new SparseMatrix(),
-            zScore: new SparseMatrix(),
             stats: {},
             cellOrder: [],
           },

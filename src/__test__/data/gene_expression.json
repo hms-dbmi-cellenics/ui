@@ -1777,11 +1777,9 @@
         ]
     },
     "stats": {
-        "TestGene": {
-            "rawMean": 0.0409,
-            "rawStdev": 0.2595,
-            "truncatedMin": 0,
-            "truncatedMax": 1.1646
-        }
+        "rawMean": [0.0409],
+        "rawStdev": [0.2595],
+        "truncatedMin": [0],
+        "truncatedMax": [1.1646]
     }
 }
