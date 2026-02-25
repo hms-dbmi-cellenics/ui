@@ -14,15 +14,16 @@ const downloadFromS3 = async (taskName, signedUrl) => {
   // because the user is not authorized to access a file that does not exist
   if (response.status === httpStatusCodes.NOT_FOUND
     || response.status === httpStatusCodes.FORBIDDEN) {
+    // ...existing code...
     return null;
   }
   if (!response.ok) {
+    // ...existing code...
     throw new Error(`Error ${response.status}: ${response.text}`, { cause: response });
   }
 
   const unpackedResult = await unpackResult(response, taskName);
   const parsedResult = parseResult(unpackedResult, taskName);
-
   return parsedResult;
 };
 
