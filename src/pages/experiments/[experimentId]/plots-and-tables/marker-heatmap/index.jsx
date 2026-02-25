@@ -162,10 +162,10 @@ const MarkerHeatmap = ({ experimentId }) => {
     config?.selectedGenes,
   ]);
 
+  // Only fetch gene expression if selectedGenes, selectedCellSet, or selectedPoints change
   useConditionalEffect(() => {
     const expectedConditions = (
       louvainClustersResolution
-      && config?.groupedTracks
       && config?.selectedCellSet
       && config?.selectedPoints
       && hierarchy?.length
@@ -177,14 +177,20 @@ const MarkerHeatmap = ({ experimentId }) => {
 
     dispatch(loadDownsampledGeneExpression(experimentId, config?.selectedGenes, plotUuid));
   }, [
-    config?.groupedTracks,
     config?.selectedCellSet,
     config?.selectedPoints,
+    config?.selectedGenes,
     hierarchy,
     cellSets.accessible,
     louvainClustersResolution,
     groupedCellSets,
   ]);
+
+  // When groupedTracks changes, just recalculate cell order locally
+  useConditionalEffect(() => {
+    if (!config?.groupedTracks || !config?.selectedCellSet) return;
+    dispatch(updateDownsampledCellOrder(plotUuid));
+  }, [config?.groupedTracks]);
 
   // When marker genes have been loaded, update the config with those
   useConditionalEffect(() => {
