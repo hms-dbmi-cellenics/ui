@@ -11,7 +11,9 @@ import {
   getCellSets, getCellSetsHierarchyByKeys, getSelectedMetadataTracks,
 } from 'redux/selectors';
 
-import { loadDownsampledGeneExpression, loadMarkerGenes } from 'redux/actions/genes';
+import {
+  loadDownsampledGeneExpression, loadMarkerGenes, updateDownsampledCellOrder,
+} from 'redux/actions/genes';
 import { loadComponentConfig } from 'redux/actions/componentConfig';
 import { updateCellInfo } from 'redux/actions/cellInfo';
 
@@ -204,7 +206,6 @@ const HeatmapPlot = (props) => {
     heatmapSettings?.groupedTracks,
     heatmapSettings?.selectedCellSet,
     heatmapSettings?.selectedPoints,
-    cellSets.hidden,
     groupedCellSets,
   ]);
 
@@ -231,9 +232,19 @@ const HeatmapPlot = (props) => {
     heatmapSettings?.groupedTracks,
     heatmapSettings?.selectedCellSet,
     heatmapSettings?.selectedPoints,
-    cellSets.hidden,
     groupedCellSets,
   ]);
+
+  // When hidden cell sets change, recalculate cell order without fetching new data
+  useConditionalEffect(() => {
+    if (
+      !cellSets.accessible
+      || !heatmapSettings?.groupedTracks
+      || !heatmapSettings?.selectedCellSet
+    ) return;
+
+    dispatch(updateDownsampledCellOrder(COMPONENT_TYPE));
+  }, [cellSets.hidden]);
 
   useEffect(() => {
     if (cellHighlight) {
@@ -275,6 +286,8 @@ const HeatmapPlot = (props) => {
       />
     );
   }
+
+
 
   if (isHeatmapGenesLoading || !cellSets.accessible || !heatmapData) {
     return (

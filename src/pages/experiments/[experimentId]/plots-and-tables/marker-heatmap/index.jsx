@@ -25,7 +25,11 @@ import { updatePlotConfig, loadPlotConfig } from 'redux/actions/componentConfig'
 import Header from 'components/Header';
 import PlotContainer from 'components/plots/PlotContainer';
 import { generateSpec } from 'utils/plotSpecs/generateHeatmapSpec';
-import { loadDownsampledGeneExpression, loadMarkerGenes } from 'redux/actions/genes';
+import {
+  loadDownsampledGeneExpression,
+  loadMarkerGenes,
+  updateDownsampledCellOrder,
+} from 'redux/actions/genes';
 import loadGeneList from 'redux/actions/genes/loadGeneList';
 import { loadCellSets } from 'redux/actions/cellSets';
 import PlatformError from 'components/PlatformError';
@@ -192,6 +196,13 @@ const MarkerHeatmap = ({ experimentId }) => {
     // So don't replace this with userUpdatedPlotWithChanges
     dispatch(updatePlotConfig(plotUuid, { selectedGenes: loadedGenes }));
   }, [loadedGenes, loadedGenesAreMarkers]);
+
+  // When hidden cell sets change, recalculate cell order without fetching new data
+  useEffect(() => {
+    if (!config?.groupedTracks || !config?.selectedCellSet) return;
+
+    dispatch(updateDownsampledCellOrder(plotUuid));
+  }, [cellSets.hidden]);
 
   useEffect(() => {
     if (

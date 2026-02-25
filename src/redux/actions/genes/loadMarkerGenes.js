@@ -5,7 +5,7 @@ import {
 } from 'redux/actionTypes/genes';
 
 import fetchWork from 'utils/work/fetchWork';
-import getCellSetsThatAffectDownsampling from 'utils/work/getCellSetsThatAffectDownsampling';
+import getHeatmapCellOrder from 'utils/work/getHeatmapCellOrder';
 import getTimeoutForWorkerTask from 'utils/getTimeoutForWorkerTask';
 import handleError from 'utils/http/handleError';
 import endUserMessages from 'utils/endUserMessages';
@@ -21,22 +21,28 @@ const loadMarkerGenes = (
     hiddenCellSets = [],
   } = options;
 
-  const cellSets = await getCellSetsThatAffectDownsampling(
-    experimentId, selectedCellSetKey, groupedTracks, dispatch, getState,
+  // Calculate cell order for downsampling on the client side
+  const state = getState();
+  const cellSetData = state.cellSets;
+  const cellOrder = getHeatmapCellOrder(
+    selectedCellSetKey,
+    groupedTracks,
+    selectedPoints,
+    hiddenCellSets,
+    cellSetData,
   );
 
-  const downsampleSettings = {
-    selectedCellSet: selectedCellSetKey,
-    groupedTracks,
-    cellSets,
-    selectedPoints,
-    hiddenCellSets: Array.from(hiddenCellSets),
-  };
-
+  // Send request to worker for marker genes (no downsampling in worker since we moved it to UI)
+  // Include dummy downsampleSettings to satisfy API validation
   const body = {
     name: 'MarkerHeatmap',
     nGenes: numGenes,
-    downsampleSettings,
+    downsampleSettings: {
+      selectedCellSet: selectedCellSetKey,
+      groupedTracks,
+      selectedPoints,
+      hiddenCellSets: Array.from(hiddenCellSets),
+    },
   };
 
   try {
@@ -49,7 +55,6 @@ const loadMarkerGenes = (
       orderedGeneNames,
       rawExpression: rawExpressionJson,
       stats,
-      cellOrder,
     } = await fetchWork(
       experimentId,
       body,

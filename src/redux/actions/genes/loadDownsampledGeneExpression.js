@@ -8,7 +8,7 @@ import {
 
 import fetchWork from 'utils/work/fetchWork';
 import getTimeoutForWorkerTask from 'utils/getTimeoutForWorkerTask';
-import getCellSetsThatAffectDownsampling from 'utils/work/getCellSetsThatAffectDownsampling';
+import getHeatmapCellOrder from 'utils/work/getHeatmapCellOrder';
 
 // Debounce so that we only fetch once the settings are done being set up
 const loadDownsampledGeneExpression = (
@@ -39,23 +39,28 @@ const loadDownsampledGeneExpression = (
 
   const hiddenCellSets = withHiddenCellSets ? Array.from(state.cellSets.hidden) : [];
 
-  const cellSets = await getCellSetsThatAffectDownsampling(
-    experimentId, selectedCellSetKey, groupedTracks, dispatch, getState,
-  );
-
-  const downsampleSettings = {
-    selectedCellSet: selectedCellSetKey,
+  // Calculate cell order for downsampling on the client side
+  const cellSetData = state.cellSets;
+  const cellOrder = getHeatmapCellOrder(
+    selectedCellSetKey,
     groupedTracks,
-    cellSets,
     selectedPoints,
     hiddenCellSets,
-  };
+    cellSetData,
+  );
 
+  // Send request to worker for full expression matrix (no downsampling in worker)
+  // Include downsampleSettings for API validation (not used by worker anymore)
   const body = {
     name: 'GeneExpression',
     genes,
-    downsampled: true,
-    downsampleSettings,
+    downsampled: false,
+    downsampleSettings: {
+      selectedCellSet: selectedCellSetKey,
+      groupedTracks,
+      selectedPoints,
+      hiddenCellSets,
+    },
   };
 
   const timeout = getTimeoutForWorkerTask(getState(), 'GeneExpression');
@@ -67,7 +72,6 @@ const loadDownsampledGeneExpression = (
       orderedGeneNames,
       rawExpression: rawExpressionJson,
       stats,
-      cellOrder,
     } = await fetchWork(
       experimentId, body, getState, dispatch,
       {
