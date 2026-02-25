@@ -209,6 +209,7 @@ const HeatmapPlot = (props) => {
     groupedCellSets,
   ]);
 
+  // Only fetch gene expression if selectedGenes, selectedCellSet, or selectedPoints change
   useConditionalEffect(() => {
     if (
       !cellSets.accessible
@@ -219,7 +220,7 @@ const HeatmapPlot = (props) => {
       || !selectedGenes?.length > 0
     ) return;
 
-    // Load current genes
+    // Only fetch if selectedGenes, selectedCellSet, or selectedPoints changed
     debouncedLoadDownsampledGeneExpression(
       experimentId,
       selectedGenes,
@@ -229,11 +230,21 @@ const HeatmapPlot = (props) => {
   }, [
     louvainClustersResolution,
     cellSets.accessible,
-    heatmapSettings?.groupedTracks,
     heatmapSettings?.selectedCellSet,
     heatmapSettings?.selectedPoints,
-    groupedCellSets,
+    selectedGenes,
   ]);
+
+  // When groupedTracks changes, just recalculate cell order locally
+  useConditionalEffect(() => {
+    if (
+      !cellSets.accessible
+      || !heatmapSettings?.groupedTracks
+      || !heatmapSettings?.selectedCellSet
+    ) return;
+
+    dispatch(updateDownsampledCellOrder(COMPONENT_TYPE));
+  }, [heatmapSettings?.groupedTracks]);
 
   // When hidden cell sets change, recalculate cell order without fetching new data
   useConditionalEffect(() => {
