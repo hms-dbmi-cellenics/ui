@@ -16,14 +16,24 @@ const downsampledGenesLoaded = (state, action) => {
       cellOrder,
     } = newGenes;
 
-    state.expression.full.matrix.pushGeneExpression(
-      orderedGeneNames,
-      rawExpression,
-      stats,
-    );
+    // Only push to matrix if rawExpression is provided (i.e., new data from worker)
+    if (rawExpression) {
+      state.expression.full.matrix.pushGeneExpression(
+        orderedGeneNames,
+        rawExpression,
+        stats,
+      );
+    }
 
-    cellOrderToStore = cellOrder;
-    orderedGeneNamesToStore = orderedGeneNames;
+    // Always update orderedGeneNames if provided (even if rawExpression is null)
+    if (orderedGeneNames) {
+      orderedGeneNamesToStore = orderedGeneNames;
+    }
+
+    // Always update cellOrder if provided
+    if (cellOrder) {
+      cellOrderToStore = cellOrder;
+    }
   }
 
   return {

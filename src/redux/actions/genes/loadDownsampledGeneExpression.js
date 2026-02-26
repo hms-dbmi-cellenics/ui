@@ -8,17 +8,31 @@ import {
 
 import fetchWork from 'utils/work/fetchWork';
 import getTimeoutForWorkerTask from 'utils/getTimeoutForWorkerTask';
-import updateDownsampledCellOrder from 'redux/actions/genes/updateDownsampledCellOrder';
-import updateDownsampledGeneOrder from 'redux/actions/genes/updateDownsampledGeneOrder';
 import getHeatmapCellOrder from 'utils/work/getHeatmapCellOrder';
+import upperCaseArray from 'utils/upperCaseArray';
+
+const findLoadedGenes = (matrix, selectedGenes) => {
+  // Check which of the genes we actually need to load.
+  const storedGenes = matrix.getStoredGenes();
+  const genesToLoad = [...selectedGenes].filter(
+    (gene) => !new Set(upperCaseArray(storedGenes)).has(gene.toUpperCase()),
+  );
+
+  const genesAlreadyLoaded = storedGenes.filter(
+    (gene) => upperCaseArray(selectedGenes).includes(gene.toUpperCase()),
+  );
+
+  return { genesToLoad, genesAlreadyLoaded };
+};
 
 /**
  * Loads gene expression for the heatmap.
  * Wrapper that:
- * 1. Makes the gene expression work request
- * 2. Computes and stores cellOrder
- * 3. Stores orderedGeneNames from the work request response
- * 4. Updates the shared expression matrix
+ * 1. Checks if genes are already loaded (skips request if they are)
+ * 2. Makes the gene expression work request only for missing genes
+ * 3. Computes and stores cellOrder
+ * 4. Stores orderedGeneNames from the work request response
+ * 5. Updates the shared expression matrix
  */
 const loadHeatmapGeneExpression = (
   experimentId,
@@ -30,8 +44,13 @@ const loadHeatmapGeneExpression = (
     return;
   }
 
-  // Compute cell order upfront
   const state = getState();
+  const { matrix } = state.genes.expression.full;
+  
+  // Check if all genes are already loaded
+  const { genesToLoad, genesAlreadyLoaded } = findLoadedGenes(matrix, genes);
+  
+  // Compute cell order upfront
   const {
     groupedTracks,
     selectedCellSet: selectedCellSetKey,
@@ -47,8 +66,29 @@ const loadHeatmapGeneExpression = (
     hiddenCellSets,
     cellSetData,
   );
+  
+  // If all genes are already loaded, just update the UI without fetching
+  if (genesToLoad.length === 0) {
+    // Dispatch that genes are loaded with existing data
+    // Don't include cellOrder - it shouldn't change if genes are already cached
+    dispatch({
+      type: DOWNSAMPLED_GENES_EXPRESSION_LOADED,
+      payload: {
+        componentUuid,
+        genes,
+        ETag: state.genes.expression.full.ETag,
+        newGenes: {
+          orderedGeneNames: genes,
+          stats: {},
+          rawExpression: null,
+        },
+      },
+    });
+    
+    return;
+  }
 
-  // Dispatch loading state for heatmap
+  // Dispatch loading state for heatmap (only if we need to fetch)
   dispatch({
     type: DOWNSAMPLED_GENES_EXPRESSION_LOADING,
     payload: {
@@ -62,7 +102,7 @@ const loadHeatmapGeneExpression = (
   try {
     const body = {
       name: 'GeneExpression',
-      genes,
+      genes: genesToLoad,
       downsampled: false,
     };
 
@@ -78,8 +118,8 @@ const loadHeatmapGeneExpression = (
 
     const rawExpression = SparseMatrix.fromJSON(rawExpressionJson);
 
-    // Update the shared expression matrix with the loaded data
-    // Pass the INPUT genes (marker order), not orderedGeneNames (worker order)
+    // Update the shared expression matrix with the newly loaded data
+    // Use INPUT genes (marker order), not orderedGeneNames (worker order)
     // Vitessce will look them up by name and display in the order we specify
     dispatch({
       type: DOWNSAMPLED_GENES_EXPRESSION_LOADED,
@@ -91,15 +131,10 @@ const loadHeatmapGeneExpression = (
           orderedGeneNames,
           stats,
           rawExpression,
+          cellOrder,
         },
       },
     });
-
-    // Store the ordered gene names in downsampled state
-    dispatch(updateDownsampledGeneOrder(componentUuid, orderedGeneNames));
-
-    // Store the cell order in downsampled state
-    dispatch(updateDownsampledCellOrder(componentUuid));
   } catch (error) {
     dispatch({
       type: DOWNSAMPLED_GENES_EXPRESSION_ERROR,
