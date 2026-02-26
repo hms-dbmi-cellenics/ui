@@ -11,8 +11,6 @@ import endUserMessages from 'utils/endUserMessages';
 const loadMarkerGenes = (
   experimentId, plotUuid, options = {},
 ) => async (dispatch, getState) => {
-  console.log('loadMarkerGenes called with plotUuid:', plotUuid);
-  
   const {
     numGenes = 5,
     groupedTracks = ['sample', 'louvain'],
@@ -74,9 +72,6 @@ const loadMarkerGenes = (
     if (getState().genes.expression.downsampled.ETag !== requestETag) {
       return;
     }
-
-    console.log('Marker genes work request returned:', orderedGeneNames);
-    console.log('Dispatching MARKER_GENES_LOADED with orderedGeneNames:', orderedGeneNames);
 
     dispatch({
       type: MARKER_GENES_LOADED,
