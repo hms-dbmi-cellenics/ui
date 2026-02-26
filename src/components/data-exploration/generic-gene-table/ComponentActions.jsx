@@ -35,7 +35,7 @@ const ComponentActions = (props) => {
     }
 
     if (useDownsampledExpression) {
-      dispatch(loadDownsampledGeneExpression(experimentId, newGenes, componentType));
+      dispatch(loadDownsampledGeneExpression(experimentId, newGenes, componentType, true));
     } else {
       dispatch(loadGeneExpression(experimentId, newGenes, componentType));
     }
