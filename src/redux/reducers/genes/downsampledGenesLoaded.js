@@ -4,7 +4,7 @@ const downsampledGenesLoaded = (state, action) => {
   const { componentUuid, genes, ETag, newGenes = undefined } = action.payload;
 
   let cellOrderToStore = state.expression.downsampled.cellOrder;
-  let orderedGeneNamesToStore = genes;
+  let orderedGeneNamesToStore = state.expression.downsampled.orderedGeneNames;
 
   // If there's any data to store, load it into the full matrix
   // Use pushGeneExpression to append genes (don't replace), in case there's already data
@@ -37,7 +37,7 @@ const downsampledGenesLoaded = (state, action) => {
           ...state.expression.views[componentUuid],
           fetching: false,
           error: false,
-          data: orderedGeneNamesToStore,
+          data: genes,
           markers: false,
         },
       },
@@ -46,6 +46,7 @@ const downsampledGenesLoaded = (state, action) => {
         loading: [],
         error: false,
         cellOrder: cellOrderToStore,
+        orderedGeneNames: orderedGeneNamesToStore,
       },
       full: {
         ...state.expression.full,

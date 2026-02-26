@@ -3,7 +3,7 @@ import { SparseMatrix } from 'mathjs';
 import {
   DOWNSAMPLED_GENES_EXPRESSION_LOADING,
   DOWNSAMPLED_GENES_EXPRESSION_ERROR,
-  GENES_EXPRESSION_LOADED,
+  DOWNSAMPLED_GENES_EXPRESSION_LOADED,
 } from 'redux/actionTypes/genes';
 
 import fetchWork from 'utils/work/fetchWork';
@@ -36,7 +36,7 @@ const loadHeatmapGeneExpression = (
     groupedTracks,
     selectedCellSet: selectedCellSetKey,
     selectedPoints,
-  } = state.componentConfig[componentUuid]?.config;
+  } = state.componentConfig[componentUuid]?.config || {};
 
   const hiddenCellSets = withHiddenCellSets ? Array.from(state.cellSets.hidden) : [];
   const cellSetData = state.cellSets;
@@ -82,10 +82,11 @@ const loadHeatmapGeneExpression = (
     // Pass the INPUT genes (marker order), not orderedGeneNames (worker order)
     // Vitessce will look them up by name and display in the order we specify
     dispatch({
-      type: GENES_EXPRESSION_LOADED,
+      type: DOWNSAMPLED_GENES_EXPRESSION_LOADED,
       payload: {
         componentUuid,
         genes,
+        ETag: null,
         newGenes: {
           orderedGeneNames,
           stats,

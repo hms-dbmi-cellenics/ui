@@ -130,8 +130,10 @@ const HeatmapPlot = (props) => {
   }, [heatmapSettings]);
 
   useEffect(() => {
-    const selectedGenesLoading = _.intersection(selectedGenes, loadingGenes).length > 0
-      && fetchingGenes;
+    // Check if genes are currently being loaded
+    // For downsampled expressions, we just need to check fetchingGenes
+    const selectedGenesLoading = fetchingGenes
+      || (_.intersection(selectedGenes, loadingGenes).length > 0);
 
     // markerGenesLoading only happen on the first load
     // selectedGenesLoading happens every time the selected genes are changed
@@ -141,7 +143,7 @@ const HeatmapPlot = (props) => {
     }
 
     setIsHeatmapGenesLoading(false);
-  }, [selectedGenes, loadingGenes, markerGenesLoading]);
+  }, [selectedGenes, loadingGenes, markerGenesLoading, fetchingGenes]);
 
   useConditionalEffect(() => {
     if (
@@ -232,6 +234,7 @@ const HeatmapPlot = (props) => {
         || !heatmapSettings.selectedCellSet
         || !heatmapSettings.selectedPoints
         || !selectedGenes?.length > 0
+        || fetchingGenes
       ) { return; }
 
       // Only fetch if selectedGenes, selectedCellSet, or selectedPoints changed

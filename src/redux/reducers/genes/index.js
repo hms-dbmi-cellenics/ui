@@ -22,6 +22,7 @@ import genesExpressionLoaded from 'redux/reducers/genes/genesExpressionLoaded';
 import genesExpressionError from 'redux/reducers/genes/genesExpressionError';
 
 import downsampledGenesLoading from 'redux/reducers/genes/downsampledGenesLoading';
+import downsampledGenesLoaded from 'redux/reducers/genes/downsampledGenesLoaded';
 import downsampledGenesUpdateCellOrder from 'redux/reducers/genes/downsampledGenesUpdateCellOrder';
 import downsampledGenesUpdateGeneOrder from 'redux/reducers/genes/downsampledGenesUpdateGeneOrder';
 
@@ -67,6 +68,9 @@ const genesReducer = (state = getInitialState(), action) => {
     }
     case DOWNSAMPLED_GENES_EXPRESSION_LOADING: {
       return downsampledGenesLoading(state, action);
+    }
+    case DOWNSAMPLED_GENES_EXPRESSION_LOADED: {
+      return downsampledGenesLoaded(state, action);
     }
     case DOWNSAMPLED_GENES_EXPRESSION_ERROR: {
       return downsampledGenesError(state, action);
