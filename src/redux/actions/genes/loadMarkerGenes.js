@@ -13,7 +13,7 @@ const loadMarkerGenes = (
 ) => async (dispatch, getState) => {
   const {
     numGenes = 5,
-    groupedTracks = ['sample', 'louvain'],
+    groupedTracks = ['louvain', 'sample'],
     selectedCellSetKey = 'louvain',
     selectedPoints = 'All',
     hiddenCellSets = [],

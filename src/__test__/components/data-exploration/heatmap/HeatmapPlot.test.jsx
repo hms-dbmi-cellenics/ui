@@ -249,7 +249,7 @@ describe('HeatmapPlot', () => {
     await act(async () => {
       await storeState.dispatch(
         updatePlotConfig('interactiveHeatmap', {
-          groupedTracks: ['sample', 'louvain'],
+          groupedTracks: ['louvain', 'sample'],
         }),
       );
     });

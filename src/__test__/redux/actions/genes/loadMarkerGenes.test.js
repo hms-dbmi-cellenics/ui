@@ -118,7 +118,7 @@ describe('loadMarkerGenes action', () => {
       nGenes: 5,
       downsampleSettings: {
         selectedCellSet: 'louvain',
-        groupedTracks: ['sample', 'louvain'],
+        groupedTracks: ['louvain', 'sample'],
         hiddenCellSets: [],
         selectedPoints: 'All',
       },

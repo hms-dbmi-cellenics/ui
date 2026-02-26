@@ -203,7 +203,7 @@ const heatmapInitialConfig = {
   selectedPoints: 'All',
   labelColour: 'transparent',
   selectedTracks: ['louvain'],
-  groupedTracks: ['sample', 'louvain'],
+  groupedTracks: ['louvain', 'sample'],
   expressionValue: 'raw',
   truncatedValues: true,
   geneLabelSize: 10,
