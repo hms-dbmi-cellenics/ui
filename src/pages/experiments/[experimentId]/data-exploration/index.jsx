@@ -22,8 +22,6 @@ import { updateLayout, addWindow } from 'redux/actions/layout/index';
 import SearchMenu from 'components/SearchMenu';
 import 'react-mosaic-component/react-mosaic-component.css';
 import MultiTileContainer from 'components/MultiTileContainer';
-import { loadGeneExpression } from 'redux/actions/genes';
-import getHighestDispersionGenes from 'utils/getHighestDispersionGenes';
 import { initialLayoutSingleCell, initialLayoutSpatial } from 'redux/reducers/layout/initialState';
 
 const { TabPane } = Tabs;
@@ -40,8 +38,6 @@ const ExplorationViewPage = ({
     state.experimentSettings.processing?.configureEmbedding?.embeddingSettings
   )) || false;
 
-  const geneData = useSelector((state) => state.genes.properties.data);
-
   const samples = useSelector((state) => state.samples);
   const selectedTechnology = (samples[experimentData?.sampleIds?.[0]]?.type || false);
 
@@ -56,12 +52,6 @@ const ExplorationViewPage = ({
       dispatch(loadProcessingSettings(experimentId));
     }
   }, []);
-
-  useEffect(() => {
-    if (!Object.keys(geneData)) return;
-    const genesToLoad = getHighestDispersionGenes(geneData, 50);
-    dispatch(loadGeneExpression(experimentId, genesToLoad, 'embedding'));
-  }, [geneData]);
 
   const methodUppercase = method ? method.toUpperCase() : ' ';
   const embeddingTitle = `${methodUppercase} Embedding`;
