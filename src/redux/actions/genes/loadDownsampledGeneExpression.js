@@ -70,7 +70,7 @@ const loadHeatmapGeneExpression = (
   // If all genes are already loaded, just update the UI without fetching
   if (genesToLoad.length === 0) {
     // Dispatch that genes are loaded with existing data
-    // Still recalculate cell order so it stays in sync with the new gene selection
+    // Don't include cellOrder - it shouldn't change if genes are already cached
     dispatch({
       type: DOWNSAMPLED_GENES_EXPRESSION_LOADED,
       payload: {
@@ -81,11 +81,10 @@ const loadHeatmapGeneExpression = (
           orderedGeneNames: genes,
           stats: {},
           rawExpression: null,
-          cellOrder,
         },
       },
     });
-    
+
     return;
   }
 
