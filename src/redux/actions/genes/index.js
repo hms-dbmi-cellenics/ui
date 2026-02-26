@@ -2,14 +2,17 @@ import loadGeneExpression from './loadGeneExpression';
 import changeGeneSelection from './changeGeneSelection';
 import loadPaginatedGeneProperties from './loadPaginatedGeneProperties';
 import loadMarkerGenes from './loadMarkerGenes';
-import loadDownsampledGeneExpression from './loadDownsampledGeneExpression';
+import loadHeatmapGeneExpression, { loadDownsampledGeneExpression } from './loadDownsampledGeneExpression';
 import updateDownsampledCellOrder from './updateDownsampledCellOrder';
+import updateDownsampledGeneOrder from './updateDownsampledGeneOrder';
 
 export {
   loadGeneExpression,
   changeGeneSelection,
   loadPaginatedGeneProperties,
   loadMarkerGenes,
+  loadHeatmapGeneExpression,
   loadDownsampledGeneExpression,
   updateDownsampledCellOrder,
+  updateDownsampledGeneOrder,
 };

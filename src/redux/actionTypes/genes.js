@@ -66,12 +66,7 @@ const MARKER_GENES_ERROR = `${GENES}/markerGenesError`;
 const DOWNSAMPLED_GENES_EXPRESSION_LOADING = `${GENES}/downsampledGenesExpressionLoading`;
 
 /**
- * Downsampled genes expression loaded
- */
-const DOWNSAMPLED_GENES_EXPRESSION_LOADED = `${GENES}/downsampledGenesExpressionLoaded`;
-
-/**
- * Downsampled genes expression loaded
+ * Downsampled genes expression error
  */
 const DOWNSAMPLED_GENES_EXPRESSION_ERROR = `${GENES}/downsampledGenesExpressionError`;
 
@@ -80,13 +75,18 @@ const DOWNSAMPLED_GENES_EXPRESSION_ERROR = `${GENES}/downsampledGenesExpressionE
  */
 const DOWNSAMPLED_GENES_EXPRESSION_UPDATE_CELL_ORDER = `${GENES}/downsampledGenesExpressionUpdateCellOrder`;
 
+/**
+ * Update ordered gene names for downsampled expression (without refetching data)
+ */
+const DOWNSAMPLED_GENES_EXPRESSION_UPDATE_GENE_ORDER = `${GENES}/downsampledGenesExpressionUpdateGeneOrder`;
+
 export {
   GENES_PROPERTIES_LOADING, GENES_PROPERTIES_LOADED_PAGINATED, GENES_PROPERTIES_ERROR,
   GENES_SELECT, GENES_DESELECT,
   MARKER_GENES_LOADING, MARKER_GENES_LOADED, MARKER_GENES_ERROR,
   GENES_EXPRESSION_LOADING, GENES_EXPRESSION_LOADED, GENES_EXPRESSION_ERROR,
   DOWNSAMPLED_GENES_EXPRESSION_LOADING,
-  DOWNSAMPLED_GENES_EXPRESSION_LOADED,
   DOWNSAMPLED_GENES_EXPRESSION_ERROR,
   DOWNSAMPLED_GENES_EXPRESSION_UPDATE_CELL_ORDER,
+  DOWNSAMPLED_GENES_EXPRESSION_UPDATE_GENE_ORDER,
 };

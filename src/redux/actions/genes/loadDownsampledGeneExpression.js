@@ -1,38 +1,37 @@
-import _ from 'lodash';
 import { SparseMatrix } from 'mathjs';
 
 import {
   DOWNSAMPLED_GENES_EXPRESSION_LOADING,
-  DOWNSAMPLED_GENES_EXPRESSION_LOADED,
   DOWNSAMPLED_GENES_EXPRESSION_ERROR,
+  GENES_EXPRESSION_LOADED,
 } from 'redux/actionTypes/genes';
 
 import fetchWork from 'utils/work/fetchWork';
 import getTimeoutForWorkerTask from 'utils/getTimeoutForWorkerTask';
+import updateDownsampledCellOrder from 'redux/actions/genes/updateDownsampledCellOrder';
+import updateDownsampledGeneOrder from 'redux/actions/genes/updateDownsampledGeneOrder';
 import getHeatmapCellOrder from 'utils/work/getHeatmapCellOrder';
 
-// Fetch gene expression for the heatmap using the full cell matrix
-// The heatmap will downsample on-the-fly using this full matrix
-const loadDownsampledGeneExpression = (
+/**
+ * Loads gene expression for the heatmap.
+ * Wrapper that:
+ * 1. Makes the gene expression work request
+ * 2. Computes and stores cellOrder
+ * 3. Stores orderedGeneNames from the work request response
+ * 4. Updates the shared expression matrix
+ */
+const loadHeatmapGeneExpression = (
   experimentId,
   genes,
   componentUuid,
   withHiddenCellSets = false,
 ) => async (dispatch, getState) => {
   if (genes.length === 0) {
-    dispatch({
-      type: DOWNSAMPLED_GENES_EXPRESSION_LOADED,
-      payload: {
-        componentUuid,
-        genes,
-      },
-    });
-
     return;
   }
 
+  // Compute cell order upfront
   const state = getState();
-
   const {
     groupedTracks,
     selectedCellSet: selectedCellSetKey,
@@ -40,8 +39,6 @@ const loadDownsampledGeneExpression = (
   } = state.componentConfig[componentUuid]?.config;
 
   const hiddenCellSets = withHiddenCellSets ? Array.from(state.cellSets.hidden) : [];
-
-  // Calculate cell order for downsampling on the client side
   const cellSetData = state.cellSets;
   const cellOrder = getHeatmapCellOrder(
     selectedCellSetKey,
@@ -51,70 +48,57 @@ const loadDownsampledGeneExpression = (
     cellSetData,
   );
 
-  // Send request to worker for full expression matrix
-  // The heatmap needs a complete set of genes to render correctly,
-  // so we request all genes without deduplication
-  const body = {
-    name: 'GeneExpression',
-    genes,
-    downsampled: false,
-  };
-
-  const timeout = getTimeoutForWorkerTask(getState(), 'GeneExpression');
+  // Dispatch loading state for heatmap
+  dispatch({
+    type: DOWNSAMPLED_GENES_EXPRESSION_LOADING,
+    payload: {
+      experimentId,
+      componentUuid,
+      genes,
+      ETag: null,
+    },
+  });
 
   try {
-    let requestETag = null;
+    const body = {
+      name: 'GeneExpression',
+      genes,
+      downsampled: false,
+    };
 
-    // Dispatch loading state.
-    dispatch({
-      type: DOWNSAMPLED_GENES_EXPRESSION_LOADING,
-      payload: {
-        experimentId,
-        componentUuid,
-        genes,
-        ETag: null,
-      },
-    });
+    const timeout = getTimeoutForWorkerTask(getState(), 'GeneExpression');
 
     const {
       orderedGeneNames,
       rawExpression: rawExpressionJson,
       stats,
     } = await fetchWork(
-      experimentId, body, getState, dispatch,
-      {
-        timeout,
-        onETagGenerated: (ETag) => {
-          requestETag = ETag;
-        },
-      },
+      experimentId, body, getState, dispatch, { timeout },
     );
-
-    // If we had a previous request with a different ETag, that means a newer request
-    // was sent while this one was in flight, so skip processing this stale response
-    const currentETag = getState().genes.expression.full.ETag;
-    if (currentETag !== null && currentETag !== requestETag) {
-      return;
-    }
 
     const rawExpression = SparseMatrix.fromJSON(rawExpressionJson);
 
+    // Update the shared expression matrix with the loaded data
+    // Pass the INPUT genes (marker order), not orderedGeneNames (worker order)
+    // Vitessce will look them up by name and display in the order we specify
     dispatch({
-      type: DOWNSAMPLED_GENES_EXPRESSION_LOADED,
+      type: GENES_EXPRESSION_LOADED,
       payload: {
         componentUuid,
         genes,
-        ETag: requestETag,
         newGenes: {
           orderedGeneNames,
           stats,
           rawExpression,
-          cellOrder,
         },
       },
     });
 
+    // Store the ordered gene names in downsampled state
+    dispatch(updateDownsampledGeneOrder(componentUuid, orderedGeneNames));
 
+    // Store the cell order in downsampled state
+    dispatch(updateDownsampledCellOrder(componentUuid));
   } catch (error) {
     dispatch({
       type: DOWNSAMPLED_GENES_EXPRESSION_ERROR,
@@ -128,4 +112,6 @@ const loadDownsampledGeneExpression = (
   }
 };
 
-export default loadDownsampledGeneExpression;
+// Keep the old name as an alias for backward compatibility
+export { loadHeatmapGeneExpression as loadDownsampledGeneExpression };
+export default loadHeatmapGeneExpression;

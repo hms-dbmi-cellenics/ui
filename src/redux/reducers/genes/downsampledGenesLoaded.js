@@ -4,10 +4,10 @@ const downsampledGenesLoaded = (state, action) => {
   const { componentUuid, genes, ETag, newGenes = undefined } = action.payload;
 
   let cellOrderToStore = state.expression.downsampled.cellOrder;
+  let orderedGeneNamesToStore = genes;
 
   // If there's any data to store, load it into the full matrix
-  // Use setGeneExpression to completely replace (not append) since the heatmap
-  // needs all genes together in one matrix for proper downsampling
+  // Use pushGeneExpression to append genes (don't replace), in case there's already data
   if (newGenes) {
     const {
       orderedGeneNames,
@@ -16,13 +16,14 @@ const downsampledGenesLoaded = (state, action) => {
       cellOrder,
     } = newGenes;
 
-    state.expression.full.matrix.setGeneExpression(
+    state.expression.full.matrix.pushGeneExpression(
       orderedGeneNames,
       rawExpression,
       stats,
     );
 
     cellOrderToStore = cellOrder;
+    orderedGeneNamesToStore = orderedGeneNames;
   }
 
   return {
@@ -36,7 +37,7 @@ const downsampledGenesLoaded = (state, action) => {
           ...state.expression.views[componentUuid],
           fetching: false,
           error: false,
-          data: genes,
+          data: orderedGeneNamesToStore,
           markers: false,
         },
       },
