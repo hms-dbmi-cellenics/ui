@@ -3,6 +3,11 @@ import { initialViewState } from 'redux/reducers/genes/getInitialState';
 const downsampledGenesLoaded = (state, action) => {
   const { componentUuid, genes, newGenes = undefined } = action.payload;
 
+  console.log('downsampledGenesLoaded called');
+  console.log('componentUuid:', componentUuid);
+  console.log('genes:', genes);
+  console.log('newGenes:', newGenes);
+
   let cellOrderToStore = state.expression.downsampled.cellOrder;
 
   // If there's any data to store, load it
@@ -14,6 +19,7 @@ const downsampledGenesLoaded = (state, action) => {
       cellOrder,
     } = newGenes;
 
+    console.log('Storing expression data for genes:', orderedGeneNames);
     state.expression.downsampled.matrix.setGeneExpression(
       orderedGeneNames,
       rawExpression,

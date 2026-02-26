@@ -23,7 +23,7 @@ const downloadFromS3 = async (taskName, signedUrl) => {
   }
 
   const unpackedResult = await unpackResult(response, taskName);
-  const parsedResult = parseResult(unpackedResult, taskName);
+  const parsedResult = await parseResult(unpackedResult, taskName);
   return parsedResult;
 };
 

@@ -164,6 +164,10 @@ const MarkerHeatmap = ({ experimentId }) => {
 
   // Only fetch gene expression if selectedGenes, selectedCellSet, or selectedPoints change
   useConditionalEffect(() => {
+    console.log('Gene expression fetch effect triggered');
+    console.log('selectedGenes:', config?.selectedGenes);
+    console.log('selectedCellSet:', config?.selectedCellSet);
+    
     const expectedConditions = (
       louvainClustersResolution
       && config?.selectedCellSet
@@ -173,8 +177,14 @@ const MarkerHeatmap = ({ experimentId }) => {
       && config?.selectedGenes?.length > 0
       && !markerGenesLoading
     );
-    if (!expectedConditions) return;
+    console.log('Gene expression fetch effect - expectedConditions:', expectedConditions);
+    
+    if (!expectedConditions) {
+      console.log('Gene expression fetch effect - early return');
+      return;
+    }
 
+    console.log('Gene expression fetch effect - dispatching loadDownsampledGeneExpression');
     dispatch(loadDownsampledGeneExpression(experimentId, config?.selectedGenes, plotUuid));
   }, [
     config?.selectedCellSet,
@@ -194,10 +204,15 @@ const MarkerHeatmap = ({ experimentId }) => {
 
   // When marker genes have been loaded, update the config with those
   useConditionalEffect(() => {
+    console.log('Marker genes update effect - loadedGenes:', loadedGenes);
+    console.log('Marker genes update effect - config.selectedGenes:', config?.selectedGenes);
+    
     if (!config || _.isEqual(loadedGenes, config.selectedGenes)) {
+      console.log('Marker genes update effect - early return');
       return;
     }
 
+    console.log('Marker genes update effect - updating config with loadedGenes');
     // IMPORTANT This update is NOT performed by a user action, but by loadMarkerGenes work result
     // So don't replace this with userUpdatedPlotWithChanges
     dispatch(updatePlotConfig(plotUuid, { selectedGenes: loadedGenes }));
@@ -211,18 +226,32 @@ const MarkerHeatmap = ({ experimentId }) => {
   }, [cellSets.hidden]);
 
   useEffect(() => {
+    console.log('Marker heatmap render effect triggered');
+    console.log('cellSets.accessible:', cellSets.accessible);
+    console.log('loadedGenes:', loadedGenes);
+    console.log('loading:', loading);
+    console.log('loading.includes(plotUuid):', loading?.includes(plotUuid));
+    console.log('matrix:', matrix);
+    console.log('hierarchy?.length:', hierarchy?.length);
+    console.log('markerGenesLoadingError:', markerGenesLoadingError);
+    console.log('markerGenesLoading:', markerGenesLoading);
+    console.log('config?.selectedGenes:', config?.selectedGenes);
+    
     if (
       !cellSets.accessible
       || _.isEmpty(loadedGenes)
       || !loading
+      || loading.includes(plotUuid) // Don't render while expression data is loading
       || !hierarchy?.length
       || markerGenesLoadingError
       || markerGenesLoading
       || config?.selectedGenes === null
     ) {
+      console.log('Early return from render effect');
       return;
     }
 
+    console.log('Proceeding to render heatmap');
     const data = generateVegaData(cellOrder, matrix, config, cellSets);
     const spec = generateSpec(config, 'Cluster ID', data, config.showGeneLabels);
 

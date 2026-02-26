@@ -17,7 +17,10 @@ const loadDownsampledGeneExpression = (
   componentUuid,
   withHiddenCellSets = false,
 ) => async (dispatch, getState) => {
+  console.log('loadDownsampledGeneExpression called with genes:', genes);
+  
   if (genes.length === 0) {
+    console.log('No genes to load, dispatching empty load');
     dispatch({
       type: DOWNSAMPLED_GENES_EXPRESSION_LOADED,
       payload: {
@@ -100,6 +103,10 @@ const loadDownsampledGeneExpression = (
     }
 
     const rawExpression = SparseMatrix.fromJSON(rawExpressionJson);
+
+    console.log('Gene expression work request returned for genes:', orderedGeneNames);
+    console.log('Dispatching DOWNSAMPLED_GENES_EXPRESSION_LOADED with orderedGeneNames:', orderedGeneNames);
+    console.log('Stats:', stats);
 
     dispatch({
       type: DOWNSAMPLED_GENES_EXPRESSION_LOADED,

@@ -1,5 +1,3 @@
-import { SparseMatrix } from 'mathjs';
-
 import {
   MARKER_GENES_ERROR, MARKER_GENES_LOADING, MARKER_GENES_LOADED,
 } from 'redux/actionTypes/genes';
@@ -13,6 +11,8 @@ import endUserMessages from 'utils/endUserMessages';
 const loadMarkerGenes = (
   experimentId, plotUuid, options = {},
 ) => async (dispatch, getState) => {
+  console.log('loadMarkerGenes called with plotUuid:', plotUuid);
+  
   const {
     numGenes = 5,
     groupedTracks = ['sample', 'louvain'],
@@ -75,7 +75,8 @@ const loadMarkerGenes = (
       return;
     }
 
-    const rawExpression = SparseMatrix.fromJSON(rawExpressionJson);
+    console.log('Marker genes work request returned:', orderedGeneNames);
+    console.log('Dispatching MARKER_GENES_LOADED with orderedGeneNames:', orderedGeneNames);
 
     dispatch({
       type: MARKER_GENES_LOADED,
@@ -83,8 +84,6 @@ const loadMarkerGenes = (
         plotUuid,
         data: {
           orderedGeneNames,
-          rawExpression,
-          stats,
           cellOrder,
         },
       },
@@ -97,8 +96,6 @@ const loadMarkerGenes = (
           plotUuid,
           data: {
             orderedGeneNames: [],
-            rawExpression: new SparseMatrix(),
-            stats: {},
             cellOrder: [],
           },
         },

@@ -1,5 +1,5 @@
 /* eslint-disable no-param-reassign */
-import produce, { original } from 'immer';
+import produce from 'immer';
 
 import getInitialState from 'redux/reducers/genes/getInitialState';
 
@@ -8,19 +8,9 @@ const markerGenesLoaded = produce((draft, action) => {
     plotUuid,
     data: {
       orderedGeneNames,
-      rawExpression,
-      stats,
       cellOrder,
     },
   } = action.payload;
-
-  const downsampledExpressionMatrix = original(draft).expression.downsampled.matrix;
-
-  downsampledExpressionMatrix.setGeneExpression(
-    orderedGeneNames,
-    rawExpression,
-    stats,
-  );
 
   draft.expression.downsampled.cellOrder = cellOrder;
 

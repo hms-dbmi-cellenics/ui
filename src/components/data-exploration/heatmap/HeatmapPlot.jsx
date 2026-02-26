@@ -144,16 +144,27 @@ const HeatmapPlot = (props) => {
   }, [selectedGenes, loadingGenes, markerGenesLoading]);
 
   useConditionalEffect(() => {
+    console.log('HeatmapPlot data generation effect running');
+    console.log('selectedGenes:', selectedGenes);
+    console.log('cellSets.hierarchy.length:', cellSets.hierarchy.length);
+    console.log('downsampledCellOrder.length:', downsampledCellOrder?.length);
+    console.log('matrix:', matrix);
+    console.log('matrix has expression data:', matrix?.geneExpression ? 'YES' : 'NO');
+    
     if (
       !selectedGenes?.length > 0
       || !cellSets.hierarchy.length > 0
       || !downsampledCellOrder?.length > 0
-    ) { return; }
+    ) {
+      console.log('Early return due to missing data');
+      return;
+    }
 
     // Selected genes is not contained in heatmap settings for the
     // data exploration marker heatmap, so must be passed spearatedly.
     // Trying to assign it to heatmapSettings will throw an error because
     // heatmapSettings is is frozen in redux by immer.
+    console.log('Calling generateVitessceData with matrix');
     const data = generateVitessceData(
       downsampledCellOrder,
       selectedTracks,
@@ -162,6 +173,7 @@ const HeatmapPlot = (props) => {
       cellSets,
     );
 
+    console.log('Setting heatmapData');
     setHeatmapData(data);
   }, [
     selectedGenes,
@@ -172,6 +184,7 @@ const HeatmapPlot = (props) => {
     cellSets.hierarchy,
     // For when tracks colors change
     cellSets.properties,
+    matrix,  // <-- ADD matrix to dependency array so effect re-runs when expression data arrives
   ]);
 
   useConditionalEffect(() => {
@@ -210,30 +223,33 @@ const HeatmapPlot = (props) => {
   ]);
 
   // Only fetch gene expression if selectedGenes, selectedCellSet, or selectedPoints change
-  useConditionalEffect(() => {
-    if (
-      !cellSets.accessible
-      || !louvainClustersResolution
-      || !heatmapSettings.groupedTracks
-      || !heatmapSettings.selectedCellSet
-      || !heatmapSettings.selectedPoints
-      || !selectedGenes?.length > 0
-    ) return;
+  useConditionalEffect(
+    () => {
+      if (
+        !cellSets.accessible
+        || !louvainClustersResolution
+        || !heatmapSettings.groupedTracks
+        || !heatmapSettings.selectedCellSet
+        || !heatmapSettings.selectedPoints
+        || !selectedGenes?.length > 0
+      ) { return; }
 
-    // Only fetch if selectedGenes, selectedCellSet, or selectedPoints changed
-    debouncedLoadDownsampledGeneExpression(
-      experimentId,
+      // Only fetch if selectedGenes, selectedCellSet, or selectedPoints changed
+      debouncedLoadDownsampledGeneExpression(
+        experimentId,
+        selectedGenes,
+        COMPONENT_TYPE,
+        true,
+      );
+    },
+    [
+      louvainClustersResolution,
+      cellSets.accessible,
+      heatmapSettings?.selectedCellSet,
+      heatmapSettings?.selectedPoints,
       selectedGenes,
-      COMPONENT_TYPE,
-      true,
-    );
-  }, [
-    louvainClustersResolution,
-    cellSets.accessible,
-    heatmapSettings?.selectedCellSet,
-    heatmapSettings?.selectedPoints,
-    selectedGenes,
-  ]);
+    ],
+  );
 
   // When groupedTracks changes, just recalculate cell order locally
   useConditionalEffect(() => {
@@ -301,12 +317,31 @@ const HeatmapPlot = (props) => {
 
 
   if (isHeatmapGenesLoading || !cellSets.accessible || !heatmapData) {
+    console.log('HeatmapPlot showing Loader');
+    console.log('isHeatmapGenesLoading:', isHeatmapGenesLoading);
+    console.log('cellSets.accessible:', cellSets.accessible);
+    console.log('heatmapData:', heatmapData);
     return (
       <center>
         <Loader experimentId={experimentId} />
       </center>
     );
   }
+
+  // Also check if the expression matrix has actual gene data loaded
+  if (!matrix?.geneIndexes || Object.keys(matrix.geneIndexes).length === 0) {
+    console.log('HeatmapPlot showing Loader - waiting for expression data');
+    console.log('matrix?.geneIndexes:', matrix?.geneIndexes);
+    console.log('Object.keys(matrix?.geneIndexes).length:', Object.keys(matrix?.geneIndexes || {}).length);
+    return (
+      <center>
+        <Loader experimentId={experimentId} />
+      </center>
+    );
+  }
+
+  console.log('HeatmapPlot rendering actual heatmap');
+  console.log('heatmapData.expressionMatrix.rows.length:', heatmapData.expressionMatrix.rows.length);
 
   if (heatmapData.expressionMatrix.rows.length === 0) {
     return (

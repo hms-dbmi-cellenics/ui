@@ -107,7 +107,7 @@ const waitForWorkRequest = async (
       // no further downloads are necessary, we just need to decompress and return it
       const decompressedData = await decompressUint8Array(Uint8Array.from(Buffer.from(res, 'base64')));
 
-      return resolve({ data: parseResult(decompressedData) });
+      return resolve({ data: await parseResult(decompressedData, request.body.name) });
     });
   });
 
