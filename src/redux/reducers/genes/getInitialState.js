@@ -17,6 +17,7 @@ const getInitialState = () => ({
     full: {
       loading: [],
       error: false,
+      ETag: null,
       matrix: new ExpressionMatrix(),
     },
     downsampled: {

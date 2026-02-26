@@ -57,8 +57,10 @@ const MarkerHeatmap = ({ experimentId }) => {
   const configIsLoaded = useSelector((state) => !_.isNil(state.componentConfig[plotUuid]));
 
   const {
-    error, loading, matrix, cellOrder,
-  } = useSelector((state) => state.genes.expression.downsampled);
+    error, loading, matrix,
+  } = useSelector((state) => state.genes.expression.full);
+
+  const cellOrder = useSelector((state) => state.genes.expression.downsampled.cellOrder);
 
   const cellSets = useSelector(getCellSets());
   const { hierarchy } = cellSets;

@@ -1,11 +1,13 @@
 import { initialViewState } from 'redux/reducers/genes/getInitialState';
 
 const downsampledGenesLoaded = (state, action) => {
-  const { componentUuid, genes, newGenes = undefined } = action.payload;
+  const { componentUuid, genes, ETag, newGenes = undefined } = action.payload;
 
   let cellOrderToStore = state.expression.downsampled.cellOrder;
 
-  // If there's any data to store, load it
+  // If there's any data to store, load it into the full matrix
+  // Use setGeneExpression to completely replace (not append) since the heatmap
+  // needs all genes together in one matrix for proper downsampling
   if (newGenes) {
     const {
       orderedGeneNames,
@@ -13,7 +15,8 @@ const downsampledGenesLoaded = (state, action) => {
       stats,
       cellOrder,
     } = newGenes;
-    state.expression.downsampled.matrix.setGeneExpression(
+
+    state.expression.full.matrix.setGeneExpression(
       orderedGeneNames,
       rawExpression,
       stats,
@@ -42,6 +45,12 @@ const downsampledGenesLoaded = (state, action) => {
         loading: [],
         error: false,
         cellOrder: cellOrderToStore,
+      },
+      full: {
+        ...state.expression.full,
+        loading: [],
+        error: false,
+        ETag,
       },
     },
   };

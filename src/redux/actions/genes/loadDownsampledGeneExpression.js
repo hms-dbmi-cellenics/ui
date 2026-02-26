@@ -1,3 +1,4 @@
+import _ from 'lodash';
 import { SparseMatrix } from 'mathjs';
 
 import {
@@ -10,7 +11,8 @@ import fetchWork from 'utils/work/fetchWork';
 import getTimeoutForWorkerTask from 'utils/getTimeoutForWorkerTask';
 import getHeatmapCellOrder from 'utils/work/getHeatmapCellOrder';
 
-// Debounce so that we only fetch once the settings are done being set up
+// Fetch gene expression for the heatmap using the full cell matrix
+// The heatmap will downsample on-the-fly using this full matrix
 const loadDownsampledGeneExpression = (
   experimentId,
   genes,
@@ -49,24 +51,30 @@ const loadDownsampledGeneExpression = (
     cellSetData,
   );
 
-  // Send request to worker for full expression matrix (no downsampling in worker)
-  // Include downsampleSettings for API validation (not used by worker anymore)
+  // Send request to worker for full expression matrix
+  // The heatmap needs a complete set of genes to render correctly,
+  // so we request all genes without deduplication
   const body = {
     name: 'GeneExpression',
     genes,
     downsampled: false,
-    downsampleSettings: {
-      selectedCellSet: selectedCellSetKey,
-      groupedTracks,
-      selectedPoints,
-      hiddenCellSets,
-    },
   };
 
   const timeout = getTimeoutForWorkerTask(getState(), 'GeneExpression');
 
   try {
     let requestETag = null;
+
+    // Dispatch loading state.
+    dispatch({
+      type: DOWNSAMPLED_GENES_EXPRESSION_LOADING,
+      payload: {
+        experimentId,
+        componentUuid,
+        genes,
+        ETag: null,
+      },
+    });
 
     const {
       orderedGeneNames,
@@ -78,24 +86,14 @@ const loadDownsampledGeneExpression = (
         timeout,
         onETagGenerated: (ETag) => {
           requestETag = ETag;
-
-          // Dispatch loading state.
-          dispatch({
-            type: DOWNSAMPLED_GENES_EXPRESSION_LOADING,
-            payload: {
-              experimentId,
-              componentUuid,
-              genes,
-              ETag,
-            },
-          });
         },
       },
     );
 
-    // If the ETag is different, that means that a new request was sent in between
-    // So we don't need to handle this outdated result
-    if (getState().genes.expression.downsampled.ETag !== requestETag) {
+    // If we had a previous request with a different ETag, that means a newer request
+    // was sent while this one was in flight, so skip processing this stale response
+    const currentETag = getState().genes.expression.full.ETag;
+    if (currentETag !== null && currentETag !== requestETag) {
       return;
     }
 
@@ -106,6 +104,7 @@ const loadDownsampledGeneExpression = (
       payload: {
         componentUuid,
         genes,
+        ETag: requestETag,
         newGenes: {
           orderedGeneNames,
           stats,
@@ -114,6 +113,8 @@ const loadDownsampledGeneExpression = (
         },
       },
     });
+
+
   } catch (error) {
     dispatch({
       type: DOWNSAMPLED_GENES_EXPRESSION_ERROR,

@@ -7,9 +7,8 @@ import getInitialState, { initialViewState } from 'redux/reducers/genes/getIniti
 const downsampledGenesLoading = produce((draft, action) => {
   const { ETag, genes, componentUuid } = action.payload;
 
-  if (ETag) {
-    draft.expression.downsampled.ETag = ETag;
-  }
+  // Always update ETag, even if null (for deduplication logic)
+  draft.expression.full.ETag = ETag;
 
   if (genes) {
     draft.expression.downsampled.loading = _.union(

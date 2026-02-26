@@ -51,7 +51,7 @@ const HeatmapPlot = (props) => {
 
   const dispatch = useDispatch();
 
-  const loadingGenes = useSelector((state) => state.genes.expression.downsampled.loading);
+  const loadingGenes = useSelector((state) => state.genes.expression.full.loading);
   const downsampledCellOrder = useSelector(
     (state) => state.genes.expression.downsampled.cellOrder,
   );
@@ -73,7 +73,7 @@ const HeatmapPlot = (props) => {
 
   const {
     error: expressionDataError, matrix,
-  } = useSelector((state) => state.genes.expression.downsampled);
+  } = useSelector((state) => state.genes.expression.full);
 
   const {
     loading: markerGenesLoading, error: markerGenesLoadingError,
@@ -97,7 +97,7 @@ const HeatmapPlot = (props) => {
     return groupedCellClasses.map((cellClass) => cellClass.children).flat();
   }, _.isEqual);
 
-  const expressionMatrix = useSelector((state) => state.genes.expression.downsampled.matrix);
+  const expressionMatrix = useSelector((state) => state.genes.expression.full.matrix);
 
   const viewError = useSelector((state) => state.genes.expression.views[COMPONENT_TYPE]?.error);
 
@@ -150,10 +150,20 @@ const HeatmapPlot = (props) => {
       || !downsampledCellOrder?.length > 0
     ) { return; }
 
+    // Check that the expression data has actually been loaded into the matrix
+    // Just having geneIndexes isn't enough - we need the rawGeneExpressions data
+    const [cellCount, geneCount] = matrix?.rawGeneExpressions?.size?.() || [0, 0];
+    if (!geneCount || geneCount === 0) {
+      // Data not ready yet, wait for the expression values to be populated
+      return;
+    }
+
     // Selected genes is not contained in heatmap settings for the
     // data exploration marker heatmap, so must be passed spearatedly.
     // Trying to assign it to heatmapSettings will throw an error because
     // heatmapSettings is is frozen in redux by immer.
+
+
     const data = generateVitessceData(
       downsampledCellOrder,
       selectedTracks,
@@ -161,6 +171,8 @@ const HeatmapPlot = (props) => {
       selectedGenes,
       cellSets,
     );
+
+
 
     setHeatmapData(data);
   }, [
@@ -320,6 +332,8 @@ const HeatmapPlot = (props) => {
       </center>
     );
   }
+
+
 
   if (heatmapData.expressionMatrix.rows.length === 0) {
     return (

@@ -67,9 +67,10 @@ const loadMarkerGenes = (
       },
     );
 
-    // If the ETag is different, that means that a new request was sent in between
-    // So we don't need to handle this outdated result
-    if (getState().genes.expression.downsampled.ETag !== requestETag) {
+    // If we had a previous request with a different ETag, that means a newer request
+    // was sent while this one was in flight, so skip processing this stale response
+    const currentETag = getState().genes.expression.downsampled.ETag;
+    if (currentETag !== null && currentETag !== requestETag) {
       return;
     }
 
@@ -77,6 +78,7 @@ const loadMarkerGenes = (
       type: MARKER_GENES_LOADED,
       payload: {
         plotUuid,
+        ETag: requestETag,
         data: {
           orderedGeneNames,
           cellOrder,
