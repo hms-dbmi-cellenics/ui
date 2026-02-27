@@ -1,7 +1,9 @@
 import { initialViewState } from 'redux/reducers/genes/getInitialState';
 
 const downsampledGenesLoaded = (state, action) => {
-  const { componentUuid, genes, ETag, newGenes = undefined } = action.payload;
+  const {
+    componentUuid, genes, ETag, newGenes = undefined,
+  } = action.payload;
 
   let cellOrderToStore = state.expression.downsampled.cellOrder;
   let orderedGeneNamesToStore = state.expression.downsampled.orderedGeneNames;

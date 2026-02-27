@@ -51,8 +51,6 @@ const loadMarkerGenes = (
 
     const {
       orderedGeneNames,
-      rawExpression: rawExpressionJson,
-      stats,
     } = await fetchWork(
       experimentId,
       body,

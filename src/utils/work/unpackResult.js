@@ -1,7 +1,6 @@
 import { decompress } from 'fflate';
 import { isZstdCompressed } from './fzstdDecompress';
 
-
 const unpackResult = async (storageResp, taskName = null) => {
   if (taskName === 'DownloadAnnotSeuratObject' || taskName === 'GetNormalizedExpression') {
     const blob = await storageResp.blob();
@@ -13,7 +12,6 @@ const unpackResult = async (storageResp, taskName = null) => {
   const decompressed = await decompressUint8Array(uint8);
   return decompressed;
 };
-
 
 const decompressUint8Array = async (array) => {
   if (isZstdCompressed(array)) {

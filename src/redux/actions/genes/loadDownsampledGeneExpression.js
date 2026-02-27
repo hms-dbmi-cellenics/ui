@@ -46,10 +46,10 @@ const loadHeatmapGeneExpression = (
 
   const state = getState();
   const { matrix } = state.genes.expression.full;
-  
+
   // Check if all genes are already loaded
-  const { genesToLoad, genesAlreadyLoaded } = findLoadedGenes(matrix, genes);
-  
+  const { genesToLoad } = findLoadedGenes(matrix, genes);
+
   // Compute cell order upfront
   const {
     groupedTracks,
@@ -66,7 +66,7 @@ const loadHeatmapGeneExpression = (
     hiddenCellSets,
     cellSetData,
   );
-  
+
   // If all genes are already loaded, just update the UI without fetching
   if (genesToLoad.length === 0) {
     // Dispatch that genes are loaded with existing data

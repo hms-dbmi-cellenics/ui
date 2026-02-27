@@ -6,27 +6,19 @@ const generateVitessceData = (
   cellOrder, selectedTracks,
   expressionMatrix, selectedGenes, cellSets,
 ) => {
-
-
   // filter out hidden cells
   const hiddenCells = union([...cellSets.hidden], cellSets.properties);
   const cellOrderFiltered = cellOrder.filter((cell) => !hiddenCells.has(cell));
 
-
-
   const trackColorData = generateVitessceHeatmapTracksData(
     selectedTracks, cellSets, cellOrderFiltered,
   );
-
-
 
   const vitessceMatrix = generateVitessceHeatmapExpressionsMatrix(
     cellOrderFiltered,
     selectedGenes,
     expressionMatrix,
   );
-
-
 
   const metadataTracksLabels = selectedTracks
     .map((cellClassKey) => cellSets.properties[cellClassKey].name);
@@ -42,8 +34,6 @@ const generateVitessceData = (
       labels: metadataTracksLabels,
     },
   };
-
-
 
   return result;
 };

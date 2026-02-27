@@ -1,8 +1,4 @@
-// eslint-disable-next-line camelcase
-
-import { JSON_parse } from 'uint8array-json-parser';
 import { isZstdCompressed, zstdDecompress } from './fzstdDecompress';
-
 
 const resultParsers = {
   GetNormalizedExpression: (result) => result,

@@ -1,5 +1,5 @@
 const downsampledGenesUpdateGeneOrder = (state, action) => {
-  const { componentUuid, orderedGeneNames } = action.payload;
+  const { orderedGeneNames } = action.payload;
 
   return {
     ...state,

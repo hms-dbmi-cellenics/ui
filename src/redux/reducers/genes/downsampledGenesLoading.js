@@ -24,7 +24,7 @@ const downsampledGenesLoading = produce((draft, action) => {
 
   draft.expression.views[componentUuid].fetching = true;
   draft.expression.views[componentUuid].error = false;
-  
+
   // Update the view's data to reflect the genes being loaded
   // This ensures selectedGenes selector reflects the new genes immediately,
   // preventing re-triggers when the loaded action updates it to the same value
