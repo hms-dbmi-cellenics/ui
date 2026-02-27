@@ -33,6 +33,7 @@ exports[`genesReducer Deselecting all genes updates to empty list 1`] = `
       },
     },
     "full": {
+      "ETag": null,
       "error": false,
       "loading": [],
       "matrix": ExpressionMatrix {
@@ -109,6 +110,7 @@ exports[`genesReducer Deselecting non-selected genes is handled gracefully 1`] =
       },
     },
     "full": {
+      "ETag": null,
       "error": false,
       "loading": [],
       "matrix": ExpressionMatrix {
@@ -189,6 +191,7 @@ exports[`genesReducer Deselecting part of all genes updates list as set 1`] = `
       },
     },
     "full": {
+      "ETag": null,
       "error": false,
       "loading": [],
       "matrix": ExpressionMatrix {
@@ -268,6 +271,7 @@ exports[`genesReducer Error state handled appropriately 1`] = `
       },
     },
     "full": {
+      "ETag": null,
       "error": false,
       "loading": [],
       "matrix": ExpressionMatrix {
@@ -350,6 +354,7 @@ exports[`genesReducer Expression loaded state handled appropriately when other t
       },
     },
     "full": {
+      "ETag": null,
       "error": false,
       "loading": [
         "GENED",
@@ -474,6 +479,7 @@ exports[`genesReducer Loaded paginated state handled appropriately 1`] = `
       },
     },
     "full": {
+      "ETag": null,
       "error": false,
       "loading": [],
       "matrix": ExpressionMatrix {
@@ -571,6 +577,7 @@ exports[`genesReducer Loaded paginated state handled appropriately when other th
       },
     },
     "full": {
+      "ETag": null,
       "error": false,
       "loading": [],
       "matrix": ExpressionMatrix {
@@ -671,6 +678,7 @@ exports[`genesReducer Loading on error state causes error to reset 1`] = `
       },
     },
     "full": {
+      "ETag": null,
       "error": false,
       "loading": [],
       "matrix": ExpressionMatrix {
@@ -757,6 +765,7 @@ exports[`genesReducer Multiple components loading some of same expression trigge
     },
     "error": false,
     "full": {
+      "ETag": null,
       "error": false,
       "loading": [
         "a",
@@ -848,6 +857,7 @@ exports[`genesReducer Multiple components loading some of same property triggers
       },
     },
     "full": {
+      "ETag": null,
       "error": false,
       "loading": [],
       "matrix": ExpressionMatrix {
@@ -939,6 +949,7 @@ exports[`genesReducer Properties loading triggers appropriate changes 1`] = `
       },
     },
     "full": {
+      "ETag": null,
       "error": false,
       "loading": [],
       "matrix": ExpressionMatrix {
@@ -1024,6 +1035,7 @@ exports[`genesReducer Selected genes get added as a set to a non-empty list 1`] 
       },
     },
     "full": {
+      "ETag": null,
       "error": false,
       "loading": [],
       "matrix": ExpressionMatrix {
@@ -1104,6 +1116,7 @@ exports[`genesReducer Selected genes get added on empty list 1`] = `
       },
     },
     "full": {
+      "ETag": null,
       "error": false,
       "loading": [],
       "matrix": ExpressionMatrix {
@@ -1184,6 +1197,7 @@ exports[`genesReducer Sets error state on expression error action 1`] = `
       },
     },
     "full": {
+      "ETag": null,
       "error": "asd",
       "loading": [],
       "matrix": ExpressionMatrix {
@@ -1266,6 +1280,7 @@ exports[`genesReducer Sets loaded state on expression loading action 1`] = `
       },
     },
     "full": {
+      "ETag": null,
       "error": false,
       "loading": [],
       "matrix": ExpressionMatrix {
@@ -1377,6 +1392,7 @@ exports[`genesReducer Sets loading state on expression loading action 1`] = `
     },
     "error": false,
     "full": {
+      "ETag": null,
       "error": false,
       "loading": [
         "A",

@@ -25,7 +25,6 @@ const getInitialState = () => ({
       error: false,
       matrix: new ExpressionMatrix(),
       cellOrder: [],
-      orderedGeneNames: [],
       ETag: null,
     },
   },

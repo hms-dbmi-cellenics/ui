@@ -6,7 +6,6 @@ const downsampledGenesLoaded = (state, action) => {
   } = action.payload;
 
   let cellOrderToStore = state.expression.downsampled.cellOrder;
-  let orderedGeneNamesToStore = state.expression.downsampled.orderedGeneNames;
 
   // If there's any data to store, load it into the full matrix
   // Use pushGeneExpression to append genes (don't replace), in case there's already data
@@ -25,11 +24,6 @@ const downsampledGenesLoaded = (state, action) => {
         rawExpression,
         stats,
       );
-    }
-
-    // Always update orderedGeneNames if provided (even if rawExpression is null)
-    if (orderedGeneNames) {
-      orderedGeneNamesToStore = orderedGeneNames;
     }
 
     // Always update cellOrder if provided
@@ -58,7 +52,6 @@ const downsampledGenesLoaded = (state, action) => {
         loading: [],
         error: false,
         cellOrder: cellOrderToStore,
-        orderedGeneNames: orderedGeneNamesToStore,
       },
       full: {
         ...state.expression.full,

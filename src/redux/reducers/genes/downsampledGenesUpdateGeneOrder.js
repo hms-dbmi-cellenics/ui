@@ -1,16 +1,5 @@
-const downsampledGenesUpdateGeneOrder = (state, action) => {
-  const { orderedGeneNames } = action.payload;
-
-  return {
-    ...state,
-    expression: {
-      ...state.expression,
-      downsampled: {
-        ...state.expression.downsampled,
-        orderedGeneNames,
-      },
-    },
-  };
-};
+// Gene order is now stored in expression.views[componentUuid].data
+// This reducer is kept for backwards compatibility but doesn't modify state
+const downsampledGenesUpdateGeneOrder = (state) => state;
 
 export default downsampledGenesUpdateGeneOrder;
