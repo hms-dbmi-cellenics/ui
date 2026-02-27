@@ -222,6 +222,7 @@ const MarkerHeatmap = ({ experimentId }) => {
       || !loading
       || loading.includes(plotUuid) // Don't render while expression data is loading
       || !hierarchy?.length
+      || error
       || markerGenesLoadingError
       || markerGenesLoading
       || config?.selectedGenes === null
@@ -254,7 +255,7 @@ const MarkerHeatmap = ({ experimentId }) => {
     spec.marks.push(extraMarks);
 
     setVegaSpec(spec);
-  }, [config, cellOrder]);
+  }, [config, cellOrder, error]);
 
   useEffect(() => {
     dispatch(loadGeneList(experimentId));
