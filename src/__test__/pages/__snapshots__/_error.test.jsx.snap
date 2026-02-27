@@ -139,6 +139,7 @@ exports[`ErrorPage Should post error to Slack if environment is production 1`] =
           },
         },
         "full": {
+          "ETag": null,
           "error": false,
           "loading": [],
           "matrix": ExpressionMatrix {
@@ -357,6 +358,7 @@ exports[`ErrorPage Should post error to Slack if environment is staging 1`] = `
           },
         },
         "full": {
+          "ETag": null,
           "error": false,
           "loading": [],
           "matrix": ExpressionMatrix {
