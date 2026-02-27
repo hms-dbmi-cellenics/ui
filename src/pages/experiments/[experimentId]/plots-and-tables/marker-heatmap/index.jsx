@@ -60,6 +60,8 @@ const MarkerHeatmap = ({ experimentId }) => {
     error, loading, matrix,
   } = useSelector((state) => state.genes.expression.full);
 
+  const { error: downsampledError } = useSelector((state) => state.genes.expression.downsampled);
+
   const cellOrder = useSelector((state) => state.genes.expression.downsampled.cellOrder);
 
   const cellSets = useSelector(getCellSets());
@@ -222,7 +224,7 @@ const MarkerHeatmap = ({ experimentId }) => {
       || !loading
       || loading.includes(plotUuid) // Don't render while expression data is loading
       || !hierarchy?.length
-      || error
+      || downsampledError
       || markerGenesLoadingError
       || markerGenesLoading
       || config?.selectedGenes === null
@@ -255,7 +257,7 @@ const MarkerHeatmap = ({ experimentId }) => {
     spec.marks.push(extraMarks);
 
     setVegaSpec(spec);
-  }, [config, cellOrder, error]);
+  }, [config, cellOrder, downsampledError]);
 
   useEffect(() => {
     dispatch(loadGeneList(experimentId));
@@ -469,6 +471,20 @@ const MarkerHeatmap = ({ experimentId }) => {
         <PlatformError
           description='Could not load gene expression data.'
           error={error}
+          onClick={() => {
+            dispatch(
+              loadDownsampledGeneExpression(experimentId, config.selectedGenes, plotUuid),
+            );
+          }}
+        />
+      );
+    }
+
+    if (downsampledError) {
+      return (
+        <PlatformError
+          description='Could not load gene expression data.'
+          error={downsampledError}
           onClick={() => {
             dispatch(
               loadDownsampledGeneExpression(experimentId, config.selectedGenes, plotUuid),
