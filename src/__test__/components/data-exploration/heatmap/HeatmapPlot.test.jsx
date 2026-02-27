@@ -10,6 +10,7 @@ import { Provider } from 'react-redux';
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 
 import markerGenesData5 from '__test__/data/marker_genes_5.json';
+import markerGenesWithExpression from '__test__/data/marker_genes_5_and_FAKE_gene.json';
 import cellSetsData from '__test__/data/cell_sets.json';
 
 import { makeStore } from 'redux/store';
@@ -49,7 +50,15 @@ jest.mock('lodash/sampleSize', () => ({
 enableFetchMocks();
 
 const mockWorkerResponses = {
-  MarkerHeatmap: markerGenesData5,
+  MarkerHeatmap: () => ({ 
+    orderedGeneNames: markerGenesData5.orderedGeneNames.slice(0, 5), 
+    cellOrder: markerGenesData5.cellOrder 
+  }),
+  GeneExpression: () => ({
+    orderedGeneNames: markerGenesWithExpression.orderedGeneNames.slice(0, 5),
+    rawExpression: markerGenesWithExpression.rawExpression,
+    stats: markerGenesWithExpression.stats,
+  }),
 };
 
 const loadAndRenderDefaultHeatmap = async (storeState) => {
@@ -91,7 +100,10 @@ describe('HeatmapPlot', () => {
 
     fetchWork
       .mockReset()
-      .mockImplementation((_experimentId, body) => mockWorkerResponses[body.name]);
+      .mockImplementation((_experimentId, body) => {
+        const response = mockWorkerResponses[body.name];
+        return typeof response === 'function' ? response() : response;
+      });
 
     vitesscePropsSpy = null;
 
@@ -104,7 +116,9 @@ describe('HeatmapPlot', () => {
   it('Renders the heatmap component by default if everything loads', async () => {
     await loadAndRenderDefaultHeatmap(storeState);
 
-    expect(screen.getByText(/Sup Im a heatmap/i)).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByText(/Sup Im a heatmap/i)).toBeInTheDocument();
+    });
 
     // Renders correct cells and genes
     expect(vitesscePropsSpy.uint8ObsFeatureMatrix).toMatchSnapshot();
@@ -267,7 +281,9 @@ describe('HeatmapPlot', () => {
   it('Responds correctly to vitessce Heatmap callbacks', async () => {
     await loadAndRenderDefaultHeatmap(storeState);
 
-    expect(screen.getByText(/Sup Im a heatmap/i)).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByText(/Sup Im a heatmap/i)).toBeInTheDocument();
+    });
 
     // Renders the correct genes and cells
     expect(vitesscePropsSpy.uint8ObsFeatureMatrix).toMatchSnapshot();

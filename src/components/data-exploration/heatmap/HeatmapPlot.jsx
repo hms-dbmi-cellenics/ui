@@ -147,9 +147,9 @@ const HeatmapPlot = (props) => {
 
   useConditionalEffect(() => {
     if (
-      !selectedGenes?.length > 0
+      !selectedGenes?.length
       || !cellSets.hierarchy.length > 0
-      || !downsampledCellOrder?.length > 0
+      || !downsampledCellOrder?.length
     ) { return; }
 
     // Check that the expression data has actually been loaded into the matrix
@@ -233,7 +233,7 @@ const HeatmapPlot = (props) => {
         || !heatmapSettings.groupedTracks
         || !heatmapSettings.selectedCellSet
         || !heatmapSettings.selectedPoints
-        || !selectedGenes?.length > 0
+        || !selectedGenes?.length
         || fetchingGenes
       ) { return; }
 

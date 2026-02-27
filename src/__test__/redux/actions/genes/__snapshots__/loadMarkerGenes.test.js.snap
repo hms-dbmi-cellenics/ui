@@ -25,41 +25,12 @@ exports[`loadMarkerGenes action dispatches appropriately on success 1`] = `
     "ETag": "new-etag",
   },
   {
+    "ETag": "new-etag",
     "data": {
-      "cellOrder": [
-        0,
-      ],
+      "cellOrder": [],
       "orderedGeneNames": [
         "geneA",
       ],
-      "rawExpression": {
-        "datatype": undefined,
-        "index": [],
-        "mathjs": "SparseMatrix",
-        "ptr": [
-          0,
-          0,
-        ],
-        "size": [
-          1,
-          1,
-        ],
-        "values": [],
-      },
-      "stats": {
-        "rawMean": [
-          1,
-        ],
-        "rawStdev": [
-          0,
-        ],
-        "truncatedMax": [
-          1,
-        ],
-        "truncatedMin": [
-          1,
-        ],
-      },
     },
     "plotUuid": "interactiveHeatmap",
   },

@@ -202,6 +202,7 @@ exports[`switch experiment  Then updates the experiment info 1`] = `
         },
       },
       "full": {
+        "ETag": null,
         "error": false,
         "loading": [],
         "matrix": ExpressionMatrix {
@@ -581,6 +582,7 @@ exports[`switch experiment  switches the experiment to its initial values 1`] = 
         },
       },
       "full": {
+        "ETag": null,
         "error": false,
         "loading": [],
         "matrix": ExpressionMatrix {
