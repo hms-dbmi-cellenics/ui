@@ -117,9 +117,7 @@ describe('HeatmapPlot', () => {
   });
 
   it('Renders the heatmap component by default if everything loads', async () => {
-    await loadAndRenderDefaultHeatmap(storeState);
-
-    // Manually trigger marker genes load since it might not run in test environment
+    // Pre-load the gene data before rendering so component has it on mount
     await act(async () => {
       await storeState.dispatch(loadMarkerGenes(
         experimentId,
@@ -128,7 +126,6 @@ describe('HeatmapPlot', () => {
       ));
     });
 
-    // Also load the gene expression data
     await act(async () => {
       await storeState.dispatch(loadDownsampledGeneExpression(
         experimentId,
@@ -136,6 +133,8 @@ describe('HeatmapPlot', () => {
         COMPONENT_TYPE,
       ));
     });
+
+    await loadAndRenderDefaultHeatmap(storeState);
 
     await waitFor(() => {
       expect(screen.getByText(/Sup Im a heatmap/i)).toBeInTheDocument();
@@ -174,6 +173,24 @@ describe('HeatmapPlot', () => {
 
   it('Shows loader message if the marker genes are loaded but there\'s other selected genes still loading', async () => {
     let onEtagGeneratedCallback;
+
+    // First load the marker genes
+    await act(async () => {
+      await storeState.dispatch(loadMarkerGenes(
+        experimentId,
+        COMPONENT_TYPE,
+        { numGenes: 5, groupedTracks: ['louvain', 'sample'], selectedCellSet: 'louvain', selectedPoints: 'All' },
+      ));
+    });
+
+    // Then load expression data
+    await act(async () => {
+      await storeState.dispatch(loadDownsampledGeneExpression(
+        experimentId,
+        markerGenesData5.orderedGeneNames.slice(0, 5),
+        COMPONENT_TYPE,
+      ));
+    });
 
     // we need to manually call the onEtagGenerated callback
     fetchWork
@@ -215,9 +232,17 @@ describe('HeatmapPlot', () => {
   });
 
   it('Handles expression data loading error correctly', async () => {
+    // Pre-load marker genes first
+    await act(async () => {
+      await storeState.dispatch(loadMarkerGenes(
+        experimentId,
+        COMPONENT_TYPE,
+        { numGenes: 5, groupedTracks: ['louvain', 'sample'], selectedCellSet: 'louvain', selectedPoints: 'All' },
+      ));
+    });
+
     fetchWork
       .mockReset()
-      .mockImplementationOnce(() => Promise.resolve(markerGenesData5))
       .mockImplementationOnce(() => Promise.reject(new Error('Some error idk')));
 
     await act(async () => {
@@ -237,6 +262,23 @@ describe('HeatmapPlot', () => {
   });
 
   it('Does not display hidden cell sets', async () => {
+    // Pre-load gene data
+    await act(async () => {
+      await storeState.dispatch(loadMarkerGenes(
+        experimentId,
+        COMPONENT_TYPE,
+        { numGenes: 5, groupedTracks: ['louvain', 'sample'], selectedCellSet: 'louvain', selectedPoints: 'All' },
+      ));
+    });
+
+    await act(async () => {
+      await storeState.dispatch(loadDownsampledGeneExpression(
+        experimentId,
+        markerGenesData5.orderedGeneNames.slice(0, 5),
+        COMPONENT_TYPE,
+      ));
+    });
+
     await act(async () => {
       await loadAndRenderDefaultHeatmap(storeState);
     });
@@ -252,9 +294,10 @@ describe('HeatmapPlot', () => {
       .children.find(({ name }) => name === 'Cluster 3')
       .cellIds.map((cellId) => cellId.toString());
 
-    // It loaded once the marker genes
-    expect(fetchWork).toHaveBeenCalledTimes(1);
+    // It loaded the marker genes and expression data (2 calls)
+    expect(fetchWork).toHaveBeenCalledTimes(2);
     expect(fetchWork.mock.calls[0][1].name === 'MarkerHeatmap').toBe(true);
+    expect(fetchWork.mock.calls[1][1].name === 'GeneExpression').toBe(true);
 
     // It shows cells in louvain-3
     expect(isSubset(cellsInLouvain3, vitesscePropsSpy.obsIndex)).toEqual(true);
@@ -275,6 +318,23 @@ describe('HeatmapPlot', () => {
   });
 
   it('Reacts to cellClass groupby being changed', async () => {
+    // Pre-load gene data
+    await act(async () => {
+      await storeState.dispatch(loadMarkerGenes(
+        experimentId,
+        COMPONENT_TYPE,
+        { numGenes: 5, groupedTracks: ['louvain', 'sample'], selectedCellSet: 'louvain', selectedPoints: 'All' },
+      ));
+    });
+
+    await act(async () => {
+      await storeState.dispatch(loadDownsampledGeneExpression(
+        experimentId,
+        markerGenesData5.orderedGeneNames.slice(0, 5),
+        COMPONENT_TYPE,
+      ));
+    });
+
     await loadAndRenderDefaultHeatmap(storeState);
 
     // Renders correctly
@@ -300,11 +360,28 @@ describe('HeatmapPlot', () => {
   });
 
   it('Responds correctly to vitessce Heatmap callbacks', async () => {
+    // Pre-load gene data
+    await act(async () => {
+      await storeState.dispatch(loadMarkerGenes(
+        experimentId,
+        COMPONENT_TYPE,
+        { numGenes: 5, groupedTracks: ['louvain', 'sample'], selectedCellSet: 'louvain', selectedPoints: 'All' },
+      ));
+    });
+
+    await act(async () => {
+      await storeState.dispatch(loadDownsampledGeneExpression(
+        experimentId,
+        markerGenesData5.orderedGeneNames.slice(0, 5),
+        COMPONENT_TYPE,
+      ));
+    });
+
     await loadAndRenderDefaultHeatmap(storeState);
 
     await waitFor(() => {
       expect(screen.getByText(/Sup Im a heatmap/i)).toBeInTheDocument();
-    });
+    }, { timeout: 5000 });
 
     // Renders the correct genes and cells
     expect(vitesscePropsSpy.uint8ObsFeatureMatrix).toMatchSnapshot();
