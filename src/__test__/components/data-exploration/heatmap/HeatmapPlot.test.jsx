@@ -82,15 +82,12 @@ let storeState = null;
 describe('HeatmapPlot', () => {
   beforeAll(async () => {
     await preloadAll();
-    jest.useFakeTimers();
   });
 
   afterAll(() => {
-    jest.useRealTimers();
   });
 
   beforeEach(async () => {
-    jest.runAllTimers();
     jest.clearAllMocks();
 
     fetchMock.resetMocks();
@@ -102,7 +99,8 @@ describe('HeatmapPlot', () => {
       .mockReset()
       .mockImplementation((_experimentId, body) => {
         const response = mockWorkerResponses[body.name];
-        return typeof response === 'function' ? response() : response;
+        const result = typeof response === 'function' ? response() : response;
+        return Promise.resolve(result);
       });
 
     vitesscePropsSpy = null;
@@ -157,7 +155,7 @@ describe('HeatmapPlot', () => {
     // we need to manually call the onEtagGenerated callback
     fetchWork
       .mockReset()
-      .mockImplementationOnce(() => markerGenesData5)
+      .mockImplementationOnce(() => Promise.resolve(markerGenesData5))
       .mockImplementationOnce((_experimentId, _body, _getState, _dispatch,
         { onETagGenerated }) => {
         onEtagGeneratedCallback = onETagGenerated;
@@ -196,7 +194,7 @@ describe('HeatmapPlot', () => {
   it('Handles expression data loading error correctly', async () => {
     fetchWork
       .mockReset()
-      .mockImplementationOnce(() => markerGenesData5)
+      .mockImplementationOnce(() => Promise.resolve(markerGenesData5))
       .mockImplementationOnce(() => Promise.reject(new Error('Some error idk')));
 
     await act(async () => {
