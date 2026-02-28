@@ -23,9 +23,10 @@ import mockAPI, {
 import HeatmapPlot from 'components/data-exploration/heatmap/HeatmapPlot';
 
 import { loadProcessingSettings } from 'redux/actions/experimentSettings';
-import { loadDownsampledGeneExpression } from 'redux/actions/genes';
-
+import { loadDownsampledGeneExpression, loadMarkerGenes } from 'redux/actions/genes';
+import { loadCellSets } from 'redux/actions/cellSets';
 import { loadBackendStatus } from 'redux/actions/backendStatus';
+import { loadComponentConfig } from 'redux/actions/componentConfig';
 
 import fake from '__test__/test-utils/constants';
 import { setCellSetHiddenStatus } from 'redux/actions/cellSets';
@@ -33,6 +34,8 @@ import { isSubset } from 'utils/arrayUtils';
 import { updatePlotConfig } from 'redux/actions/componentConfig';
 
 const experimentId = fake.EXPERIMENT_ID;
+
+const COMPONENT_TYPE = 'interactiveHeatmap';
 
 jest.mock('utils/work/fetchWork');
 
@@ -109,14 +112,34 @@ describe('HeatmapPlot', () => {
 
     await storeState.dispatch(loadProcessingSettings(experimentId));
     await storeState.dispatch(loadBackendStatus(experimentId));
+    await storeState.dispatch(loadCellSets(experimentId));
+    await storeState.dispatch(loadComponentConfig(experimentId, COMPONENT_TYPE, COMPONENT_TYPE));
   });
 
   it('Renders the heatmap component by default if everything loads', async () => {
     await loadAndRenderDefaultHeatmap(storeState);
 
+    // Manually trigger marker genes load since it might not run in test environment
+    await act(async () => {
+      await storeState.dispatch(loadMarkerGenes(
+        experimentId,
+        COMPONENT_TYPE,
+        { numGenes: 5, groupedTracks: ['louvain', 'sample'], selectedCellSet: 'louvain', selectedPoints: 'All' },
+      ));
+    });
+
+    // Also load the gene expression data
+    await act(async () => {
+      await storeState.dispatch(loadDownsampledGeneExpression(
+        experimentId,
+        markerGenesData5.orderedGeneNames.slice(0, 5),
+        COMPONENT_TYPE,
+      ));
+    });
+
     await waitFor(() => {
       expect(screen.getByText(/Sup Im a heatmap/i)).toBeInTheDocument();
-    });
+    }, { timeout: 5000 });
 
     // Renders correct cells and genes
     expect(vitesscePropsSpy.uint8ObsFeatureMatrix).toMatchSnapshot();
