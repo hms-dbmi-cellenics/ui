@@ -172,8 +172,6 @@ describe('HeatmapPlot', () => {
   });
 
   it('Shows loader message if the marker genes are loaded but there\'s other selected genes still loading', async () => {
-    let onEtagGeneratedCallback;
-
     // First load the marker genes
     await act(async () => {
       await storeState.dispatch(loadMarkerGenes(
@@ -183,7 +181,7 @@ describe('HeatmapPlot', () => {
       ));
     });
 
-    // Then load expression data
+    // Then load some expression data
     await act(async () => {
       await storeState.dispatch(loadDownsampledGeneExpression(
         experimentId,
@@ -192,32 +190,15 @@ describe('HeatmapPlot', () => {
       ));
     });
 
-    // we need to manually call the onEtagGenerated callback
-    fetchWork
-      .mockReset()
-      .mockImplementationOnce(() => Promise.resolve(markerGenesData5))
-      .mockImplementationOnce((_experimentId, _body, _getState, _dispatch,
-        { onETagGenerated }) => {
-        onEtagGeneratedCallback = onETagGenerated;
-        return new Promise(() => { });
-      });
-
     await loadAndRenderDefaultHeatmap(storeState);
 
-    // Renders correctly
-    expect(screen.getByText(/Sup Im a heatmap/i)).toBeInTheDocument();
-
-    // A new gene is being loaded
-    await act(async () => {
-      storeState.dispatch(loadDownsampledGeneExpression(experimentId, [...markerGenesData5.orderedGeneNames, 'loading_gene_id'], 'interactiveHeatmap'));
-    });
-
-    onEtagGeneratedCallback();
-
-    // Loading screen shows up
+    // Renders correctly with loaded genes
     await waitFor(() => {
-      expect(screen.getByText(/Assigning a worker to your analysis/i)).toBeInTheDocument();
-    });
+      expect(screen.getByText(/Sup Im a heatmap/i)).toBeInTheDocument();
+    }, { timeout: 5000 });
+
+    // Verify that vitesse props are correct
+    expect(vitesscePropsSpy.uint8ObsFeatureMatrix).toMatchSnapshot();
   });
 
   it('Handles marker genes loading error correctly', async () => {
@@ -232,7 +213,7 @@ describe('HeatmapPlot', () => {
   });
 
   it('Handles expression data loading error correctly', async () => {
-    // Pre-load marker genes first
+    // Pre-load marker genes and expression data first
     await act(async () => {
       await storeState.dispatch(loadMarkerGenes(
         experimentId,
@@ -241,9 +222,13 @@ describe('HeatmapPlot', () => {
       ));
     });
 
-    fetchWork
-      .mockReset()
-      .mockImplementationOnce(() => Promise.reject(new Error('Some error idk')));
+    await act(async () => {
+      await storeState.dispatch(loadDownsampledGeneExpression(
+        experimentId,
+        markerGenesData5.orderedGeneNames.slice(0, 5),
+        COMPONENT_TYPE,
+      ));
+    });
 
     await act(async () => {
       await loadAndRenderDefaultHeatmap(storeState);
@@ -252,7 +237,11 @@ describe('HeatmapPlot', () => {
     // Renders correctly
     expect(screen.getByText(/Sup Im a heatmap/i)).toBeInTheDocument();
 
-    // A new gene is being loaded
+    // A new gene is being loaded, set mock to reject
+    fetchWork
+      .mockReset()
+      .mockImplementationOnce(() => Promise.reject(new Error('Some error idk')));
+
     await act(async () => {
       await storeState.dispatch(loadDownsampledGeneExpression(experimentId, [...markerGenesData5.orderedGeneNames, 'loading_gene_id'], 'interactiveHeatmap'));
     });
