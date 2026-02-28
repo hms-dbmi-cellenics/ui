@@ -165,7 +165,8 @@ const HeatmapPlot = (props) => {
     // Trying to assign it to heatmapSettings will throw an error because
     // heatmapSettings is is frozen in redux by immer.
 
-
+    console.time('[VitessceHeatmap] generateVitessceData');
+    console.log('[VitessceHeatmap] Rendering with', downsampledCellOrder.length, 'cells,', cellSets.hidden.size, 'hidden');
     const data = generateVitessceData(
       downsampledCellOrder,
       selectedTracks,
@@ -173,8 +174,7 @@ const HeatmapPlot = (props) => {
       selectedGenes,
       cellSets,
     );
-
-
+    console.timeEnd('[VitessceHeatmap] generateVitessceData');
 
     setHeatmapData(data);
   }, [
@@ -273,6 +273,7 @@ const HeatmapPlot = (props) => {
       || !heatmapSettings?.selectedCellSet
     ) return;
 
+    console.log('[VitessceHeatmap] Hidden cell sets changed, triggering updateDownsampledCellOrder');
     dispatch(updateDownsampledCellOrder(COMPONENT_TYPE));
   }, [cellSets.hidden]);
 

@@ -162,15 +162,9 @@ const MarkerHeatmap = ({ experimentId }) => {
         },
       ));
     }
-  }, [
-    config?.nMarkerGenes,
-    JSON.stringify(config?.groupedTracks),
-    config?.selectedCellSet,
-    config?.selectedPoints,
-    config?.selectedGenes,
-  ]);
+  }, [config?.selectedGenes]);
 
-  // Only fetch gene expression if selectedGenes, selectedCellSet, or selectedPoints change
+  // Only fetch gene expression if selectedGenes change
   useConditionalEffect(() => {
     const expectedConditions = (
       louvainClustersResolution
@@ -188,13 +182,10 @@ const MarkerHeatmap = ({ experimentId }) => {
 
     dispatch(loadDownsampledGeneExpression(experimentId, config?.selectedGenes, plotUuid));
   }, [
-    config?.selectedCellSet,
-    config?.selectedPoints,
     config?.selectedGenes,
     hierarchy,
     cellSets.accessible,
     louvainClustersResolution,
-    groupedCellSets,
   ]);
 
   // When groupedTracks changes, just recalculate cell order locally
@@ -220,6 +211,13 @@ const MarkerHeatmap = ({ experimentId }) => {
 
     dispatch(updateDownsampledCellOrder(plotUuid));
   }, [cellSets.hidden]);
+
+  // When selectedCellSet, selectedPoints, or hidden cells change, recalculate cell order without fetching new data
+  useEffect(() => {
+    if (!config?.groupedTracks || !config?.selectedCellSet) return;
+
+    dispatch(updateDownsampledCellOrder(plotUuid));
+  }, [config?.selectedCellSet, config?.selectedPoints, cellSets.hidden]);
 
   // Clear vegaSpec when cellOrder is being updated to prevent showing stale heatmap
   useEffect(() => {

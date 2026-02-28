@@ -25,7 +25,10 @@ const getHeatmapCellOrder = (
   cellSets,
   maxCells = 1000,
 ) => {
+  console.time('[getHeatmapCellOrder] total');
+
   if (!cellSets || !cellSets.hierarchy || !cellSets.properties) {
+    console.timeEnd('[getHeatmapCellOrder] total');
     return [];
   }
 
@@ -58,28 +61,21 @@ const getHeatmapCellOrder = (
     }
 
     // Intersect with filtered_cell_ids (cells in louvain)
-    return new Set(
-      [...filteredCellIds].filter((id) => unfilteredCellIds.has(id)),
-    );
+    // Optimize: iterate through smaller set instead of spreading larger set
+    const intersection = new Set();
+    unfilteredCellIds.forEach((id) => {
+      if (filteredCellIds.has(id)) {
+        intersection.add(id);
+      }
+    });
+
+    return intersection;
   };
 
-  // Get all enabled (non-hidden, non-filtered) cells
+  // Get all enabled (non-hidden) cells
   const getAllEnabledCellIds = () => {
     // Get cells from the selected cell set
     let cellIds = getCells(selectedCellSet, true);
-
-    // If selectedPoints is not "All", further filter to that cell set
-    if (selectedPoints && selectedPoints !== 'All') {
-      // selectedPoints can be "All" or "root/child" format (e.g., "sample/sample-1")
-      // Extract the child key by splitting on '/'
-      const selectedPointsKey = selectedPoints.includes('/')
-        ? selectedPoints.split('/')[1]
-        : selectedPoints;
-
-      cellIds = new Set(
-        [...cellIds].filter((id) => getCells(selectedPointsKey).has(id)),
-      );
-    }
 
     // Remove hidden cells
     const hiddenArray = hiddenCellSets instanceof Set
@@ -118,6 +114,11 @@ const getHeatmapCellOrder = (
 
   // Perform cartesian product intersection for a single track
   const cartesianProductIntersection = (buckets, cellClass) => {
+    const startBuckets = buckets.length;
+    let totalCells = 0;
+    buckets.forEach((b) => { totalCells += b.size; });
+    console.log(`[getHeatmapCellOrder] cartesianProductIntersection input: ${startBuckets} buckets, ${totalCells} total cells`);
+
     const newBuckets = [];
 
     buckets.forEach((bucket) => {
@@ -151,6 +152,7 @@ const getHeatmapCellOrder = (
 
     // For each grouped track, split buckets by intersection
     groupedTracks.forEach((cellClass) => {
+      console.log(`[getHeatmapCellOrder] applying grouped track: ${cellClass}`);
       buckets = cartesianProductIntersection(buckets, cellClass);
     });
 
@@ -195,14 +197,16 @@ const getHeatmapCellOrder = (
   const enabledCellIds = getAllEnabledCellIds();
 
   if (groupedTracks.length === 0 || enabledCellIds.size === 0) {
+    console.timeEnd('[getHeatmapCellOrder] total');
     return [];
   }
 
-  const { buckets, totalSize } = splitByCartesianIntersections(
-    enabledCellIds,
-  );
+  const { buckets, totalSize } = splitByCartesianIntersections(enabledCellIds);
+  const result = downsample(buckets, totalSize);
 
-  return downsample(buckets, totalSize);
+  console.timeEnd('[getHeatmapCellOrder] total');
+
+  return result;
 };
 
 export default getHeatmapCellOrder;

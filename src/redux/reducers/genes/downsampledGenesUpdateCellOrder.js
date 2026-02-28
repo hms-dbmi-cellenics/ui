@@ -13,6 +13,7 @@ const downsampledGenesUpdateCellOrder = produce(
 
     // Only update cellOrder if it's provided in the payload
     if (cellOrder !== undefined && cellOrder !== null) {
+      console.log(`[downsampledGenesUpdateCellOrder] Updating cellOrder with ${cellOrder.length} cells`);
       // eslint-disable-next-line no-param-reassign
       draft.expression.downsampled.cellOrder = cellOrder;
     }
