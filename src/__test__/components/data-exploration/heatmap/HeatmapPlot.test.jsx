@@ -1,5 +1,6 @@
 import React from 'react';
 import preloadAll from 'jest-next-dynamic';
+import seedrandom from 'seedrandom';
 
 import { render, screen, waitFor } from '@testing-library/react';
 import { act } from 'react-dom/test-utils';
@@ -92,6 +93,10 @@ describe('HeatmapPlot', () => {
 
   beforeEach(async () => {
     jest.clearAllMocks();
+
+    // Use seeded random for deterministic tests
+    const rng = seedrandom('heatmap-test-seed');
+    jest.spyOn(Math, 'random').mockImplementation(() => rng());
 
     fetchMock.resetMocks();
     fetchMock.doMock();
