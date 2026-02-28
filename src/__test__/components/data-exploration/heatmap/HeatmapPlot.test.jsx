@@ -54,9 +54,9 @@ jest.mock('lodash/sampleSize', () => ({
 enableFetchMocks();
 
 const mockWorkerResponses = {
-  MarkerHeatmap: () => ({ 
-    orderedGeneNames: markerGenesData5.orderedGeneNames.slice(0, 5), 
-    cellOrder: markerGenesData5.cellOrder 
+  MarkerHeatmap: () => ({
+    orderedGeneNames: markerGenesData5.orderedGeneNames.slice(0, 5),
+    cellOrder: markerGenesData5.cellOrder
   }),
   GeneExpression: () => ({
     orderedGeneNames: markerGenesWithExpression.orderedGeneNames.slice(0, 5),

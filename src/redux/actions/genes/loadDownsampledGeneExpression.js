@@ -4,6 +4,7 @@ import {
   DOWNSAMPLED_GENES_EXPRESSION_LOADING,
   DOWNSAMPLED_GENES_EXPRESSION_ERROR,
   DOWNSAMPLED_GENES_EXPRESSION_LOADED,
+  DOWNSAMPLED_GENES_EXPRESSION_UPDATE_CELL_ORDER,
 } from 'redux/actionTypes/genes';
 
 import fetchWork from 'utils/work/fetchWork';
@@ -50,7 +51,58 @@ const loadHeatmapGeneExpression = (
   // Check if all genes are already loaded
   const { genesToLoad } = findLoadedGenes(matrix, genes);
 
-  // Compute cell order upfront
+  // If all genes are already loaded, just update the UI without fetching
+  if (genesToLoad.length === 0) {
+    // Get the current selectedPoints that we're computing cellOrder for
+    const { selectedPoints } = state.componentConfig[componentUuid]?.config || {};
+
+    // Signal that cellOrder is being recomputed (don't touch cellOrder so heatmap keeps old data)
+    dispatch({
+      type: DOWNSAMPLED_GENES_EXPRESSION_UPDATE_CELL_ORDER,
+      payload: {
+        componentUuid,
+        cellOrderUpdating: true,
+        cellOrderSelectedPoints: selectedPoints,
+      },
+    });
+
+    // Compute cellOrder asynchronously
+    // Use 500ms timeout to ensure browser finishes painting/closing dropdown before computation
+    setTimeout(() => {
+      const {
+        groupedTracks,
+        selectedCellSet: selectedCellSetKey,
+        selectedPoints: updatedSelectedPoints,
+      } = getState().componentConfig[componentUuid]?.config || {};
+
+      const hiddenCellSets = withHiddenCellSets ? Array.from(getState().cellSets.hidden) : [];
+      const cellSetData = getState().cellSets;
+      const cellOrder = getHeatmapCellOrder(
+        selectedCellSetKey,
+        groupedTracks,
+        updatedSelectedPoints,
+        hiddenCellSets,
+        cellSetData,
+      );
+
+      // Dispatch the computed cellOrder with updating flag cleared
+      if (cellOrder.length > 0) {
+        dispatch({
+          type: DOWNSAMPLED_GENES_EXPRESSION_UPDATE_CELL_ORDER,
+          payload: {
+            componentUuid,
+            cellOrder,
+            cellOrderUpdating: false,
+            cellOrderSelectedPoints: updatedSelectedPoints,
+          },
+        });
+      }
+    }, 500);
+
+    return;
+  }
+
+  // Compute cellOrder for new gene fetches
   const {
     groupedTracks,
     selectedCellSet: selectedCellSetKey,
@@ -66,27 +118,6 @@ const loadHeatmapGeneExpression = (
     hiddenCellSets,
     cellSetData,
   );
-
-  // If all genes are already loaded, just update the UI without fetching
-  if (genesToLoad.length === 0) {
-    // Dispatch that genes are loaded with existing data
-    // Don't include cellOrder - it shouldn't change if genes are already cached
-    dispatch({
-      type: DOWNSAMPLED_GENES_EXPRESSION_LOADED,
-      payload: {
-        componentUuid,
-        genes,
-        ETag: state.genes.expression.full.ETag,
-        newGenes: {
-          orderedGeneNames: genes,
-          stats: {},
-          rawExpression: null,
-        },
-      },
-    });
-
-    return;
-  }
 
   // Dispatch loading state for heatmap (only if we need to fetch)
   dispatch({

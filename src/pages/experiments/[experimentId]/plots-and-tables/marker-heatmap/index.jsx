@@ -64,6 +64,10 @@ const MarkerHeatmap = ({ experimentId }) => {
 
   const cellOrder = useSelector((state) => state.genes.expression.downsampled.cellOrder);
 
+  const cellOrderUpdating = useSelector((state) => state.genes.expression.downsampled.cellOrderUpdating);
+
+  const cellOrderSelectedPoints = useSelector((state) => state.genes.expression.downsampled.cellOrderSelectedPoints);
+
   const cellSets = useSelector(getCellSets());
   const { hierarchy } = cellSets;
 
@@ -217,12 +221,20 @@ const MarkerHeatmap = ({ experimentId }) => {
     dispatch(updateDownsampledCellOrder(plotUuid));
   }, [cellSets.hidden]);
 
+  // Clear vegaSpec when cellOrder is being updated to prevent showing stale heatmap
+  useEffect(() => {
+    if (cellOrderUpdating) {
+      setVegaSpec(null);
+    }
+  }, [cellOrderUpdating]);
+
   useEffect(() => {
     if (
       !cellSets.accessible
       || _.isEmpty(loadedGenes)
       || !loading
       || loading.includes(plotUuid) // Don't render while expression data is loading
+      || cellOrderUpdating // Don't render while cellOrder is being recomputed
       || !hierarchy?.length
       || downsampledError
       || markerGenesLoadingError
@@ -257,7 +269,7 @@ const MarkerHeatmap = ({ experimentId }) => {
     spec.marks.push(extraMarks);
 
     setVegaSpec(spec);
-  }, [config, cellOrder, downsampledError]);
+  }, [config, cellOrder, cellOrderUpdating, cellOrderSelectedPoints, downsampledError]);
 
   useEffect(() => {
     dispatch(loadGeneList(experimentId));
@@ -520,6 +532,7 @@ const MarkerHeatmap = ({ experimentId }) => {
     if (
       !config
       || loading.length > 0
+      || cellOrderUpdating
       || !cellSets.accessible
       || markerGenesLoading
     ) {

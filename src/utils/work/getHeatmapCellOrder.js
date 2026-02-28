@@ -70,8 +70,14 @@ const getHeatmapCellOrder = (
 
     // If selectedPoints is not "All", further filter to that cell set
     if (selectedPoints && selectedPoints !== 'All') {
+      // selectedPoints can be "All" or "root/child" format (e.g., "sample/sample-1")
+      // Extract the child key by splitting on '/'
+      const selectedPointsKey = selectedPoints.includes('/')
+        ? selectedPoints.split('/')[1]
+        : selectedPoints;
+
       cellIds = new Set(
-        [...cellIds].filter((id) => getCells(selectedPoints).has(id)),
+        [...cellIds].filter((id) => getCells(selectedPointsKey).has(id)),
       );
     }
 
