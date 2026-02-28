@@ -1,7 +1,10 @@
-import { DOWNSAMPLED_GENES_EXPRESSION_UPDATE_CELL_ORDER } from 'redux/actionTypes/genes';
+import updatePlotConfig from 'redux/actions/componentConfig/updatePlotConfig';
 import getHeatmapCellOrder from 'utils/work/getHeatmapCellOrder';
 
-const updateDownsampledCellOrder = (componentUuid) => (dispatch, getState) => {
+const updateDownsampledCellOrder = (componentUuid, selectedPoints = null) => (
+  dispatch,
+  getState,
+) => {
   const state = getState();
 
   const config = state.componentConfig[componentUuid]?.config;
@@ -9,53 +12,49 @@ const updateDownsampledCellOrder = (componentUuid) => (dispatch, getState) => {
     return;
   }
 
-  const { groupedTracks, selectedCellSet, selectedPoints } = config;
+  const { groupedTracks, selectedCellSet } = config;
   let hiddenCellSets = Array.from(state.cellSets.hidden);
   const cellSetData = state.cellSets;
 
-  // Convert selectedPoints into hidden cell sets
-  // If selectedPoints is not "All", hide all cells in that category except the selected one
+  // Compute which cell sets should be hidden based on selectedPoints
+  // This is done locally without updating Redux to avoid triggering extra effects
   if (selectedPoints && selectedPoints !== 'All') {
-    // selectedPoints format: "root/child" (e.g., "sample/sample-1")
     const parts = selectedPoints.split('/');
     if (parts.length === 2) {
-      const [rootKey, selectedChildKey] = parts;
-      const rootNode = cellSetData.hierarchy.find((node) => node.key === rootKey);
+      const [categoryKey, selectedCellSetKey] = parts;
+      const categoryRoot = cellSetData.hierarchy.find(
+        (node) => node.key === categoryKey,
+      );
 
-      if (rootNode) {
-        // Hide all children in this root except the selected one
-        rootNode.children.forEach((child) => {
-          if (child.key !== selectedChildKey && !hiddenCellSets.includes(child.key)) {
-            hiddenCellSets.push(child.key);
+      if (categoryRoot?.children) {
+        categoryRoot.children.forEach((child) => {
+          if (child.key !== selectedCellSetKey) {
+            if (!hiddenCellSets.includes(child.key)) {
+              hiddenCellSets.push(child.key);
+            }
+          } else {
+            // Include the selected cell set even if it was manually hidden
+            hiddenCellSets = hiddenCellSets.filter(
+              (key) => key !== child.key,
+            );
           }
         });
-
-        // Unhide the selected child if it was hidden
-        hiddenCellSets = hiddenCellSets.filter((key) => key !== selectedChildKey);
       }
     }
   }
 
   // Defer expensive cellOrder computation to unblock UI
   setTimeout(() => {
-    console.time('[getHeatmapCellOrder] total');
     const cellOrder = getHeatmapCellOrder(
       selectedCellSet,
       groupedTracks,
-      'All', // Always pass 'All' since filtering is done via hiddenCellSets
+      'All',
       hiddenCellSets,
       cellSetData,
     );
-    console.timeEnd('[getHeatmapCellOrder] total');
 
-    // Update Redux with new cell order
-    dispatch({
-      type: DOWNSAMPLED_GENES_EXPRESSION_UPDATE_CELL_ORDER,
-      payload: {
-        componentUuid,
-        cellOrder,
-      },
-    });
+    // Update config with new cellOrder atomically
+    dispatch(updatePlotConfig(componentUuid, { cellOrder }));
   }, 0);
 };
 

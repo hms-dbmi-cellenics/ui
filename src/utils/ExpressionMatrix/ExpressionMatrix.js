@@ -77,6 +77,9 @@ class ExpressionMatrix {
   }
 
   genesAreLoaded(geneSymbols) {
+    if (!geneSymbols) {
+      return false;
+    }
     return geneSymbols.every((geneSymbol) => this.geneIsLoaded(geneSymbol));
   }
 
