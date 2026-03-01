@@ -219,6 +219,9 @@ const markerHeatmapInitialConfig = {
   nMarkerGenes: 5,
   showGeneLabels: true,
   keepValuesOnReset: ['selectedGenes'],
+  // Explicitly reset tracks to initial values when resetting plot
+  selectedTracks: heatmapInitialConfig.selectedTracks,
+  groupedTracks: heatmapInitialConfig.groupedTracks,
 };
 
 // PLOTS & TABLES - Volcano plot

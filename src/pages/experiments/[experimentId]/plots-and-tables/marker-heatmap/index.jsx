@@ -14,6 +14,7 @@ import { Vega } from 'react-vega';
 import PropTypes from 'prop-types';
 import 'vega-webgl-renderer';
 
+import ExpressionMatrix from 'utils/ExpressionMatrix/ExpressionMatrix';
 import { getCellSets, getCellSetsHierarchyByKeys } from 'redux/selectors';
 
 import HeatmapGroupBySettings from 'components/data-exploration/heatmap/HeatmapGroupBySettings';
@@ -52,6 +53,7 @@ const MarkerHeatmap = ({ experimentId }) => {
   const dispatch = useDispatch();
 
   const [vegaSpec, setVegaSpec] = useState();
+  const [specGeneratedWithTracks, setSpecGeneratedWithTracks] = useState(null);
   const [isComputingCellOrder, setIsComputingCellOrder] = useState(false);
   const [cellOrderCellSet, setCellOrderCellSet] = useState(null);
   const [previousGroupedTracksKey, setPreviousGroupedTracksKey] = useState(null);
@@ -60,7 +62,7 @@ const MarkerHeatmap = ({ experimentId }) => {
   const configIsLoaded = useSelector((state) => !_.isNil(state.componentConfig[plotUuid]));
 
   const {
-    error, loading, matrix,
+    error, matrix: rawMatrix,
   } = useSelector((state) => state.genes.expression.full);
 
   const { error: downsampledError } = useSelector((state) => state.genes.expression.downsampled);
@@ -76,7 +78,7 @@ const MarkerHeatmap = ({ experimentId }) => {
     getCellSetsHierarchyByKeys([config?.selectedCellSet]),
   )[0]?.children?.length;
 
-  const { data: loadedGenes = [], markers: loadedGenesAreMarkers = false } = useSelector(
+  const { data: loadedGenes = [], markers: loadedGenesAreMarkers = false, fetching: fetchingGenes = false } = useSelector(
     (state) => state.genes.expression.views[plotUuid],
   ) || {};
 
@@ -171,19 +173,35 @@ const MarkerHeatmap = ({ experimentId }) => {
       && selectedCellSetClassAvailable
       && config?.selectedGenes?.length > 0
       && !loadedGenesAreMarkers // Skip for marker genes (handled in separate effect)
+      && !isComputingCellOrder // Don't load while computing cellOrder (avoids redundant requests on reset)
+      && !fetchingGenes // Skip if genes are already being fetched
     );
 
     if (!expectedConditions) {
       return;
     }
 
+    // Check if the genes we want to load are already loaded (from the view state)
+    const selectedGenesSet = new Set(config.selectedGenes.map((g) => g.toUpperCase()));
+    const loadedGenesSet = new Set(loadedGenes.map((g) => g.toUpperCase()));
+
+    // If loaded genes already match selected genes, skip loading
+    if (selectedGenesSet.size === loadedGenesSet.size && [...selectedGenesSet].every((g) => loadedGenesSet.has(g))) {
+      return;
+    }
+
     dispatch(loadDownsampledGeneExpression(experimentId, config?.selectedGenes, plotUuid));
   }, [
     config?.selectedGenes,
+    config?.selectedCellSet,
+    config?.selectedPoints,
     hierarchy,
     cellSets.accessible,
     louvainClustersResolution,
     loadedGenesAreMarkers,
+    isComputingCellOrder,
+    fetchingGenes,
+    loadedGenes,
   ]);
 
   // When marker genes have been loaded, update the config with those
@@ -192,10 +210,9 @@ const MarkerHeatmap = ({ experimentId }) => {
       return;
     }
 
-    // Always update config with marker genes and load expression when markers complete
+    // Update config with marker genes - the main gene expression effect will handle loading them
     dispatch(updatePlotConfig(plotUuid, { selectedGenes: loadedGenes }));
-    dispatch(loadDownsampledGeneExpression(experimentId, loadedGenes, plotUuid));
-  }, [loadedGenes, loadedGenesAreMarkers, experimentId, plotUuid, dispatch]);
+  }, [loadedGenes, loadedGenesAreMarkers, plotUuid, dispatch]);
 
   // When selectedPoints or selectedCellSet changes, update cell order
   useEffect(() => {
@@ -222,6 +239,24 @@ const MarkerHeatmap = ({ experimentId }) => {
     }
   }, [config?.groupedTracks, config?.selectedCellSet, config?.selectedPoints, previousGroupedTracksKey, dispatch]);
 
+  // When cellOrder becomes null/undefined (e.g. on reset), recalculate it
+  useEffect(() => {
+    if (!config?.groupedTracks || !config?.selectedCellSet || isComputingCellOrder) return;
+
+    if (!config?.cellOrder) {
+      console.log('[CellOrderNullEffect] cellOrder is missing, recalculating. cellOrder:', config?.cellOrder);
+      setIsComputingCellOrder(true);
+      dispatch(updateDownsampledCellOrder(plotUuid, config?.selectedPoints || null));
+    }
+  }, [config?.cellOrder, config?.groupedTracks, config?.selectedCellSet, config?.selectedPoints, isComputingCellOrder, dispatch, plotUuid]);
+
+  // Clear vegaSpec if data is loading (prevents showing stale specs with invalid data)
+  useEffect(() => {
+    if (fetchingGenes || markerGenesLoading) {
+      setVegaSpec(null);
+    }
+  }, [fetchingGenes, markerGenesLoading]);
+
   // When user manually hides/unhides, recalculate
   useEffect(() => {
     if (!config?.groupedTracks || !config?.selectedCellSet) return;
@@ -240,9 +275,11 @@ const MarkerHeatmap = ({ experimentId }) => {
   }, [config?.cellOrder, isComputingCellOrder, config?.selectedCellSet]);
 
   useEffect(() => {
+    console.log('[MarkerHeatmap RenderEffect] Triggered. selectedTracks:', config?.selectedTracks, 'cellOrder length:', config?.cellOrder?.length);
+
     // Don't render if cellOrder is stale (computed for different cellSet)
     if (cellOrderCellSet !== config?.selectedCellSet) {
-      console.log(`[RenderEffect] Skipping: cellOrderCellSet='${cellOrderCellSet}' !== config.selectedCellSet='${config?.selectedCellSet}'`);
+      console.log('[MarkerHeatmap RenderEffect] Stale cellOrder, skipping. cellOrderCellSet:', cellOrderCellSet, 'config.selectedCellSet:', config?.selectedCellSet);
       return;
     }
 
@@ -250,22 +287,41 @@ const MarkerHeatmap = ({ experimentId }) => {
       !cellSets.accessible
       || !config?.selectedGenes
       || config.selectedGenes.length === 0
-      || !loading
-      || loading.includes(plotUuid) // Don't render while expression data is loading
+      || fetchingGenes // Don't render while expression data is being fetched
       || !hierarchy?.length
       || downsampledError
       || markerGenesLoadingError
       || markerGenesLoading
       || !config?.cellOrder
+      || config.cellOrder.length === 0 // Skip if cellOrder is empty
+      || !rawMatrix // Ensure matrix exists
       || isComputingCellOrder
     ) {
-      console.log(`[RenderEffect] Condition blocked. cellOrder=${config?.cellOrder?.length}, isComputing=${isComputingCellOrder}, loading.includes=${loading.includes(plotUuid)}, markerGenesLoading=${markerGenesLoading}`);
+      console.log('[MarkerHeatmap RenderEffect] Early return due to loading/validation check.');
       return;
     }
 
-    console.log(`[RenderEffect] Rendering!`);
+    // Check that the expression data has actually been loaded into the matrix
+    // Just having geneIndexes isn't enough - we need the rawGeneExpressions data
+    const [cellCount, geneCount] = rawMatrix?.rawGeneExpressions?.size?.() || [0, 0];
+    if (!geneCount || geneCount === 0) {
+      // Data not ready yet, wait for the expression values to be populated
+      console.log('[MarkerHeatmap RenderEffect] Gene expression data not loaded yet. geneCount:', geneCount);
+      return;
+    }
+
+    // Reconstruct ExpressionMatrix from plain object (lost prototype after Redux hydration)
+    const matrix = new ExpressionMatrix();
+    if (rawMatrix?.geneIndexes && rawMatrix?.rawGeneExpressions && rawMatrix?.stats) {
+      matrix.geneIndexes = rawMatrix.geneIndexes;
+      matrix.rawGeneExpressions = rawMatrix.rawGeneExpressions;
+      matrix.stats = rawMatrix.stats;
+    }
+
     const data = generateVegaData(config.cellOrder, matrix, config, cellSets);
     const spec = generateSpec(config, 'Cluster ID', data, config.showGeneLabels);
+
+    console.log('[MarkerHeatmap RenderEffect] Generated spec with selectedTracks:', config.selectedTracks, 'spec marks count:', spec.marks?.length, 'data length:', data?.length);
 
     spec.description = 'Marker heatmap';
 
@@ -287,14 +343,15 @@ const MarkerHeatmap = ({ experimentId }) => {
     };
     spec.marks.push(extraMarks);
 
+    // Track which selectedTracks this spec was generated with
+    setSpecGeneratedWithTracks(config?.selectedTracks);
     setVegaSpec(spec);
-  }, [config, downsampledError, isComputingCellOrder, cellOrderCellSet]);
+  }, [config?.selectedTracks, config?.cellOrder, config?.selectedGenes, config?.selectedCellSet, downsampledError, isComputingCellOrder, cellOrderCellSet, cellSets.accessible, fetchingGenes, hierarchy, markerGenesLoadingError, markerGenesLoading, rawMatrix]);
 
   // Initialize cellOrderCellSet when config is first loaded
   useEffect(() => {
     // Only initialize once - when cellOrderCellSet is still null and config has selectedCellSet
     if (cellOrderCellSet === null && config?.selectedCellSet) {
-      console.log(`[InitEffect] Setting cellOrderCellSet to '${config.selectedCellSet}'`);
       setCellOrderCellSet(config.selectedCellSet);
     }
   }, [config?.selectedCellSet, cellOrderCellSet]);
@@ -559,7 +616,7 @@ const MarkerHeatmap = ({ experimentId }) => {
 
     if (
       !config
-      || loading.length > 0
+      || fetchingGenes
       || !cellSets.accessible
       || markerGenesLoading
     ) {
@@ -578,18 +635,27 @@ const MarkerHeatmap = ({ experimentId }) => {
       );
     }
 
-    if (vegaSpec) {
+    // Only render if spec exists AND was generated with current selectedTracks AND expression data is loaded
+    const specMatchesCurrentTracks = vegaSpec
+      && specGeneratedWithTracks
+      && _.isEqual(specGeneratedWithTracks, config?.selectedTracks)
+      && !fetchingGenes; // Don't render if still loading gene expression
+
+    if (specMatchesCurrentTracks) {
       return (
         <Space direction='vertical'>
           {config.legend.showAlert
             && numLegendItems > MAX_LEGEND_ITEMS
             && <PlotLegendAlert />}
           <center>
-            <Vega spec={vegaSpec} renderer='webgl' />
+            <Vega key={`heatmap-${config.selectedTracks?.join(',')}`} spec={vegaSpec} renderer='webgl' />
           </center>
         </Space>
       );
     }
+
+    // If spec isn't ready yet, show loading
+    return (<Loader experimentId={experimentId} />);
   };
 
   return (
