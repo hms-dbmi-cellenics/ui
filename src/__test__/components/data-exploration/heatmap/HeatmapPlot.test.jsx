@@ -475,6 +475,87 @@ describe('HeatmapPlot', () => {
     }, { timeout: 5000 });
   });
 
+  it('does not make a work request when overwriting with genes already in the matrix', async () => {
+    // Pre-load initial genes A, B
+    const initialGenes = markerGenesData5.orderedGeneNames.slice(0, 2);
+
+    await act(async () => {
+      await storeState.dispatch(loadMarkerGenes(
+        experimentId,
+        COMPONENT_TYPE,
+        { numGenes: 5, groupedTracks: ['louvain', 'sample'], selectedCellSet: 'louvain', selectedPoints: 'All' },
+      ));
+    });
+
+    await act(async () => {
+      await storeState.dispatch(loadDownsampledGeneExpression(
+        experimentId,
+        initialGenes, // A, B
+        COMPONENT_TYPE,
+      ));
+    });
+
+    await loadAndRenderDefaultHeatmap(storeState);
+
+    // Verify initial genes A, B are loaded
+    expect(vitesscePropsSpy.featureIndex).toEqual(initialGenes);
+
+    jest.clearAllMocks();
+
+    // Simulate overwrite with the same genes A, B already in matrix
+    await act(async () => {
+      await storeState.dispatch(loadDownsampledGeneExpression(
+        experimentId,
+        initialGenes, // Same genes A, B
+        COMPONENT_TYPE,
+      ));
+    });
+
+    // Key validation: no work request should be made since genes are already loaded
+    expect(fetchWork).not.toHaveBeenCalled();
+  });
+
+  it('does not make a work request when overwriting with a subset of already-loaded genes', async () => {
+    // Pre-load initial genes A, B, C
+    const initialGenes = markerGenesData5.orderedGeneNames.slice(0, 3);
+    const subsetGenes = markerGenesData5.orderedGeneNames.slice(0, 2); // A, B (subset)
+
+    await act(async () => {
+      await storeState.dispatch(loadMarkerGenes(
+        experimentId,
+        COMPONENT_TYPE,
+        { numGenes: 5, groupedTracks: ['louvain', 'sample'], selectedCellSet: 'louvain', selectedPoints: 'All' },
+      ));
+    });
+
+    await act(async () => {
+      await storeState.dispatch(loadDownsampledGeneExpression(
+        experimentId,
+        initialGenes, // A, B, C
+        COMPONENT_TYPE,
+      ));
+    });
+
+    await loadAndRenderDefaultHeatmap(storeState);
+
+    // Verify initial genes A, B, C are loaded
+    expect(vitesscePropsSpy.featureIndex).toEqual(initialGenes);
+
+    jest.clearAllMocks();
+
+    // Simulate overwrite with subset A, B (both already in matrix)
+    await act(async () => {
+      await storeState.dispatch(loadDownsampledGeneExpression(
+        experimentId,
+        subsetGenes, // A, B - subset of loaded genes
+        COMPONENT_TYPE,
+      ));
+    });
+
+    // Key validation: no work request should be made since A, B are already loaded
+    expect(fetchWork).not.toHaveBeenCalled();
+  });
+
   it('adds genes to existing genes in heatmap', async () => {
     // Pre-load initial genes
     const initialGenes = markerGenesData5.orderedGeneNames.slice(0, 2);
@@ -518,5 +599,56 @@ describe('HeatmapPlot', () => {
 
     // Verify all genes (initial + new) are now displayed
     expect(vitesscePropsSpy.featureIndex.length).toBe(3);
+  });
+
+  it('makes a work request when adding a gene not already in the matrix', async () => {
+    // Pre-load initial genes A, B, C
+    const initialGenes = markerGenesData5.orderedGeneNames.slice(0, 3);
+    const newGene = ['UNKNOWNGENE_NOT_IN_MATRIX']; // Gene not in any test data
+    const expectedCombinedGenes = [...initialGenes, ...newGene];
+
+    await act(async () => {
+      await storeState.dispatch(loadMarkerGenes(
+        experimentId,
+        COMPONENT_TYPE,
+        { numGenes: 5, groupedTracks: ['louvain', 'sample'], selectedCellSet: 'louvain', selectedPoints: 'All' },
+      ));
+    });
+
+    await act(async () => {
+      await storeState.dispatch(loadDownsampledGeneExpression(
+        experimentId,
+        initialGenes, // A, B, C
+        COMPONENT_TYPE,
+      ));
+    });
+
+    await loadAndRenderDefaultHeatmap(storeState);
+
+    // Verify initial genes A, B, C are loaded
+    expect(vitesscePropsSpy.featureIndex).toEqual(initialGenes);
+
+    jest.clearAllMocks();
+
+    // Mock work response for the new gene
+    fetchWork.mockResolvedValue({
+      orderedGeneNames: newGene,
+      rawExpression: { values: [], index: [], ptr: [] },
+      stats: {
+        rawMean: [], rawStdev: [], truncatedMin: [], truncatedMax: [],
+      },
+    });
+
+    // Simulate add: combine initial genes with new gene not in matrix
+    await act(async () => {
+      await storeState.dispatch(loadDownsampledGeneExpression(
+        experimentId,
+        expectedCombinedGenes, // A, B, C, UNKNOWNGENE
+        COMPONENT_TYPE,
+      ));
+    });
+
+    // Key validation: work request SHOULD be made since new gene is not already loaded
+    expect(fetchWork).toHaveBeenCalled();
   });
 });
