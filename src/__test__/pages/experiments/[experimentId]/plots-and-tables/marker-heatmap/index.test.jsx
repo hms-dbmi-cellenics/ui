@@ -551,4 +551,78 @@ describe('Marker heatmap plot', () => {
     );
     expect(geneExpressionCalls.length).toBeGreaterThan(0);
   });
+
+  it('does not make a work request when overwriting with a subset of already-loaded genes', async () => {
+    await renderHeatmapPage(storeState);
+
+    // Verify 5 marker genes are initially loaded
+    const initialGenes = getTreeGenes(screen.getByRole('tree'));
+    expect(initialGenes).toEqual(markerGenesData5.orderedGeneNames);
+
+    // Load expression data for all 5 marker genes
+    await act(async () => {
+      await storeState.dispatch(loadDownsampledGeneExpression(
+        experimentId,
+        initialGenes,
+        plotUuid,
+      ));
+    });
+
+    // Clear mock calls from initial load
+    jest.clearAllMocks();
+
+    // Overwrite with first 3 marker genes (subset of already loaded)
+    const subsetGenes = initialGenes.slice(0, 3);
+
+    await act(async () => {
+      await storeState.dispatch(updatePlotConfig(plotUuid, { selectedGenes: subsetGenes }));
+      await storeState.dispatch(loadDownsampledGeneExpression(
+        experimentId,
+        subsetGenes,
+        plotUuid,
+      ));
+    });
+
+    // Verify no work request is made for genes already in expression matrix
+    expect(fetchWork).not.toHaveBeenCalled();
+  });
+
+  it('makes a work request when adding a gene not already in the matrix', async () => {
+    await renderHeatmapPage(storeState);
+
+    // Verify 5 marker genes are initially loaded
+    const initialGenes = getTreeGenes(screen.getByRole('tree'));
+    expect(initialGenes).toEqual(markerGenesData5.orderedGeneNames);
+
+    // Load expression data for all 5 marker genes
+    await act(async () => {
+      await storeState.dispatch(loadDownsampledGeneExpression(
+        experimentId,
+        initialGenes,
+        plotUuid,
+      ));
+    });
+
+    // Clear mock calls from initial load
+    jest.clearAllMocks();
+
+    // Add a completely new gene not in matrix
+    const newGene = 'UNKNOWNGENE_NOT_IN_MATRIX';
+    const combinedGenes = [...initialGenes, newGene];
+
+    await act(async () => {
+      await storeState.dispatch(updatePlotConfig(plotUuid, { selectedGenes: combinedGenes }));
+      await storeState.dispatch(loadDownsampledGeneExpression(
+        experimentId,
+        combinedGenes,
+        plotUuid,
+      ));
+    });
+
+    // Verify work request IS made for new gene not in expression matrix
+    const geneExpressionCalls = fetchWork.mock.calls.filter(
+      (call) => call[1].name === 'GeneExpression',
+    );
+    expect(geneExpressionCalls.length).toBeGreaterThan(0);
+  });
 });
