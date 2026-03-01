@@ -439,4 +439,116 @@ describe('Marker heatmap plot', () => {
     // Don't render the table if there are no genes
     expect(geneTable).not.toBeInTheDocument();
   });
+
+  it('loads expression data when marker gene count increases', async () => {
+    await renderHeatmapPage(storeState);
+
+    // Initially, 5 marker genes should be loaded
+    expect(screen.getByText(markerGenesData5.orderedGeneNames[0])).toBeInTheDocument();
+
+    // Verify plot exists initially
+    expect(screen.getByRole('graphics-document', { name: 'Marker heatmap' })).toBeInTheDocument();
+
+    // Increase the number of marker genes from 5 to 2
+    userEvent.click(screen.getByText('Marker genes'));
+    expect(screen.getByText('Number of marker genes per cluster')).toBeInTheDocument();
+
+    const nGenesInput = screen.getByRole('spinbutton', { name: 'Number of genes input' });
+    userEvent.type(nGenesInput, '{backspace}2');
+
+    // Click Run to load new marker genes
+    await act(async () => {
+      userEvent.click(screen.getByText('Run'));
+    });
+
+    // Wait for gene expression to be loaded after marker genes are updated
+    await waitFor(() => {
+      // Verify loadDownsampledGeneExpression was called with genes
+      const geneExpressionCalls = fetchWork.mock.calls.filter(
+        (call) => call[1].name === 'GeneExpression',
+      );
+      expect(geneExpressionCalls.length).toBeGreaterThan(0);
+    }, { timeout: 5000 });
+
+    // Go back to custom genes tab
+    userEvent.click(screen.getByText('Custom genes'));
+
+    // Verify new marker genes are displayed
+    markerGenesData2.orderedGeneNames.forEach((geneName) => {
+      expect(screen.getByText(geneName)).toBeInTheDocument();
+    });
+  });
+
+  it('custom genes trigger expression loading and UI update', async () => {
+    await renderHeatmapPage(storeState);
+
+    // Initially 5 marker genes are displayed
+    const genesBefore = getTreeGenes(screen.getByRole('tree'));
+    expect(genesBefore).toEqual(markerGenesData5.orderedGeneNames);
+
+    // Add a custom gene like the existing "adds genes correctly" test does
+    const customGene = 'FAKEGENE';
+    const genesToLoad = [...markerGenesData5.orderedGeneNames, customGene];
+
+    await act(async () => {
+      // Update the config with new selectedGenes (simulating custom gene selection)
+      await storeState.dispatch(updatePlotConfig(plotUuid, { selectedGenes: genesToLoad }));
+      // Then load the expression data
+      await storeState.dispatch(loadDownsampledGeneExpression(experimentId, genesToLoad, plotUuid));
+    });
+
+    // Wait for gene expression to be loaded and UI to update
+    await waitFor(() => {
+      // Verify the custom gene appears in the UI
+      const geneTree = screen.getByRole('tree');
+      expect(within(geneTree).getByText(customGene)).toBeInTheDocument();
+    });
+
+    // Verify the gene list contains the custom gene
+    const genesAfter = getTreeGenes(screen.getByRole('tree'));
+    expect(genesAfter).toContain(customGene);
+    expect(genesAfter).toEqual(genesToLoad);
+
+    // Verify expression data was loaded
+    const geneExpressionCalls = fetchWork.mock.calls.filter(
+      (call) => call[1].name === 'GeneExpression',
+    );
+    expect(geneExpressionCalls.length).toBeGreaterThan(0);
+  });
+
+  it('combined marker and custom genes load expression data', async () => {
+    await renderHeatmapPage(storeState);
+
+    // Start with initial marker genes
+    const initialGenes = getTreeGenes(screen.getByRole('tree'));
+    expect(initialGenes.length).toBeGreaterThan(0);
+
+    // Directly update store with a combination of 2 marker genes + 1 custom gene
+    const combinedGenes = [...markerGenesData2.orderedGeneNames, 'FAKEGENE'];
+
+    await act(async () => {
+      // Update config and load expression data for combined genes
+      await storeState.dispatch(updatePlotConfig(plotUuid, { selectedGenes: combinedGenes }));
+      await storeState.dispatch(loadDownsampledGeneExpression(experimentId, combinedGenes, plotUuid));
+    });
+
+    // Verify all genes (both marker and custom) appear in the UI
+    await waitFor(() => {
+      const geneTree = screen.getByRole('tree');
+      expect(within(geneTree).getByText('FAKEGENE')).toBeInTheDocument();
+      markerGenesData2.orderedGeneNames.forEach((gene) => {
+        expect(within(geneTree).getByText(gene)).toBeInTheDocument();
+      });
+    });
+
+    // Verify the final gene list matches combined genes
+    const finalGenes = getTreeGenes(screen.getByRole('tree'));
+    expect(finalGenes).toEqual(combinedGenes);
+
+    // Verify expression data was loaded for combined genes
+    const geneExpressionCalls = fetchWork.mock.calls.filter(
+      (call) => call[1].name === 'GeneExpression',
+    );
+    expect(geneExpressionCalls.length).toBeGreaterThan(0);
+  });
 });
