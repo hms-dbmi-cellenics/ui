@@ -433,4 +433,90 @@ describe('HeatmapPlot', () => {
     // And doesn't show the normal cell info again
     expect(screen.queryByText(/Gene name:/i)).not.toBeInTheDocument();
   });
+
+  it('overwrites genes when selecting a completely new set of genes', async () => {
+    // Pre-load initial genes
+    const initialGenes = markerGenesData5.orderedGeneNames.slice(0, 3);
+    const overwriteGenes = markerGenesData5.orderedGeneNames.slice(2, 5);
+
+    await act(async () => {
+      await storeState.dispatch(loadMarkerGenes(
+        experimentId,
+        COMPONENT_TYPE,
+        { numGenes: 5, groupedTracks: ['louvain', 'sample'], selectedCellSet: 'louvain', selectedPoints: 'All' },
+      ));
+    });
+
+    await act(async () => {
+      await storeState.dispatch(loadDownsampledGeneExpression(
+        experimentId,
+        initialGenes,
+        COMPONENT_TYPE,
+      ));
+    });
+
+    await loadAndRenderDefaultHeatmap(storeState);
+
+    // Verify initial genes are loaded
+    expect(vitesscePropsSpy.featureIndex).toEqual(initialGenes);
+
+    // Simulate overwrite: dispatch action with completely new genes
+    await act(async () => {
+      await storeState.dispatch(loadDownsampledGeneExpression(
+        experimentId,
+        overwriteGenes, // Completely new set of genes
+        COMPONENT_TYPE,
+      ));
+    });
+
+    // Wait for heatmap to update with new genes
+    await waitFor(() => {
+      expect(vitesscePropsSpy.featureIndex).toEqual(overwriteGenes);
+    }, { timeout: 5000 });
+  });
+
+  it('adds genes to existing genes in heatmap', async () => {
+    // Pre-load initial genes
+    const initialGenes = markerGenesData5.orderedGeneNames.slice(0, 2);
+    const genesToAdd = markerGenesData5.orderedGeneNames.slice(2, 3);
+    const expectedCombinedGenes = [...initialGenes, ...genesToAdd];
+
+    await act(async () => {
+      await storeState.dispatch(loadMarkerGenes(
+        experimentId,
+        COMPONENT_TYPE,
+        { numGenes: 5, groupedTracks: ['louvain', 'sample'], selectedCellSet: 'louvain', selectedPoints: 'All' },
+      ));
+    });
+
+    await act(async () => {
+      await storeState.dispatch(loadDownsampledGeneExpression(
+        experimentId,
+        initialGenes,
+        COMPONENT_TYPE,
+      ));
+    });
+
+    await loadAndRenderDefaultHeatmap(storeState);
+
+    // Verify initial genes are loaded
+    expect(vitesscePropsSpy.featureIndex.length).toBe(initialGenes.length);
+
+    // Simulate add: combine initial genes with new genes
+    await act(async () => {
+      await storeState.dispatch(loadDownsampledGeneExpression(
+        experimentId,
+        expectedCombinedGenes, // Initial + new genes
+        COMPONENT_TYPE,
+      ));
+    });
+
+    // Wait for heatmap to update with combined genes
+    await waitFor(() => {
+      expect(vitesscePropsSpy.featureIndex).toEqual(expectedCombinedGenes);
+    }, { timeout: 5000 });
+
+    // Verify all genes (initial + new) are now displayed
+    expect(vitesscePropsSpy.featureIndex.length).toBe(3);
+  });
 });
