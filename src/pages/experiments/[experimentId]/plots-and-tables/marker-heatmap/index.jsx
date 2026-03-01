@@ -163,7 +163,7 @@ const MarkerHeatmap = ({ experimentId }) => {
     }
   }, [config?.selectedGenes, experimentId, plotUuid, dispatch, config]);
 
-  // Only fetch gene expression if selectedGenes change (but not for marker genes, handled separately)
+  // Fetch gene expression data if selectedGenes change and we don't have all the data yet
   useConditionalEffect(() => {
     const expectedConditions = (
       louvainClustersResolution
@@ -172,7 +172,6 @@ const MarkerHeatmap = ({ experimentId }) => {
       && hierarchy?.length
       && selectedCellSetClassAvailable
       && config?.selectedGenes?.length > 0
-      && !loadedGenesAreMarkers // Skip for marker genes (handled in separate effect)
       && !isComputingCellOrder // Don't load while computing cellOrder (avoids redundant requests on reset)
       && !fetchingGenes // Skip if genes are already being fetched
     );
@@ -198,21 +197,23 @@ const MarkerHeatmap = ({ experimentId }) => {
     hierarchy,
     cellSets.accessible,
     louvainClustersResolution,
-    loadedGenesAreMarkers,
     isComputingCellOrder,
     fetchingGenes,
     loadedGenes,
   ]);
 
-  // When marker genes have been loaded, update the config with those
+  // When marker genes have been loaded, update the config and load their expression data
   useEffect(() => {
     if (!loadedGenesAreMarkers || !loadedGenes || loadedGenes.length === 0) {
       return;
     }
 
-    // Update config with marker genes - the main gene expression effect will handle loading them
+    // Update config with marker genes
     dispatch(updatePlotConfig(plotUuid, { selectedGenes: loadedGenes }));
-  }, [loadedGenes, loadedGenesAreMarkers, plotUuid, dispatch]);
+
+    // Load expression data for the newly loaded marker genes
+    dispatch(loadDownsampledGeneExpression(experimentId, loadedGenes, plotUuid));
+  }, [loadedGenes, loadedGenesAreMarkers, plotUuid, experimentId, dispatch]);
 
   // When selectedPoints or selectedCellSet changes, update cell order
   useEffect(() => {
@@ -414,6 +415,8 @@ const MarkerHeatmap = ({ experimentId }) => {
 
     if (_.isEqual(allGenes, config?.selectedGenes)) return;
 
+    // Update the config with new selected genes AND load their expression data
+    dispatch(updatePlotConfig(plotUuid, { selectedGenes: allGenes }));
     dispatch(loadDownsampledGeneExpression(experimentId, allGenes, plotUuid));
   };
 

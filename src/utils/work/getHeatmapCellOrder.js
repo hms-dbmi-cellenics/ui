@@ -74,6 +74,18 @@ const getHeatmapCellOrder = (
     // Get cells from the selected cell set
     let cellIds = getCells(selectedCellSet, true);
 
+    // If selectedPoints is not "All", further filter to that cell set
+    if (selectedPoints && selectedPoints !== 'All') {
+      // selectedPoints can be "All" or a simple key (e.g., "sample-1")
+      const selectedPointsKey = selectedPoints.includes('/')
+        ? selectedPoints.split('/')[1]
+        : selectedPoints;
+
+      cellIds = new Set(
+        [...cellIds].filter((id) => getCells(selectedPointsKey).has(id)),
+      );
+    }
+
     // Remove hidden cells
     const hiddenArray = hiddenCellSets instanceof Set
       ? Array.from(hiddenCellSets)

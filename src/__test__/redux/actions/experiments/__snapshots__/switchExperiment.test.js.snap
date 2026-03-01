@@ -175,6 +175,8 @@ exports[`switch experiment  Then updates the experiment info 1`] = `
       "downsampled": {
         "ETag": null,
         "cellOrder": [],
+        "cellOrderSelectedPoints": null,
+        "cellOrderUpdating": false,
         "error": false,
         "loading": [],
         "matrix": ExpressionMatrix {
@@ -555,6 +557,8 @@ exports[`switch experiment  switches the experiment to its initial values 1`] = 
       "downsampled": {
         "ETag": null,
         "cellOrder": [],
+        "cellOrderSelectedPoints": null,
+        "cellOrderUpdating": false,
         "error": false,
         "loading": [],
         "matrix": ExpressionMatrix {

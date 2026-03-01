@@ -10,6 +10,7 @@ import { act } from 'react-dom/test-utils';
 import { Provider } from 'react-redux';
 import { loadBackendStatus } from 'redux/actions/backendStatus';
 import { loadDownsampledGeneExpression } from 'redux/actions/genes';
+import updatePlotConfig from 'redux/actions/componentConfig/updatePlotConfig';
 import { makeStore } from 'redux/store';
 import fetchWork from 'utils/work/fetchWork';
 
@@ -196,6 +197,9 @@ describe('Marker heatmap plot', () => {
     const genesToLoad = [...markerGenesData5.orderedGeneNames, 'FAKEGENE'];
 
     await act(async () => {
+      // Update the config with new selectedGenes
+      await storeState.dispatch(updatePlotConfig(plotUuid, { selectedGenes: genesToLoad }));
+      // Then load the expression data
       await storeState.dispatch(loadDownsampledGeneExpression(experimentId, genesToLoad, plotUuid));
     });
 
