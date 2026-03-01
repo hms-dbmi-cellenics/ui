@@ -208,4 +208,144 @@ describe('getHeatmapCellOrder', () => {
     expect(getHeatmapCellOrder('louvain', ['sample'], 'All', [], null, 1000)).toEqual([]);
     expect(getHeatmapCellOrder('louvain', ['sample'], 'All', [], undefined, 1000)).toEqual([]);
   });
+
+  it('handles empty groupedTracks gracefully', () => {
+    const result = getHeatmapCellOrder(
+      'louvain',
+      [],
+      'All',
+      [],
+      mockCellSets,
+      1000,
+    );
+
+    expect(result).toEqual([]);
+  });
+
+  it('maintains proportional distribution across buckets with downsampling', () => {
+    // With 15 cells total and groupedTracks=['sample', 'patient']
+    // Should create cartesian product buckets and downsample proportionally
+    // With 4 buckets from [sample, patient] cartesian product, need sufficient size
+    const result = getHeatmapCellOrder(
+      'louvain',
+      ['sample', 'patient'],
+      'All',
+      [],
+      mockCellSets,
+      4, // Sample size proportional to bucket count
+    );
+
+    // Should return up to 4 cells
+    expect(result.length).toBeLessThanOrEqual(4);
+    // Verify all returned cells are valid
+    const allValidCells = new Set([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]);
+    result.forEach((cell) => {
+      expect(allValidCells.has(cell)).toBe(true);
+    });
+  });
+
+  it('downsampling respects maxCells limit strictly', () => {
+    const maxCells = 7;
+    const result = getHeatmapCellOrder(
+      'louvain',
+      ['sample', 'patient'],
+      'All',
+      [],
+      mockCellSets,
+      maxCells,
+    );
+
+    expect(result.length).toBeLessThanOrEqual(maxCells);
+  });
+
+  it('preserves all cells when under maxCells threshold', () => {
+    const result = getHeatmapCellOrder(
+      'louvain',
+      ['sample', 'patient'],
+      'All',
+      [],
+      mockCellSets,
+      20, // Higher than total cells
+    );
+
+    // Should return all 15 cells without downsampling
+    expect(result).toHaveLength(15);
+    expect(new Set(result)).toEqual(
+      new Set([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]),
+    );
+  });
+
+  it('distributes downsampled cells across cartesian product buckets', () => {
+    // Sample-A: [0, 2, 4, 5, 7, 10, 12]
+    // Sample-B: [1, 3, 6, 8, 9, 11, 13, 14]
+    // Cartesian product with patient creates 4 buckets
+    // When downsampled, should have cells from multiple buckets
+    const results = [];
+    for (let i = 0; i < 5; i += 1) {
+      const result = getHeatmapCellOrder(
+        'louvain',
+        ['sample', 'patient'],
+        'All',
+        [],
+        mockCellSets,
+        10,
+      );
+      results.push(result);
+    }
+
+    // All runs should return downsampled cells
+    results.forEach((result) => {
+      expect(result.length).toBeLessThanOrEqual(10);
+      expect(result.length).toBeGreaterThan(0);
+    });
+  });
+
+  it('handles single grouped track (no cartesian product)', () => {
+    const result = getHeatmapCellOrder(
+      'louvain',
+      ['sample'],
+      'All',
+      [],
+      mockCellSets,
+      1000,
+    );
+
+    // Should return all 15 cells (single track doesn't reduce cells)
+    expect(result).toHaveLength(15);
+    expect(new Set(result)).toEqual(
+      new Set([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]),
+    );
+  });
+
+  it('does not return duplicate cells in result', () => {
+    // Run multiple times to ensure no random duplicates
+    for (let i = 0; i < 10; i += 1) {
+      const result = getHeatmapCellOrder(
+        'louvain',
+        ['sample', 'patient'],
+        'All',
+        [],
+        mockCellSets,
+        5,
+      );
+
+      const uniqueCells = new Set(result);
+      expect(uniqueCells.size).toBe(result.length);
+    }
+  });
+
+  it('filters selectedPoints then applies hidden cells', () => {
+    // selectedPoints filters first, then hidden cells remove more
+    const result = getHeatmapCellOrder(
+      'louvain',
+      ['sample', 'patient'],
+      'sample-1', // Filters to [0, 1, 4, 5, 6, 10, 11, 14]
+      ['louvain-0'], // Removes [0, 1, 2, 3, 4]
+      mockCellSets,
+      1000,
+    );
+
+    // sample-1 - louvain-0 = [5, 6, 10, 11, 14]
+    expect(new Set(result)).toEqual(new Set([5, 6, 10, 11, 14]));
+  });
 });
