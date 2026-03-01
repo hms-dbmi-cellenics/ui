@@ -53,7 +53,7 @@ const HeatmapPlot = (props) => {
 
   const loadingGenes = useSelector((state) => state.genes.expression.full.loading);
   const downsampledCellOrder = useSelector(
-    (state) => state.genes.expression.downsampled.cellOrder,
+    (state) => state.componentConfig[COMPONENT_TYPE]?.config?.cellOrder,
   );
 
   const { data: selectedGenes, fetching: fetchingGenes } = useSelector(
@@ -148,7 +148,7 @@ const HeatmapPlot = (props) => {
   useConditionalEffect(() => {
     if (
       !selectedGenes?.length
-      || !cellSets.hierarchy.length > 0
+      || !cellSets.hierarchy?.length
       || !downsampledCellOrder?.length
     ) { return; }
 
@@ -166,7 +166,6 @@ const HeatmapPlot = (props) => {
     // heatmapSettings is is frozen in redux by immer.
 
     console.time('[VitessceHeatmap] generateVitessceData');
-    console.log('[VitessceHeatmap] Rendering with', downsampledCellOrder.length, 'cells,', cellSets.hidden.size, 'hidden');
     const data = generateVitessceData(
       downsampledCellOrder,
       selectedTracks,
@@ -181,12 +180,11 @@ const HeatmapPlot = (props) => {
     selectedGenes,
     downsampledCellOrder,
     selectedTracks,
-    cellSets.hidden,
     // To reorder tracks when the track is reordered in hierarchy
     cellSets.hierarchy,
     // For when tracks colors change
     cellSets.properties,
-    matrix,  // <-- ADD matrix to dependency array so effect re-runs when expression data arrives
+    matrix,
   ]);
 
   useConditionalEffect(() => {
@@ -273,7 +271,6 @@ const HeatmapPlot = (props) => {
       || !heatmapSettings?.selectedCellSet
     ) return;
 
-    console.log('[VitessceHeatmap] Hidden cell sets changed, triggering updateDownsampledCellOrder');
     dispatch(updateDownsampledCellOrder(COMPONENT_TYPE));
   }, [cellSets.hidden]);
 

@@ -55,25 +55,26 @@ const loadHeatmapGeneExpression = (
 
   // If all genes are already loaded, just update the UI without fetching
   if (genesToLoad.length === 0) {
-    // Compute cellOrder asynchronously
-    const {
-      groupedTracks,
-      selectedCellSet: selectedCellSetKey,
-      selectedPoints: updatedSelectedPoints,
-    } = getState().componentConfig[componentUuid]?.config || {};
+    // Still dispatch LOADING to update selectedGenes in the view
+    dispatch({
+      type: DOWNSAMPLED_GENES_EXPRESSION_LOADING,
+      payload: {
+        experimentId,
+        componentUuid,
+        genes,
+        ETag: null,
+      },
+    });
 
-    const hiddenCellSets = withHiddenCellSets ? Array.from(getState().cellSets.hidden) : [];
-    const cellSetData = getState().cellSets;
-    const cellOrder = getHeatmapCellOrder(
-      selectedCellSetKey,
-      groupedTracks,
-      updatedSelectedPoints,
-      hiddenCellSets,
-      cellSetData,
-    );
-
-    // Dispatch the computed cellOrder to config (always, even if empty)
-    dispatch(updatePlotConfig(componentUuid, { cellOrder }));
+    // Immediately dispatch LOADED since genes are already in matrix
+    dispatch({
+      type: DOWNSAMPLED_GENES_EXPRESSION_LOADED,
+      payload: {
+        componentUuid,
+        genes,
+        ETag: null,
+      },
+    });
 
     return;
   }
@@ -106,6 +107,9 @@ const loadHeatmapGeneExpression = (
     },
   });
 
+  // Also dispatch cellOrder immediately so the effect can render with updated genes and cellOrder
+  dispatch(updatePlotConfig(componentUuid, { cellOrder }));
+
   try {
     const body = {
       name: 'GeneExpression',
@@ -125,8 +129,26 @@ const loadHeatmapGeneExpression = (
 
     const rawExpression = SparseMatrix.fromJSON(rawExpressionJson);
 
-    // Update cellOrder in config
-    dispatch(updatePlotConfig(componentUuid, { cellOrder }));
+    // Recompute cellOrder with fresh state in case settings changed during fetch
+    const {
+      groupedTracks: groupedTracksAfterFetch,
+      selectedCellSet: selectedCellSetKeyAfterFetch,
+      selectedPoints: selectedPointsAfterFetch,
+    } = getState().componentConfig[componentUuid]?.config || {};
+
+    const hiddenCellSetsAfterFetch = withHiddenCellSets
+      ? Array.from(getState().cellSets.hidden) : [];
+    const cellSetDataAfterFetch = getState().cellSets;
+    const cellOrderAfterFetch = getHeatmapCellOrder(
+      selectedCellSetKeyAfterFetch,
+      groupedTracksAfterFetch,
+      selectedPointsAfterFetch,
+      hiddenCellSetsAfterFetch,
+      cellSetDataAfterFetch,
+    );
+
+    // Update cellOrder in config with fresh computation
+    dispatch(updatePlotConfig(componentUuid, { cellOrder: cellOrderAfterFetch }));
 
     // Update the shared expression matrix with the newly loaded data
     // Use INPUT genes (marker order), not orderedGeneNames (worker order)
