@@ -43,19 +43,17 @@ const updateDownsampledCellOrder = (componentUuid, selectedPoints = null) => (
     }
   }
 
-  // Defer expensive cellOrder computation to unblock UI
-  setTimeout(() => {
-    const cellOrder = getHeatmapCellOrder(
-      selectedCellSet,
-      groupedTracks,
-      'All',
-      hiddenCellSets,
-      cellSetData,
-    );
+  const cellOrder = getHeatmapCellOrder(
+    selectedCellSet,
+    groupedTracks,
+    'All',
+    hiddenCellSets,
+    cellSetData,
+  );
 
-    // Update config with new cellOrder atomically
-    dispatch(updatePlotConfig(componentUuid, { cellOrder }));
-  }, 0);
+  // Update cellOrder atomically in a single dispatch
+  // Prevents vitessce from seeing intermediate state where cellSets changed but cellOrder hasn't
+  dispatch(updatePlotConfig(componentUuid, { cellOrder, isComputingCellOrder: false }));
 };
 
 export default updateDownsampledCellOrder;

@@ -1,5 +1,5 @@
 import React, {
-  useRef, useEffect, useState, useCallback,
+  useRef, useEffect, useLayoutEffect, useState, useCallback,
 } from 'react';
 import dynamic from 'next/dynamic';
 import PropTypes from 'prop-types';
@@ -145,7 +145,7 @@ const HeatmapPlot = (props) => {
     setIsHeatmapGenesLoading(false);
   }, [selectedGenes, loadingGenes, markerGenesLoading, fetchingGenes]);
 
-  useConditionalEffect(() => {
+  useEffect(() => {
     if (
       !selectedGenes?.length
       || !cellSets.hierarchy?.length
@@ -180,11 +180,8 @@ const HeatmapPlot = (props) => {
     selectedGenes,
     downsampledCellOrder,
     selectedTracks,
-    // To reorder tracks when the track is reordered in hierarchy
-    cellSets.hierarchy,
-    // For when tracks colors change
-    cellSets.properties,
     matrix,
+    cellSets.hidden,
   ]);
 
   useConditionalEffect(() => {
@@ -264,7 +261,9 @@ const HeatmapPlot = (props) => {
   }, [heatmapSettings?.groupedTracks]);
 
   // When hidden cell sets change, recalculate cell order without fetching new data
-  useConditionalEffect(() => {
+  // Use useLayoutEffect to update cellOrder BEFORE paint, so heatmapData regeneration
+  // happens before vitessce re-renders, preventing metadata track flicker
+  useLayoutEffect(() => {
     if (
       !cellSets.accessible
       || !heatmapSettings?.groupedTracks
