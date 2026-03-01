@@ -625,4 +625,63 @@ describe('Marker heatmap plot', () => {
     );
     expect(geneExpressionCalls.length).toBeGreaterThan(0);
   });
+
+  it('Reset button restores original marker genes', async () => {
+    await renderHeatmapPage(storeState);
+
+    // Verify initial 5 marker genes are loaded
+    const initialGenes = getTreeGenes(screen.getByRole('tree'));
+    expect(initialGenes).toEqual(markerGenesData5.orderedGeneNames);
+
+    // Modify genes by selecting a smaller subset (first 2 genes)
+    const modifiedGenes = initialGenes.slice(0, 2);
+
+    await act(async () => {
+      await storeState.dispatch(updatePlotConfig(plotUuid, { selectedGenes: modifiedGenes }));
+      await storeState.dispatch(loadDownsampledGeneExpression(experimentId, modifiedGenes, plotUuid));
+    });
+
+    // Verify genes have changed
+    let displayedGenes = getTreeGenes(screen.getByRole('tree'));
+    expect(displayedGenes.length).toBe(2);
+
+    // Find and click Reset button (look for button with text "Reset")
+    const buttons = screen.getAllByRole('button');
+    const resetButton = buttons.find((btn) => btn.textContent === 'Reset');
+
+    await act(async () => {
+      userEvent.click(resetButton);
+    });
+
+    // Wait for marker genes to be reloaded
+    await waitFor(() => {
+      displayedGenes = getTreeGenes(screen.getByRole('tree'));
+      expect(displayedGenes).toEqual(markerGenesData5.orderedGeneNames);
+    }, { timeout: 5000 });
+  });
+
+  it('Clear All button removes all genes from heatmap', async () => {
+    await renderHeatmapPage(storeState);
+
+    // Verify initial genes are loaded
+    const initialGenes = getTreeGenes(screen.getByRole('tree'));
+    expect(initialGenes.length).toBeGreaterThan(0);
+
+    // Find and click Clear All button (look for button with text "Clear All")
+    const buttons = screen.getAllByRole('button');
+    const clearAllButton = buttons.find((btn) => btn.textContent.includes('Clear All'));
+
+    await act(async () => {
+      userEvent.click(clearAllButton);
+    });
+
+    // Verify selectedGenes config is cleared (genes removed even if tree not re-rendered)
+    await waitFor(() => {
+      const config = storeState.getState().componentConfig[plotUuid]?.config;
+      expect(config?.selectedGenes).toEqual([]);
+    }, { timeout: 5000 });
+
+    // Verify plot no longer displays (since there are no genes)
+    expect(screen.queryByRole('graphics-document', { name: 'Marker heatmap' })).not.toBeInTheDocument();
+  });
 });
