@@ -25,10 +25,7 @@ const getHeatmapCellOrder = (
   cellSets,
   maxCells = 1000,
 ) => {
-  console.time('[getHeatmapCellOrder] total');
-
   if (!cellSets || !cellSets.hierarchy || !cellSets.properties) {
-    console.timeEnd('[getHeatmapCellOrder] total');
     return [];
   }
 
@@ -114,11 +111,6 @@ const getHeatmapCellOrder = (
 
   // Perform cartesian product intersection for a single track
   const cartesianProductIntersection = (buckets, cellClass) => {
-    const startBuckets = buckets.length;
-    let totalCells = 0;
-    buckets.forEach((b) => { totalCells += b.size; });
-    console.log(`[getHeatmapCellOrder] cartesianProductIntersection input: ${startBuckets} buckets, ${totalCells} total cells`);
-
     const newBuckets = [];
 
     buckets.forEach((bucket) => {
@@ -152,7 +144,6 @@ const getHeatmapCellOrder = (
 
     // For each grouped track, split buckets by intersection
     groupedTracks.forEach((cellClass) => {
-      console.log(`[getHeatmapCellOrder] applying grouped track: ${cellClass}`);
       buckets = cartesianProductIntersection(buckets, cellClass);
     });
 
@@ -197,14 +188,11 @@ const getHeatmapCellOrder = (
   const enabledCellIds = getAllEnabledCellIds();
 
   if (groupedTracks.length === 0 || enabledCellIds.size === 0) {
-    console.timeEnd('[getHeatmapCellOrder] total');
     return [];
   }
 
   const { buckets, totalSize } = splitByCartesianIntersections(enabledCellIds);
   const result = downsample(buckets, totalSize);
-
-  console.timeEnd('[getHeatmapCellOrder] total');
 
   return result;
 };

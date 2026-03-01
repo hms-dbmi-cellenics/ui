@@ -165,7 +165,6 @@ const HeatmapPlot = (props) => {
     // Trying to assign it to heatmapSettings will throw an error because
     // heatmapSettings is is frozen in redux by immer.
 
-    console.time('[VitessceHeatmap] generateVitessceData');
     const data = generateVitessceData(
       downsampledCellOrder,
       selectedTracks,
@@ -173,7 +172,6 @@ const HeatmapPlot = (props) => {
       selectedGenes,
       cellSets,
     );
-    console.timeEnd('[VitessceHeatmap] generateVitessceData');
 
     setHeatmapData(data);
   }, [

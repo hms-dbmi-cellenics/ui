@@ -10,8 +10,6 @@ const generateVitessceData = (
   const hiddenCells = union([...cellSets.hidden], cellSets.properties);
   const cellOrderFiltered = cellOrder.filter((cell) => !hiddenCells.has(cell));
 
-  console.log(`[generateVitessceData] cellOrder: ${cellOrder.length} cells, hidden: ${cellSets.hidden.size}, filtered: ${cellOrderFiltered.length}`);
-
   const trackColorData = generateVitessceHeatmapTracksData(
     selectedTracks, cellSets, cellOrderFiltered,
   );
