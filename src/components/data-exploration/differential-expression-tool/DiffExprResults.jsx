@@ -6,7 +6,6 @@ import {
 import {
   Space, Button, Alert, Tooltip,
 } from 'antd';
-import Link from 'next/link';
 import { LeftOutlined } from '@ant-design/icons';
 import PropTypes from 'prop-types';
 import _ from 'lodash';
@@ -38,7 +37,6 @@ const DiffExprResults = (props) => {
 
   const [dataShown, setDataShown] = useState(data);
   const [exportAlert, setExportAlert] = useState(false);
-  const [settingsListed, setSettingsListed] = useState(false);
   const [advancedFilteringModalVisible, setAdvancedFilteringModalVisible] = useState(false);
   const [pathwayAnalysisModalVisible, setPathwayAnalysisModalVisible] = useState(false);
   const [columns, setColumns] = useState([]);
@@ -51,9 +49,14 @@ const DiffExprResults = (props) => {
 
   useEffect(() => {
     if (!data.length || !Object.keys(properties).length) return;
-    setColumns(buildColumns(data));
+    let cols = buildColumns(data);
+    // Remove FDR column if it's a within-group comparison
+    if (comparisonType === 'within') {
+      cols = cols.filter(col => col.key !== 'p_val_adj');
+    }
+    setColumns(cols);
     setDataShown(data);
-  }, [data, properties]);
+  }, [data, properties, comparisonType]);
 
   const loadData = (loadAllState) => {
     geneTableState.current = loadAllState;
@@ -100,57 +103,25 @@ const DiffExprResults = (props) => {
 
   const { basis, cellSet, compareWith } = comparisonGroup[comparisonType];
 
-  const renderExportAlert = () => {
-    if (!exportAlert) return null;
-    return (
-      <Alert
-        message={(
-          <span>
-            Exporting to CSV is not currently available here. Use the&nbsp;
-            <Link
-              target='_blank'
-              as={`/experiments/${experimentId}/plots-and-tables/volcano`}
-              href='/experiments/[experimentId]/plots-and-tables/volcano'
-              passHref
-            >
-              {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
-              <a target='_blank'>volcano plot</a>
-            </Link>
-            &nbsp;in Plots and Tables to export results (opens in new tab).
-          </span>
-        )}
-        type='info'
-        showIcon
-        closable
-        onClose={() => {
-          setExportAlert(false);
-        }}
-      />
-    );
-  };
+  const geneTooltipText = `All genes present in the dataset are shown in the differential expression results table. Note that a gene is typically considered 'differentially expressed' based on established thresholds on adjusted p-value and/or log fold change. You should apply your own criteria and thresholds to filter the resulting list of genes using the "Advanced filtering" button.`;
 
   return (
     <Space direction='vertical' style={{ width: '100%' }}>
 
       {/* This is needed so changes to the export alert don't cause the table to re-render. */}
-      <Space direction='vertical' style={{ width: '100%' }}>
-        <Button size='small' onClick={onGoBack}>
+      <Space direction='horizontal'>
+        <Button size='medium' onClick={onGoBack}>
           <span>
             <LeftOutlined />
             Go back
           </span>
         </Button>
-        {renderExportAlert()}
-        <Space direction='horizontal'>
-          <Button id='settingsButton' onClick={() => setSettingsListed(!settingsListed)}>
-            {settingsListed ? 'Hide' : 'Show'}
-            {' '}
-            settings
-          </Button>
-          <Button onClick={() => setAdvancedFilteringModalVisible(!advancedFilteringModalVisible)}>
-            Advanced filtering
-          </Button>
-        </Space>
+        <Button size='medium' onClick={() => setAdvancedFilteringModalVisible(!advancedFilteringModalVisible)}>
+          Filter results
+        </Button>
+        <Button size='medium' onClick={() => setPathwayAnalysisModalVisible(!pathwayAnalysisModalVisible)}>
+          Pathway analysis
+        </Button>
       </Space>
       {advancedFilteringModalVisible && (
         <AdvancedFilteringModal
@@ -161,20 +132,17 @@ const DiffExprResults = (props) => {
           onCancel={() => setAdvancedFilteringModalVisible(false)}
         />
       )}
-      {settingsListed
-        ? (
-          <div id='settingsText'>
-            {optionName(cellSet)}
-            {' '}
-            vs.
-            {' '}
-            {optionName(compareWith)}
-            {' '}
-            in
-            {' '}
-            {optionName(basis)}
-          </div>
-        ) : <div />}
+      <div id='settingsText'>
+        {optionName(cellSet)}
+        {' '}
+        vs.
+        {' '}
+        {optionName(compareWith)}
+        {' '}
+        in
+        {' '}
+        {optionName(basis)}
+      </div>
       <GeneTable
         experimentId={experimentId}
         initialTableState={{
@@ -188,16 +156,12 @@ const DiffExprResults = (props) => {
         loading={loading}
         error={error}
         width={width}
-        height={height - 70 - (exportAlert ? 70 : 0) - (settingsListed ? 70 : 0)}
+        height={height - 57}
         propData={dataShown}
         loadData={loadData}
-        extraOptions={(
-          <>
-            <Button type='link' size='small' onClick={() => setExportAlert(true)}>Export as CSV</Button>
-            <Button type='link' size='small' onClick={() => setPathwayAnalysisModalVisible(!pathwayAnalysisModalVisible)}>Pathway analysis</Button>
-          </>
-        )}
-        geneColumnTooltipText='All genes present in the dataset are shown in the differential expression results table. Note that a gene is typically considered ‘differentially expressed’ based on established thresholds on adjusted p-value and/or log fold change. You should apply your own criteria and thresholds to filter the resulting list of genes using the "Advanced filtering" button.'
+        extraOptions={null}
+        geneColumnTooltipText={geneTooltipText}
+        geneColumnWidth="100px"
       />
       {
         pathwayAnalysisModalVisible && (
@@ -212,19 +176,35 @@ const DiffExprResults = (props) => {
   );
 };
 
+const formatDecimal = (value, decimals) => {
+  return parseFloat(value).toFixed(decimals).replace(/\.?0+$/, '');
+};
+
+const formatFDR = (value) => {
+  const num = parseFloat(value);
+
+  // If number is very small, use exponential notation with 1 decimal
+  if (num < 0.01 || num.toString().includes('e')) {
+    return num.toExponential(1);
+  }
+  // Otherwise use decimal format with max 2 decimals
+  return formatDecimal(value, 2);
+};
+
 const columnDefinitions = [
   {
     title: 'logFC',
     key: 'logFC',
     sorter: true,
     showSorterTooltip: false,
+    render: (score) => formatDecimal(score, 1),
   },
   {
-    title: 'adj p-value',
+    title: 'FDR',
     key: 'p_val_adj',
     sorter: true,
     showSorterTooltip: false,
-    render: (score, record) => <Tooltip title={`adj p-value: ${record.p_val_adj}`}>{score}</Tooltip>,
+    render: (score, record) => <Tooltip title={`FDR: ${record.p_val_adj}`}>{formatFDR(score)}</Tooltip>,
   },
   {
     title: 'Pct 1',
@@ -233,6 +213,7 @@ const columnDefinitions = [
     showSorterTooltip: {
       title: 'The percentage of cells where the feature is detected in the first group',
     },
+    render: (score) => formatDecimal(score, 1),
   },
   {
     title: 'Pct 2',
@@ -241,6 +222,7 @@ const columnDefinitions = [
     showSorterTooltip: {
       title: 'The percentage of cells where the feature is detected in the second group',
     },
+    render: (score) => formatDecimal(score, 1),
   },
   {
     title: 'AUC',
@@ -249,6 +231,7 @@ const columnDefinitions = [
     showSorterTooltip: {
       title: 'Area under the ROC curve',
     },
+    render: (score) => formatDecimal(score, 2),
   },
 ];
 

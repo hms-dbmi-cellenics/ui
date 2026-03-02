@@ -15,7 +15,7 @@ const initialLayoutSpatial = {
       splitPercentage: 45,
     },
     second: 'Genes',
-    splitPercentage: 70,
+    splitPercentage: 68,
   },
   panel: 'Gene list',
 };
@@ -32,7 +32,7 @@ const initialLayoutSingleCell = {
       splitPercentage: 50,
     },
     second: 'Genes',
-    splitPercentage: 70,
+    splitPercentage: 68,
   },
   panel: 'Gene list',
 };
