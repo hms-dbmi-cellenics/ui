@@ -114,7 +114,6 @@ const loadHeatmapGeneExpression = (
     const body = {
       name: 'GeneExpression',
       genes: genesToLoad,
-      downsampled: false,
     };
 
     const timeout = getTimeoutForWorkerTask(getState(), 'GeneExpression');

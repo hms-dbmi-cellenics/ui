@@ -219,7 +219,6 @@ const MarkerHeatmap = ({ experimentId }) => {
   useEffect(() => {
     if (!config?.groupedTracks || !config?.selectedCellSet) return;
 
-    console.log(`[UpdateEffect] Calling updateDownsampledCellOrder, selectedCellSet='${config?.selectedCellSet}'`);
     // Clear cellOrder and track state to prevent rendering stale data
     dispatch(updatePlotConfig(plotUuid, { cellOrder: null }));
     setCellOrderCellSet(null);
@@ -233,7 +232,6 @@ const MarkerHeatmap = ({ experimentId }) => {
 
     const currentKey = JSON.stringify(config.groupedTracks);
     if (currentKey !== previousGroupedTracksKey) {
-      console.log(`[GroupByEffect] groupedTracks changed, recalculating cellOrder`);
       setPreviousGroupedTracksKey(currentKey);
       setIsComputingCellOrder(true);
       dispatch(updateDownsampledCellOrder(plotUuid, config?.selectedPoints || null));
@@ -245,7 +243,6 @@ const MarkerHeatmap = ({ experimentId }) => {
     if (!config?.groupedTracks || !config?.selectedCellSet || isComputingCellOrder) return;
 
     if (!config?.cellOrder) {
-      console.log('[CellOrderNullEffect] cellOrder is missing, recalculating. cellOrder:', config?.cellOrder);
       setIsComputingCellOrder(true);
       dispatch(updateDownsampledCellOrder(plotUuid, config?.selectedPoints || null));
     }
@@ -269,18 +266,14 @@ const MarkerHeatmap = ({ experimentId }) => {
   // When cellOrder finishes computing, clear the flag and track which cellSet it's for
   useEffect(() => {
     if (config?.cellOrder !== null && isComputingCellOrder) {
-      console.log(`[CellOrderFinish] Setting cellOrderCellSet to '${config?.selectedCellSet}'`);
       setCellOrderCellSet(config?.selectedCellSet);
       setIsComputingCellOrder(false);
     }
   }, [config?.cellOrder, isComputingCellOrder, config?.selectedCellSet]);
 
   useEffect(() => {
-    console.log('[MarkerHeatmap RenderEffect] Triggered. selectedTracks:', config?.selectedTracks, 'cellOrder length:', config?.cellOrder?.length);
-
     // Don't render if cellOrder is stale (computed for different cellSet)
     if (cellOrderCellSet !== config?.selectedCellSet) {
-      console.log('[MarkerHeatmap RenderEffect] Stale cellOrder, skipping. cellOrderCellSet:', cellOrderCellSet, 'config.selectedCellSet:', config?.selectedCellSet);
       return;
     }
 
@@ -298,7 +291,6 @@ const MarkerHeatmap = ({ experimentId }) => {
       || !rawMatrix // Ensure matrix exists
       || isComputingCellOrder
     ) {
-      console.log('[MarkerHeatmap RenderEffect] Early return due to loading/validation check.');
       return;
     }
 
@@ -307,7 +299,6 @@ const MarkerHeatmap = ({ experimentId }) => {
     const [cellCount, geneCount] = rawMatrix?.rawGeneExpressions?.size?.() || [0, 0];
     if (!geneCount || geneCount === 0) {
       // Data not ready yet, wait for the expression values to be populated
-      console.log('[MarkerHeatmap RenderEffect] Gene expression data not loaded yet. geneCount:', geneCount);
       return;
     }
 
@@ -321,8 +312,6 @@ const MarkerHeatmap = ({ experimentId }) => {
 
     const data = generateVegaData(config.cellOrder, matrix, config, cellSets);
     const spec = generateSpec(config, 'Cluster ID', data, config.showGeneLabels);
-
-    console.log('[MarkerHeatmap RenderEffect] Generated spec with selectedTracks:', config.selectedTracks, 'spec marks count:', spec.marks?.length, 'data length:', data?.length);
 
     spec.description = 'Marker heatmap';
 
