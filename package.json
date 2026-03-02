@@ -134,8 +134,7 @@
     "vega-webgl-renderer": "^1.0.0-beta.2",
     "virtualizedtableforantd4": "^1.2.2",
     "webpack-bundle-analyzer": "^4.7.0",
-    "zarrita": "^0.3.2",
-    "zstd-codec": "^0.1.5"
+    "zarrita": "^0.3.2"
   },
   "devDependencies": {
     "@babel/preset-env": "^7.20.2",
