@@ -1,4 +1,5 @@
 import { initialViewState } from 'redux/reducers/genes/getInitialState';
+import _ from 'lodash';
 
 const downsampledGenesLoaded = (state, action) => {
   const {
@@ -26,8 +27,8 @@ const downsampledGenesLoaded = (state, action) => {
       );
     }
 
-    // Always update cellOrder if provided
-    if (cellOrder) {
+    // Always update cellOrder if provided (including empty arrays for "no matching cells" case)
+    if (cellOrder !== null && cellOrder !== undefined) {
       cellOrderToStore = cellOrder;
     }
   }
@@ -55,7 +56,7 @@ const downsampledGenesLoaded = (state, action) => {
       },
       full: {
         ...state.expression.full,
-        loading: [],
+        loading: _.difference(state.expression.full.loading, genes),
         error: false,
         ETag,
       },

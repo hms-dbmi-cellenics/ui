@@ -15,6 +15,12 @@ const downsampledGenesLoading = produce((draft, action) => {
       original(draft).expression.downsampled.loading,
       genes,
     );
+
+    // Also track in full.loading to coordinate with non-downsampled gene loads
+    draft.expression.full.loading = _.union(
+      original(draft).expression.full.loading,
+      genes,
+    );
   }
 
   // If the view hasn't stored properties yet, then set initial state
