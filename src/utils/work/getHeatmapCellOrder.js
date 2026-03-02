@@ -25,7 +25,13 @@ const getHeatmapCellOrder = (
   cellSets,
   maxCells = 1000,
 ) => {
-  if (!cellSets || !cellSets.hierarchy || !cellSets.properties) {
+  if (
+    !cellSets
+    || !cellSets.hierarchy
+    || !cellSets.properties
+    || !groupedTracks
+    || !selectedCellSet
+  ) {
     return [];
   }
 

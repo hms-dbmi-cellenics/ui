@@ -180,6 +180,8 @@ const HeatmapPlot = (props) => {
     selectedTracks,
     matrix,
     cellSets.hidden,
+    cellSets.properties,
+    cellSets.hierarchy,
   ]);
 
   useConditionalEffect(() => {
