@@ -116,6 +116,7 @@ describe('loadMarkerGenes action', () => {
     expect(functionArgs[1]).toEqual({
       name: 'MarkerHeatmap',
       nGenes: 5,
+      selectedCellSet: 'louvain',
     });
   });
 

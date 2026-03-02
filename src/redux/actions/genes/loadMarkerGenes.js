@@ -34,6 +34,7 @@ const loadMarkerGenes = (
   const body = {
     name: 'MarkerHeatmap',
     nGenes: numGenes,
+    selectedCellSet: selectedCellSetKey,
   };
 
   try {
