@@ -121,7 +121,6 @@ exports[`loadGeneExpression action Does not send work for already loaded express
     [
       "1234",
       {
-        "downsampled": false,
         "genes": [
           "b",
           "c",

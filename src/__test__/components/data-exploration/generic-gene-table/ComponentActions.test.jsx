@@ -123,7 +123,6 @@ describe('ComponentActions', () => {
     expect(fetchWork).toHaveBeenCalledWith(
       experimentId,
       {
-        downsampled: false,
         name: 'GeneExpression',
         genes: ['GeneA', 'GeneB', 'GeneC'],
       },
