@@ -199,7 +199,7 @@ exports[`ErrorPage Should post error to Slack if environment is production 1`] =
           "splitPercentage": 50,
         },
         "second": "Genes",
-        "splitPercentage": 70,
+        "splitPercentage": 68,
       },
     },
     "networkResources": {
@@ -420,7 +420,7 @@ exports[`ErrorPage Should post error to Slack if environment is staging 1`] = `
           "splitPercentage": 50,
         },
         "second": "Genes",
-        "splitPercentage": 70,
+        "splitPercentage": 68,
       },
     },
     "networkResources": {

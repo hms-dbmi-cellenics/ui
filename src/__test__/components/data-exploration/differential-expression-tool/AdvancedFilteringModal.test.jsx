@@ -143,7 +143,7 @@ describe('Advanced filtering modal', () => {
     const listOptionContainer = screen.getByText('AUC').closest('div[class=rc-virtual-list]');
     const options = listOptionContainer.querySelectorAll('div[class=ant-select-item-option-content]');
 
-    const expectedFilterOptions = ['logFC', 'adj p-value', 'Pct1', 'Pct2', 'AUC'];
+    const expectedFilterOptions = ['logFC', 'FDR', 'Pct 1', 'Pct 2', 'AUC'];
 
     expect(options.length).toEqual(expectedFilterOptions.length);
     options.forEach((el) => {

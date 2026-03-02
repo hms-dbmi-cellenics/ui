@@ -128,7 +128,7 @@ describe('Pathway analysis modal ', () => {
 
   it('Clicking advanced filtering modal opens the modal', async () => {
     await renderPathwayAnalysisModal(store);
-    userEvent.click(screen.getByText('Click here to open the advanced filtering options.'));
+    userEvent.click(screen.getByText('Click here to open filtering for differential expression table'));
 
     expect(onOpenAdvancedFilters).toHaveBeenCalledTimes(1);
   });

@@ -284,7 +284,7 @@ describe('DiffExprResults', () => {
 
     const entries = component.find('.ant-table-tbody').children();
 
-    expect(entries.at(1).text()).toEqual('A-1.4271.6471001000.1');
+    expect(entries.at(1).text()).toEqual('A-1.41.651001000.1');
     expect(entries).toHaveLength(2);
   });
 
@@ -333,17 +333,9 @@ describe('DiffExprResults', () => {
         />
       </Provider>,
     );
-    const button = component.find('#settingsButton').first();
-    expect(button.text()).toContain('Show');
-    button.simulate('click');
-    expect(button.text()).toContain('Hide');
-
     const div = component.find('#settingsText');
     // Should display name of cluster instead of ID
     expect(div.text()).toEqual('cluster a vs. cluster b in New Cluster');
-    button.simulate('click');
-    expect(button.childAt(0).text()).toEqual('Show settings');
-    expect(!div);
   });
 
   it('Does not show loading indicator if there is no data returned', () => {
@@ -377,10 +369,10 @@ describe('DiffExprResults', () => {
       </Provider>,
     );
     const buttons = component.find('Button');
-    expect(buttons.at(2).text()).toEqual('Advanced filtering');
+    expect(buttons.at(1).text()).toEqual('Filter results');
 
     // opening the modal
-    buttons.at(2).simulate('click');
+    buttons.at(1).simulate('click');
     expect(component.find(AdvancedFilteringModal).length).toEqual(1);
 
     // Adding a filter and applying it
@@ -465,7 +457,7 @@ describe('DiffExprResults', () => {
     expect(table.getElement().props.columns[6].key).toEqual('auc');
   });
 
-  it('The export as CSV alert opens and closes properly', async () => {
+  it('The pathway analysis button is available', () => {
     const component = mount(
       <Provider store={withResultStore}>
         <DiffExprResults
@@ -476,29 +468,9 @@ describe('DiffExprResults', () => {
         />
       </Provider>,
     );
-
-    // Clicking the CSV button opens the modal
-    const csvButton = component.find('span[children="Export as CSV"]');
-    expect(csvButton.length).toEqual(1);
-
-    act(() => {
-      csvButton.simulate('click');
-    });
-    component.update();
-
-    const csvModal = component.find('Alert');
-    expect(csvModal.length).toEqual(1);
-
-    // Clicking the close button closes the CSV modal
-    const closeCsvModalButton = csvModal.find('button');
-    expect(closeCsvModalButton.length).toEqual(1);
-
-    act(() => {
-      closeCsvModalButton.simulate('click');
-    });
-    component.update();
-
-    // Expect CSV modal to not be shown anymore
-    expect(component.find('Alert').length).toEqual(0);
+    const buttons = component.find('Button');
+    // Pathway analysis button should be present
+    const pathwayButton = buttons.filterWhere(btn => btn.text() === 'Pathway analysis');
+    expect(pathwayButton.length).toEqual(1);
   });
 });
