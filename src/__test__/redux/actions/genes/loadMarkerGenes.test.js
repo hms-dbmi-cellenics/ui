@@ -116,12 +116,6 @@ describe('loadMarkerGenes action', () => {
     expect(functionArgs[1]).toEqual({
       name: 'MarkerHeatmap',
       nGenes: 5,
-      downsampleSettings: {
-        selectedCellSet: 'louvain',
-        groupedTracks: ['louvain', 'sample'],
-        hiddenCellSets: [],
-        selectedPoints: 'All',
-      },
     });
   });
 

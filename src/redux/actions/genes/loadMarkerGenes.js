@@ -31,16 +31,9 @@ const loadMarkerGenes = (
   );
 
   // Send request to worker for marker genes (no downsampling in worker since we moved it to UI)
-  // Include dummy downsampleSettings to satisfy API validation
   const body = {
     name: 'MarkerHeatmap',
     nGenes: numGenes,
-    downsampleSettings: {
-      selectedCellSet: selectedCellSetKey,
-      groupedTracks,
-      selectedPoints,
-      hiddenCellSets: Array.from(hiddenCellSets),
-    },
   };
 
   try {
