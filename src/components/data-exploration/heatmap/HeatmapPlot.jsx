@@ -12,7 +12,7 @@ import {
 } from 'redux/selectors';
 
 import {
-  loadDownsampledGeneExpression, loadMarkerGenes, updateDownsampledCellOrder,
+  loadHeatmapGeneExpression, loadMarkerGenes, updateDownsampledCellOrder,
 } from 'redux/actions/genes';
 import { loadComponentConfig } from 'redux/actions/componentConfig';
 import { updateCellInfo } from 'redux/actions/cellInfo';
@@ -45,8 +45,8 @@ const HeatmapPlot = (props) => {
     experimentId, width, height,
   } = props;
 
-  const debouncedLoadDownsampledGeneExpression = _.debounce((...params) => {
-    dispatch(loadDownsampledGeneExpression(...params));
+  const debouncedLoadHeatmapGeneExpression = _.debounce((...params) => {
+    dispatch(loadHeatmapGeneExpression(...params));
   }, 1000);
 
   const dispatch = useDispatch();
@@ -72,8 +72,20 @@ const HeatmapPlot = (props) => {
   const cellCoordinatesRef = useRef({ x: 200, y: 300 });
 
   const {
-    error: expressionDataError, matrix,
+    error: expressionDataError, matrix, ETag,
   } = useSelector((state) => state.genes.expression.full);
+
+  // Create a stable reference that only changes when the heatmap's selected genes
+  // are loaded in the matrix (ignoring other genes added by other components)
+  const heatmapGenesLoadedKey = useSelector((state) => {
+    if (!selectedGenes?.length) return null;
+    const matrix = state.genes.expression.full.matrix;
+    // Check which of the heatmap's genes are currently loaded
+    const loadedCount = selectedGenes.filter((gene) => matrix.geneIsLoaded(gene)).length;
+    // Return a key that only changes when the loaded genes for heatmap actually change
+    const key = `${selectedGenes.length}_${loadedCount}`;
+    return key;
+  });
 
   const {
     loading: markerGenesLoading, error: markerGenesLoadingError,
@@ -151,7 +163,6 @@ const HeatmapPlot = (props) => {
       || !cellSets.hierarchy?.length
       || !downsampledCellOrder?.length
     ) { return; }
-
     // Check that the expression data has actually been loaded into the matrix
     // Just having geneIndexes isn't enough - we need the rawGeneExpressions data
     const [cellCount, geneCount] = matrix?.rawGeneExpressions?.size?.() || [0, 0];
@@ -172,13 +183,12 @@ const HeatmapPlot = (props) => {
       selectedGenes,
       cellSets,
     );
-
     setHeatmapData(data);
   }, [
     selectedGenes,
     downsampledCellOrder,
     selectedTracks,
-    matrix,
+    heatmapGenesLoadedKey,
     cellSets.hidden,
     cellSets.properties,
     cellSets.hierarchy,
@@ -233,11 +243,10 @@ const HeatmapPlot = (props) => {
       ) { return; }
 
       // Only fetch if selectedGenes, selectedCellSet, or selectedPoints changed
-      debouncedLoadDownsampledGeneExpression(
+      debouncedLoadHeatmapGeneExpression(
         experimentId,
         selectedGenes,
         COMPONENT_TYPE,
-        true,
       );
     },
     [
@@ -249,29 +258,25 @@ const HeatmapPlot = (props) => {
     ],
   );
 
-  // When groupedTracks changes, just recalculate cell order locally
+  // Compute cellOrder when cell set configuration or hidden cells change
+  // Use useConditionalEffect to prevent infinite loops when cellOrder updates in Redux
+  // This watches specific properties rather than entire heatmapSettings object
   useConditionalEffect(() => {
     if (
       !cellSets.accessible
       || !heatmapSettings?.groupedTracks
       || !heatmapSettings?.selectedCellSet
+      || !heatmapSettings?.selectedPoints
     ) return;
 
     dispatch(updateDownsampledCellOrder(COMPONENT_TYPE));
-  }, [heatmapSettings?.groupedTracks]);
-
-  // When hidden cell sets change, recalculate cell order without fetching new data
-  // Use useLayoutEffect to update cellOrder BEFORE paint, so heatmapData regeneration
-  // happens before vitessce re-renders, preventing metadata track flicker
-  useLayoutEffect(() => {
-    if (
-      !cellSets.accessible
-      || !heatmapSettings?.groupedTracks
-      || !heatmapSettings?.selectedCellSet
-    ) return;
-
-    dispatch(updateDownsampledCellOrder(COMPONENT_TYPE));
-  }, [cellSets.hidden]);
+  }, [
+    cellSets.accessible,
+    heatmapSettings?.groupedTracks,
+    heatmapSettings?.selectedCellSet,
+    heatmapSettings?.selectedPoints,
+    cellSets.hidden,
+  ]);
 
   useEffect(() => {
     if (cellHighlight) {
@@ -305,7 +310,7 @@ const HeatmapPlot = (props) => {
           }
 
           if ((expressionDataError || viewError) && !_.isNil(selectedGenes)) {
-            debouncedLoadDownsampledGeneExpression(
+            debouncedLoadHeatmapGeneExpression(
               experimentId, selectedGenes, COMPONENT_TYPE, true,
             );
           }

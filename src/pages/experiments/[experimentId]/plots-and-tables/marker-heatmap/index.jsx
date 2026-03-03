@@ -27,7 +27,7 @@ import Header from 'components/Header';
 import PlotContainer from 'components/plots/PlotContainer';
 import { generateSpec } from 'utils/plotSpecs/generateHeatmapSpec';
 import {
-  loadDownsampledGeneExpression,
+  loadHeatmapGeneExpression,
   loadMarkerGenes,
   updateDownsampledCellOrder,
 } from 'redux/actions/genes';
@@ -54,7 +54,6 @@ const MarkerHeatmap = ({ experimentId }) => {
 
   const [vegaSpec, setVegaSpec] = useState();
   const [specGeneratedWithTracks, setSpecGeneratedWithTracks] = useState(null);
-  const [isComputingCellOrder, setIsComputingCellOrder] = useState(false);
   const [cellOrderCellSet, setCellOrderCellSet] = useState(null);
   const [previousGroupedTracksKey, setPreviousGroupedTracksKey] = useState(null);
 
@@ -132,7 +131,7 @@ const MarkerHeatmap = ({ experimentId }) => {
       ));
     } else if (updatesToDispatch.selectedGenes) {
       dispatch(
-        loadDownsampledGeneExpression(experimentId, updatesToDispatch.selectedGenes, plotUuid),
+        loadHeatmapGeneExpression(experimentId, updatesToDispatch.selectedGenes, plotUuid),
       );
     }
   };
@@ -172,7 +171,6 @@ const MarkerHeatmap = ({ experimentId }) => {
       && hierarchy?.length
       && selectedCellSetClassAvailable
       && config?.selectedGenes?.length > 0
-      && !isComputingCellOrder // Don't load while computing cellOrder (avoids redundant requests on reset)
       && !fetchingGenes // Skip if genes are already being fetched
     );
 
@@ -189,7 +187,7 @@ const MarkerHeatmap = ({ experimentId }) => {
       return;
     }
 
-    dispatch(loadDownsampledGeneExpression(experimentId, config?.selectedGenes, plotUuid));
+    dispatch(loadHeatmapGeneExpression(experimentId, config?.selectedGenes, plotUuid));
   }, [
     config?.selectedGenes,
     config?.selectedCellSet,
@@ -197,7 +195,6 @@ const MarkerHeatmap = ({ experimentId }) => {
     hierarchy,
     cellSets.accessible,
     louvainClustersResolution,
-    isComputingCellOrder,
     fetchingGenes,
     loadedGenes,
   ]);
@@ -212,64 +209,28 @@ const MarkerHeatmap = ({ experimentId }) => {
     dispatch(updatePlotConfig(plotUuid, { selectedGenes: loadedGenes }));
 
     // Load expression data for the newly loaded marker genes
-    dispatch(loadDownsampledGeneExpression(experimentId, loadedGenes, plotUuid));
+    dispatch(loadHeatmapGeneExpression(experimentId, loadedGenes, plotUuid));
   }, [loadedGenes, loadedGenesAreMarkers, plotUuid, experimentId, dispatch]);
 
-  // When selectedPoints or selectedCellSet changes, update cell order
-  useEffect(() => {
-    if (!config?.groupedTracks || !config?.selectedCellSet) return;
-
-    // Clear cellOrder and track state to prevent rendering stale data
-    dispatch(updatePlotConfig(plotUuid, { cellOrder: null }));
-    setCellOrderCellSet(null);
-    setIsComputingCellOrder(true);
-    dispatch(updateDownsampledCellOrder(plotUuid, config?.selectedPoints || null));
-  }, [config?.selectedPoints, config?.selectedCellSet]);
-
-  // When groupedTracks (group by selection) changes, recalculate
-  useEffect(() => {
+  // Compute cellOrder based on configuration and hidden cells
+  // Consolidates multiple triggers: selectedPoints, selectedCellSet, groupedTracks, cellOrder reset, hidden cells
+  useConditionalEffect(() => {
     if (!config?.groupedTracks || !config?.selectedCellSet) return;
 
     const currentKey = JSON.stringify(config.groupedTracks);
     if (currentKey !== previousGroupedTracksKey) {
       setPreviousGroupedTracksKey(currentKey);
-      setIsComputingCellOrder(true);
-      dispatch(updateDownsampledCellOrder(plotUuid, config?.selectedPoints || null));
     }
-  }, [config?.groupedTracks, config?.selectedCellSet, config?.selectedPoints, previousGroupedTracksKey, dispatch]);
 
-  // When cellOrder becomes null/undefined (e.g. on reset), recalculate it
-  useEffect(() => {
-    if (!config?.groupedTracks || !config?.selectedCellSet || isComputingCellOrder) return;
-
-    if (!config?.cellOrder) {
-      setIsComputingCellOrder(true);
-      dispatch(updateDownsampledCellOrder(plotUuid, config?.selectedPoints || null));
-    }
-  }, [config?.cellOrder, config?.groupedTracks, config?.selectedCellSet, config?.selectedPoints, isComputingCellOrder, dispatch, plotUuid]);
-
-  // Clear vegaSpec if data is loading (prevents showing stale specs with invalid data)
-  useEffect(() => {
-    if (fetchingGenes || markerGenesLoading) {
-      setVegaSpec(null);
-    }
-  }, [fetchingGenes, markerGenesLoading]);
-
-  // When user manually hides/unhides, recalculate
-  useEffect(() => {
-    if (!config?.groupedTracks || !config?.selectedCellSet) return;
-
-    setIsComputingCellOrder(true);
+    dispatch(updatePlotConfig(plotUuid, { cellOrder: null }));
+    setCellOrderCellSet(null);
     dispatch(updateDownsampledCellOrder(plotUuid, config?.selectedPoints || null));
-  }, [cellSets.hidden]);
-
-  // When cellOrder finishes computing, clear the flag and track which cellSet it's for
-  useEffect(() => {
-    if (config?.cellOrder !== null && isComputingCellOrder) {
-      setCellOrderCellSet(config?.selectedCellSet);
-      setIsComputingCellOrder(false);
-    }
-  }, [config?.cellOrder, isComputingCellOrder, config?.selectedCellSet]);
+  }, [
+    config?.selectedPoints,
+    config?.selectedCellSet,
+    config?.groupedTracks,
+    cellSets.hidden,
+  ]);
 
   useEffect(() => {
     // Don't render if cellOrder is stale (computed for different cellSet)
@@ -289,7 +250,6 @@ const MarkerHeatmap = ({ experimentId }) => {
       || !config?.cellOrder
       || config.cellOrder.length === 0 // Skip if cellOrder is empty
       || !rawMatrix // Ensure matrix exists
-      || isComputingCellOrder
     ) {
       return;
     }
@@ -336,7 +296,7 @@ const MarkerHeatmap = ({ experimentId }) => {
     // Track which selectedTracks this spec was generated with
     setSpecGeneratedWithTracks(config?.selectedTracks);
     setVegaSpec(spec);
-  }, [config?.selectedTracks, config?.cellOrder, config?.selectedGenes, config?.selectedCellSet, downsampledError, isComputingCellOrder, cellOrderCellSet, cellSets.accessible, fetchingGenes, hierarchy, markerGenesLoadingError, markerGenesLoading, rawMatrix]);
+  }, [config?.selectedTracks, config?.cellOrder, config?.selectedGenes, config?.selectedCellSet, downsampledError, cellOrderCellSet, cellSets.accessible, fetchingGenes, hierarchy, markerGenesLoadingError, markerGenesLoading, rawMatrix]);
 
   // Initialize cellOrderCellSet when config is first loaded
   useEffect(() => {
@@ -396,7 +356,7 @@ const MarkerHeatmap = ({ experimentId }) => {
   ];
 
   const onGenesChange = useCallback(_.debounce((newGenes) => {
-    dispatch(loadDownsampledGeneExpression(experimentId, newGenes, plotUuid));
+    dispatch(loadHeatmapGeneExpression(experimentId, newGenes, plotUuid));
   }, 1000), []);
 
   const onGenesSelect = (genes) => {
@@ -406,7 +366,7 @@ const MarkerHeatmap = ({ experimentId }) => {
 
     // Update the config with new selected genes AND load their expression data
     dispatch(updatePlotConfig(plotUuid, { selectedGenes: allGenes }));
-    dispatch(loadDownsampledGeneExpression(experimentId, allGenes, plotUuid));
+    dispatch(loadHeatmapGeneExpression(experimentId, allGenes, plotUuid));
   };
 
   const onReset = () => {
@@ -562,7 +522,7 @@ const MarkerHeatmap = ({ experimentId }) => {
           error={error}
           onClick={() => {
             dispatch(
-              loadDownsampledGeneExpression(experimentId, config.selectedGenes, plotUuid),
+              loadHeatmapGeneExpression(experimentId, config.selectedGenes, plotUuid),
             );
           }}
         />
@@ -576,7 +536,7 @@ const MarkerHeatmap = ({ experimentId }) => {
           error={downsampledError}
           onClick={() => {
             dispatch(
-              loadDownsampledGeneExpression(experimentId, config.selectedGenes, plotUuid),
+              loadHeatmapGeneExpression(experimentId, config.selectedGenes, plotUuid),
             );
           }}
         />
