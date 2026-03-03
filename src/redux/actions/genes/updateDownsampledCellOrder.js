@@ -51,9 +51,18 @@ const updateDownsampledCellOrder = (componentUuid, selectedPoints = null) => (
     cellSetData,
   );
 
-  // Update cellOrder atomically in a single dispatch
-  // Prevents vitessce from seeing intermediate state where cellSets changed but cellOrder hasn't
-  dispatch(updatePlotConfig(componentUuid, { cellOrder, isComputingCellOrder: false }));
+  // Store cellOrder outside of config to prevent render effects from re-triggering
+  // when config changes for other reasons (like selectedGenes updates)
+  dispatch({
+    type: 'componentConfig/updateCellOrder',
+    payload: {
+      componentUuid,
+      cellOrder,
+    },
+  });
+
+  // Mark that we're done computing cellOrder
+  dispatch(updatePlotConfig(componentUuid, { isComputingCellOrder: false }));
 };
 
 export default updateDownsampledCellOrder;

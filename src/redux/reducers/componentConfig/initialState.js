@@ -387,7 +387,7 @@ const dotPlotConfig = {
   useAbsoluteScale: true,
   useMarkerGenes: false,
   nMarkerGenes: 3,
-  selectedGenes: [],
+  selectedGenes: null,
   selectedCellSet: 'louvain',
   selectedPoints: 'All',
   keepValuesOnReset: ['selectedGenes'],

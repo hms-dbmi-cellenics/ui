@@ -53,7 +53,7 @@ const HeatmapPlot = (props) => {
 
   const loadingGenes = useSelector((state) => state.genes.expression.full.loading);
   const downsampledCellOrder = useSelector(
-    (state) => state.componentConfig[COMPONENT_TYPE]?.config?.cellOrder,
+    (state) => state.componentConfig[COMPONENT_TYPE]?.cellOrder,
   );
 
   const { data: selectedGenes, fetching: fetchingGenes } = useSelector(
