@@ -8,7 +8,6 @@ import {
 
 import fetchWork from 'utils/work/fetchWork';
 import getTimeoutForWorkerTask from 'utils/getTimeoutForWorkerTask';
-import updatePlotConfig from 'redux/actions/componentConfig/updatePlotConfig';
 import upperCaseArray from 'utils/upperCaseArray';
 
 const findLoadedGenes = (matrix, selectedGenes) => {
@@ -30,12 +29,6 @@ const loadHeatmapGeneExpression = (
   genes,
   componentUuid,
 ) => async (dispatch, getState) => {
-  // Handle empty genes case
-  if (!genes || genes.length === 0) {
-    dispatch(updatePlotConfig(componentUuid, { selectedGenes: [], cellOrder: null }));
-    return;
-  }
-
   // Always dispatch LOADING first
   dispatch({
     type: HEATMAP_GENES_EXPRESSION_LOADING,

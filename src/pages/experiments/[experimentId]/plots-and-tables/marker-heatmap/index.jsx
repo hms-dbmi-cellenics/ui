@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState, useRef } from 'react';
 import {
   Collapse,
   Skeleton,
@@ -56,6 +56,9 @@ const MarkerHeatmap = ({ experimentId }) => {
   const [specGeneratedWithTracks, setSpecGeneratedWithTracks] = useState(null);
   const [cellOrderCellSet, setCellOrderCellSet] = useState(null);
   const [previousGroupedTracksKey, setPreviousGroupedTracksKey] = useState(null);
+
+  // Track if we've already called loadMarkerGenes on initial load
+  const markerGenesLoadedRef = useRef(false);
 
   const config = useSelector((state) => state.componentConfig[plotUuid]?.config);
   const configIsLoaded = useSelector((state) => !_.isNil(state.componentConfig[plotUuid]));
@@ -146,23 +149,24 @@ const MarkerHeatmap = ({ experimentId }) => {
     if (showAlert) userUpdatedPlotWithChanges({ legend: { showAlert, enabled: !showAlert } });
   }, [configIsLoaded, cellSets.accessible]);
 
-  // If the plot has never been loaded (so has no selectedGenes), then load the marker genes
+  // If the plot has never been loaded (so has no loadedGenes), then load the marker genes once
   useEffect(() => {
-    if (config?.selectedGenes === null) {
-      dispatch(loadMarkerGenes(
-        experimentId,
-        plotUuid,
-        {
-          numGenes: config.nMarkerGenes,
-          groupedTracks: config.groupedTracks,
-          selectedCellSet: config.selectedCellSet,
-          selectedPoints: config.selectedPoints,
-        },
-      ));
-    }
-  }, [config?.selectedGenes, experimentId, plotUuid, dispatch, config]);
+    if (!config || markerGenesLoadedRef.current) return;
 
-  // Fetch gene expression data if selectedGenes change and we don't have all the data yet
+    markerGenesLoadedRef.current = true;
+    dispatch(loadMarkerGenes(
+      experimentId,
+      plotUuid,
+      {
+        numGenes: config.nMarkerGenes,
+        groupedTracks: config.groupedTracks,
+        selectedCellSet: config.selectedCellSet,
+        selectedPoints: config.selectedPoints,
+      },
+    ));
+  }, [config, experimentId, plotUuid, dispatch]);
+
+  // Fetch gene expression data if loadedGenes change and we don't have all the data yet
   useConditionalEffect(() => {
     const expectedConditions = (
       louvainClustersResolution
@@ -170,47 +174,25 @@ const MarkerHeatmap = ({ experimentId }) => {
       && config?.selectedPoints
       && hierarchy?.length
       && selectedCellSetClassAvailable
-      && config?.selectedGenes?.length > 0
+      && loadedGenes?.length > 0
       && !fetchingGenes // Skip if genes are already being fetched
     );
 
     if (!expectedConditions) {
       return;
     }
-
-    // Check if the genes we want to load are already loaded (from the view state)
-    const selectedGenesSet = new Set(config.selectedGenes.map((g) => g.toUpperCase()));
-    const loadedGenesSet = new Set(loadedGenes.map((g) => g.toUpperCase()));
-
-    // If loaded genes already match selected genes, skip loading
-    if (selectedGenesSet.size === loadedGenesSet.size && [...selectedGenesSet].every((g) => loadedGenesSet.has(g))) {
-      return;
-    }
-
-    dispatch(loadHeatmapGeneExpression(experimentId, config?.selectedGenes, plotUuid));
+    dispatch(loadHeatmapGeneExpression(experimentId, loadedGenes, plotUuid));
   }, [
-    config?.selectedGenes,
+    loadedGenes,
     config?.selectedCellSet,
     config?.selectedPoints,
     hierarchy,
     cellSets.accessible,
     louvainClustersResolution,
     fetchingGenes,
-    loadedGenes,
   ]);
 
-  // When marker genes have been loaded, update the config and load their expression data
-  useEffect(() => {
-    if (!loadedGenesAreMarkers || !loadedGenes || loadedGenes.length === 0) {
-      return;
-    }
-
-    // Update config with marker genes
-    dispatch(updatePlotConfig(plotUuid, { selectedGenes: loadedGenes }));
-
-    // Load expression data for the newly loaded marker genes
-    dispatch(loadHeatmapGeneExpression(experimentId, loadedGenes, plotUuid));
-  }, [loadedGenes, loadedGenesAreMarkers, plotUuid, experimentId, dispatch]);
+  // Gene expression loading is handled by useConditionalEffect above when loadedGenes arrives
 
   // Compute cellOrder based on configuration and hidden cells
   // Consolidates multiple triggers: selectedPoints, selectedCellSet, groupedTracks, cellOrder reset, hidden cells
@@ -247,8 +229,8 @@ const MarkerHeatmap = ({ experimentId }) => {
 
     if (
       !cellSets.accessible
-      || !config?.selectedGenes
-      || config.selectedGenes.length === 0
+      || !loadedGenes
+      || loadedGenes.length === 0
       || fetchingGenes // Don't render while expression data is being fetched
       || !hierarchy?.length
       || downsampledError
@@ -277,7 +259,9 @@ const MarkerHeatmap = ({ experimentId }) => {
       matrix.stats = rawMatrix.stats;
     }
 
-    const data = generateVegaData(config.cellOrder, matrix, config, cellSets);
+    // Pass loadedGenes as selectedGenes to vega data generator
+    // This ensures we render the loaded genes instead of config.selectedGenes which may be empty
+    const data = generateVegaData(config.cellOrder, matrix, { ...config, selectedGenes: loadedGenes }, cellSets);
     const spec = generateSpec(config, 'Cluster ID', data, config.showGeneLabels);
 
     spec.description = 'Marker heatmap';
@@ -303,7 +287,7 @@ const MarkerHeatmap = ({ experimentId }) => {
     // Track which selectedTracks this spec was generated with
     setSpecGeneratedWithTracks(config?.selectedTracks);
     setVegaSpec(spec);
-  }, [config?.selectedTracks, config?.cellOrder, config?.selectedGenes, config?.selectedCellSet, downsampledError, cellOrderCellSet, cellSets.accessible, fetchingGenes, hierarchy, markerGenesLoadingError, markerGenesLoading, rawMatrix]);
+  }, [config?.selectedTracks, config?.cellOrder, loadedGenes, config?.selectedCellSet, downsampledError, cellOrderCellSet, cellSets.accessible, fetchingGenes, hierarchy, markerGenesLoadingError, markerGenesLoading, rawMatrix]);
 
   // Initialize cellOrderCellSet when config is first loaded
   useEffect(() => {
@@ -367,12 +351,11 @@ const MarkerHeatmap = ({ experimentId }) => {
   }, 1000), []);
 
   const onGenesSelect = (genes) => {
-    const allGenes = _.uniq([...config?.selectedGenes, ...genes]);
+    const allGenes = _.uniq([...loadedGenes, ...genes]);
 
-    if (_.isEqual(allGenes, config?.selectedGenes)) return;
+    if (_.isEqual(allGenes, loadedGenes)) return;
 
-    // Update the config with new selected genes AND load their expression data
-    dispatch(updatePlotConfig(plotUuid, { selectedGenes: allGenes }));
+    // Load the selected genes (updates genes.expression.views)
     dispatch(loadHeatmapGeneExpression(experimentId, allGenes, plotUuid));
   };
 
@@ -399,12 +382,12 @@ const MarkerHeatmap = ({ experimentId }) => {
         <MarkerGeneSelection
           config={config}
           plotUuid={plotUuid}
-          genesToDisable={config.selectedGenes}
+          genesToDisable={loadedGenes}
           onUpdate={userUpdatedPlotWithChanges}
           onReset={onReset}
           onGenesChange={onGenesChange}
           onGenesSelect={onGenesSelect}
-          showGeneTable={config.selectedGenes?.length > 0}
+          showGeneTable={loadedGenes?.length > 0}
         />
         <div style={{ paddingTop: '10px' }}>
           <p><strong>Gene labels:</strong></p>
@@ -529,7 +512,7 @@ const MarkerHeatmap = ({ experimentId }) => {
           error={error}
           onClick={() => {
             dispatch(
-              loadHeatmapGeneExpression(experimentId, config.selectedGenes, plotUuid),
+              loadHeatmapGeneExpression(experimentId, loadedGenes, plotUuid),
             );
           }}
         />
@@ -543,7 +526,7 @@ const MarkerHeatmap = ({ experimentId }) => {
           error={downsampledError}
           onClick={() => {
             dispatch(
-              loadHeatmapGeneExpression(experimentId, config.selectedGenes, plotUuid),
+              loadHeatmapGeneExpression(experimentId, loadedGenes, plotUuid),
             );
           }}
         />
@@ -588,7 +571,7 @@ const MarkerHeatmap = ({ experimentId }) => {
       );
     }
 
-    if (!config?.selectedGenes || config.selectedGenes.length === 0) {
+    if (!loadedGenes || loadedGenes.length === 0) {
       return (
         <Empty description='Add some genes to this heatmap to get started.' />
       );

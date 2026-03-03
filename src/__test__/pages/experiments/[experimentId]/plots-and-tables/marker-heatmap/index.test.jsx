@@ -675,10 +675,10 @@ describe('Marker heatmap plot', () => {
       userEvent.click(clearAllButton);
     });
 
-    // Verify selectedGenes config is cleared (genes removed even if tree not re-rendered)
+    // Verify selectedGenes is cleared from genes.expression.views (not in componentConfig anymore)
     await waitFor(() => {
-      const config = storeState.getState().componentConfig[plotUuid]?.config;
-      expect(config?.selectedGenes).toEqual([]);
+      const selectedGenes = storeState.getState().genes.expression.views[plotUuid]?.data;
+      expect(selectedGenes).toEqual([]);
     }, { timeout: 5000 });
 
     // Verify plot no longer displays (since there are no genes)
