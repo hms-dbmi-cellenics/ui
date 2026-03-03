@@ -54,7 +54,6 @@ const MarkerHeatmap = ({ experimentId }) => {
 
   const [vegaSpec, setVegaSpec] = useState();
   const [cellOrderCellSet, setCellOrderCellSet] = useState(null);
-  const [previousGroupedTracksKey, setPreviousGroupedTracksKey] = useState(null);
 
   const config = useSelector((state) => state.componentConfig[plotUuid]?.config);
   const configIsLoaded = useSelector((state) => !_.isNil(state.componentConfig[plotUuid]));
@@ -161,7 +160,6 @@ const MarkerHeatmap = ({ experimentId }) => {
   // Handles both initial load (selectedGenes = null) and hard reload (selectedGenes = [])
   useEffect(() => {
     if (!config || !config.selectedGenes || config.selectedGenes.length === 0) {
-      console.log('[Load Marker Genes Effect] selectedGenes is empty, loading marker genes');
       dispatch(loadMarkerGenes(
         experimentId,
         plotUuid,
@@ -184,7 +182,6 @@ const MarkerHeatmap = ({ experimentId }) => {
   // Clear the spec when marker genes start loading to prevent showing stale spec with old genes
   useEffect(() => {
     if (markerGenesLoading) {
-      console.log('[Clear Spec Effect] Marker genes loading, clearing spec to prevent stale render');
       setVegaSpec(undefined);
     }
   }, [markerGenesLoading]);
@@ -224,48 +221,24 @@ const MarkerHeatmap = ({ experimentId }) => {
 
   // When loadedGenes changes (from deletions or additions), sync back to config
   useConditionalEffect(() => {
-    console.log('[Gene Sync Effect] loadedGenes changed:', {
-      count: loadedGenes.length,
-      genes: loadedGenes.slice(0, 3),
-      loadedGenesAreMarkers,
-    });
-
     if (!config || _.isEqual(loadedGenes, config.selectedGenes)) {
-      console.log('[Gene Sync Effect] Skipping - genes unchanged or config missing');
       return;
     }
 
     // Update config with the new gene list (from loadMarkerGenes or direct gene operations)
-    console.log('[Gene Sync Effect] Syncing loadedGenes to config.selectedGenes');
     dispatch(updatePlotConfig(plotUuid, { selectedGenes: loadedGenes }));
   }, [loadedGenes]);
 
   // Compute cellOrder based on configuration and hidden cells
   // Consolidates multiple triggers: selectedPoints, selectedCellSet, groupedTracks, cellOrder reset, hidden cells
   useConditionalEffect(() => {
-    console.log('[cellOrder Effect] Triggered with:', {
-      selectedCellSet: selectedCellSetConfig,
-      groupedTracks: config?.groupedTracks,
-      cellSetsAccessible: cellSets.accessible,
-      hierarchyLength: cellSets.hierarchy?.length,
-    });
-
     if (!config?.groupedTracks || !config?.selectedCellSet) {
-      console.log('[cellOrder Effect] Early return - missing groupedTracks or selectedCellSet');
       return;
     }
 
     // Don't compute cellOrder until cellSets are actually loaded
     if (!cellSets.accessible || !cellSets.hierarchy?.length) {
-      console.log('[cellOrder Effect] Early return - cellSets not loaded');
       return;
-    }
-
-    console.log('[cellOrder Effect] Computing cellOrder for selectedCellSet:', selectedCellSetConfig);
-
-    const currentKey = JSON.stringify(config.groupedTracks);
-    if (currentKey !== previousGroupedTracksKey) {
-      setPreviousGroupedTracksKey(currentKey);
     }
 
     // Reset cellOrder to null (stored separately now to prevent config object churn)
@@ -285,22 +258,13 @@ const MarkerHeatmap = ({ experimentId }) => {
   ]);
 
   useEffect(() => {
-    console.log('[Render Effect] Triggered with loadedGenes:', {
-      count: loadedGenes?.length,
-      genes: loadedGenes?.slice(0, 3),
-      cellOrderLength: cellOrder?.length,
-      selectedTracks: selectedTracks?.length,
-    });
-
     // Don't render if cellOrder is stale (computed for different cellSet)
     if (cellOrderCellSet !== selectedCellSetConfig) {
-      console.log('[Render Effect] Early return - cellOrderCellSet mismatch');
       return;
     }
 
     // Don't create spec while marker genes are loading (prevents stale spec recreation)
     if (markerGenesLoading) {
-      console.log('[Render Effect] Early return - marker genes still loading');
       return;
     }
 
@@ -316,28 +280,16 @@ const MarkerHeatmap = ({ experimentId }) => {
       || cellOrder.length === 0 // Skip if cellOrder is empty
       || !rawMatrix // Ensure matrix exists
     ) {
-      console.log('[Render Effect] Early return - preconditions not met', {
-        notAccessible: !cellSets.accessible,
-        noLoadedGenes: !loadedGenes || loadedGenes.length === 0,
-        fetchingGenes,
-        noHierarchy: !hierarchy?.length,
-        downsampledError: !!downsampledError,
-        markerGenesLoadingError: !!markerGenesLoadingError,
-        markerGenesLoading,
-        noCellOrder: !cellOrder || cellOrder.length === 0,
-        noRawMatrix: !rawMatrix,
-      });
+
       return;
     }
 
     // Check that the expression data has actually been loaded into the matrix
     // Just having geneIndexes isn't enough - we need the rawGeneExpressions data
     const [cellCount, geneCount] = rawMatrix?.rawGeneExpressions?.size?.() || [0, 0];
-    console.log('[Render Effect] Matrix size check', { loadedGenesCount: loadedGenes.length, geneCount, cellCount });
 
     if (!geneCount || geneCount === 0) {
       // Data not ready yet, wait for the expression values to be populated
-      console.log('[Render Effect] No genes in matrix yet, returning');
       return;
     }
 
@@ -346,20 +298,9 @@ const MarkerHeatmap = ({ experimentId }) => {
     // We only care that all genes in loadedGenes are present in the matrix
     const matrixGeneIndexes = rawMatrix?.geneIndexes || {};
     const allGenesAvailable = loadedGenes.every((gene) => matrixGeneIndexes[gene] !== undefined);
-    const missingGenes = loadedGenes.filter((gene) => matrixGeneIndexes[gene] === undefined);
-
-    console.log('[Render Effect] Gene availability check', {
-      loadedGenes: loadedGenes.slice(0, 3),
-      totalLoadedGenes: loadedGenes.length,
-      matrixGeneCount: Object.keys(matrixGeneIndexes).length,
-      allGenesAvailable,
-      missingGenes: missingGenes.slice(0, 3),
-      totalMissing: missingGenes.length,
-    });
 
     if (!allGenesAvailable) {
       // Not all genes are in the matrix yet, wait for expression data to be fully loaded
-      console.log('[Render Effect] Not all genes available, returning');
       return;
     }
 
@@ -370,8 +311,6 @@ const MarkerHeatmap = ({ experimentId }) => {
       matrix.rawGeneExpressions = rawMatrix.rawGeneExpressions;
       matrix.stats = rawMatrix.stats;
     }
-
-    console.log('[Render Effect] Creating spec with genes:', loadedGenes.slice(0, 5), 'total:', loadedGenes.length);
 
     // Pass loadedGenes as selectedGenes to vega data generator
     // This ensures we render the loaded genes instead of config.selectedGenes which may be empty
@@ -398,7 +337,6 @@ const MarkerHeatmap = ({ experimentId }) => {
     };
     spec.marks.push(extraMarks);
 
-    console.log('[Render Effect] Setting spec with marks:', spec.marks.length, 'genes:', loadedGenes.slice(0, 3), 'total:', loadedGenes.length);
     setVegaSpec(spec);
   }, [selectedTracks, cellOrder, loadedGenes, selectedCellSetConfig, downsampledError, cellOrderCellSet, cellSets.accessible, fetchingGenes, hierarchy, markerGenesLoadingError, markerGenesLoading, rawMatrix]);
 
@@ -693,15 +631,6 @@ const MarkerHeatmap = ({ experimentId }) => {
     // Only render if spec exists and expression data is loaded
     // Don't show the plot while marker genes are loading (even if spec exists with old genes)
     const specIsReady = vegaSpec && !fetchingGenes && !markerGenesLoading;
-
-    console.log('[Render Condition] specIsReady:', {
-      specExists: !!vegaSpec,
-      fetchingGenes,
-      markerGenesLoading,
-      specIsReady,
-      loadedGenesCount: loadedGenes.length,
-      cellOrderLength: cellOrder?.length,
-    });
 
     if (specIsReady) {
       return (
