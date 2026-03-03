@@ -53,7 +53,6 @@ const MarkerHeatmap = ({ experimentId }) => {
   const dispatch = useDispatch();
 
   const [vegaSpec, setVegaSpec] = useState();
-  const [cellOrderCellSet, setCellOrderCellSet] = useState(null);
 
   const config = useSelector((state) => state.componentConfig[plotUuid]?.config);
   const configIsLoaded = useSelector((state) => !_.isNil(state.componentConfig[plotUuid]));
@@ -157,9 +156,10 @@ const MarkerHeatmap = ({ experimentId }) => {
   }, [configIsLoaded, cellSets.accessible]);
 
   // If the plot has never been loaded (so has no selectedGenes), then load the marker genes
+  // Only auto-load on initial render, not when user clears genes (genesHaveBeenLoaded check prevents reset)
   // Handles both initial load (selectedGenes = null) and hard reload (selectedGenes = [])
   useEffect(() => {
-    if (!config || !config.selectedGenes || config.selectedGenes.length === 0) {
+    if (!genesHaveBeenLoaded && (!config || !config.selectedGenes || config.selectedGenes.length === 0)) {
       dispatch(loadMarkerGenes(
         experimentId,
         plotUuid,
@@ -177,6 +177,7 @@ const MarkerHeatmap = ({ experimentId }) => {
     config?.selectedCellSet,
     config?.selectedPoints,
     config?.selectedGenes,
+    genesHaveBeenLoaded,
   ]);
 
   // Clear the spec when marker genes start loading to prevent showing stale spec with old genes
@@ -230,7 +231,7 @@ const MarkerHeatmap = ({ experimentId }) => {
   }, [loadedGenes]);
 
   // Compute cellOrder based on configuration and hidden cells
-  // Consolidates multiple triggers: selectedPoints, selectedCellSet, groupedTracks, cellOrder reset, hidden cells
+  // Watches: selectedPoints, selectedCellSet, groupedTracks, hidden cells
   useConditionalEffect(() => {
     if (!config?.groupedTracks || !config?.selectedCellSet) {
       return;
@@ -241,12 +242,6 @@ const MarkerHeatmap = ({ experimentId }) => {
       return;
     }
 
-    // Reset cellOrder to null (stored separately now to prevent config object churn)
-    dispatch({
-      type: 'componentConfig/updateCellOrder',
-      payload: { componentUuid: plotUuid, cellOrder: null },
-    });
-    setCellOrderCellSet(null);
     dispatch(updateDownsampledCellOrder(plotUuid, config?.selectedPoints || null));
   }, [
     config?.selectedPoints,
@@ -258,29 +253,24 @@ const MarkerHeatmap = ({ experimentId }) => {
   ]);
 
   useEffect(() => {
-    // Don't render if cellOrder is stale (computed for different cellSet)
-    if (cellOrderCellSet !== selectedCellSetConfig) {
-      return;
-    }
-
     // Don't create spec while marker genes are loading (prevents stale spec recreation)
     if (markerGenesLoading) {
       return;
     }
 
+    // Check preconditions: data is loaded and ready
     if (
       !cellSets.accessible
-      || !loadedGenes
-      || loadedGenes.length === 0
-      || fetchingGenes // Don't render while expression data is being fetched
+      || !loadedGenes?.length
       || !hierarchy?.length
-      || downsampledError
-      || markerGenesLoadingError
-      || !cellOrder
-      || cellOrder.length === 0 // Skip if cellOrder is empty
-      || !rawMatrix // Ensure matrix exists
+      || !cellOrder?.length
+      || !rawMatrix
     ) {
+      return;
+    }
 
+    // Check preconditions: no errors and data is not fetching
+    if (fetchingGenes || downsampledError || markerGenesLoadingError) {
       return;
     }
 
@@ -338,15 +328,7 @@ const MarkerHeatmap = ({ experimentId }) => {
     spec.marks.push(extraMarks);
 
     setVegaSpec(spec);
-  }, [selectedTracks, cellOrder, loadedGenes, selectedCellSetConfig, downsampledError, cellOrderCellSet, cellSets.accessible, fetchingGenes, hierarchy, markerGenesLoadingError, markerGenesLoading, rawMatrix]);
-
-  // Initialize cellOrderCellSet when config is first loaded
-  useEffect(() => {
-    // Only initialize once - when cellOrderCellSet is still null and config has selectedCellSet
-    if (cellOrderCellSet === null && selectedCellSetConfig) {
-      setCellOrderCellSet(selectedCellSetConfig);
-    }
-  }, [selectedCellSetConfig, cellOrderCellSet]);
+  }, [selectedTracks, cellOrder, loadedGenes, selectedCellSetConfig, downsampledError, cellSets.accessible, fetchingGenes, hierarchy, markerGenesLoadingError, markerGenesLoading, rawMatrix]);
 
   useEffect(() => {
     dispatch(loadGeneList(experimentId));
