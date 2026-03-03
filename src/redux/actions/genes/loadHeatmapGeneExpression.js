@@ -29,22 +29,21 @@ const loadHeatmapGeneExpression = (
   genes,
   componentUuid,
 ) => async (dispatch, getState) => {
-  // Always dispatch LOADING first
-  dispatch({
-    type: HEATMAP_GENES_EXPRESSION_LOADING,
-    payload: {
-      experimentId, componentUuid, genes, ETag: null,
-    },
-  });
-
   const state = getState();
   const { matrix } = state.genes.expression.full;
   const { genesToLoad } = findLoadedGenes(matrix, genes);
 
   let newGenes = null;
 
-  // Only fetch if we have missing genes
+  // Only dispatch LOADING if we actually have genes to fetch
   if (genesToLoad.length > 0) {
+    dispatch({
+      type: HEATMAP_GENES_EXPRESSION_LOADING,
+      payload: {
+        experimentId, componentUuid, genes: genesToLoad, ETag: null,
+      },
+    });
+
     try {
       const body = { name: 'GeneExpression', genes: genesToLoad };
       const timeout = getTimeoutForWorkerTask(getState(), 'GeneExpression');

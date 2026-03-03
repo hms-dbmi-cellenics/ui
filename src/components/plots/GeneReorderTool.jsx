@@ -20,11 +20,14 @@ const GeneReorderTool = (props) => {
 
   const config = useSelector((state) => state.componentConfig[plotUuid]?.config);
 
+  // Read selectedGenes from the consolidated location in genes.expression.views
+  const selectedGenes = useSelector((state) => state.genes.expression.views[plotUuid]?.data) || [];
+
   const [selectedGenesLocal, setSelectedGenesLocal] = useState([]);
 
   useEffect(() => {
-    setSelectedGenesLocal(config?.selectedGenes);
-  }, [config?.selectedGenes]);
+    setSelectedGenesLocal(selectedGenes);
+  }, [selectedGenes]);
 
   // Tree from antd requires format [{key: , title: }],
   // made from gene names from loadedMarkerGenes and config

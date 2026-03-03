@@ -57,9 +57,6 @@ const MarkerHeatmap = ({ experimentId }) => {
   const [cellOrderCellSet, setCellOrderCellSet] = useState(null);
   const [previousGroupedTracksKey, setPreviousGroupedTracksKey] = useState(null);
 
-  // Track if we've already called loadMarkerGenes on initial load
-  const markerGenesLoadedRef = useRef(false);
-
   const config = useSelector((state) => state.componentConfig[plotUuid]?.config);
   const configIsLoaded = useSelector((state) => !_.isNil(state.componentConfig[plotUuid]));
 
@@ -83,6 +80,11 @@ const MarkerHeatmap = ({ experimentId }) => {
   const { data: loadedGenes = [], markers: loadedGenesAreMarkers = false, fetching: fetchingGenes = false } = useSelector(
     (state) => state.genes.expression.views[plotUuid],
   ) || {};
+
+  // Check if genes have been loaded (to distinguish initial load from gene deletion)
+  const genesHaveBeenLoaded = useSelector(
+    (state) => !_.isNil(state.genes.expression.views[plotUuid]),
+  );
 
   const {
     loading: markerGenesLoading,
@@ -149,11 +151,19 @@ const MarkerHeatmap = ({ experimentId }) => {
     if (showAlert) userUpdatedPlotWithChanges({ legend: { showAlert, enabled: !showAlert } });
   }, [configIsLoaded, cellSets.accessible]);
 
-  // If the plot has never been loaded (so has no loadedGenes), then load the marker genes once
+  // Load initial marker genes when config is first available
+  // Load marker genes on initial load (when genesHaveBeenLoaded is false) OR when in marker genes mode
   useEffect(() => {
-    if (!config || markerGenesLoadedRef.current) return;
+    if (!config) {
+      return;
+    }
 
-    markerGenesLoadedRef.current = true;
+    // Only load if: (1) this is initial load (genesHaveBeenLoaded is false) OR (2) we're in marker genes mode
+    const isInitialLoad = !genesHaveBeenLoaded;
+    if (!isInitialLoad && !config.useMarkerGenes) {
+      return;
+    }
+
     dispatch(loadMarkerGenes(
       experimentId,
       plotUuid,
@@ -164,10 +174,16 @@ const MarkerHeatmap = ({ experimentId }) => {
         selectedPoints: config.selectedPoints,
       },
     ));
-  }, [config, experimentId, plotUuid, dispatch]);
+  }, [config?.nMarkerGenes, config?.groupedTracks, config?.selectedCellSet, config?.selectedPoints, config?.useMarkerGenes, genesHaveBeenLoaded, experimentId, plotUuid, dispatch]);
 
   // Fetch gene expression data if loadedGenes change and we don't have all the data yet
+  // Only run this when we're in marker genes mode (custom genes are handled by onGenesChange)
   useConditionalEffect(() => {
+    // Skip if we're in custom genes mode - those are managed by onGenesChange
+    if (!loadedGenesAreMarkers) {
+      return;
+    }
+
     const expectedConditions = (
       louvainClustersResolution
       && config?.selectedCellSet
@@ -184,6 +200,7 @@ const MarkerHeatmap = ({ experimentId }) => {
     dispatch(loadHeatmapGeneExpression(experimentId, loadedGenes, plotUuid));
   }, [
     loadedGenes,
+    loadedGenesAreMarkers,
     config?.selectedCellSet,
     config?.selectedPoints,
     hierarchy,
@@ -191,8 +208,6 @@ const MarkerHeatmap = ({ experimentId }) => {
     louvainClustersResolution,
     fetchingGenes,
   ]);
-
-  // Gene expression loading is handled by useConditionalEffect above when loadedGenes arrives
 
   // Compute cellOrder based on configuration and hidden cells
   // Consolidates multiple triggers: selectedPoints, selectedCellSet, groupedTracks, cellOrder reset, hidden cells
@@ -346,9 +361,9 @@ const MarkerHeatmap = ({ experimentId }) => {
     },
   ];
 
-  const onGenesChange = useCallback(_.debounce((newGenes) => {
+  const onGenesChange = useCallback((newGenes) => {
     dispatch(loadHeatmapGeneExpression(experimentId, newGenes, plotUuid));
-  }, 1000), []);
+  }, [experimentId, plotUuid, dispatch]);
 
   const onGenesSelect = (genes) => {
     const allGenes = _.uniq([...loadedGenes, ...genes]);
