@@ -3,7 +3,7 @@ import getInitialState from 'redux/reducers/genes/getInitialState';
 
 const downsampledGenesUpdateCellOrder = produce(
   (draft, action) => {
-    const { cellOrder, cellOrderUpdating = false, cellOrderSelectedPoints = null } = action.payload;
+    const { cellOrderUpdating = false, cellOrderSelectedPoints = null } = action.payload;
 
     // Immer allows direct mutation of draft
     if (!draft.expression.downsampled) {
@@ -11,11 +11,7 @@ const downsampledGenesUpdateCellOrder = produce(
       draft.expression.downsampled = getInitialState().expression.downsampled;
     }
 
-    // Only update cellOrder if it's provided in the payload
-    if (cellOrder !== undefined && cellOrder !== null) {
-      // eslint-disable-next-line no-param-reassign
-      draft.expression.downsampled.cellOrder = cellOrder;
-    }
+    // Track cellOrder computation state
     // eslint-disable-next-line no-param-reassign
     draft.expression.downsampled.cellOrderUpdating = cellOrderUpdating;
     // eslint-disable-next-line no-param-reassign

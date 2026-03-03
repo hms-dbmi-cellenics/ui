@@ -68,9 +68,8 @@ describe('updateDownsampledCellOrder Redux action', () => {
 
     const actions = store.getActions();
     expect(actions).toHaveLength(1);
-    expect(actions[0].payload).toHaveProperty('configChanges');
-    expect(actions[0].payload.configChanges).toHaveProperty('cellOrder');
-    expect(actions[0].payload.configChanges.isComputingCellOrder).toBe(false);
+    expect(actions[0].type).toBe('componentConfig/updateCellOrder');
+    expect(actions[0].payload).toHaveProperty('cellOrder');
   });
 
   it('returns early if config is missing selectedCellSet', () => {
@@ -230,7 +229,7 @@ describe('updateDownsampledCellOrder Redux action', () => {
     expect(actions).toHaveLength(1);
   });
 
-  it('marks isComputingCellOrder as false after dispatching', () => {
+  it('dispatches updateCellOrder with computed cellOrder', () => {
     store = mockStore({
       componentConfig: {
         testComponent: {
@@ -247,6 +246,10 @@ describe('updateDownsampledCellOrder Redux action', () => {
     store.dispatch(updateDownsampledCellOrder('testComponent'));
 
     const actions = store.getActions();
-    expect(actions[0].payload.configChanges.isComputingCellOrder).toBe(false);
+    expect(actions).toHaveLength(2);
+    expect(actions[0].type).toBe('componentConfig/updateCellOrder');
+    expect(actions[0].payload).toHaveProperty('cellOrder');
+    expect(actions[1].type).toBe('componentConfig/update');
+    expect(actions[1].payload.configChanges.isComputingCellOrder).toBe(false);
   });
 });

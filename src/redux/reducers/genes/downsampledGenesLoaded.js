@@ -6,8 +6,6 @@ const downsampledGenesLoaded = (state, action) => {
     componentUuid, genes, ETag, newGenes = undefined,
   } = action.payload;
 
-  let cellOrderToStore = state.expression.downsampled.cellOrder;
-
   // If there's any data to store, load it into the full matrix
   // Use pushGeneExpression to append genes (don't replace), in case there's already data
   if (newGenes) {
@@ -15,7 +13,6 @@ const downsampledGenesLoaded = (state, action) => {
       orderedGeneNames,
       rawExpression,
       stats,
-      cellOrder,
     } = newGenes;
 
     // Only push to matrix if rawExpression is provided (i.e., new data from worker)
@@ -25,11 +22,6 @@ const downsampledGenesLoaded = (state, action) => {
         rawExpression,
         stats,
       );
-    }
-
-    // Always update cellOrder if provided (including empty arrays for "no matching cells" case)
-    if (cellOrder !== null && cellOrder !== undefined) {
-      cellOrderToStore = cellOrder;
     }
   }
 
@@ -52,7 +44,6 @@ const downsampledGenesLoaded = (state, action) => {
         ...state.expression.downsampled,
         loading: [],
         error: false,
-        cellOrder: cellOrderToStore,
       },
       full: {
         ...state.expression.full,

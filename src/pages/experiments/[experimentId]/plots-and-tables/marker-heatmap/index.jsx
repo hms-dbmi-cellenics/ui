@@ -61,6 +61,8 @@ const MarkerHeatmap = ({ experimentId }) => {
   // from re-running when other config properties change (colors, sizes, etc)
   // cellOrder is stored separate from config to prevent config object reference changes
   const cellOrder = useSelector((state) => state.componentConfig[plotUuid]?.cellOrder);
+
+
   const selectedTracks = useSelector((state) => state.componentConfig[plotUuid]?.config?.selectedTracks);
   const selectedCellSetConfig = useSelector((state) => state.componentConfig[plotUuid]?.config?.selectedCellSet);
 
@@ -159,15 +161,21 @@ const MarkerHeatmap = ({ experimentId }) => {
   // Only auto-load on initial render, not when user clears genes (genesHaveBeenLoaded check prevents reset)
   // Handles both initial load (selectedGenes = null) and hard reload (selectedGenes = [])
   useEffect(() => {
-    if (!genesHaveBeenLoaded && (!config || !config.selectedGenes || config.selectedGenes.length === 0)) {
+    // Load marker genes if:
+    // 1. Never loaded before (!genesHaveBeenLoaded) AND selectedGenes is empty, OR
+    // 2. selectedGenes was reset to null/empty (genesHaveBeenLoaded=true but selectedGenes became empty)
+    const selectedGenesEmpty = !config?.selectedGenes || config.selectedGenes.length === 0;
+    const shouldLoadMarkers = (!genesHaveBeenLoaded || (genesHaveBeenLoaded && selectedGenesEmpty && config?.selectedGenes === null));
+
+    if (shouldLoadMarkers && config?.nMarkerGenes) {
       dispatch(loadMarkerGenes(
         experimentId,
         plotUuid,
         {
-          numGenes: config?.nMarkerGenes,
-          groupedTracks: config?.groupedTracks,
-          selectedCellSet: config?.selectedCellSet,
-          selectedPoints: config?.selectedPoints,
+          numGenes: config.nMarkerGenes,
+          groupedTracks: config.groupedTracks,
+          selectedCellSet: config.selectedCellSet,
+          selectedPoints: config.selectedPoints,
         },
       ));
     }
@@ -186,6 +194,11 @@ const MarkerHeatmap = ({ experimentId }) => {
       setVegaSpec(undefined);
     }
   }, [markerGenesLoading]);
+
+// When marker genes finish loading, update the plot
+  useEffect(() => {
+    // Just a marker for when gene loading completes
+  }, [markerGenesLoading, config?.selectedGenes]);
 
   // Fetch gene expression data if loadedGenes change and we don't have all the data yet
   // Only run this when we're in marker genes mode (custom genes are handled by onGenesChange)
@@ -247,7 +260,6 @@ const MarkerHeatmap = ({ experimentId }) => {
     config?.selectedPoints,
     selectedCellSetConfig,
     config?.groupedTracks,
-    cellSets.hidden,
     cellSets.accessible,
     cellSets.hierarchy,
   ]);
@@ -257,6 +269,7 @@ const MarkerHeatmap = ({ experimentId }) => {
     if (markerGenesLoading) {
       return;
     }
+
 
     // Check preconditions: data is loaded and ready
     if (

@@ -24,7 +24,6 @@ const getInitialState = () => ({
       loading: [],
       error: false,
       matrix: new ExpressionMatrix(),
-      cellOrder: [],
       cellOrderUpdating: false,
       cellOrderSelectedPoints: null, // Track which selectedPoints cellOrder was computed for
       ETag: null,
