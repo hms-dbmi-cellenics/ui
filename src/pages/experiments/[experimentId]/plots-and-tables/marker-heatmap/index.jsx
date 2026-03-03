@@ -217,6 +217,11 @@ const MarkerHeatmap = ({ experimentId }) => {
   useConditionalEffect(() => {
     if (!config?.groupedTracks || !config?.selectedCellSet) return;
 
+    // Don't compute cellOrder until cellSets are actually loaded
+    if (!cellSets.accessible || !cellSets.hierarchy?.length) {
+      return;
+    }
+
     const currentKey = JSON.stringify(config.groupedTracks);
     if (currentKey !== previousGroupedTracksKey) {
       setPreviousGroupedTracksKey(currentKey);
@@ -230,6 +235,8 @@ const MarkerHeatmap = ({ experimentId }) => {
     config?.selectedCellSet,
     config?.groupedTracks,
     cellSets.hidden,
+    cellSets.accessible,
+    cellSets.hierarchy,
   ]);
 
   useEffect(() => {

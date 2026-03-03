@@ -9,7 +9,7 @@ import React from 'react';
 import { act } from 'react-dom/test-utils';
 import { Provider } from 'react-redux';
 import { loadBackendStatus } from 'redux/actions/backendStatus';
-import { loadDownsampledGeneExpression } from 'redux/actions/genes';
+import { loadHeatmapGeneExpression } from 'redux/actions/genes';
 import updatePlotConfig from 'redux/actions/componentConfig/updatePlotConfig';
 import { makeStore } from 'redux/store';
 import fetchWork from 'utils/work/fetchWork';
@@ -200,7 +200,7 @@ describe('Marker heatmap plot', () => {
       // Update the config with new selectedGenes
       await storeState.dispatch(updatePlotConfig(plotUuid, { selectedGenes: genesToLoad }));
       // Then load the expression data
-      await storeState.dispatch(loadDownsampledGeneExpression(experimentId, genesToLoad, plotUuid));
+      await storeState.dispatch(loadHeatmapGeneExpression(experimentId, genesToLoad, plotUuid));
     });
 
     // Get genes displayed in the tree
@@ -250,7 +250,7 @@ describe('Marker heatmap plot', () => {
     const genesToLoad = [...markerGenesData5.orderedGeneNames, 'FAKEGENE'];
 
     await act(async () => {
-      await storeState.dispatch(loadDownsampledGeneExpression(experimentId, genesToLoad, plotUuid));
+      await storeState.dispatch(loadHeatmapGeneExpression(experimentId, genesToLoad, plotUuid));
     });
 
     // It shouldn't show the plot
@@ -463,7 +463,7 @@ describe('Marker heatmap plot', () => {
 
     // Wait for gene expression to be loaded after marker genes are updated
     await waitFor(() => {
-      // Verify loadDownsampledGeneExpression was called with genes
+      // Verify loadHeatmapGeneExpression was called with genes
       const geneExpressionCalls = fetchWork.mock.calls.filter(
         (call) => call[1].name === 'GeneExpression',
       );
@@ -494,7 +494,7 @@ describe('Marker heatmap plot', () => {
       // Update the config with new selectedGenes (simulating custom gene selection)
       await storeState.dispatch(updatePlotConfig(plotUuid, { selectedGenes: genesToLoad }));
       // Then load the expression data
-      await storeState.dispatch(loadDownsampledGeneExpression(experimentId, genesToLoad, plotUuid));
+      await storeState.dispatch(loadHeatmapGeneExpression(experimentId, genesToLoad, plotUuid));
     });
 
     // Wait for gene expression to be loaded and UI to update
@@ -529,7 +529,7 @@ describe('Marker heatmap plot', () => {
     await act(async () => {
       // Update config and load expression data for combined genes
       await storeState.dispatch(updatePlotConfig(plotUuid, { selectedGenes: combinedGenes }));
-      await storeState.dispatch(loadDownsampledGeneExpression(experimentId, combinedGenes, plotUuid));
+      await storeState.dispatch(loadHeatmapGeneExpression(experimentId, combinedGenes, plotUuid));
     });
 
     // Verify all genes (both marker and custom) appear in the UI
@@ -561,7 +561,7 @@ describe('Marker heatmap plot', () => {
 
     // Load expression data for all 5 marker genes
     await act(async () => {
-      await storeState.dispatch(loadDownsampledGeneExpression(
+      await storeState.dispatch(loadHeatmapGeneExpression(
         experimentId,
         initialGenes,
         plotUuid,
@@ -576,7 +576,7 @@ describe('Marker heatmap plot', () => {
 
     await act(async () => {
       await storeState.dispatch(updatePlotConfig(plotUuid, { selectedGenes: subsetGenes }));
-      await storeState.dispatch(loadDownsampledGeneExpression(
+      await storeState.dispatch(loadHeatmapGeneExpression(
         experimentId,
         subsetGenes,
         plotUuid,
@@ -596,7 +596,7 @@ describe('Marker heatmap plot', () => {
 
     // Load expression data for all 5 marker genes
     await act(async () => {
-      await storeState.dispatch(loadDownsampledGeneExpression(
+      await storeState.dispatch(loadHeatmapGeneExpression(
         experimentId,
         initialGenes,
         plotUuid,
@@ -612,7 +612,7 @@ describe('Marker heatmap plot', () => {
 
     await act(async () => {
       await storeState.dispatch(updatePlotConfig(plotUuid, { selectedGenes: combinedGenes }));
-      await storeState.dispatch(loadDownsampledGeneExpression(
+      await storeState.dispatch(loadHeatmapGeneExpression(
         experimentId,
         combinedGenes,
         plotUuid,
@@ -638,7 +638,7 @@ describe('Marker heatmap plot', () => {
 
     await act(async () => {
       await storeState.dispatch(updatePlotConfig(plotUuid, { selectedGenes: modifiedGenes }));
-      await storeState.dispatch(loadDownsampledGeneExpression(experimentId, modifiedGenes, plotUuid));
+      await storeState.dispatch(loadHeatmapGeneExpression(experimentId, modifiedGenes, plotUuid));
     });
 
     // Verify genes have changed
