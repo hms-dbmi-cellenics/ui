@@ -207,16 +207,6 @@ const MarkerHeatmap = ({ experimentId }) => {
     louvainClustersResolution,
   ]);
 
-  // When loadedGenes changes (from deletions or additions), sync back to config
-  useConditionalEffect(() => {
-    if (!config || _.isEqual(loadedGenes, config.selectedGenes)) {
-      return;
-    }
-
-    // Update config with the new gene list (from loadMarkerGenes or direct gene operations)
-    dispatch(updatePlotConfig(plotUuid, { selectedGenes: loadedGenes }));
-  }, [loadedGenes]);
-
   useEffect(() => {
     // Don't create spec while marker genes are loading (prevents stale spec recreation)
     if (markerGenesLoading || expressionFetching) {
@@ -350,6 +340,9 @@ const MarkerHeatmap = ({ experimentId }) => {
   ];
 
   const onGenesChange = useCallback((newGenes) => {
+    // Update config with the new gene order first (single source of truth)
+    dispatch(updatePlotConfig(plotUuid, { selectedGenes: newGenes }));
+    // Then load gene expression with the new order
     dispatch(loadGeneExpression(experimentId, newGenes, plotUuid));
   }, [experimentId, plotUuid, dispatch]);
 
