@@ -8,7 +8,6 @@ import {
   HEATMAP_GENES_EXPRESSION_LOADED,
 } from 'redux/actionTypes/genes';
 import fetchWork from 'utils/work/fetchWork';
-import updatePlotConfig from 'redux/actions/componentConfig/updatePlotConfig';
 
 import { getTwoGenesExpressionMatrix } from '__test__/utils/ExpressionMatrix/testMatrixes';
 
@@ -16,12 +15,6 @@ const middlewares = [thunk];
 const mockStore = configureMockStore(middlewares);
 
 jest.mock('utils/work/fetchWork');
-jest.mock('redux/actions/componentConfig/updatePlotConfig', () => jest.fn(
-  (componentUuid, configChanges) => ({
-    type: 'UPDATE_PLOT_CONFIG',
-    payload: { componentUuid, configChanges },
-  }),
-));
 jest.mock('utils/work/getHeatmapCellOrder', () => jest.fn(() => [0, 1, 2, 3, 4]));
 
 describe('loadHeatmapGeneExpression Redux action - expression matrix data check', () => {
