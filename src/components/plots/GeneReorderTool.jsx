@@ -19,8 +19,8 @@ const GeneReorderTool = (props) => {
 
   const config = useSelector((state) => state.componentConfig[plotUuid]?.config);
 
-  // Read selectedGenes from the consolidated location in genes.expression.views
-  const selectedGenes = useSelector((state) => state.genes.expression.views[plotUuid]?.data) || [];
+  // Read selectedGenes from config
+  const selectedGenes = config?.selectedGenes || [];
 
   const [selectedGenesLocal, setSelectedGenesLocal] = useState([]);
 
@@ -49,14 +49,13 @@ const GeneReorderTool = (props) => {
   }, [selectedGenesLocal]);
 
   // geneKey is equivalent to it's index, moves a gene from pos geneKey to newPosition
-  // Triggers UI update via onReorder callback (which updates genes.expression.views)
+  // Triggers UI update via onReorder callback (which updates config.selectedGenes)
   const onGeneReorder = (geneKey, newPosition) => {
     const oldOrder = geneTreeData.map((treeNode) => treeNode.title);
 
     const newOrder = arrayMoveImmutable(Object.values(oldOrder), geneKey, newPosition);
 
-    // Call the callback to update genes.expression.views (the actual displayed genes location)
-    // The marker-heatmap sync effect will then update config.selectedGenes
+    // Call the callback to update config.selectedGenes
     if (onReorder) {
       onReorder(newOrder);
     }

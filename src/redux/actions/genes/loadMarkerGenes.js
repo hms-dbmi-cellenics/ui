@@ -3,38 +3,24 @@ import {
 } from 'redux/actionTypes/genes';
 
 import fetchWork from 'utils/work/fetchWork';
-import getHeatmapCellOrder from 'utils/work/getHeatmapCellOrder';
 import getTimeoutForWorkerTask from 'utils/getTimeoutForWorkerTask';
 import handleError from 'utils/http/handleError';
 import endUserMessages from 'utils/endUserMessages';
+import { updatePlotConfig } from 'redux/actions/componentConfig';
 
 const loadMarkerGenes = (
   experimentId, plotUuid, options = {},
 ) => async (dispatch, getState) => {
   const {
     numGenes = 5,
-    groupedTracks = ['louvain', 'sample'],
-    selectedCellSetKey = 'louvain',
-    selectedPoints = 'All',
-    hiddenCellSets = [],
+    selectedCellSet = 'louvain',
   } = options;
-
-  // Calculate cell order for downsampling on the client side
-  const state = getState();
-  const cellSetData = state.cellSets;
-  const cellOrder = getHeatmapCellOrder(
-    selectedCellSetKey,
-    groupedTracks,
-    selectedPoints,
-    hiddenCellSets,
-    cellSetData,
-  );
 
   // Send request to worker for marker genes (no downsampling in worker since we moved it to UI)
   const body = {
     name: 'MarkerHeatmap',
     nGenes: numGenes,
-    selectedCellSet: selectedCellSetKey,
+    selectedCellSet,
   };
 
   try {
@@ -59,13 +45,6 @@ const loadMarkerGenes = (
       },
     );
 
-    // If we had a previous request with a different ETag, that means a newer request
-    // was sent while this one was in flight, so skip processing this stale response
-    const currentETag = getState().genes.expression.downsampled.ETag;
-    if (currentETag !== null && currentETag !== requestETag) {
-      return;
-    }
-
     dispatch({
       type: MARKER_GENES_LOADED,
       payload: {
@@ -73,10 +52,12 @@ const loadMarkerGenes = (
         ETag: requestETag,
         data: {
           orderedGeneNames,
-          cellOrder,
         },
       },
     });
+
+    // Sync the ordered marker genes to config as the single source of truth for gene ordering
+    dispatch(updatePlotConfig(plotUuid, { selectedGenes: orderedGeneNames }));
   } catch (e) {
     if (e.message.includes('No cells found')) {
       dispatch({
@@ -85,10 +66,12 @@ const loadMarkerGenes = (
           plotUuid,
           data: {
             orderedGeneNames: [],
-            cellOrder: [],
           },
         },
       });
+
+      // Empty result still needs to update config
+      dispatch(updatePlotConfig(plotUuid, { selectedGenes: [] }));
 
       return;
     }

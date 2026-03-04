@@ -8,6 +8,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import _ from 'lodash';
 import { PlusOutlined, RedoOutlined, MinusOutlined } from '@ant-design/icons';
 import { loadHeatmapGeneExpression, loadGeneExpression } from 'redux/actions/genes';
+import { updatePlotConfig } from 'redux/actions/componentConfig';
 
 const geneOperations = {
   ADD: 'add',
@@ -22,17 +23,21 @@ const ComponentActions = (props) => {
 
   const dispatch = useDispatch();
   const selectedGenes = useSelector((state) => state.genes.selected);
-  const displayedGenes = useSelector((state) => state.genes.expression?.views[componentType]?.data);
+  const config = useSelector((state) => state.componentConfig[componentType]?.config) || {};
+  const displayedGenes = config.selectedGenes || [];
 
   const performGeneOperation = (genesOperation) => {
     let newGenes = _.cloneDeep(selectedGenes);
 
-    if (genesOperation === geneOperations.ADD && displayedGenes) {
+    if (genesOperation === geneOperations.ADD && displayedGenes.length > 0) {
       newGenes = Array.from(new Set(displayedGenes.concat(selectedGenes)));
     }
-    if (genesOperation === geneOperations.REMOVE && displayedGenes) {
+    if (genesOperation === geneOperations.REMOVE && displayedGenes.length > 0) {
       newGenes = displayedGenes.filter((gene) => !selectedGenes.includes(gene));
     }
+
+    // Update config with new gene list
+    dispatch(updatePlotConfig(componentType, { selectedGenes: newGenes }));
 
     if (useDownsampledExpression) {
       dispatch(loadHeatmapGeneExpression(experimentId, newGenes, componentType));

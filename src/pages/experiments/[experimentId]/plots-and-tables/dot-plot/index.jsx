@@ -307,7 +307,7 @@ const DotPlotPage = (props) => {
     if (_.isEmpty(geneData) || !config || highestGenesLoadedRef.current || plotDataLoading) {
       return;
     }
-    if (!config.selectedGenes.length) {
+    if (!config?.selectedGenes.length) {
       setHighestDispersionGenes();
     }
     highestGenesLoadedRef.current = true;
@@ -320,7 +320,7 @@ const DotPlotPage = (props) => {
       || !reorderAfterFetch
     ) return;
 
-    reorderData(config.selectedGenes);
+    reorderData(config?.selectedGenes);
     setReorderAfterFetch(false);
   }, [plotData]);
 
@@ -378,7 +378,7 @@ const DotPlotPage = (props) => {
         <MarkerGeneSelection
           config={config}
           plotUuid={plotUuid}
-          genesToDisable={config.selectedGenes}
+          genesToDisable={config?.selectedGenes}
           onUpdate={updatePlotWithChanges}
           onReset={onReset}
           onGenesChange={onGenesChange}

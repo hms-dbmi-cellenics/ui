@@ -387,7 +387,7 @@ const dotPlotConfig = {
   useAbsoluteScale: true,
   useMarkerGenes: false,
   nMarkerGenes: 3,
-  selectedGenes: null,
+  selectedGenes: [],
   selectedCellSet: 'louvain',
   selectedPoints: 'All',
   keepValuesOnReset: ['selectedGenes'],
@@ -628,6 +628,7 @@ const interactiveHeatmapInitialConfig = {
   selectedPoints: 'All',
   selectedTracks: ['louvain'],
   groupedTracks: ['louvain', 'sample'],
+  selectedGenes: [],
   expressionValue: 'raw',
   legendIsVisible: true,
 };
