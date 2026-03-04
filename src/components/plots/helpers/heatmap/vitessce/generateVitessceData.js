@@ -23,16 +23,12 @@ const generateVitessceData = (
     cellSets,
   );
 
-  // filter out hidden cells (in addition to what getHeatmapCellOrder handles)
-  const hiddenCells = union([...cellSets.hidden], cellSets.properties);
-  const cellOrderFiltered = cellOrder.filter((cell) => !hiddenCells.has(cell));
-
   const trackColorData = generateVitessceHeatmapTracksData(
-    selectedTracks, cellSets, cellOrderFiltered,
+    selectedTracks, cellSets, cellOrder,
   );
 
   const vitessceMatrix = generateVitessceHeatmapExpressionsMatrix(
-    cellOrderFiltered,
+    cellOrder,
     selectedGenes,
     expressionMatrix,
   );
@@ -43,7 +39,7 @@ const generateVitessceData = (
   const result = {
     expressionMatrix: {
       cols: selectedGenes,
-      rows: cellOrderFiltered.map((x) => `${x}`),
+      rows: cellOrder.map((x) => `${x}`),
       matrix: Uint8Array.from(vitessceMatrix),
     },
     metadataTracks: {
