@@ -24,7 +24,7 @@ import mockAPI, {
 import HeatmapPlot from 'components/data-exploration/heatmap/HeatmapPlot';
 
 import { loadProcessingSettings } from 'redux/actions/experimentSettings';
-import { loadHeatmapGeneExpression, loadMarkerGenes } from 'redux/actions/genes';
+import { loadGeneExpression, loadMarkerGenes } from 'redux/actions/genes';
 import { loadCellSets } from 'redux/actions/cellSets';
 import { loadBackendStatus } from 'redux/actions/backendStatus';
 import { loadComponentConfig } from 'redux/actions/componentConfig';
@@ -132,7 +132,7 @@ describe('HeatmapPlot', () => {
     });
 
     await act(async () => {
-      await storeState.dispatch(loadHeatmapGeneExpression(
+      await storeState.dispatch(loadGeneExpression(
         experimentId,
         markerGenesData5.orderedGeneNames.slice(0, 5),
         COMPONENT_TYPE,
@@ -188,7 +188,7 @@ describe('HeatmapPlot', () => {
 
     // Then load some expression data
     await act(async () => {
-      await storeState.dispatch(loadHeatmapGeneExpression(
+      await storeState.dispatch(loadGeneExpression(
         experimentId,
         markerGenesData5.orderedGeneNames.slice(0, 5),
         COMPONENT_TYPE,
@@ -228,7 +228,7 @@ describe('HeatmapPlot', () => {
     });
 
     await act(async () => {
-      await storeState.dispatch(loadHeatmapGeneExpression(
+      await storeState.dispatch(loadGeneExpression(
         experimentId,
         markerGenesData5.orderedGeneNames.slice(0, 5),
         COMPONENT_TYPE,
@@ -248,7 +248,7 @@ describe('HeatmapPlot', () => {
       .mockImplementationOnce(() => Promise.reject(new Error('Some error idk')));
 
     await act(async () => {
-      await storeState.dispatch(loadHeatmapGeneExpression(experimentId, [...markerGenesData5.orderedGeneNames, 'loading_gene_id'], 'interactiveHeatmap'));
+      await storeState.dispatch(loadGeneExpression(experimentId, [...markerGenesData5.orderedGeneNames, 'loading_gene_id'], 'interactiveHeatmap'));
     });
 
     // Error screen shows up
@@ -266,7 +266,7 @@ describe('HeatmapPlot', () => {
     });
 
     await act(async () => {
-      await storeState.dispatch(loadHeatmapGeneExpression(
+      await storeState.dispatch(loadGeneExpression(
         experimentId,
         markerGenesData5.orderedGeneNames.slice(0, 5),
         COMPONENT_TYPE,
@@ -322,7 +322,7 @@ describe('HeatmapPlot', () => {
     });
 
     await act(async () => {
-      await storeState.dispatch(loadHeatmapGeneExpression(
+      await storeState.dispatch(loadGeneExpression(
         experimentId,
         markerGenesData5.orderedGeneNames.slice(0, 5),
         COMPONENT_TYPE,
@@ -364,7 +364,7 @@ describe('HeatmapPlot', () => {
     });
 
     await act(async () => {
-      await storeState.dispatch(loadHeatmapGeneExpression(
+      await storeState.dispatch(loadGeneExpression(
         experimentId,
         markerGenesData5.orderedGeneNames.slice(0, 5),
         COMPONENT_TYPE,
@@ -448,7 +448,7 @@ describe('HeatmapPlot', () => {
     });
 
     await act(async () => {
-      await storeState.dispatch(loadHeatmapGeneExpression(
+      await storeState.dispatch(loadGeneExpression(
         experimentId,
         initialGenes,
         COMPONENT_TYPE,
@@ -462,7 +462,7 @@ describe('HeatmapPlot', () => {
 
     // Simulate overwrite: dispatch action with completely new genes
     await act(async () => {
-      await storeState.dispatch(loadHeatmapGeneExpression(
+      await storeState.dispatch(loadGeneExpression(
         experimentId,
         overwriteGenes, // Completely new set of genes
         COMPONENT_TYPE,
@@ -488,7 +488,7 @@ describe('HeatmapPlot', () => {
     });
 
     await act(async () => {
-      await storeState.dispatch(loadHeatmapGeneExpression(
+      await storeState.dispatch(loadGeneExpression(
         experimentId,
         initialGenes, // A, B
         COMPONENT_TYPE,
@@ -504,7 +504,7 @@ describe('HeatmapPlot', () => {
 
     // Simulate overwrite with the same genes A, B already in matrix
     await act(async () => {
-      await storeState.dispatch(loadHeatmapGeneExpression(
+      await storeState.dispatch(loadGeneExpression(
         experimentId,
         initialGenes, // Same genes A, B
         COMPONENT_TYPE,
@@ -529,7 +529,7 @@ describe('HeatmapPlot', () => {
     });
 
     await act(async () => {
-      await storeState.dispatch(loadHeatmapGeneExpression(
+      await storeState.dispatch(loadGeneExpression(
         experimentId,
         initialGenes, // A, B, C
         COMPONENT_TYPE,
@@ -545,7 +545,7 @@ describe('HeatmapPlot', () => {
 
     // Simulate overwrite with subset A, B (both already in matrix)
     await act(async () => {
-      await storeState.dispatch(loadHeatmapGeneExpression(
+      await storeState.dispatch(loadGeneExpression(
         experimentId,
         subsetGenes, // A, B - subset of loaded genes
         COMPONENT_TYPE,
@@ -571,7 +571,7 @@ describe('HeatmapPlot', () => {
     });
 
     await act(async () => {
-      await storeState.dispatch(loadHeatmapGeneExpression(
+      await storeState.dispatch(loadGeneExpression(
         experimentId,
         initialGenes,
         COMPONENT_TYPE,
@@ -585,7 +585,7 @@ describe('HeatmapPlot', () => {
 
     // Simulate add: combine initial genes with new genes
     await act(async () => {
-      await storeState.dispatch(loadHeatmapGeneExpression(
+      await storeState.dispatch(loadGeneExpression(
         experimentId,
         expectedCombinedGenes, // Initial + new genes
         COMPONENT_TYPE,
@@ -616,7 +616,7 @@ describe('HeatmapPlot', () => {
     });
 
     await act(async () => {
-      await storeState.dispatch(loadHeatmapGeneExpression(
+      await storeState.dispatch(loadGeneExpression(
         experimentId,
         initialGenes, // A, B, C
         COMPONENT_TYPE,
@@ -641,7 +641,7 @@ describe('HeatmapPlot', () => {
 
     // Simulate add: combine initial genes with new gene not in matrix
     await act(async () => {
-      await storeState.dispatch(loadHeatmapGeneExpression(
+      await storeState.dispatch(loadGeneExpression(
         experimentId,
         expectedCombinedGenes, // A, B, C, UNKNOWNGENE
         COMPONENT_TYPE,

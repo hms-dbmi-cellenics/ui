@@ -2,7 +2,6 @@ import loadGeneExpression from './loadGeneExpression';
 import changeGeneSelection from './changeGeneSelection';
 import loadPaginatedGeneProperties from './loadPaginatedGeneProperties';
 import loadMarkerGenes from './loadMarkerGenes';
-import loadHeatmapGeneExpression from './loadHeatmapGeneExpression';
 import updateDownsampledGeneOrder from './updateDownsampledGeneOrder';
 
 export {
@@ -10,6 +9,5 @@ export {
   changeGeneSelection,
   loadPaginatedGeneProperties,
   loadMarkerGenes,
-  loadHeatmapGeneExpression,
   updateDownsampledGeneOrder,
 };

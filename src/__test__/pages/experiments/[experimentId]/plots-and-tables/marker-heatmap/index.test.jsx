@@ -9,7 +9,7 @@ import React from 'react';
 import { act } from 'react-dom/test-utils';
 import { Provider } from 'react-redux';
 import { loadBackendStatus } from 'redux/actions/backendStatus';
-import { loadHeatmapGeneExpression } from 'redux/actions/genes';
+import { loadGeneExpression } from 'redux/actions/genes';
 import updatePlotConfig from 'redux/actions/componentConfig/updatePlotConfig';
 import { makeStore } from 'redux/store';
 import fetchWork from 'utils/work/fetchWork';
@@ -200,7 +200,7 @@ describe('Marker heatmap plot', () => {
       // Update the config with new selectedGenes
       await storeState.dispatch(updatePlotConfig(plotUuid, { selectedGenes: genesToLoad }));
       // Then load the expression data
-      await storeState.dispatch(loadHeatmapGeneExpression(experimentId, genesToLoad, plotUuid));
+      await storeState.dispatch(loadGeneExpression(experimentId, genesToLoad, plotUuid));
     });
 
     // Get genes displayed in the tree
@@ -470,7 +470,7 @@ describe('Marker heatmap plot', () => {
 
     // Wait for gene expression to be loaded after marker genes are updated
     await waitFor(() => {
-      // Verify loadHeatmapGeneExpression was called with genes
+      // Verify loadGeneExpression was called with genes
       const geneExpressionCalls = fetchWork.mock.calls.filter(
         (call) => call[1].name === 'GeneExpression',
       );
@@ -501,7 +501,7 @@ describe('Marker heatmap plot', () => {
       // Update the config with new selectedGenes (simulating custom gene selection)
       await storeState.dispatch(updatePlotConfig(plotUuid, { selectedGenes: genesToLoad }));
       // Then load the expression data
-      await storeState.dispatch(loadHeatmapGeneExpression(experimentId, genesToLoad, plotUuid));
+      await storeState.dispatch(loadGeneExpression(experimentId, genesToLoad, plotUuid));
     });
 
     // Wait for gene expression to be loaded and UI to update
@@ -536,7 +536,7 @@ describe('Marker heatmap plot', () => {
     await act(async () => {
       // Update config and load expression data for combined genes
       await storeState.dispatch(updatePlotConfig(plotUuid, { selectedGenes: combinedGenes }));
-      await storeState.dispatch(loadHeatmapGeneExpression(experimentId, combinedGenes, plotUuid));
+      await storeState.dispatch(loadGeneExpression(experimentId, combinedGenes, plotUuid));
     });
 
     // Verify all genes (both marker and custom) appear in the UI
@@ -568,7 +568,7 @@ describe('Marker heatmap plot', () => {
 
     // Load expression data for all 5 marker genes
     await act(async () => {
-      await storeState.dispatch(loadHeatmapGeneExpression(
+      await storeState.dispatch(loadGeneExpression(
         experimentId,
         initialGenes,
         plotUuid,
@@ -583,7 +583,7 @@ describe('Marker heatmap plot', () => {
 
     await act(async () => {
       await storeState.dispatch(updatePlotConfig(plotUuid, { selectedGenes: subsetGenes }));
-      await storeState.dispatch(loadHeatmapGeneExpression(
+      await storeState.dispatch(loadGeneExpression(
         experimentId,
         subsetGenes,
         plotUuid,
@@ -603,7 +603,7 @@ describe('Marker heatmap plot', () => {
 
     // Load expression data for all 5 marker genes
     await act(async () => {
-      await storeState.dispatch(loadHeatmapGeneExpression(
+      await storeState.dispatch(loadGeneExpression(
         experimentId,
         initialGenes,
         plotUuid,
@@ -619,7 +619,7 @@ describe('Marker heatmap plot', () => {
 
     await act(async () => {
       await storeState.dispatch(updatePlotConfig(plotUuid, { selectedGenes: combinedGenes }));
-      await storeState.dispatch(loadHeatmapGeneExpression(
+      await storeState.dispatch(loadGeneExpression(
         experimentId,
         combinedGenes,
         plotUuid,
@@ -645,7 +645,7 @@ describe('Marker heatmap plot', () => {
 
     await act(async () => {
       await storeState.dispatch(updatePlotConfig(plotUuid, { selectedGenes: modifiedGenes }));
-      await storeState.dispatch(loadHeatmapGeneExpression(experimentId, modifiedGenes, plotUuid));
+      await storeState.dispatch(loadGeneExpression(experimentId, modifiedGenes, plotUuid));
     });
 
     // Verify genes have changed
