@@ -50,15 +50,14 @@ const GeneReorderTool = (props) => {
   }, [selectedGenesLocal]);
 
   // geneKey is equivalent to it's index, moves a gene from pos geneKey to newPosition
-  // dispatches an action to update selectedGenes in config and triggers UI update via onReorder
+  // Triggers UI update via onReorder callback (which updates genes.expression.views)
   const onGeneReorder = (geneKey, newPosition) => {
     const oldOrder = geneTreeData.map((treeNode) => treeNode.title);
 
     const newOrder = arrayMoveImmutable(Object.values(oldOrder), geneKey, newPosition);
 
-    dispatch(updatePlotConfig(plotUuid, { selectedGenes: newOrder }));
-    
-    // Trigger UI update with reordered genes
+    // Call the callback to update genes.expression.views (the actual displayed genes location)
+    // The marker-heatmap sync effect will then update config.selectedGenes
     if (onReorder) {
       onReorder(newOrder);
     }
