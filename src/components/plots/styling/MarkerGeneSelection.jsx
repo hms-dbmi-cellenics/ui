@@ -15,7 +15,14 @@ import updatePlotConfig from 'redux/actions/componentConfig/updatePlotConfig';
 const MarkerGeneSelection = (props) => {
   const dispatch = useDispatch();
   const {
-    config, plotUuid, genesToDisable, onUpdate, onReset, onGenesChange, onGenesSelect, showGeneTable,
+    config,
+    plotUuid,
+    genesToDisable,
+    onUpdate,
+    onReset,
+    onGenesChange,
+    onGenesSelect,
+    showGeneTable,
   } = props;
   const [numGenes, setNumGenes] = useState(config.nMarkerGenes);
 
@@ -28,6 +35,7 @@ const MarkerGeneSelection = (props) => {
             <InputNumber
               aria-label='Number of genes input'
               size='small'
+              min={1}
               value={numGenes}
               onChange={(value) => setNumGenes(value)}
             />
