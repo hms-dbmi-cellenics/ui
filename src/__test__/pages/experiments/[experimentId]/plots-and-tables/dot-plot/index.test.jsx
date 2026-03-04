@@ -399,6 +399,52 @@ describe('Dot plot page', () => {
     // expect the gene only within the options of the search box, antd creates 2 elements
     expect(screen.getAllByText('Apoe').length).toBe(2);
   });
+
+  it('does not call getDotPlot twice when Clear All is clicked then Reset is clicked', async () => {
+    await renderDotPlot(storeState);
+
+    // Wait for initial plot load
+    await waitFor(() => {
+      expect(fetchWork).toHaveBeenCalledTimes(2); // ListGenes + DotPlot
+    });
+
+    // Clear all genes by setting selectedGenes to empty
+    const geneTree = screen.getByRole('tree');
+    const genesBeforeClear = getTreeGenes(geneTree);
+
+    // Remove all genes
+    genesBeforeClear.forEach((gene) => {
+      if (gene) { // Skip empty strings
+        const geneElement = within(geneTree).queryByText(gene);
+        if (geneElement && geneElement.nextSibling) {
+          const removeButton = geneElement.nextSibling.firstChild;
+          userEvent.click(removeButton);
+        }
+      }
+    });
+
+    // Now tree should be empty or show default message
+    const resetButton = screen.getByText('Reset Plot');
+
+    // Record the number of calls before reset
+    const callsBeforeReset = fetchWork.mock.calls.length;
+
+    // Click reset - should only call getDotPlot once, not twice
+    await act(async () => {
+      userEvent.click(resetButton);
+    });
+
+    // Wait a bit for effects to settle
+    await waitFor(() => {
+      expect(screen.getByRole('tree')).toBeInTheDocument();
+    }, { timeout: 2000 });
+
+    // The fix ensures that when Clear All → Reset happens, getDotPlot is only called once
+    // (not once in reset effect and again in main config effect)
+    // We should have exactly one more call than before reset
+    const callsAfterReset = fetchWork.mock.calls.length;
+    expect(callsAfterReset - callsBeforeReset).toBeLessThanOrEqual(1);
+  });
 });
 
 // drag and drop is impossible in RTL, use enzyme
