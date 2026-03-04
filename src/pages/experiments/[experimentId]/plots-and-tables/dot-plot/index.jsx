@@ -101,6 +101,7 @@ const DotPlotPage = (props) => {
   const [reorderAfterFetch, setReorderAfterFetch] = useState(false);
   const [reset, setReset] = useState(false);
   const highestGenesLoadedRef = useRef(false);
+  const resetRef = useRef(false);
 
   const experimentName = useSelector((state) => state.experimentSettings.info.experimentName);
   const csvFileName = plotCsvFilename(experimentName, 'DOT_PLOT', [config?.selectedCellSet, config?.selectedPoints]);
@@ -367,10 +368,13 @@ const DotPlotPage = (props) => {
   useEffect(() => {
     if (!reset) return;
 
+    // Update previousComparedConfig to current config so main effect recognizes
+    // that we've already handled this config change in the reset effect
+    previousComparedConfig.current = getComparedConfig(config);
     dispatch(getDotPlot(experimentId, plotUuid, config));
     setReorderAfterFetch(true);
     setReset(false);
-  }, [reset, experimentId, plotUuid]);
+  }, [config]);
 
   const renderExtraPanels = () => (
     <>
