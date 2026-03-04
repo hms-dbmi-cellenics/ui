@@ -6,6 +6,7 @@ import React from 'react';
 import { act } from 'react-dom/test-utils';
 import { Provider } from 'react-redux';
 import configureStore from 'redux-mock-store';
+import thunk from 'redux-thunk';
 
 import { initialPlotConfigStates } from 'redux/reducers/componentConfig/initialState';
 import MarkerGeneSelection from 'components/plots/styling/MarkerGeneSelection';
@@ -35,8 +36,8 @@ jest.mock('components/plots/GeneSearchBar', () => () => 'MockedGeneReorderSearch
 
 const markerGeneSelectionFactory = createTestComponentFactory(MarkerGeneSelection, defaultProps);
 
-const mockStore = configureStore([]);
-const store = mockStore({});
+const mockStoreWithThunk = configureStore([thunk]);
+const store = mockStoreWithThunk({});
 
 describe('MarkerGeneSelection', () => {
   beforeEach(() => {
@@ -69,7 +70,9 @@ describe('MarkerGeneSelection', () => {
 
     await act(async () => {
       render(
-        markerGeneSelectionFactory({ config: mockConfig }),
+        <Provider store={store}>
+          {markerGeneSelectionFactory({ config: mockConfig })}
+        </Provider>,
       );
     });
 

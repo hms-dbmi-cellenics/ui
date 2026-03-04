@@ -6,7 +6,7 @@ const getDotDimensions = (config, numClusters) => {
 
   const numGenes = config.useMarkerGenes
     ? config.nMarkerGenes * numClusters
-    : config.selectedGenes.length;
+    : (config.selectedGenes || []).length;
 
   // Adjustment is added to counter the blowing up of dot sizes
   // when there is a small number of data points. The effect of the

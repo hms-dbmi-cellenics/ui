@@ -162,7 +162,7 @@ const DotPlotPage = (props) => {
     if (!cellSets.accessible || !config) return false;
 
     // If using custom genes, check that there are genes in the list
-    if (!config.useMarkerGenes && config.selectedGenes.length === 0) return false;
+    if (!config.useMarkerGenes && (!config.selectedGenes || config.selectedGenes.length === 0)) return false;
 
     // If using marker genes, check that the selected number is more than 0
     if (config.useMarkerGenes && config.nMarkerGenes === 0) return false;
@@ -252,7 +252,7 @@ const DotPlotPage = (props) => {
   // if all selected genes are removed, deleteData will not run. Remove plotData manually instead
   useEffect(() => {
     if (config?.useMarkerGenes
-      || config?.selectedGenes.length
+      || config?.selectedGenes?.length
       || !plotData?.length
       || !previousComparedConfig.current
     ) return;
@@ -307,7 +307,7 @@ const DotPlotPage = (props) => {
     if (_.isEmpty(geneData) || !config || highestGenesLoadedRef.current || plotDataLoading) {
       return;
     }
-    if (!config.selectedGenes.length) {
+    if (!config.selectedGenes || !config.selectedGenes.length) {
       setHighestDispersionGenes();
     }
     highestGenesLoadedRef.current = true;
@@ -316,7 +316,7 @@ const DotPlotPage = (props) => {
   // When fetching new genes, reorder data to match selected genes
   useEffect(() => {
     if (
-      plotData?.length !== cellSets.hierarchy[0]?.children.length * config?.selectedGenes.length
+      plotData?.length !== cellSets.hierarchy[0]?.children.length * (config?.selectedGenes?.length || 0)
       || !reorderAfterFetch
     ) return;
 
