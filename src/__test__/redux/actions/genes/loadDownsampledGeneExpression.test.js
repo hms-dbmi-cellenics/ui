@@ -139,7 +139,7 @@ describe('loadHeatmapGeneExpression Redux action - expression matrix data check'
     expect(dispatchedActions[0].payload.genes).toEqual(['NewGene']);
   });
 
-  it('clears selectedGenes when genes array is empty', async () => {
+  it('clears selectedGenes and cellOrder when genes array is empty', async () => {
     store = mockStore({
       experimentSettings: {
         info: { experimentId: 'exp123' },
@@ -165,7 +165,7 @@ describe('loadHeatmapGeneExpression Redux action - expression matrix data check'
       'testComponent',
     ));
 
-    // Should call updatePlotConfig to clear genes when none selected
+    // Should call updatePlotConfig to clear genes and cellOrder when none selected
     expect(updatePlotConfig).toHaveBeenCalledWith('testComponent', expect.objectContaining({
       selectedGenes: [],
       cellOrder: null,

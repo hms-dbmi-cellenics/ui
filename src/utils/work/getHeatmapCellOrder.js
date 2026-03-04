@@ -17,6 +17,20 @@
  * @param {number} maxCells - Maximum cells to return after downsampling (default 1000)
  * @returns {number[]} Array of cell IDs to display, downsampled proportionally
  */
+
+/**
+ * Seeded random number generator for reproducible downsampling.
+ * Ensures same inputs always produce same cell order.
+ */
+const createSeededRandom = (seed) => {
+  // Simple linear congruential generator
+  let state = seed;
+  return () => {
+    state = (state * 1103515245 + 12345) & 0x7fffffff;
+    return state / 0x7fffffff;
+  };
+};
+
 const getHeatmapCellOrder = (
   selectedCellSet,
   groupedTracks,
@@ -36,6 +50,15 @@ const getHeatmapCellOrder = (
   }
 
   const { hierarchy, properties } = cellSets;
+
+  // Create a seed from the function inputs to ensure deterministic downsampling
+  const seedString = `${selectedCellSet}|${groupedTracks.join(',')}|${selectedPoints}|${Array.from(hiddenCellSets).join(',')}`;
+  let seed = 0;
+  for (let i = 0; i < seedString.length; i += 1) {
+    seed = ((seed << 5) - seed) + seedString.charCodeAt(i);
+    seed &= seed; // Convert to 32bit integer
+  }
+  const random = createSeededRandom(Math.abs(seed));
 
   // Helper to get all cell IDs in a cell class (root node)
   const getCellClassIds = (key) => {
@@ -185,13 +208,13 @@ const getHeatmapCellOrder = (
       );
 
       if (sampleSize > 0) {
-        // Random sample from bucket
+        // Deterministic sample from bucket using seeded random
         const bucketArray = Array.from(bucket);
         const sample = [];
         const bucketCopy = [...bucketArray];
 
         for (let i = 0; i < sampleSize; i += 1) {
-          const randomIndex = Math.floor(Math.random() * bucketCopy.length);
+          const randomIndex = Math.floor(random() * bucketCopy.length);
           sample.push(bucketCopy[randomIndex]);
           bucketCopy.splice(randomIndex, 1);
         }
@@ -215,4 +238,41 @@ const getHeatmapCellOrder = (
   return result;
 };
 
+/**
+ * Compute which cell sets should be hidden based on user selections
+ * Mirrors the logic in updateDownsampledCellOrder thunk
+ */
+const computeHiddenCellSets = (selectedPoints, cellSets) => {
+  let hiddenCellSets = Array.from(cellSets.hidden || []);
+
+  // Compute which cell sets should be hidden based on selectedPoints
+  if (selectedPoints && selectedPoints !== 'All') {
+    const parts = selectedPoints.split('/');
+    if (parts.length === 2) {
+      const [categoryKey, selectedCellSetKey] = parts;
+      const categoryRoot = cellSets.hierarchy.find(
+        (node) => node.key === categoryKey,
+      );
+
+      if (categoryRoot?.children) {
+        categoryRoot.children.forEach((child) => {
+          if (child.key !== selectedCellSetKey) {
+            if (!hiddenCellSets.includes(child.key)) {
+              hiddenCellSets.push(child.key);
+            }
+          } else {
+            // Include the selected cell set even if it was manually hidden
+            hiddenCellSets = hiddenCellSets.filter(
+              (key) => key !== child.key,
+            );
+          }
+        });
+      }
+    }
+  }
+
+  return hiddenCellSets;
+};
+
+export { computeHiddenCellSets };
 export default getHeatmapCellOrder;
