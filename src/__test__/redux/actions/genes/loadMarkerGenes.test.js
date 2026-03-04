@@ -75,7 +75,7 @@ describe('loadMarkerGenes action', () => {
     await store.dispatch(loadMarkerGenes(experimentId, 'interactiveHeatmap'));
 
     const actions = store.getActions();
-    expect(_.map(actions, 'type')).toEqual([MARKER_GENES_LOADING, MARKER_GENES_LOADED]);
+    expect(_.map(actions, 'type')).toEqual([MARKER_GENES_LOADING, MARKER_GENES_LOADED, 'componentConfig/update']);
     expect(_.map(actions, 'payload')).toMatchSnapshot();
   });
 
@@ -153,7 +153,7 @@ describe('loadMarkerGenes action', () => {
     await store.dispatch(loadMarkerGenes(experimentId, 'interactiveHeatmap'));
 
     const actions = store.getActions();
-    expect(_.map(actions, 'type')).toEqual([MARKER_GENES_LOADING]);
+    expect(_.map(actions, 'type')).toEqual([MARKER_GENES_LOADING, MARKER_GENES_LOADED, 'componentConfig/update']);
     expect(_.map(actions, 'payload')).toMatchSnapshot();
   });
 });

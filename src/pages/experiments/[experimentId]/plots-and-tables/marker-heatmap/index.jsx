@@ -144,12 +144,10 @@ const MarkerHeatmap = ({ experimentId }) => {
     if (showAlert) userUpdatedPlotWithChanges({ legend: { showAlert, enabled: !showAlert } });
   }, [configIsLoaded, cellSets.accessible]);
 
-  // If the plot has never been loaded (so has no selectedGenes), then load the marker genes
-  // Only auto-load on initial render, not when user clears genes
+  // If the plot has never been loaded (so selectedGenes is null), then load the marker genes
+  // Only auto-load on initial render (null), not when user clears genes (empty array)
   useEffect(() => {
-    const selectedGenesEmpty = !config?.selectedGenes || config.selectedGenes.length === 0;
-
-    if (selectedGenesEmpty && config?.nMarkerGenes) {
+    if (config?.selectedGenes === null && config?.nMarkerGenes) {
       dispatch(loadMarkerGenes(
         experimentId,
         plotUuid,
