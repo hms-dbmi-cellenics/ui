@@ -14,7 +14,7 @@ import { Space, Button } from 'antd';
 import { CloseOutlined } from '@ant-design/icons';
 
 const GeneReorderTool = (props) => {
-  const { plotUuid, onDelete } = props;
+  const { plotUuid, onDelete, onReorder } = props;
 
   const dispatch = useDispatch();
 
@@ -50,13 +50,18 @@ const GeneReorderTool = (props) => {
   }, [selectedGenesLocal]);
 
   // geneKey is equivalent to it's index, moves a gene from pos geneKey to newPosition
-  // dispatches an action to update selectedGenes in config
+  // dispatches an action to update selectedGenes in config and triggers UI update via onReorder
   const onGeneReorder = (geneKey, newPosition) => {
     const oldOrder = geneTreeData.map((treeNode) => treeNode.title);
 
     const newOrder = arrayMoveImmutable(Object.values(oldOrder), geneKey, newPosition);
 
     dispatch(updatePlotConfig(plotUuid, { selectedGenes: newOrder }));
+    
+    // Trigger UI update with reordered genes
+    if (onReorder) {
+      onReorder(newOrder);
+    }
   };
 
   const onNodeDelete = (geneKey) => {
@@ -108,11 +113,14 @@ const GeneReorderTool = (props) => {
   );
 };
 
-GeneReorderTool.defaultProps = {};
+GeneReorderTool.defaultProps = {
+  onReorder: null,
+};
 
 GeneReorderTool.propTypes = {
   plotUuid: PropTypes.string.isRequired,
   onDelete: PropTypes.func.isRequired,
+  onReorder: PropTypes.func,
 };
 
 export default GeneReorderTool;

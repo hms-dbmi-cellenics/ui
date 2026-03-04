@@ -162,15 +162,18 @@ describe('Drag and drop enzyme tests', () => {
       node: { dragOver: false },
     };
 
-    tree.getElement().props.onDrop(info);
+    const expectedOrder = arrayMoveImmutable(markerGenesData5.orderedGeneNames, 1, 3);
 
+    // Simulate the drag-drop event
     await act(async () => {
-      component.update();
+      tree.getElement().props.onDrop(info);
+      // Give Redux time to process the action
+      await new Promise((resolve) => setTimeout(resolve, 100));
     });
 
+    // Wait for the actual reorder to take effect
+    component.update();
     const newOrder = getCurrentGeneOrder(component);
-
-    const expectedOrder = arrayMoveImmutable(markerGenesData5.orderedGeneNames, 1, 3);
 
     expect(_.isEqual(newOrder, expectedOrder)).toEqual(true);
   });

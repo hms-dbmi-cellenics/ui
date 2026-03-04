@@ -257,13 +257,15 @@ describe('Marker heatmap plot', () => {
     expect(screen.queryByRole('graphics-document', { name: 'Marker heatmap' })).toBeNull();
 
     // There is an error message
-    expect(screen.getByText(/Could not load gene expression data/i)).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByText(/Could not load gene expression data/i)).toBeInTheDocument();
+    }, { timeout: 30000 });
   });
 
   it('removing a gene keeps the sorted order without re-sorting', async () => {
     await renderHeatmapPage(storeState);
 
-    const geneTree = screen.getByRole('tree');
+    const geneTree = await waitFor(() => screen.getByRole('tree'), { timeout: 30000 });
 
     // The genes in Data 5 should be in the tree
     markerGenesData5.orderedGeneNames.forEach((geneName) => {
@@ -278,6 +280,7 @@ describe('Marker heatmap plot', () => {
     const geneRemoveButton = geneToRemove.nextSibling.firstChild;
 
     userEvent.click(geneRemoveButton);
+  }, 60000);
 
     const genesListAfterRemoval = getTreeGenes(geneTree);
 

@@ -7,7 +7,6 @@ import {
   HEATMAP_GENES_EXPRESSION_LOADING,
   HEATMAP_GENES_EXPRESSION_LOADED,
   HEATMAP_GENES_EXPRESSION_ERROR,
-  HEATMAP_GENES_EXPRESSION_UPDATE_CELL_ORDER,
   HEATMAP_GENES_EXPRESSION_UPDATE_GENE_ORDER,
 } from 'redux/actionTypes/genes';
 
@@ -23,7 +22,6 @@ import genesExpressionError from 'redux/reducers/genes/genesExpressionError';
 
 import downsampledGenesLoading from 'redux/reducers/genes/downsampledGenesLoading';
 import downsampledGenesLoaded from 'redux/reducers/genes/downsampledGenesLoaded';
-import downsampledGenesUpdateCellOrder from 'redux/reducers/genes/downsampledGenesUpdateCellOrder';
 import downsampledGenesUpdateGeneOrder from 'redux/reducers/genes/downsampledGenesUpdateGeneOrder';
 
 import markerGenesLoading from 'redux/reducers/genes/markerGenesLoading';
@@ -74,9 +72,6 @@ const genesReducer = (state = getInitialState(), action) => {
     }
     case HEATMAP_GENES_EXPRESSION_ERROR: {
       return downsampledGenesError(state, action);
-    }
-    case HEATMAP_GENES_EXPRESSION_UPDATE_CELL_ORDER: {
-      return downsampledGenesUpdateCellOrder(state, action);
     }
     case HEATMAP_GENES_EXPRESSION_UPDATE_GENE_ORDER: {
       return downsampledGenesUpdateGeneOrder(state, action);

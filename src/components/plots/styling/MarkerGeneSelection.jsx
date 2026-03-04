@@ -64,6 +64,7 @@ const MarkerGeneSelection = (props) => {
             <GeneReorderTool
               plotUuid={plotUuid}
               onDelete={onGenesChange}
+              onReorder={onGenesChange}
             />
           )}
         <Space size='small'>

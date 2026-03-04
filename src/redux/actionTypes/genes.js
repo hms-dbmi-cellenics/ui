@@ -76,11 +76,6 @@ const HEATMAP_GENES_EXPRESSION_LOADED = `${GENES}/heatmapGenesExpressionLoaded`;
 const HEATMAP_GENES_EXPRESSION_ERROR = `${GENES}/heatmapGenesExpressionError`;
 
 /**
- * Update cell order when hidden cell sets change (without fetching new data)
- */
-const HEATMAP_GENES_EXPRESSION_UPDATE_CELL_ORDER = `${GENES}/heatmapGenesExpressionUpdateCellOrder`;
-
-/**
  * Update ordered gene names for heatmap expression (without refetching data)
  */
 const HEATMAP_GENES_EXPRESSION_UPDATE_GENE_ORDER = `${GENES}/heatmapGenesExpressionUpdateGeneOrder`;
@@ -93,6 +88,5 @@ export {
   HEATMAP_GENES_EXPRESSION_LOADING,
   HEATMAP_GENES_EXPRESSION_LOADED,
   HEATMAP_GENES_EXPRESSION_ERROR,
-  HEATMAP_GENES_EXPRESSION_UPDATE_CELL_ORDER,
   HEATMAP_GENES_EXPRESSION_UPDATE_GENE_ORDER,
 };

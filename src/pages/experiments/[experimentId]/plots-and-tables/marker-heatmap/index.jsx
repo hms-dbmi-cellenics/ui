@@ -232,12 +232,10 @@ const MarkerHeatmap = ({ experimentId }) => {
 
   // When loadedGenes changes (from deletions or additions), sync back to config
   useConditionalEffect(() => {
-    console.log('[DEBUG] loadedGenes changed:', { loadedGenes: loadedGenes?.slice(0, 3), configSelectedGenes: config?.selectedGenes?.slice(0, 3), equal: _.isEqual(loadedGenes, config?.selectedGenes) });
     if (!config || _.isEqual(loadedGenes, config.selectedGenes)) {
       return;
     }
 
-    console.log('[DEBUG] SYNCING loadedGenes back to config - this causes second render!');
     // Update config with the new gene list (from loadMarkerGenes or direct gene operations)
     dispatch(updatePlotConfig(plotUuid, { selectedGenes: loadedGenes }));
   }, [loadedGenes]);
