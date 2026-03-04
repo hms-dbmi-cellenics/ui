@@ -78,11 +78,9 @@ describe('loadHeatmapGeneExpression Redux action - expression matrix data check'
     // Key testing point: verify NO work request is made
     expect(fetchWork).not.toHaveBeenCalled();
     const dispatchedActions = store.getActions();
-    // Should dispatch LOADING then LOADED
-    // cellOrder management is now handled by component effect, not the action
-    expect(dispatchedActions).toHaveLength(2);
-    expect(dispatchedActions[0].type).toBe(HEATMAP_GENES_EXPRESSION_LOADING);
-    expect(dispatchedActions[1].type).toBe(HEATMAP_GENES_EXPRESSION_LOADED);
+    // When all genes are already loaded, only LOADED action is dispatched (no LOADING)
+    expect(dispatchedActions).toHaveLength(1);
+    expect(dispatchedActions[0].type).toBe(HEATMAP_GENES_EXPRESSION_LOADED);
   });
 
   it('dispatches LOADING before attempting to fetch genes', async () => {
@@ -165,11 +163,11 @@ describe('loadHeatmapGeneExpression Redux action - expression matrix data check'
       'testComponent',
     ));
 
-    // Should call updatePlotConfig to clear genes and cellOrder when none selected
-    expect(updatePlotConfig).toHaveBeenCalledWith('testComponent', expect.objectContaining({
-      selectedGenes: [],
-      cellOrder: null,
-    }));
+    // When empty genes array is passed, only LOADED action is dispatched
+    const dispatchedActions = store.getActions();
+    expect(dispatchedActions).toHaveLength(1);
+    expect(dispatchedActions[0].type).toBe(HEATMAP_GENES_EXPRESSION_LOADED);
+    expect(dispatchedActions[0].payload.genes).toEqual([]);
   });
 
   it('handles case-insensitive gene matching for checking if loaded', async () => {
@@ -216,9 +214,9 @@ describe('loadHeatmapGeneExpression Redux action - expression matrix data check'
     expect(fetchWork).not.toHaveBeenCalled();
 
     const dispatchedActions = store.getActions();
-    // cellOrder management is now handled by component effect, not the action
-    expect(dispatchedActions[0].type).toBe(HEATMAP_GENES_EXPRESSION_LOADING);
-    expect(dispatchedActions[1].type).toBe(HEATMAP_GENES_EXPRESSION_LOADED);
+    // When all genes are already loaded, only LOADED action is dispatched (no LOADING)
+    expect(dispatchedActions).toHaveLength(1);
+    expect(dispatchedActions[0].type).toBe(HEATMAP_GENES_EXPRESSION_LOADED);
   });
 
   it('verifies that matrix data availability is checked before making requests', async () => {
