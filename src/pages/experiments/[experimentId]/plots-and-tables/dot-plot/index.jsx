@@ -98,7 +98,6 @@ const DotPlotPage = (props) => {
 
   const cellSets = useSelector(getCellSets());
   const [moreThanTwoGroups, setMoreThanTwoGroups] = useState(false);
-  const [reorderAfterFetch, setReorderAfterFetch] = useState(false);
   const [reset, setReset] = useState(false);
   const highestGenesLoadedRef = useRef(false);
   const resetRef = useRef(false);
@@ -216,31 +215,42 @@ const DotPlotPage = (props) => {
       // previous compared config is null on first load, use [] for previous selected genes instead
       const previousSelected = previousComparedConfig.current?.selectedGenes ?? [];
       const currentSelected = currentComparedConfig.selectedGenes;
-
       const previousUseMarker = previousComparedConfig.current?.useMarkerGenes ?? false;
+      const previousNMarkerGenes = previousComparedConfig.current?.nMarkerGenes ?? config.nMarkerGenes;
+
+      // If ONLY useMarkerGenes changed (but not nMarkerGenes and not selectedGenes), skip
+      // This is handled by updatePlotWithChanges which has conditional logic
+      const useMarkerGenesChanged = config.useMarkerGenes !== previousUseMarker;
+      const onlyUseMarkerGenesChanged = useMarkerGenesChanged
+        && _.isEqual(currentSelected, previousSelected)
+        && config.nMarkerGenes === previousNMarkerGenes;
+
+      if (onlyUseMarkerGenesChanged) {
+        previousComparedConfig.current = currentComparedConfig;
+        return;
+      }
 
       previousComparedConfig.current = currentComparedConfig;
       // if the selected genes don't change
       if (_.isEqual(currentSelected, previousSelected)) {
-        // if switching back from marker genes to custom genes, reorder data
-        if (!config.useMarkerGenes && previousUseMarker) {
-          setReorderAfterFetch(true);
-        }
-
+        // Genes haven't changed but other fields did (cell set, points, etc.)
+        // Fetch new data (spec generator will reorder by selectedGenes)
         dispatch(getDotPlot(experimentId, plotUuid, config));
         return;
       }
 
       // if a gene was added
       if (currentSelected.length > previousSelected.length) {
+        // Gene added, fetch new data (spec generator will reorder by selectedGenes)
         dispatch(getDotPlot(experimentId, plotUuid, config));
-        setReorderAfterFetch(true);
         return;
       }
 
-      // if the genes were reordered
-      if (currentSelected.length === previousSelected.length) {
-        reorderData(currentSelected);
+      // if the genes were reordered (same genes, different order)
+      if (currentSelected.length === previousSelected.length
+        && _.isEqual(_.sortBy(currentSelected), _.sortBy(previousSelected))) {
+        // Just update config (spec generator will reorder when rendering)
+        dispatch(updatePlotConfig(plotUuid, { selectedGenes: currentSelected }));
         return;
       }
 
@@ -287,11 +297,13 @@ const DotPlotPage = (props) => {
   }, [treeScrollable]);
 
   // find genes with highest dispersion from list of genes sorted by name
+  // Always use 3 genes for reset in custom genes mode, not dependent on nMarkerGenes
   const setHighestDispersionGenes = () => {
+    const NUM_GENES_FOR_RESET = 3;
     const highestDispersions = Object.values(geneData)
       .map((gene) => gene.dispersions)
       .sort()
-      .splice(-config.nMarkerGenes);
+      .splice(-NUM_GENES_FOR_RESET);
 
     const getKeyByValue = (value) => Object.keys(geneData)
       .find((key) => geneData[key].dispersions === value);
@@ -314,17 +326,6 @@ const DotPlotPage = (props) => {
     highestGenesLoadedRef.current = true;
   }, [geneData, config]);
 
-  // When fetching new genes, reorder data to match selected genes
-  useEffect(() => {
-    if (
-      plotData?.length !== cellSets.hierarchy[0]?.children.length * config?.selectedGenes.length
-      || !reorderAfterFetch
-    ) return;
-
-    reorderData(config?.selectedGenes);
-    setReorderAfterFetch(false);
-  }, [plotData]);
-
   const getCSVData = () => {
     if (!plotData?.length) return [];
     const newData = plotData?.map(({
@@ -344,12 +345,34 @@ const DotPlotPage = (props) => {
     const updateObj = { axes: { yAxisText: cellSets.properties[selectedCellSet]?.name }, ...obj };
     updatePlotWithChanges(updateObj);
   };
+
   const updatePlotWithChanges = (obj) => {
     dispatch(updatePlotConfig(plotUuid, obj));
+
+    // Only call work requests if relevant fields changed
+    // Toggles of useMarkerGenes without nMarkerGenes change should NOT trigger work requests
+    if (obj.nMarkerGenes) {
+      // When nMarkerGenes changes, call getDotPlot to load marker genes
+      dispatch(getDotPlot(experimentId, plotUuid, { ...config, ...obj }));
+    } else if (obj.selectedGenes) {
+      // When selectedGenes changes, call getDotPlot
+      dispatch(getDotPlot(experimentId, plotUuid, { ...config, ...obj }));
+    }
   };
 
   const onGenesChange = (genes) => {
-    updatePlotWithChanges({ selectedGenes: genes });
+    // Check if this is a reordering (same genes, different order) or an actual change (add/remove)
+    const currentGenes = config?.selectedGenes || [];
+    const isReordering = genes.length === currentGenes.length
+      && _.isEqual(_.sortBy(genes), _.sortBy(currentGenes));
+
+    if (isReordering) {
+      // Just update config without calling getDotPlot - the effect will handle reordering locally
+      dispatch(updatePlotConfig(plotUuid, { selectedGenes: genes }));
+    } else {
+      // Gene added or removed - need to fetch new data
+      updatePlotWithChanges({ selectedGenes: genes });
+    }
   };
 
   const onGenesSelect = (genes) => {
@@ -372,7 +395,6 @@ const DotPlotPage = (props) => {
     // that we've already handled this config change in the reset effect
     previousComparedConfig.current = getComparedConfig(config);
     dispatch(getDotPlot(experimentId, plotUuid, config));
-    setReorderAfterFetch(true);
     setReset(false);
   }, [config]);
 
