@@ -7,7 +7,7 @@ import { useSelector, useDispatch } from 'react-redux';
 
 import _ from 'lodash';
 import { PlusOutlined, RedoOutlined, MinusOutlined } from '@ant-design/icons';
-import { loadHeatmapGeneExpression, loadGeneExpression } from 'redux/actions/genes';
+import { loadGeneExpression } from 'redux/actions/genes';
 import { updatePlotConfig } from 'redux/actions/componentConfig';
 
 const geneOperations = {
@@ -18,7 +18,7 @@ const geneOperations = {
 
 const ComponentActions = (props) => {
   const {
-    experimentId, name, componentType, useDownsampledExpression,
+    experimentId, name, componentType,
   } = props;
 
   const dispatch = useDispatch();
@@ -39,11 +39,7 @@ const ComponentActions = (props) => {
     // Update config with new gene list
     dispatch(updatePlotConfig(componentType, { selectedGenes: newGenes }));
 
-    if (useDownsampledExpression) {
-      dispatch(loadHeatmapGeneExpression(experimentId, newGenes, componentType));
-    } else {
-      dispatch(loadGeneExpression(experimentId, newGenes, componentType));
-    }
+    dispatch(loadGeneExpression(experimentId, newGenes, componentType));
   };
 
   const menu = (
@@ -80,7 +76,6 @@ ComponentActions.propTypes = {
   experimentId: PropTypes.string.isRequired,
   componentType: PropTypes.string.isRequired,
   name: PropTypes.string.isRequired,
-  useDownsampledExpression: PropTypes.bool.isRequired,
 };
 
 export default ComponentActions;

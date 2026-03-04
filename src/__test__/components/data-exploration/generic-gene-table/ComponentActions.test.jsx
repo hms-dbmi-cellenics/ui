@@ -71,7 +71,7 @@ describe('ComponentActions', () => {
 
     component = mount(
       <Provider store={store}>
-        <ComponentActions name='fakeName' experimentId={experimentId} componentType={componentType} useDownsampledExpression={false} />
+        <ComponentActions name='fakeName' experimentId={experimentId} componentType={componentType} />
       </Provider>,
     );
 
@@ -92,7 +92,7 @@ describe('ComponentActions', () => {
 
     component = mount(
       <Provider store={store}>
-        <ComponentActions name='fakeName' experimentId={experimentId} componentType={componentType} useDownsampledExpression={false} />
+        <ComponentActions name='fakeName' experimentId={experimentId} componentType={componentType} />
       </Provider>,
     );
 
@@ -110,7 +110,7 @@ describe('ComponentActions', () => {
 
     component = mount(
       <Provider store={store}>
-        <ComponentActions name='fakeName' experimentId={experimentId} componentType={componentType} useDownsampledExpression={false} />
+        <ComponentActions name='fakeName' experimentId={experimentId} componentType={componentType} />
       </Provider>,
     );
 
@@ -149,7 +149,7 @@ describe('ComponentActions', () => {
 
     component = mount(
       <Provider store={store}>
-        <ComponentActions name='fakeName' experimentId={experimentId} componentType={componentType} useDownsampledExpression={false} />
+        <ComponentActions name='fakeName' experimentId={experimentId} componentType={componentType} />
       </Provider>,
     );
 
@@ -177,7 +177,7 @@ describe('ComponentActions', () => {
 
     component = mount(
       <Provider store={store}>
-        <ComponentActions name='fakeName' experimentId={experimentId} componentType={componentType} useDownsampledExpression={false} />
+        <ComponentActions name='fakeName' experimentId={experimentId} componentType={componentType} />
       </Provider>,
     );
 
