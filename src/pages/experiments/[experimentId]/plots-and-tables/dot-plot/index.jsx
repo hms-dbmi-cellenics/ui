@@ -287,7 +287,7 @@ const DotPlotPage = (props) => {
   }, [treeScrollable]);
 
   // find genes with highest dispersion from list of genes sorted by name
-  const setHighestDispersionGenes = () => {
+  const getHighestDispersionGenes = () => {
     const highestDispersions = Object.values(geneData)
       .map((gene) => gene.dispersions)
       .sort()
@@ -296,11 +296,13 @@ const DotPlotPage = (props) => {
     const getKeyByValue = (value) => Object.keys(geneData)
       .find((key) => geneData[key].dispersions === value);
 
-    const highestDispersionGenes = highestDispersions.map(
+    return highestDispersions.map(
       (dispersion) => getKeyByValue(dispersion),
     );
+  };
 
-    updatePlotWithChanges({ selectedGenes: highestDispersionGenes });
+  const setHighestDispersionGenes = () => {
+    updatePlotWithChanges({ selectedGenes: getHighestDispersionGenes() });
   };
 
   // load initial state, based on highest dispersion genes from all genes
@@ -362,7 +364,11 @@ const DotPlotPage = (props) => {
 
   const onReset = () => {
     setReset(true);
-    setHighestDispersionGenes();
+    // Reset to marker genes mode with highest dispersion genes
+    updatePlotWithChanges({
+      useMarkerGenes: true,
+      selectedGenes: getHighestDispersionGenes(),
+    });
   };
 
   useEffect(() => {
