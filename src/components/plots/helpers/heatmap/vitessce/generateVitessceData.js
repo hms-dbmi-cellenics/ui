@@ -1,6 +1,5 @@
 import generateVitessceHeatmapExpressionsMatrix from 'components/plots/helpers/heatmap/vitessce/utils/generateVitessceHeatmapExpressionsMatrix';
 import generateVitessceHeatmapTracksData from 'components/plots/helpers/heatmap/vitessce/utils/generateVitessceHeatmapTracksData';
-import { union } from 'utils/cellSetOperations';
 import getHeatmapCellOrder, {
   computeHiddenCellSets,
 } from 'utils/work/getHeatmapCellOrder';
