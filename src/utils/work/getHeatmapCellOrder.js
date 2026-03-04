@@ -1,3 +1,6 @@
+import seedrandom from 'seedrandom';
+import lruMemoize from 'lru-memoize';
+
 /**
  * Downsamples cell order for marker heatmap based on:
  * - Selected cell set
@@ -17,19 +20,6 @@
  * @param {number} maxCells - Maximum cells to return after downsampling (default 1000)
  * @returns {number[]} Array of cell IDs to display, downsampled proportionally
  */
-
-/**
- * Seeded random number generator for reproducible downsampling.
- * Ensures same inputs always produce same cell order.
- */
-const createSeededRandom = (seed) => {
-  // Simple linear congruential generator
-  let state = seed;
-  return () => {
-    state = (state * 1103515245 + 12345) & 0x7fffffff;
-    return state / 0x7fffffff;
-  };
-};
 
 const getHeatmapCellOrder = (
   selectedCellSet,
@@ -53,12 +43,7 @@ const getHeatmapCellOrder = (
 
   // Create a seed from the function inputs to ensure deterministic downsampling
   const seedString = `${selectedCellSet}|${groupedTracks.join(',')}|${selectedPoints}|${Array.from(hiddenCellSets).join(',')}`;
-  let seed = 0;
-  for (let i = 0; i < seedString.length; i += 1) {
-    seed = ((seed << 5) - seed) + seedString.charCodeAt(i);
-    seed &= seed; // Convert to 32bit integer
-  }
-  const random = createSeededRandom(Math.abs(seed));
+  const random = seedrandom(seedString);
 
   // Helper to get all cell IDs in a cell class (root node)
   const getCellClassIds = (key) => {
@@ -274,5 +259,8 @@ const computeHiddenCellSets = (selectedPoints, cellSets) => {
   return hiddenCellSets;
 };
 
+// Memoize getHeatmapCellOrder to avoid recomputation with same inputs
+const memoizedGetHeatmapCellOrder = lruMemoize(10)(getHeatmapCellOrder);
+
 export { computeHiddenCellSets };
-export default getHeatmapCellOrder;
+export default memoizedGetHeatmapCellOrder;
