@@ -1,12 +1,29 @@
 import generateVitessceHeatmapExpressionsMatrix from 'components/plots/helpers/heatmap/vitessce/utils/generateVitessceHeatmapExpressionsMatrix';
 import generateVitessceHeatmapTracksData from 'components/plots/helpers/heatmap/vitessce/utils/generateVitessceHeatmapTracksData';
 import { union } from 'utils/cellSetOperations';
+import getHeatmapCellOrder, {
+  computeHiddenCellSets,
+} from 'utils/work/getHeatmapCellOrder';
 
 const generateVitessceData = (
-  cellOrder, selectedTracks,
-  expressionMatrix, selectedGenes, cellSets,
+  selectedTracks,
+  expressionMatrix, selectedGenes, cellSets, heatmapSettings,
 ) => {
-  // filter out hidden cells
+  // Compute cellOrder internally based on heatmap settings
+  const {
+    selectedCellSet = 'louvain', groupedTracks = [], selectedPoints = 'All',
+  } = heatmapSettings || {};
+
+  const hiddenCellSets = computeHiddenCellSets(selectedPoints, cellSets);
+  const cellOrder = getHeatmapCellOrder(
+    selectedCellSet,
+    groupedTracks,
+    selectedPoints,
+    hiddenCellSets,
+    cellSets,
+  );
+
+  // filter out hidden cells (in addition to what getHeatmapCellOrder handles)
   const hiddenCells = union([...cellSets.hidden], cellSets.properties);
   const cellOrderFiltered = cellOrder.filter((cell) => !hiddenCells.has(cell));
 

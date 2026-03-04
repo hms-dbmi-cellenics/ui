@@ -12,7 +12,7 @@ import {
 } from 'redux/selectors';
 
 import {
-  loadHeatmapGeneExpression, loadMarkerGenes, updateDownsampledCellOrder,
+  loadHeatmapGeneExpression, loadMarkerGenes,
 } from 'redux/actions/genes';
 import { loadComponentConfig } from 'redux/actions/componentConfig';
 import { updateCellInfo } from 'redux/actions/cellInfo';
@@ -52,9 +52,6 @@ const HeatmapPlot = (props) => {
   const dispatch = useDispatch();
 
   const loadingGenes = useSelector((state) => state.genes.expression.full.loading);
-  const downsampledCellOrder = useSelector(
-    (state) => state.componentConfig[COMPONENT_TYPE]?.cellOrder,
-  );
 
   const { data: selectedGenes, fetching: fetchingGenes } = useSelector(
     (state) => state.genes.expression.views[COMPONENT_TYPE],
@@ -161,7 +158,6 @@ const HeatmapPlot = (props) => {
     if (
       !selectedGenes?.length
       || !cellSets.hierarchy?.length
-      || !downsampledCellOrder?.length
     ) { return; }
     // Check that the expression data has actually been loaded into the matrix
     // Just having geneIndexes isn't enough - we need the rawGeneExpressions data
@@ -177,21 +173,23 @@ const HeatmapPlot = (props) => {
     // heatmapSettings is is frozen in redux by immer.
 
     const data = generateVitessceData(
-      downsampledCellOrder,
       selectedTracks,
       matrix,
       selectedGenes,
       cellSets,
+      heatmapSettings,
     );
     setHeatmapData(data);
   }, [
     selectedGenes,
-    downsampledCellOrder,
     selectedTracks,
     heatmapGenesLoadedKey,
     cellSets.hidden,
     cellSets.properties,
     cellSets.hierarchy,
+    heatmapSettings?.selectedCellSet,
+    heatmapSettings?.groupedTracks,
+    heatmapSettings?.selectedPoints,
   ]);
 
   useConditionalEffect(() => {
@@ -257,26 +255,6 @@ const HeatmapPlot = (props) => {
       selectedGenes,
     ],
   );
-
-  // Compute cellOrder when cell set configuration or hidden cells change
-  // Use useConditionalEffect to prevent infinite loops when cellOrder updates in Redux
-  // This watches specific properties rather than entire heatmapSettings object
-  useConditionalEffect(() => {
-    if (
-      !cellSets.accessible
-      || !heatmapSettings?.groupedTracks
-      || !heatmapSettings?.selectedCellSet
-      || !heatmapSettings?.selectedPoints
-    ) return;
-
-    dispatch(updateDownsampledCellOrder(COMPONENT_TYPE));
-  }, [
-    cellSets.accessible,
-    heatmapSettings?.groupedTracks,
-    heatmapSettings?.selectedCellSet,
-    heatmapSettings?.selectedPoints,
-    cellSets.hidden,
-  ]);
 
   useEffect(() => {
     if (cellHighlight) {
