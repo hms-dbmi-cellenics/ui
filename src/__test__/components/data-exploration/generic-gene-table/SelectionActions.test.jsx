@@ -16,10 +16,19 @@ import { GENES_DESELECT } from 'redux/actionTypes/genes';
 
 const { Text } = Typography;
 
+const COMPONENT_TYPE = 'interactiveHeatmap';
+
 const initialState = {
   experimentSettings: {
     info: {
       experimentId: fake.EXPERIMENT_ID,
+    },
+  },
+  componentConfig: {
+    [COMPONENT_TYPE]: {
+      config: {
+        selectedGenes: ['CEMIP', 'TIMP3'],
+      },
     },
   },
   genes: {

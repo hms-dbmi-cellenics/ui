@@ -448,6 +448,7 @@ describe('HeatmapPlot', () => {
     });
 
     await act(async () => {
+      await storeState.dispatch(updatePlotConfig(COMPONENT_TYPE, { selectedGenes: initialGenes }));
       await storeState.dispatch(loadGeneExpression(
         experimentId,
         initialGenes,
@@ -462,6 +463,7 @@ describe('HeatmapPlot', () => {
 
     // Simulate overwrite: dispatch action with completely new genes
     await act(async () => {
+      await storeState.dispatch(updatePlotConfig(COMPONENT_TYPE, { selectedGenes: overwriteGenes }));
       await storeState.dispatch(loadGeneExpression(
         experimentId,
         overwriteGenes, // Completely new set of genes
@@ -488,6 +490,7 @@ describe('HeatmapPlot', () => {
     });
 
     await act(async () => {
+      await storeState.dispatch(updatePlotConfig(COMPONENT_TYPE, { selectedGenes: initialGenes }));
       await storeState.dispatch(loadGeneExpression(
         experimentId,
         initialGenes, // A, B
@@ -504,6 +507,7 @@ describe('HeatmapPlot', () => {
 
     // Simulate overwrite with the same genes A, B already in matrix
     await act(async () => {
+      await storeState.dispatch(updatePlotConfig(COMPONENT_TYPE, { selectedGenes: initialGenes }));
       await storeState.dispatch(loadGeneExpression(
         experimentId,
         initialGenes, // Same genes A, B
@@ -529,6 +533,7 @@ describe('HeatmapPlot', () => {
     });
 
     await act(async () => {
+      await storeState.dispatch(updatePlotConfig(COMPONENT_TYPE, { selectedGenes: initialGenes }));
       await storeState.dispatch(loadGeneExpression(
         experimentId,
         initialGenes, // A, B, C
@@ -545,6 +550,7 @@ describe('HeatmapPlot', () => {
 
     // Simulate overwrite with subset A, B (both already in matrix)
     await act(async () => {
+      await storeState.dispatch(updatePlotConfig(COMPONENT_TYPE, { selectedGenes: subsetGenes }));
       await storeState.dispatch(loadGeneExpression(
         experimentId,
         subsetGenes, // A, B - subset of loaded genes
@@ -571,6 +577,7 @@ describe('HeatmapPlot', () => {
     });
 
     await act(async () => {
+      await storeState.dispatch(updatePlotConfig(COMPONENT_TYPE, { selectedGenes: initialGenes }));
       await storeState.dispatch(loadGeneExpression(
         experimentId,
         initialGenes,
@@ -585,6 +592,7 @@ describe('HeatmapPlot', () => {
 
     // Simulate add: combine initial genes with new genes
     await act(async () => {
+      await storeState.dispatch(updatePlotConfig(COMPONENT_TYPE, { selectedGenes: expectedCombinedGenes }));
       await storeState.dispatch(loadGeneExpression(
         experimentId,
         expectedCombinedGenes, // Initial + new genes
@@ -616,6 +624,7 @@ describe('HeatmapPlot', () => {
     });
 
     await act(async () => {
+      await storeState.dispatch(updatePlotConfig(COMPONENT_TYPE, { selectedGenes: initialGenes }));
       await storeState.dispatch(loadGeneExpression(
         experimentId,
         initialGenes, // A, B, C
@@ -641,6 +650,7 @@ describe('HeatmapPlot', () => {
 
     // Simulate add: combine initial genes with new gene not in matrix
     await act(async () => {
+      await storeState.dispatch(updatePlotConfig(COMPONENT_TYPE, { selectedGenes: expectedCombinedGenes }));
       await storeState.dispatch(loadGeneExpression(
         experimentId,
         expectedCombinedGenes, // A, B, C, UNKNOWNGENE

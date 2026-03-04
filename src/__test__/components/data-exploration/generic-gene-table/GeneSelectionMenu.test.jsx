@@ -14,7 +14,15 @@ const mockStore = configureMockStore([thunk]);
 
 let component;
 const experimentId = '1234';
+const COMPONENT_TYPE = 'interactiveHeatmap';
 const initialState = {
+  componentConfig: {
+    [COMPONENT_TYPE]: {
+      config: {
+        selectedGenes: [],
+      },
+    },
+  },
   genes: {
     selected: ['A', 'B', 'C'],
   },
