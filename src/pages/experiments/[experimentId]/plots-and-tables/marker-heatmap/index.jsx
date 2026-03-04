@@ -243,6 +243,32 @@ const MarkerHeatmap = ({ experimentId }) => {
     dispatch(updatePlotConfig(plotUuid, { selectedGenes: loadedGenes }));
   }, [loadedGenes]);
 
+  // When config.selectedGenes changes (from UI reordering or deletion), sync to genes
+  // This handles custom gene selection (not in marker genes mode)
+  useConditionalEffect(() => {
+    if (!config?.selectedGenes || config?.selectedGenes?.length === 0) {
+      return;
+    }
+
+    // Skip if we're in marker genes mode - those are handled by loadMarkerGenes effect
+    if (config?.useMarkerGenes) {
+      return;
+    }
+
+    // Skip if loadedGenes is empty or in initial state (marker genes haven't loaded yet)
+    if (!loadedGenes || loadedGenes.length === 0) {
+      return;
+    }
+
+    // Only dispatch if genes actually changed (not a re-render with same genes)
+    if (_.isEqual(loadedGenes, config.selectedGenes)) {
+      return;
+    }
+
+    // Load the selected genes (will fetch from worker if not already in matrix)
+    dispatch(loadHeatmapGeneExpression(experimentId, config.selectedGenes, plotUuid));
+  }, [config?.selectedGenes, config?.useMarkerGenes, loadedGenes]);
+
   // Compute cellOrder based on configuration and hidden cells
   // Watches: selectedPoints, selectedCellSet, groupedTracks, hidden cells
   useConditionalEffect(() => {

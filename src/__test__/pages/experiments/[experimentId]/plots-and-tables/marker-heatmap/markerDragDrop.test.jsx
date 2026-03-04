@@ -47,6 +47,11 @@ const mockWorkerResponses = {
   MarkerHeatmap: markerGenesData5,
   'FAKEGENE-expression': expressionDataFAKEGENE,
   ListGenes: geneList,
+  GeneExpression: {
+    orderedGeneNames: markerGenesData5.orderedGeneNames,
+    rawExpression: markerGenesData5.rawExpression,
+    stats: markerGenesData5.stats,
+  },
 };
 
 const experimentId = fake.EXPERIMENT_ID;
@@ -105,7 +110,7 @@ describe('Drag and drop enzyme tests', () => {
 
     fetchWork
       .mockReset()
-      .mockImplementation((_experimentId, body) => mockWorkerResponses[body.name]);
+      .mockImplementation((_experimentId, body) => Promise.resolve(mockWorkerResponses[body.name]));
 
     enableFetchMocks();
     fetchMock.resetMocks();

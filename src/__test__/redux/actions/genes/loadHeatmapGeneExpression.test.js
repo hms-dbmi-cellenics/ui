@@ -8,7 +8,6 @@ import {
   HEATMAP_GENES_EXPRESSION_LOADED,
 } from 'redux/actionTypes/genes';
 import fetchWork from 'utils/work/fetchWork';
-import updatePlotConfig from 'redux/actions/componentConfig/updatePlotConfig';
 
 import { getTwoGenesExpressionMatrix } from '__test__/utils/ExpressionMatrix/testMatrixes';
 
@@ -16,12 +15,6 @@ const middlewares = [thunk];
 const mockStore = configureMockStore(middlewares);
 
 jest.mock('utils/work/fetchWork');
-jest.mock('redux/actions/componentConfig/updatePlotConfig', () => jest.fn(
-  (componentUuid, configChanges) => ({
-    type: 'UPDATE_PLOT_CONFIG',
-    payload: { componentUuid, configChanges },
-  }),
-));
 jest.mock('utils/work/getHeatmapCellOrder', () => jest.fn(() => [0, 1, 2, 3, 4]));
 
 describe('loadHeatmapGeneExpression Redux action - expression matrix data check', () => {
@@ -78,11 +71,10 @@ describe('loadHeatmapGeneExpression Redux action - expression matrix data check'
     // Key testing point: verify NO work request is made
     expect(fetchWork).not.toHaveBeenCalled();
     const dispatchedActions = store.getActions();
-    // Should dispatch LOADING then LOADED
+    // If genes are already loaded, only LOADED is dispatched (no LOADING needed)
     // cellOrder management is now handled by component effect, not the action
-    expect(dispatchedActions).toHaveLength(2);
-    expect(dispatchedActions[0].type).toBe(HEATMAP_GENES_EXPRESSION_LOADING);
-    expect(dispatchedActions[1].type).toBe(HEATMAP_GENES_EXPRESSION_LOADED);
+    expect(dispatchedActions).toHaveLength(1);
+    expect(dispatchedActions[0].type).toBe(HEATMAP_GENES_EXPRESSION_LOADED);
   });
 
   it('dispatches LOADING before attempting to fetch genes', async () => {
@@ -165,11 +157,11 @@ describe('loadHeatmapGeneExpression Redux action - expression matrix data check'
       'testComponent',
     ));
 
-    // Should call updatePlotConfig to clear genes when none selected
-    expect(updatePlotConfig).toHaveBeenCalledWith('testComponent', expect.objectContaining({
-      selectedGenes: [],
-      cellOrder: null,
-    }));
+    // Note: cellOrder management is now handled by component effect, not the action
+    // Just verify that LOADED action is dispatched
+    const dispatchedActions = store.getActions();
+    expect(dispatchedActions).toHaveLength(1);
+    expect(dispatchedActions[0].type).toBe(HEATMAP_GENES_EXPRESSION_LOADED);
   });
 
   it('handles case-insensitive gene matching for checking if loaded', async () => {
@@ -216,9 +208,10 @@ describe('loadHeatmapGeneExpression Redux action - expression matrix data check'
     expect(fetchWork).not.toHaveBeenCalled();
 
     const dispatchedActions = store.getActions();
+    // If genes are already loaded, only LOADED is dispatched (no LOADING needed)
     // cellOrder management is now handled by component effect, not the action
-    expect(dispatchedActions[0].type).toBe(HEATMAP_GENES_EXPRESSION_LOADING);
-    expect(dispatchedActions[1].type).toBe(HEATMAP_GENES_EXPRESSION_LOADED);
+    expect(dispatchedActions).toHaveLength(1);
+    expect(dispatchedActions[0].type).toBe(HEATMAP_GENES_EXPRESSION_LOADED);
   });
 
   it('verifies that matrix data availability is checked before making requests', async () => {

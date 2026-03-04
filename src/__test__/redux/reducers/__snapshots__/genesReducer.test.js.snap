@@ -5,7 +5,6 @@ exports[`genesReducer Deselecting all genes updates to empty list 1`] = `
   "expression": {
     "downsampled": {
       "ETag": null,
-      "cellOrder": [],
       "cellOrderSelectedPoints": null,
       "cellOrderUpdating": false,
       "error": false,
@@ -84,7 +83,6 @@ exports[`genesReducer Deselecting non-selected genes is handled gracefully 1`] =
   "expression": {
     "downsampled": {
       "ETag": null,
-      "cellOrder": [],
       "cellOrderSelectedPoints": null,
       "cellOrderUpdating": false,
       "error": false,
@@ -167,7 +165,6 @@ exports[`genesReducer Deselecting part of all genes updates list as set 1`] = `
   "expression": {
     "downsampled": {
       "ETag": null,
-      "cellOrder": [],
       "cellOrderSelectedPoints": null,
       "cellOrderUpdating": false,
       "error": false,
@@ -249,7 +246,6 @@ exports[`genesReducer Error state handled appropriately 1`] = `
   "expression": {
     "downsampled": {
       "ETag": null,
-      "cellOrder": [],
       "cellOrderSelectedPoints": null,
       "cellOrderUpdating": false,
       "error": false,
@@ -334,7 +330,6 @@ exports[`genesReducer Expression loaded state handled appropriately when other t
   "expression": {
     "downsampled": {
       "ETag": null,
-      "cellOrder": [],
       "cellOrderSelectedPoints": null,
       "cellOrderUpdating": false,
       "error": false,
@@ -461,7 +456,6 @@ exports[`genesReducer Loaded paginated state handled appropriately 1`] = `
   "expression": {
     "downsampled": {
       "ETag": null,
-      "cellOrder": [],
       "cellOrderSelectedPoints": null,
       "cellOrderUpdating": false,
       "error": false,
@@ -561,7 +555,6 @@ exports[`genesReducer Loaded paginated state handled appropriately when other th
   "expression": {
     "downsampled": {
       "ETag": null,
-      "cellOrder": [],
       "cellOrderSelectedPoints": null,
       "cellOrderUpdating": false,
       "error": false,
@@ -664,7 +657,6 @@ exports[`genesReducer Loading on error state causes error to reset 1`] = `
   "expression": {
     "downsampled": {
       "ETag": null,
-      "cellOrder": [],
       "cellOrderSelectedPoints": null,
       "cellOrderUpdating": false,
       "error": false,
@@ -752,7 +744,6 @@ exports[`genesReducer Multiple components loading some of same expression trigge
   "expression": {
     "downsampled": {
       "ETag": null,
-      "cellOrder": [],
       "cellOrderSelectedPoints": null,
       "cellOrderUpdating": false,
       "error": false,
@@ -847,7 +838,6 @@ exports[`genesReducer Multiple components loading some of same property triggers
   "expression": {
     "downsampled": {
       "ETag": null,
-      "cellOrder": [],
       "cellOrderSelectedPoints": null,
       "cellOrderUpdating": false,
       "error": false,
@@ -941,7 +931,6 @@ exports[`genesReducer Properties loading triggers appropriate changes 1`] = `
   "expression": {
     "downsampled": {
       "ETag": null,
-      "cellOrder": [],
       "cellOrderSelectedPoints": null,
       "cellOrderUpdating": false,
       "error": false,
@@ -1029,7 +1018,6 @@ exports[`genesReducer Selected genes get added as a set to a non-empty list 1`] 
   "expression": {
     "downsampled": {
       "ETag": null,
-      "cellOrder": [],
       "cellOrderSelectedPoints": null,
       "cellOrderUpdating": false,
       "error": false,
@@ -1112,7 +1100,6 @@ exports[`genesReducer Selected genes get added on empty list 1`] = `
   "expression": {
     "downsampled": {
       "ETag": null,
-      "cellOrder": [],
       "cellOrderSelectedPoints": null,
       "cellOrderUpdating": false,
       "error": false,
@@ -1195,7 +1182,6 @@ exports[`genesReducer Sets error state on expression error action 1`] = `
   "expression": {
     "downsampled": {
       "ETag": null,
-      "cellOrder": [],
       "cellOrderSelectedPoints": null,
       "cellOrderUpdating": false,
       "error": false,
@@ -1280,7 +1266,6 @@ exports[`genesReducer Sets loaded state on expression loading action 1`] = `
   "expression": {
     "downsampled": {
       "ETag": null,
-      "cellOrder": [],
       "cellOrderSelectedPoints": null,
       "cellOrderUpdating": false,
       "error": false,
@@ -1393,7 +1378,6 @@ exports[`genesReducer Sets loading state on expression loading action 1`] = `
   "expression": {
     "downsampled": {
       "ETag": null,
-      "cellOrder": [],
       "cellOrderSelectedPoints": null,
       "cellOrderUpdating": false,
       "error": false,
