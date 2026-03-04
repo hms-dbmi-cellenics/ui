@@ -2,10 +2,8 @@ import React, {
   useEffect, useState,
 } from 'react';
 
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
-
-import { updatePlotConfig } from 'redux/actions/componentConfig';
 
 import { arrayMoveImmutable } from 'utils/arrayUtils';
 import HierarchicalTreeGenes from 'components/plots/hierarchical-tree-genes/HierarchicalTreeGenes';
@@ -15,10 +13,6 @@ import { CloseOutlined } from '@ant-design/icons';
 
 const GeneReorderTool = (props) => {
   const { plotUuid, onDelete, onReorder } = props;
-
-  const dispatch = useDispatch();
-
-  const config = useSelector((state) => state.componentConfig[plotUuid]?.config);
 
   // Read selectedGenes from the consolidated location in genes.expression.views
   const selectedGenes = useSelector((state) => state.genes.expression.views[plotUuid]?.data) || [];
@@ -68,8 +62,6 @@ const GeneReorderTool = (props) => {
     genes.splice(geneKey, 1);
 
     setSelectedGenesLocal(genes);
-
-    dispatch(updatePlotConfig(plotUuid, { selectedGenes: genes }));
 
     onDelete(genes);
   };

@@ -154,15 +154,12 @@ const MarkerHeatmap = ({ experimentId }) => {
     if (showAlert) userUpdatedPlotWithChanges({ legend: { showAlert, enabled: !showAlert } });
   }, [configIsLoaded, cellSets.accessible]);
 
-  // If the plot has never been loaded (so has no selectedGenes), then load the marker genes
+  // If the plot has never been loaded (so has no loadedGenes), then load the marker genes
   // Only auto-load on initial render, not when user clears genes (genesHaveBeenLoaded check prevents reset)
-  // Handles both initial load (selectedGenes = null) and hard reload (selectedGenes = [])
   useEffect(() => {
-    // Load marker genes if:
-    // 1. Never loaded before (!genesHaveBeenLoaded) AND selectedGenes is empty, OR
-    // 2. selectedGenes was reset to null/empty (genesHaveBeenLoaded=true but selectedGenes became empty)
-    const selectedGenesEmpty = !config?.selectedGenes || config.selectedGenes.length === 0;
-    const shouldLoadMarkers = (!genesHaveBeenLoaded || (genesHaveBeenLoaded && selectedGenesEmpty && config?.selectedGenes === null));
+    // Load marker genes if we've never loaded genes before and currently have none
+    const selectedGenesEmpty = !loadedGenes || loadedGenes.length === 0;
+    const shouldLoadMarkers = !genesHaveBeenLoaded && selectedGenesEmpty;
 
     if (shouldLoadMarkers && config?.nMarkerGenes) {
       dispatch(loadMarkerGenes(
@@ -177,11 +174,11 @@ const MarkerHeatmap = ({ experimentId }) => {
       ));
     }
   }, [
+    loadedGenes,
     config?.nMarkerGenes,
     JSON.stringify(config?.groupedTracks),
     config?.selectedCellSet,
     config?.selectedPoints,
-    config?.selectedGenes,
     genesHaveBeenLoaded,
   ]);
 
@@ -229,16 +226,6 @@ const MarkerHeatmap = ({ experimentId }) => {
     louvainClustersResolution,
     fetchingGenes,
   ]);
-
-  // When loadedGenes changes (from deletions or additions), sync back to config
-  useConditionalEffect(() => {
-    if (!config || _.isEqual(loadedGenes, config.selectedGenes)) {
-      return;
-    }
-
-    // Update config with the new gene list (from loadMarkerGenes or direct gene operations)
-    dispatch(updatePlotConfig(plotUuid, { selectedGenes: loadedGenes }));
-  }, [loadedGenes]);
 
   useEffect(() => {
     // Don't create spec while marker genes are loading (prevents stale spec recreation)
