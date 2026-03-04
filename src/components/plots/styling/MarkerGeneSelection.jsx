@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import propTypes from 'prop-types';
-import { useDispatch } from 'react-redux';
 import {
   Space,
   Radio,
@@ -10,10 +9,8 @@ import {
 
 import GeneReorderTool from 'components/plots/GeneReorderTool';
 import GeneSearchBar from 'components/plots/GeneSearchBar';
-import updatePlotConfig from 'redux/actions/componentConfig/updatePlotConfig';
 
 const MarkerGeneSelection = (props) => {
-  const dispatch = useDispatch();
   const {
     config,
     plotUuid,
@@ -87,7 +84,6 @@ const MarkerGeneSelection = (props) => {
             type='primary'
             danger
             onClick={() => {
-              dispatch(updatePlotConfig(plotUuid, { selectedGenes: [] }));
               onGenesChange([]);
             }}
             size='small'

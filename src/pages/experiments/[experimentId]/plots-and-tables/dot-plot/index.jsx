@@ -370,7 +370,7 @@ const DotPlotPage = (props) => {
     dispatch(getDotPlot(experimentId, plotUuid, config));
     setReorderAfterFetch(true);
     setReset(false);
-  }, [config]);
+  }, [reset, experimentId, plotUuid]);
 
   const renderExtraPanels = () => (
     <>
