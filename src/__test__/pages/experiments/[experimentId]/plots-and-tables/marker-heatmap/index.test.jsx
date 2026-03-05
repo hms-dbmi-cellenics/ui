@@ -843,12 +843,16 @@ describe('Marker heatmap plot', () => {
     await waitFor(() => {
       const resetConfig = storeState.getState().componentConfig[plotUuid]?.config;
       // Check that color scheme is reset to initial value (not 'viridis')
-      expect(resetConfig?.colour?.scheme).not.toBe('viridis');
       expect(resetConfig?.colour?.scheme).toBe(initialColorScheme);
     }, { timeout: 5000 });
 
-    // Note: selectedGenes are kept on reset for heatmap (keepValuesOnReset: ['selectedGenes'])
-    // So genes remain in config after reset (this is by design, not a bug)
+    // Verify that genes are reset back to initial (either null or the default marker genes)
+    await waitFor(() => {
+      const currentConfig = storeState.getState().componentConfig[plotUuid]?.config;
+      // After reset, selectedGenes should be either null (triggering auto-load) or restored to initial
+      // The important thing is they're no longer the 2-gene subset
+      expect(currentConfig?.selectedGenes?.length || 0).not.toBe(2);
+    }, { timeout: 5000 });
   });
 
   it('toggling to marker genes and clicking Run results in those genes showing up in Custom genes list', async () => {
