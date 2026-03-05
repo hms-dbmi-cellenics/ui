@@ -13,13 +13,12 @@ const generateVegaData = (
   } = heatmapSettings;
   const trackOrder = reversed(selectedTracks);
 
-  // Compute which cell sets should be hidden based on configuration
+  // Compute which cell sets should be hidden based on selectedPoints
   const hiddenCellSets = computeHiddenCellSets(selectedPoints, cellSets);
 
   const cellOrder = getHeatmapCellOrder(
     selectedCellSet,
     groupedTracks,
-    'All',
     hiddenCellSets,
     cellSets,
   );

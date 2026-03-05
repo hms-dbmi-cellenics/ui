@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState, useRef } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
   Collapse,
   Skeleton,
@@ -173,11 +173,6 @@ const MarkerHeatmap = ({ experimentId }) => {
       setVegaSpec(undefined);
     }
   }, [markerGenesLoading]);
-
-  // When marker genes finish loading, update the plot
-  useEffect(() => {
-    // Just a marker for when gene loading completes
-  }, [markerGenesLoading, config?.selectedGenes]);
 
   // Fetch gene expression data if loadedGenes change and we don't have all the data yet
   // Only run this when we're in marker genes mode (custom genes are handled by onGenesChange)

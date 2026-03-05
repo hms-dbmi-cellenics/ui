@@ -5,7 +5,6 @@ import lruMemoize from 'lru-memoize';
  * Downsamples cell order for marker heatmap based on:
  * - Selected cell set
  * - Grouped tracks (cartesian product buckets)
- * - Selected points (e.g., specific sample or patient)
  * - Hidden cell sets (to exclude)
  * - Maximum cells threshold
  *
@@ -14,7 +13,6 @@ import lruMemoize from 'lru-memoize';
  *
  * @param {string} selectedCellSet - Key of the primary cell set (e.g., "louvain")
  * @param {string[]} groupedTracks - Array of cell set keys for cartesian product
- * @param {string} selectedPoints - Either "All" or a specific cell set key
  * @param {Set|string[]} hiddenCellSets - Cell set keys to exclude
  * @param {object} cellSets - Cell sets structure with hierarchy and properties
  * @param {number} maxCells - Maximum cells to return after downsampling (default 1000)
@@ -24,7 +22,6 @@ import lruMemoize from 'lru-memoize';
 const getHeatmapCellOrder = (
   selectedCellSet,
   groupedTracks,
-  selectedPoints,
   hiddenCellSets,
   cellSets,
   maxCells = 1000,
@@ -41,8 +38,13 @@ const getHeatmapCellOrder = (
 
   const { hierarchy, properties } = cellSets;
 
+  // Normalize hiddenCellSets before using it (could be null, undefined, Set, or array)
+  const normalizedHiddenCellSets = hiddenCellSets instanceof Set
+    ? Array.from(hiddenCellSets)
+    : (hiddenCellSets || []);
+
   // Create a seed from the function inputs to ensure deterministic downsampling
-  const seedString = `${selectedCellSet}|${groupedTracks.join(',')}|${selectedPoints}|${Array.from(hiddenCellSets).join(',')}`;
+  const seedString = `${selectedCellSet}|${groupedTracks.join(',')}|${normalizedHiddenCellSets.join(',')}`;
   const random = seedrandom(seedString);
 
   // Helper to get all cell IDs in a cell class (root node)
@@ -88,24 +90,8 @@ const getHeatmapCellOrder = (
     // Get cells from the selected cell set
     let cellIds = getCells(selectedCellSet, true);
 
-    // If selectedPoints is not "All", further filter to that cell set
-    if (selectedPoints && selectedPoints !== 'All') {
-      // selectedPoints can be "All" or a simple key (e.g., "sample-1")
-      const selectedPointsKey = selectedPoints.includes('/')
-        ? selectedPoints.split('/')[1]
-        : selectedPoints;
-
-      cellIds = new Set(
-        [...cellIds].filter((id) => getCells(selectedPointsKey).has(id)),
-      );
-    }
-
     // Remove hidden cells
-    const hiddenArray = hiddenCellSets instanceof Set
-      ? Array.from(hiddenCellSets)
-      : (hiddenCellSets || []);
-
-    hiddenArray.forEach((hiddenKey) => {
+    normalizedHiddenCellSets.forEach((hiddenKey) => {
       const hiddenCellIds = getCells(hiddenKey);
       cellIds = new Set([...cellIds].filter((id) => !hiddenCellIds.has(id)));
     });

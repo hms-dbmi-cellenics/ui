@@ -93,9 +93,10 @@ class ExpressionMatrix {
    * to each row in the geneExpressions (in the same order)
    * @param {*} newRawGeneExpression A mathjs SparseMatrix with the
    *  raw gene expressions for each of the genes
-   * @param {*} newStats An object which with the stats for each gene's expression
-   * Each key is a gene symbol,
-   * Each value has this shape: {rawMean, rawStdev, truncatedMin, truncatedMax}
+   * @param {*} newStats An object with statistics for each gene's expression.
+   * Keys are 'rawMean', 'rawStdev', 'truncatedMin', 'truncatedMax'.
+   * Each value is an array aligned to orderedNewGeneSymbols (index corresponds to gene position).
+   * Shape: {rawMean: [...], rawStdev: [...], truncatedMin: [...], truncatedMax: [...]}
    */
   pushGeneExpression(
     orderedNewGeneSymbols,

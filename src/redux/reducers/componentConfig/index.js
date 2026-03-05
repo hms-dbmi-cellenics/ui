@@ -9,7 +9,6 @@ import { CELL_CLASS_DELETE } from 'redux/actionTypes/cellSets';
 import initialState from 'redux/reducers/componentConfig/initialState';
 import loadConfig from 'redux/reducers/componentConfig/loadConfig';
 import updateConfig from 'redux/reducers/componentConfig/updateConfig';
-import updateCellOrder from 'redux/reducers/componentConfig/updateCellOrder';
 import configsReplaced from 'redux/reducers/componentConfig/configsReplaced';
 import saveConfig from 'redux/reducers/componentConfig/saveConfig';
 import resetConfig from 'redux/reducers/componentConfig/resetConfig';
@@ -26,8 +25,6 @@ const plotsReducer = (state = initialState, action) => {
       return loadConfig(state, action);
     case UPDATE_CONFIG:
       return updateConfig(state, action);
-    case 'componentConfig/updateCellOrder':
-      return updateCellOrder(state, action);
     case CONFIGS_REPLACED:
       return configsReplaced(state, action);
     case RESET_CONFIG:

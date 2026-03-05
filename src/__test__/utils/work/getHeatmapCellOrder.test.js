@@ -59,11 +59,10 @@ describe('getHeatmapCellOrder', () => {
     },
   };
 
-  it('returns all cells from selected cell set when selectedPoints is "All" and no hidden cells', () => {
+  it('returns all cells from selected cell set when no hidden cells', () => {
     const result = getHeatmapCellOrder(
       'louvain',
       ['sample', 'patient'],
-      'All',
       [],
       mockCellSets,
       1000,
@@ -76,11 +75,12 @@ describe('getHeatmapCellOrder', () => {
   });
 
   it('filters cells by selectedPoints', () => {
+    // selectedPoints='sample-1' means only show cells in sample-1
+    // So we hide everything else (sample-2)
     const result = getHeatmapCellOrder(
       'louvain',
       ['sample', 'patient'],
-      'sample-1',
-      [],
+      ['sample-2'], // Hide everything NOT in sample-1
       mockCellSets,
       1000,
     );
@@ -93,7 +93,6 @@ describe('getHeatmapCellOrder', () => {
     const result = getHeatmapCellOrder(
       'louvain',
       ['sample', 'patient'],
-      'All',
       ['louvain-0'],
       mockCellSets,
       1000,
@@ -106,16 +105,24 @@ describe('getHeatmapCellOrder', () => {
   });
 
   it('combines filter by selectedPoints and hidden cells', () => {
+    // selectedPoints='sample-1' would hide cells NOT in sample-1: [2, 3, 7, 8, 9, 12, 13]
+    // Plus we hide louvain-0: [0, 1, 2, 3, 4]
+    // Combined hidden: [0, 1, 2, 3, 4, 7, 8, 9, 12, 13]
+    // Remaining visible: [5, 6, 10, 11, 14]
     const result = getHeatmapCellOrder(
       'louvain',
       ['sample', 'patient'],
-      'sample-1',
-      ['louvain-0'],
+      [
+        // Hidden cells from selectedPoints='sample-1'
+        'sample-2',
+        // Additional hidden cells
+        'louvain-0',
+      ],
       mockCellSets,
       1000,
     );
 
-    // Sample-1 has cells [0, 1, 4, 5, 6, 10, 11, 14]
+    // Sample-1 visible cells [0, 1, 4, 5, 6, 10, 11, 14]
     // Remove louvain-0 which has [0, 1, 2, 3, 4]
     // Should leave [5, 6, 10, 11, 14]
     expect(new Set(result)).toEqual(new Set([5, 6, 10, 11, 14]));
@@ -125,7 +132,6 @@ describe('getHeatmapCellOrder', () => {
     const result = getHeatmapCellOrder(
       'louvain',
       ['sample', 'patient'],
-      'All',
       [],
       mockCellSets,
       5, // max 5 cells
@@ -146,7 +152,6 @@ describe('getHeatmapCellOrder', () => {
     const result = getHeatmapCellOrder(
       'louvain',
       ['sample', 'patient'],
-      'All',
       [],
       mockCellSets,
       10, // Limit to less than 14 to trigger proportional sampling
@@ -160,7 +165,6 @@ describe('getHeatmapCellOrder', () => {
     const result = getHeatmapCellOrder(
       'invalid-key',
       ['sample', 'patient'],
-      'All',
       [],
       mockCellSets,
       1000,
@@ -173,7 +177,6 @@ describe('getHeatmapCellOrder', () => {
     const result = getHeatmapCellOrder(
       'louvain',
       ['sample', 'patient'],
-      'All',
       ['louvain-0', 'louvain-1', 'louvain-2'],
       mockCellSets,
       1000,
@@ -186,7 +189,6 @@ describe('getHeatmapCellOrder', () => {
     const resultFromSet = getHeatmapCellOrder(
       'louvain',
       ['sample', 'patient'],
-      'All',
       new Set(['louvain-0']),
       mockCellSets,
       1000,
@@ -195,7 +197,6 @@ describe('getHeatmapCellOrder', () => {
     const resultFromArray = getHeatmapCellOrder(
       'louvain',
       ['sample', 'patient'],
-      'All',
       ['louvain-0'],
       mockCellSets,
       1000,
@@ -205,15 +206,14 @@ describe('getHeatmapCellOrder', () => {
   });
 
   it('returns empty array for null or undefined cellSets', () => {
-    expect(getHeatmapCellOrder('louvain', ['sample'], 'All', [], null, 1000)).toEqual([]);
-    expect(getHeatmapCellOrder('louvain', ['sample'], 'All', [], undefined, 1000)).toEqual([]);
+    expect(getHeatmapCellOrder('louvain', ['sample'], [], null, 1000)).toEqual([]);
+    expect(getHeatmapCellOrder('louvain', ['sample'], [], undefined, 1000)).toEqual([]);
   });
 
   it('handles empty groupedTracks gracefully', () => {
     const result = getHeatmapCellOrder(
       'louvain',
       [],
-      'All',
       [],
       mockCellSets,
       1000,
@@ -229,7 +229,6 @@ describe('getHeatmapCellOrder', () => {
     const result = getHeatmapCellOrder(
       'louvain',
       ['sample', 'patient'],
-      'All',
       [],
       mockCellSets,
       4, // Sample size proportional to bucket count
@@ -249,7 +248,6 @@ describe('getHeatmapCellOrder', () => {
     const result = getHeatmapCellOrder(
       'louvain',
       ['sample', 'patient'],
-      'All',
       [],
       mockCellSets,
       maxCells,
@@ -262,7 +260,6 @@ describe('getHeatmapCellOrder', () => {
     const result = getHeatmapCellOrder(
       'louvain',
       ['sample', 'patient'],
-      'All',
       [],
       mockCellSets,
       20, // Higher than total cells
@@ -285,7 +282,6 @@ describe('getHeatmapCellOrder', () => {
       const result = getHeatmapCellOrder(
         'louvain',
         ['sample', 'patient'],
-        'All',
         [],
         mockCellSets,
         10,
@@ -304,7 +300,6 @@ describe('getHeatmapCellOrder', () => {
     const result = getHeatmapCellOrder(
       'louvain',
       ['sample'],
-      'All',
       [],
       mockCellSets,
       1000,
@@ -323,7 +318,6 @@ describe('getHeatmapCellOrder', () => {
       const result = getHeatmapCellOrder(
         'louvain',
         ['sample', 'patient'],
-        'All',
         [],
         mockCellSets,
         5,
@@ -335,12 +329,18 @@ describe('getHeatmapCellOrder', () => {
   });
 
   it('filters selectedPoints then applies hidden cells', () => {
-    // selectedPoints filters first, then hidden cells remove more
+    // selectedPoints='sample-1' would keep cells in sample-1: [0, 1, 4, 5, 6, 10, 11, 14]
+    // This means hiding sample-2: [2, 3, 7, 8, 9, 12, 13]
+    // Additional hidden cells: louvain-0 [0, 1, 2, 3, 4]
+    // Combination: hidden [2, 3, 7, 8, 9, 12, 13, 0, 1, 4]
+    // Result: [5, 6, 10, 11, 14]
     const result = getHeatmapCellOrder(
       'louvain',
       ['sample', 'patient'],
-      'sample-1', // Filters to [0, 1, 4, 5, 6, 10, 11, 14]
-      ['louvain-0'], // Removes [0, 1, 2, 3, 4]
+      [
+        'sample-2', // Hide non-sample-1 cells
+        'louvain-0', // Additional hidden cells
+      ],
       mockCellSets,
       1000,
     );

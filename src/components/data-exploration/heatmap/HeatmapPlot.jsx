@@ -1,5 +1,5 @@
 import React, {
-  useRef, useEffect, useState, useCallback,
+  useRef, useEffect, useState, useCallback, useMemo,
 } from 'react';
 import dynamic from 'next/dynamic';
 import PropTypes from 'prop-types';
@@ -45,11 +45,21 @@ const HeatmapPlot = (props) => {
     experimentId, width, height,
   } = props;
 
-  const debouncedLoadGeneExpression = _.debounce((...params) => {
-    dispatch(loadGeneExpression(...params));
-  }, 1000);
-
   const dispatch = useDispatch();
+
+  const debouncedLoadGeneExpression = useMemo(() => {
+    const debounced = _.debounce((...params) => {
+      dispatch(loadGeneExpression(...params));
+    }, 1000);
+    return debounced;
+  }, [dispatch]);
+
+  // Cancel pending debounced calls on unmount to prevent unexpected dispatches
+  useEffect(() => {
+    return () => {
+      debouncedLoadGeneExpression.cancel();
+    };
+  }, [debouncedLoadGeneExpression]);
 
   const loadingGenes = useSelector((state) => state.genes.expression.full.loading);
 
@@ -76,7 +86,7 @@ const HeatmapPlot = (props) => {
   const cellCoordinatesRef = useRef({ x: 200, y: 300 });
 
   const {
-    error: expressionDataError, matrix, ETag,
+    error: expressionDataError, matrix,
   } = useSelector((state) => state.genes.expression.full);
 
   // Create a stable reference that only changes when the heatmap's selected genes
@@ -97,6 +107,7 @@ const HeatmapPlot = (props) => {
 
   const cellSets = useSelector(getCellSets());
 
+  // Note: selectedPoints is not needed for vitessce heatmap as it's always 'All'
   const heatmapSettings = useSelector((state) => state.componentConfig[COMPONENT_TYPE]?.config,
     _.isEqual) || {};
   const selectedTracks = useSelector(getSelectedMetadataTracks(COMPONENT_TYPE));
@@ -196,7 +207,6 @@ const HeatmapPlot = (props) => {
     cellSets.hidden,
     heatmapSettings?.selectedCellSet,
     heatmapSettings?.groupedTracks,
-    heatmapSettings?.selectedPoints,
   ]);
 
   useConditionalEffect(() => {
@@ -205,7 +215,7 @@ const HeatmapPlot = (props) => {
       || !louvainClustersResolution
       || !heatmapSettings.selectedCellSet
       // If selectedGenes isn't empty, then we are not at the initial load, so don't load markers
-      // We are only supposed to load marker genes to fill up the heatmap at the beginning)
+      // If selectedGenes is empty, load marker genes to fill up the heatmap at the beginning
       || selectedGenes.length > 0
     ) return;
 
@@ -223,7 +233,7 @@ const HeatmapPlot = (props) => {
     groupedCellSets,
   ]);
 
-  // Only fetch gene expression if selectedGenes, selectedCellSet, or selectedPoints change
+  // Only fetch gene expression if selectedGenes or selectedCellSet change
   useConditionalEffect(
     () => {
       if (
@@ -231,12 +241,11 @@ const HeatmapPlot = (props) => {
         || !louvainClustersResolution
         || !heatmapSettings.groupedTracks
         || !heatmapSettings.selectedCellSet
-        || !heatmapSettings.selectedPoints
         || selectedGenes.length === 0
         || fetchingGenes
       ) { return; }
 
-      // Only fetch if selectedGenes, selectedCellSet, or selectedPoints changed
+      // Only fetch if selectedGenes or selectedCellSet changed
       debouncedLoadGeneExpression(
         experimentId,
         selectedGenes,
@@ -247,7 +256,6 @@ const HeatmapPlot = (props) => {
       louvainClustersResolution,
       cellSets.accessible,
       heatmapSettings?.selectedCellSet,
-      heatmapSettings?.selectedPoints,
       selectedGenes,
     ],
   );

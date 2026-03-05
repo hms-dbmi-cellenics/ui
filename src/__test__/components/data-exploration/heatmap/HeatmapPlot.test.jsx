@@ -56,7 +56,6 @@ enableFetchMocks();
 const mockWorkerResponses = {
   MarkerHeatmap: () => ({
     orderedGeneNames: markerGenesData5.orderedGeneNames.slice(0, 5),
-    cellOrder: markerGenesData5.cellOrder
   }),
   GeneExpression: () => ({
     orderedGeneNames: markerGenesWithExpression.orderedGeneNames.slice(0, 5),
@@ -660,5 +659,60 @@ describe('HeatmapPlot', () => {
 
     // Key validation: work request SHOULD be made since new gene is not already loaded
     expect(fetchWork).toHaveBeenCalled();
+  });
+
+  it('excludes hidden cell sets from the heatmap display', async () => {
+    // Pre-load the gene data
+    await act(async () => {
+      await storeState.dispatch(loadMarkerGenes(
+        experimentId,
+        COMPONENT_TYPE,
+        { numGenes: 5, groupedTracks: ['louvain', 'sample'], selectedCellSet: 'louvain', selectedPoints: 'All' },
+      ));
+    });
+
+    await act(async () => {
+      await storeState.dispatch(loadGeneExpression(
+        experimentId,
+        markerGenesData5.orderedGeneNames.slice(0, 5),
+        COMPONENT_TYPE,
+      ));
+    });
+
+    await loadAndRenderDefaultHeatmap(storeState);
+
+    // Wait for initial render
+    await waitFor(() => {
+      expect(vitesscePropsSpy.obsIndex).toBeDefined();
+    }, { timeout: 5000 });
+
+    // Get the cell IDs from the initial heatmap
+    const initialCellIds = vitesscePropsSpy.obsIndex.map((cellStr) => parseInt(cellStr, 10));
+
+    // Hide louvain-0 (which contains cells 1-30 in the test data)
+    await act(async () => {
+      await storeState.dispatch(setCellSetHiddenStatus('louvain-0', true));
+    });
+
+    // Wait for heatmap to update after hiding the cell set
+    await waitFor(() => {
+      expect(vitesscePropsSpy.obsIndex).toBeDefined();
+      // Check that obsIndex has changed (fewer cells now)
+      const newCellIds = vitesscePropsSpy.obsIndex.map((cellStr) => parseInt(cellStr, 10));
+      expect(newCellIds.length).toBeLessThan(initialCellIds.length);
+    }, { timeout: 5000 });
+
+    const hiddenCellIds = vitesscePropsSpy.obsIndex.map((cellStr) => parseInt(cellStr, 10));
+
+    // Cell IDs from louvain-0 (based on test data)
+    const louvain0CellIds = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30];
+
+    // Verify none of the louvain-0 cells appear in the heatmap
+    louvain0CellIds.forEach((cellId) => {
+      expect(hiddenCellIds).not.toContain(cellId);
+    });
+
+    // Verify some cells from other clusters still appear
+    expect(hiddenCellIds.length).toBeGreaterThan(0);
   });
 });

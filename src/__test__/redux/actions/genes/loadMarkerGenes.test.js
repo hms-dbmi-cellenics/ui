@@ -62,7 +62,6 @@ describe('loadMarkerGenes action', () => {
 
     const mockResult = {
       ...getOneGeneMatrix('geneA', 1),
-      cellOrder: [0],
     };
 
     fetchWork.mockImplementationOnce((_expId, _body, _getState, _dispatch, optionals) => {
@@ -140,7 +139,6 @@ describe('loadMarkerGenes action', () => {
 
     const mockResult = {
       ...getOneGeneMatrix('geneA', 1),
-      cellOrder: [0],
     };
 
     fetchWork.mockImplementationOnce((_expId, _body, _getState, _dispatch, optionals) => {
