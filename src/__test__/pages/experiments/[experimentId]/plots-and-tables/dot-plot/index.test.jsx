@@ -549,6 +549,105 @@ describe('Dot plot page', () => {
     expect(lastDotPlotCall[1]).toBeDefined();
     expect(lastDotPlotCall[1].name).toBe('DotPlot');
   });
+
+  it('preserves marker genes in custom genes list when toggling back to Custom genes', async () => {
+    // This test verifies that when toggling to marker genes, running (which returns different genes),
+    // then toggling back to custom genes, the marker genes (not the original 3 genes) are in the list
+    
+    // Create custom mock that returns different genes for marker genes
+    const markerGenesResult = {
+      ...dotPlotData,
+      geneNames: ['Apoe', 'Lyz2', 'Gzma', 'Ifitm3', 'Chil3'], // Different/reordered genes
+      geneNameIdx: [1, 3, 4, 2, 0],
+    };
+
+    // Reset mock to use custom implementation
+    jest.clearAllMocks();
+    let isFirstCall = true;
+
+    fetchWork
+      .mockReset()
+      .mockImplementation((_experimentId, body) => {
+        if (body.name === 'ListGenes') {
+          return mockWorkerResponses.ListGenes;
+        }
+        if (body.name === 'DotPlot') {
+          // Return marker genes data when in marker genes mode
+          if (body.config?.useMarkerGenes) {
+            return markerGenesResult;
+          }
+          // Return default data for custom genes mode
+          return mockWorkerResponses.DotPlot;
+        }
+        return mockWorkerResponses[body.name];
+      });
+
+    fetchMock.resetMocks();
+    fetchMock.mockIf(/.*/, mockAPI(mockAPIResponse));
+
+    const testStore = makeStore();
+    await testStore.dispatch(loadBackendStatus(experimentId));
+
+    testStore.dispatch({
+      type: EXPERIMENT_SETTINGS_INFO_UPDATE,
+      payload: {
+        experimentId: fake.EXPERIMENT_ID,
+        experimentName: fake.EXPERIMENT_NAME,
+      },
+    });
+
+    await renderDotPlot(testStore);
+
+    // Wait for initial setup - should have 3 highest dispersion genes
+    await waitFor(() => {
+      expect(screen.getByText(/Dot plot/i)).toBeInTheDocument();
+    });
+
+    const geneTree = screen.getByRole('tree');
+    const initialGenes = getTreeGenes(geneTree).filter((g) => g); // Filter empty strings
+    expect(initialGenes.length).toBe(3); // Should have 3 initial genes
+
+    // Switch to marker genes mode
+    const markerGenesToggle = screen.getByText(/Marker genes/i);
+    await act(async () => {
+      userEvent.click(markerGenesToggle);
+    });
+
+    // Click Run to load marker genes
+    const runButton = screen.getByRole('button', { name: /run/i });
+    await act(async () => {
+      userEvent.click(runButton);
+    });
+
+    // Wait for effects to process and genes to be synced
+    await waitFor(() => {
+      const state = testStore.getState();
+      const currentGenes = state.componentConfig.dotPlotMain?.config?.selectedGenes || [];
+      // When marker genes are synced, selectedGenes should be updated
+      expect(currentGenes.length).toBeGreaterThan(0);
+    }, { timeout: 3000 });
+
+    // Get marker genes that were loaded
+    let markerGenesLoaded = testStore.getState().componentConfig.dotPlotMain?.config?.selectedGenes || [];
+
+    // Toggle back to Custom genes
+    await act(async () => {
+      userEvent.click(markerGenesToggle);
+    });
+
+    // Wait a moment for the view to update
+    await new Promise((resolve) => setTimeout(resolve, 100));
+
+    // Get the genes after toggling back to custom
+    const genesAfterToggle = testStore.getState().componentConfig.dotPlotMain?.config?.selectedGenes || [];
+    
+    // The genes should still be the marker genes that were loaded
+    // (they should have been preserved when toggling to custom genes mode)
+    expect(genesAfterToggle).toEqual(markerGenesLoaded);
+    
+    // And they should be different from the initial 3 genes
+    expect(genesAfterToggle).not.toEqual(initialGenes);
+  });
 });
 
 // drag and drop is impossible in RTL, use enzyme
