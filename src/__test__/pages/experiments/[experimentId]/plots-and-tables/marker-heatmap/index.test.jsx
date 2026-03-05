@@ -779,7 +779,7 @@ describe('Marker heatmap plot', () => {
     const colorSchemeBeforeReset = storeState.getState().componentConfig[plotUuid]?.config?.colour?.scheme;
 
     await act(async () => {
-      await storeState.dispatch(updatePlotConfig(plotUuid, { 
+      await storeState.dispatch(updatePlotConfig(plotUuid, {
         selectedGenes: initialGenes.slice(0, 2),
         colour: { ...storeState.getState().componentConfig[plotUuid]?.config?.colour, scheme: 'viridis' },
       }));
@@ -820,7 +820,7 @@ describe('Marker heatmap plot', () => {
 
     // Modify both genes and config
     await act(async () => {
-      await storeState.dispatch(updatePlotConfig(plotUuid, { 
+      await storeState.dispatch(updatePlotConfig(plotUuid, {
         selectedGenes: initialGenes.slice(0, 2),
         colour: { ...storeState.getState().componentConfig[plotUuid]?.config?.colour, scheme: 'viridis' },
       }));
