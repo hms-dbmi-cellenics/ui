@@ -103,7 +103,7 @@ const DiffExprResults = (props) => {
 
   const { basis, cellSet, compareWith } = comparisonGroup[comparisonType];
 
-  const geneTooltipText = `All genes present in the dataset are shown in the differential expression results table. Note that a gene is typically considered 'differentially expressed' based on established thresholds on adjusted p-value and/or log fold change. You should apply your own criteria and thresholds to filter the resulting list of genes using the "Advanced filtering" button.`;
+  const geneTooltipText = `All genes present in the dataset are shown in the differential expression results table. Note that a gene is typically considered 'differentially expressed' based on established thresholds on FDR and/or log fold change. You should apply your own criteria and thresholds to filter the resulting list of genes using the "Filter results" button.`;
 
   return (
     <Space direction='vertical' style={{ width: '100%' }}>

@@ -53,10 +53,11 @@ const generateSpec = (config, plotData, numClusters) => {
   // Sort plotData by the gene order specified in config.selectedGenes
   let sortedPlotData = plotData;
   if (config.selectedGenes && config.selectedGenes.length > 0 && plotData?.length > 0) {
-    const geneOrder = config.selectedGenes;
+    // Precompute gene index map for O(1) lookup instead of O(n) indexOf() per comparison
+    const geneIndexMap = new Map(config.selectedGenes.map((gene, index) => [gene, index]));
     sortedPlotData = [...plotData].sort((a, b) => {
-      const aIndex = geneOrder.indexOf(a.geneName);
-      const bIndex = geneOrder.indexOf(b.geneName);
+      const aIndex = geneIndexMap.get(a.geneName) ?? Number.MAX_SAFE_INTEGER;
+      const bIndex = geneIndexMap.get(b.geneName) ?? Number.MAX_SAFE_INTEGER;
       return aIndex - bIndex;
     });
   }
