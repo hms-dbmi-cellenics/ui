@@ -7,7 +7,6 @@ import {
   Empty,
   Form,
   Radio,
-  Button,
   Space,
 } from 'antd';
 
@@ -30,8 +29,8 @@ import {
   loadPlotConfig,
   getDotPlot,
   updatePlotData,
-  resetPlotConfig,
 } from 'redux/actions/componentConfig';
+import { initialPlotConfigStates } from 'redux/reducers/componentConfig/initialState';
 
 import { getCellSets } from 'redux/selectors';
 import { plotNames, plotTypes } from 'utils/constants';
@@ -101,9 +100,7 @@ const DotPlotPage = (props) => {
 
   const cellSets = useSelector(getCellSets());
   const [moreThanTwoGroups, setMoreThanTwoGroups] = useState(false);
-  const [reset, setReset] = useState(false);
-  const highestGenesLoadedRef = useRef(false);
-  const resetRef = useRef(false);
+  const [isResetDisabled, setIsResetDisabled] = useState(true);
 
   const experimentName = useSelector((state) => state.experimentSettings.info.experimentName);
   const csvFileName = plotCsvFilename(experimentName, 'DOT_PLOT', [config?.selectedCellSet, config?.selectedPoints]);
@@ -112,6 +109,36 @@ const DotPlotPage = (props) => {
     if (!config) dispatch(loadPlotConfig(experimentId, plotUuid, plotType));
     if (cellSets.hierarchy.length === 0) dispatch(loadCellSets(experimentId));
   }, []);
+
+  const isConfigEqual = (currentConfig, initialConfig) => {
+    const removeDefaultValues = (obj) => {
+      if (!obj || typeof obj !== 'object') return obj;
+      const cleaned = { ...obj };
+      delete cleaned.defaultValues;
+      return cleaned;
+    };
+
+    const isEqual = Object.keys(initialConfig).every((key) => {
+      // By pass plot data because we want to compare settings not data
+      if (key === 'plotData') return true;
+      if (initialConfig.keepValuesOnReset?.includes(key)) return true;
+      if (currentConfig[key] && typeof currentConfig[key] === 'object' && initialConfig[key] && typeof initialConfig[key] === 'object') {
+        // For nested objects, exclude defaultValues from comparison as it's metadata about defaults
+        const currentObj = removeDefaultValues(currentConfig[key]);
+        const initialObj = removeDefaultValues(initialConfig[key]);
+        return JSON.stringify(currentObj) === JSON.stringify(initialObj);
+      }
+
+      return currentConfig[key] === initialConfig[key];
+    });
+
+    return isEqual;
+  };
+
+  useEffect(() => {
+    if (!config) return;
+    setIsResetDisabled(isConfigEqual(config, initialPlotConfigStates[plotType]));
+  }, [config]);
 
   const previousComparedConfig = useRef(null);
   const getComparedConfig = (updatedConfig) => _.pick(
@@ -170,8 +197,6 @@ const DotPlotPage = (props) => {
     // If using marker genes, check that the selected number is more than 0
     if (config.useMarkerGenes && config.nMarkerGenes === 0) return false;
 
-    if (reset) return false;
-
     return true;
   };
 
@@ -220,6 +245,13 @@ const DotPlotPage = (props) => {
       const currentSelected = currentComparedConfig.selectedGenes;
       const previousUseMarker = previousComparedConfig.current?.useMarkerGenes ?? false;
       const previousNMarkerGenes = previousComparedConfig.current?.nMarkerGenes ?? config.nMarkerGenes;
+
+      // If selectedGenes is null (i.e. config was reset), skip main effect
+      // and let the initialization effect handle loading default genes
+      if (currentSelected === null) {
+        previousComparedConfig.current = currentComparedConfig;
+        return;
+      }
 
       // If ONLY useMarkerGenes changed (but not nMarkerGenes and not selectedGenes), skip
       // This is handled by updatePlotWithChanges which has conditional logic
@@ -287,7 +319,7 @@ const DotPlotPage = (props) => {
   // if all selected genes are removed, deleteData will not run. Remove plotData manually instead
   useEffect(() => {
     if (config?.useMarkerGenes
-      || config?.selectedGenes.length
+      || config?.selectedGenes?.length
       || !plotData?.length
       || !previousComparedConfig.current
     ) return;
@@ -320,9 +352,12 @@ const DotPlotPage = (props) => {
     if (treeScrollable) ScrollOnDrag(treeScrollable);
   }, [treeScrollable]);
 
-  // find genes with highest dispersion from list of genes sorted by name
-  // Always use 3 genes for reset in custom genes mode, not dependent on nMarkerGenes
-  const setHighestDispersionGenes = () => {
+  // If selectedGenes is null (initial state or after reset), load the 3 highest dispersion genes
+  useEffect(() => {
+    if (config?.selectedGenes !== null || _.isEmpty(geneData) || !config) {
+      return;
+    }
+
     const NUM_GENES_FOR_RESET = 3;
     const highestDispersions = Object.values(geneData)
       .map((gene) => gene.dispersions)
@@ -337,24 +372,14 @@ const DotPlotPage = (props) => {
     );
 
     updatePlotWithChanges({ selectedGenes: highestDispersionGenes });
-  };
 
-  // load initial state, based on highest dispersion genes from all genes (only on first load)
-  useEffect(() => {
-    // Only run this initialization effect once, on initial load
-    if (highestGenesLoadedRef.current) {
-      return;
-    }
-
-    if (_.isEmpty(geneData) || !config || plotDataLoading) {
-      return;
-    }
-
-    if (!config?.selectedGenes.length) {
-      setHighestDispersionGenes();
-    }
-    highestGenesLoadedRef.current = true;
-  }, [geneData, config]);
+    // Update previousComparedConfig so the main effect knows to skip processing this gene change
+    // This prevents getDotPlot from being called twice on reset
+    previousComparedConfig.current = getComparedConfig({
+      ...config,
+      selectedGenes: highestDispersionGenes,
+    });
+  }, [geneData, config?.selectedGenes]);
 
   const getCSVData = () => {
     if (!plotData?.length) return [];
@@ -422,47 +447,27 @@ const DotPlotPage = (props) => {
     updatePlotWithChanges({ selectedGenes: allGenes });
   };
 
-  const onReset = () => {
-    // Reset the ref so initialization effect can run again on next load
-    highestGenesLoadedRef.current = false;
+  const getHighestDispersionGenes = () => {
+    // Calculate the 3 highest dispersion genes
+    const NUM_GENES_FOR_RESET = 3;
+    const highestDispersions = Object.values(geneData)
+      .map((gene) => gene.dispersions)
+      .sort()
+      .splice(-NUM_GENES_FOR_RESET);
 
-    // The PlotContainer's resetPlotConfig is async and would overwrite our gene selection
-    // So we dispatch it first, then wait for it to complete before setting our genes
-    dispatch(resetPlotConfig(experimentId, plotUuid, plotType)).then(() => {
-      // After reset config completes, set the 3 highest dispersion genes
-      const NUM_GENES_FOR_RESET = 3;
-      const highestDispersions = Object.values(geneData)
-        .map((gene) => gene.dispersions)
-        .sort()
-        .splice(-NUM_GENES_FOR_RESET);
+    const getKeyByValue = (value) => Object.keys(geneData)
+      .find((key) => geneData[key].dispersions === value);
 
-      const getKeyByValue = (value) => Object.keys(geneData)
-        .find((key) => geneData[key].dispersions === value);
-
-      const highestDispersionGenes = highestDispersions.map(
-        (dispersion) => getKeyByValue(dispersion),
-      );
-
-      // Update config with the 3 highest genes and disable marker genes mode
-      dispatch(updatePlotConfig(plotUuid, {
-        selectedGenes: highestDispersionGenes,
-        useMarkerGenes: false,
-      }));
-
-      // Then set reset flag to trigger getDotPlot via the reset effect
-      setReset(true);
-    });
+    return highestDispersions.map(
+      (dispersion) => getKeyByValue(dispersion),
+    );
   };
 
-  useEffect(() => {
-    if (!reset) return;
-
-    // Update previousComparedConfig to current config so main effect recognizes
-    // that we've already handled this config change in the reset effect
-    previousComparedConfig.current = getComparedConfig(config);
-    dispatch(getDotPlot(experimentId, plotUuid, config));
-    setReset(false);
-  }, [reset, config, experimentId, plotUuid]);
+  const onResetGenes = () => {
+    // Reset selectedGenes to the 3 highest dispersion genes, keeping all other config the same
+    const highestDispersionGenes = getHighestDispersionGenes();
+    updatePlotWithChanges({ selectedGenes: highestDispersionGenes });
+  };
 
   const renderExtraPanels = () => (
     <>
@@ -472,7 +477,7 @@ const DotPlotPage = (props) => {
           plotUuid={plotUuid}
           genesToDisable={config?.selectedGenes}
           onUpdate={updatePlotWithChanges}
-          onReset={onReset}
+          onReset={onResetGenes}
           onGenesChange={onGenesChange}
           onGenesSelect={onGenesSelect}
         />
@@ -606,18 +611,10 @@ const DotPlotPage = (props) => {
         extraToolbarControls={(
           <Space>
             <ExportAsCSV data={getCSVData()} filename={csvFileName} />
-            <Button
-              type='primary'
-              size='small'
-              onClick={onReset}
-            >
-              Reset Plot
-            </Button>
           </Space>
         )}
         extraControlPanels={renderExtraPanels()}
         defaultActiveKey='gene-selection'
-        showResetButton={false}
       >
         {renderPlot()}
       </PlotContainer>

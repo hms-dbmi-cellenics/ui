@@ -424,6 +424,99 @@ describe('Dot plot page', () => {
     }, { timeout: 2000 });
   });
 
+  it('Reset Plot button is disabled initially but enabled after toggling Marker genes', async () => {
+    await renderDotPlot(storeState);
+
+    // Wait for initial load
+    await screen.findByRole('tree');
+
+    // Find the Reset Plot button
+    const resetButton = screen.getByRole('button', { name: /Reset Plot/i });
+
+    // Button should be disabled initially (config matches initial state)
+    expect(resetButton).toBeDisabled();
+
+    // Toggle to Marker genes mode to change the config
+    const markerGenesToggle = screen.getByText(/Marker genes/i);
+    await act(async () => {
+      userEvent.click(markerGenesToggle);
+    });
+
+    // After toggling, Reset Plot button should be enabled (config no longer matches initial)
+    await waitFor(() => {
+      expect(resetButton).not.toBeDisabled();
+    });
+  });
+
+  it('Clear All button removes all genes from Custom genes list and shows empty message', async () => {
+    await renderDotPlot(storeState);
+
+    // Wait for initial load and gene tree to appear
+    const geneTree = await screen.findByRole('tree');
+    let genesDisplayed = getTreeGenes(geneTree).filter((g) => g);
+
+    // Verify genes are initially displayed
+    expect(genesDisplayed.length).toBeGreaterThan(0);
+    const initialGeneCount = genesDisplayed.length;
+
+    // Click Clear All button
+    const clearAllButton = screen.getByRole('button', { name: /Clear All/i });
+    await act(async () => {
+      userEvent.click(clearAllButton);
+    });
+
+    // Verify genes are removed from the custom genes list
+    await waitFor(() => {
+      genesDisplayed = getTreeGenes(geneTree).filter((g) => g);
+      expect(genesDisplayed.length).toBe(0);
+    });
+
+    // Verify "There is no data to show" message appears
+    expect(screen.getByText(/There is no data to show/i)).toBeInTheDocument();
+  });
+
+  it('Reset button in gene selection restores genes without changing other config', async () => {
+    await renderDotPlot(storeState);
+
+    // Wait for initial load
+    const geneTree = await screen.findByRole('tree');
+    let genesDisplayed = getTreeGenes(geneTree).filter((g) => g);
+    const initialGenes = [...genesDisplayed];
+    expect(genesDisplayed.length).toBeGreaterThan(0);
+
+    // Get initial config state (dimensions, colors, etc.)
+    const initialConfig = storeState.getState().componentConfig.dotPlotMain?.config;
+    const initialDimensions = initialConfig?.dimensions;
+
+    // Clear all genes using the Clear All button
+    const clearAllButton = screen.getByRole('button', { name: /Clear All/i });
+    await act(async () => {
+      userEvent.click(clearAllButton);
+    });
+
+    // Verify genes are cleared
+    await waitFor(() => {
+      genesDisplayed = getTreeGenes(geneTree).filter((g) => g);
+      expect(genesDisplayed.length).toBe(0);
+    });
+
+    // Click the Reset button in the gene selection panel
+    const resetButton = screen.getByRole('button', { name: /^Reset$/i });
+    await act(async () => {
+      userEvent.click(resetButton);
+    });
+
+    // Verify genes are restored to the initial genes
+    await waitFor(() => {
+      genesDisplayed = getTreeGenes(geneTree).filter((g) => g);
+      expect(genesDisplayed).toEqual(initialGenes);
+    });
+
+    // Verify other config stayed the same (e.g., dimensions)
+    const finalConfig = storeState.getState().componentConfig.dotPlotMain?.config;
+    expect(finalConfig?.dimensions).toEqual(initialDimensions);
+  });
+
   it('does not call getDotPlot twice when Clear All is clicked then Reset is clicked', async () => {
     await renderDotPlot(storeState);
 

@@ -387,7 +387,9 @@ const dotPlotConfig = {
   useAbsoluteScale: true,
   useMarkerGenes: false,
   nMarkerGenes: 3,
-  selectedGenes: [],
+  // When null, this indicates that the value is its initial one
+  // and the highest dispersion genes should be loaded
+  selectedGenes: null,
   selectedCellSet: 'louvain',
   selectedPoints: 'All',
   keepValuesOnReset: ['selectedGenes'],
