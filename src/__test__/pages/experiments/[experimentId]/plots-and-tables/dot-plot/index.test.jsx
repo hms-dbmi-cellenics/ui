@@ -648,6 +648,51 @@ describe('Dot plot page', () => {
     // And they should be different from the initial 3 genes
     expect(genesAfterToggle).not.toEqual(initialGenes);
   });
+
+  it('does not call getDotPlot when removing a gene from custom genes list', async () => {
+    // This test verifies that removing a gene from the custom genes list
+    // filters the existing plotData locally and does NOT call getDotPlot
+    
+    await renderDotPlot(storeState);
+
+    // Wait for initial setup with 3 default genes
+    await waitFor(() => {
+      expect(screen.getByText(/Dot plot/i)).toBeInTheDocument();
+    });
+
+    const geneTree = screen.getByRole('tree');
+    const initialGenes = getTreeGenes(geneTree).filter((g) => g);
+    expect(initialGenes.length).toBe(3);
+
+    // Record the number of work requests before deleting a gene
+    const callCountBeforeDelete = fetchWork.mock.calls.length;
+
+    // Get the first gene and its remove button
+    const genesBeforeDelete = getTreeGenes(geneTree);
+    const geneToRemove = genesBeforeDelete[0];
+    
+    const geneElement = within(geneTree).queryByText(geneToRemove);
+    if (geneElement && geneElement.nextSibling) {
+      const removeButton = geneElement.nextSibling.firstChild;
+      
+      // Click remove button
+      await act(async () => {
+        userEvent.click(removeButton);
+      });
+
+      // Wait a moment for state to update
+      await new Promise((resolve) => setTimeout(resolve, 100));
+
+      // Should NOT have called getDotPlot
+      const callsMadeByDelete = fetchWork.mock.calls.length - callCountBeforeDelete;
+      expect(callsMadeByDelete).toBe(0);
+
+      // But the gene should be removed from the list
+      const genesAfterDelete = getTreeGenes(geneTree).filter((g) => g);
+      expect(genesAfterDelete.length).toBe(2);
+      expect(genesAfterDelete).not.toContain(geneToRemove);
+    }
+  });
 });
 
 // drag and drop is impossible in RTL, use enzyme
