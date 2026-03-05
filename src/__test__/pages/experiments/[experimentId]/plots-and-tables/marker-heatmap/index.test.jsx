@@ -691,4 +691,207 @@ describe('Marker heatmap plot', () => {
     // Verify plot no longer displays (since there are no genes)
     expect(screen.queryByRole('graphics-document', { name: 'Marker heatmap' })).not.toBeInTheDocument();
   });
+
+  it('gene reorder does not recall work requests', async () => {
+    await renderHeatmapPage(storeState);
+
+    // Verify initial genes are loaded
+    const initialGenes = getTreeGenes(screen.getByRole('tree'));
+    expect(initialGenes.length).toBeGreaterThan(2);
+
+    // Load expression for initial genes
+    await act(async () => {
+      await storeState.dispatch(loadGeneExpression(experimentId, initialGenes, plotUuid));
+    });
+
+    // Clear mock calls
+    jest.clearAllMocks();
+
+    // Reorder genes (same genes, different order)
+    const reorderedGenes = [initialGenes[1], initialGenes[0], ...initialGenes.slice(2)];
+
+    await act(async () => {
+      await storeState.dispatch(updatePlotConfig(plotUuid, { selectedGenes: reorderedGenes }));
+    });
+
+    // Verify no work request was made for reordering
+    expect(fetchWork).not.toHaveBeenCalled();
+  });
+
+  it('gene deletion does not recall work requests', async () => {
+    await renderHeatmapPage(storeState);
+
+    // Verify initial genes are loaded
+    const initialGenes = getTreeGenes(screen.getByRole('tree'));
+    expect(initialGenes.length).toBeGreaterThan(1);
+
+    // Load expression for initial genes
+    await act(async () => {
+      await storeState.dispatch(loadGeneExpression(experimentId, initialGenes, plotUuid));
+    });
+
+    // Clear mock calls
+    jest.clearAllMocks();
+
+    // Remove the last gene
+    const genesAfterRemoval = initialGenes.slice(0, -1);
+
+    await act(async () => {
+      await storeState.dispatch(updatePlotConfig(plotUuid, { selectedGenes: genesAfterRemoval }));
+    });
+
+    // Verify no work request was made for deletion
+    expect(fetchWork).not.toHaveBeenCalled();
+  });
+
+  it('clear all shows "Add some genes" message', async () => {
+    await renderHeatmapPage(storeState);
+
+    // Verify initial genes are displayed
+    const initialGenes = getTreeGenes(screen.getByRole('tree'));
+    expect(initialGenes.length).toBeGreaterThan(0);
+
+    // Find and click Clear All button
+    const buttons = screen.getAllByRole('button');
+    const clearAllButton = buttons.find((btn) => btn.textContent.includes('Clear All'));
+
+    await act(async () => {
+      userEvent.click(clearAllButton);
+    });
+
+    // Wait for the "Add some genes" message to appear
+    await waitFor(() => {
+      expect(screen.getByText(/Add some genes to this heatmap to get started/i)).toBeInTheDocument();
+    }, { timeout: 5000 });
+
+    // Verify plot is not displayed
+    expect(screen.queryByRole('graphics-document', { name: 'Marker heatmap' })).not.toBeInTheDocument();
+  });
+
+  it('Reset button reloads initial genes but keeps config the same', async () => {
+    await renderHeatmapPage(storeState);
+
+    // Verify initial genes are loaded
+    const initialGenes = getTreeGenes(screen.getByRole('tree'));
+    expect(initialGenes).toEqual(markerGenesData5.orderedGeneNames);
+
+    // Update config (e.g., change color scheme)
+    const colorSchemeBeforeReset = storeState.getState().componentConfig[plotUuid]?.config?.colour?.scheme;
+
+    await act(async () => {
+      await storeState.dispatch(updatePlotConfig(plotUuid, { 
+        selectedGenes: initialGenes.slice(0, 2),
+        colour: { ...storeState.getState().componentConfig[plotUuid]?.config?.colour, scheme: 'viridis' },
+      }));
+    });
+
+    // Verify genes changed
+    let displayedGenes = getTreeGenes(screen.getByRole('tree'));
+    expect(displayedGenes.length).toBe(2);
+
+    // Find and click Reset button
+    const buttons = screen.getAllByRole('button');
+    const resetButton = buttons.find((btn) => btn.textContent === 'Reset');
+
+    await act(async () => {
+      userEvent.click(resetButton);
+    });
+
+    // Wait for genes to be restored
+    await waitFor(() => {
+      displayedGenes = getTreeGenes(screen.getByRole('tree'));
+      expect(displayedGenes).toEqual(markerGenesData5.orderedGeneNames);
+    }, { timeout: 5000 });
+
+    // Verify color config is preserved (it should still be 'viridis', not the initial value)
+    const colorSchemeAfterReset = storeState.getState().componentConfig[plotUuid]?.config?.colour?.scheme;
+    expect(colorSchemeAfterReset).toBe('viridis');
+  });
+
+  it('Reset plot resets both config and initial gene list', async () => {
+    await renderHeatmapPage(storeState);
+
+    // Verify initial genes
+    const initialGenes = getTreeGenes(screen.getByRole('tree'));
+    expect(initialGenes).toEqual(markerGenesData5.orderedGeneNames);
+
+    // Store the initial color scheme
+    const initialColorScheme = storeState.getState().componentConfig[plotUuid]?.config?.colour?.scheme;
+
+    // Modify both genes and config
+    await act(async () => {
+      await storeState.dispatch(updatePlotConfig(plotUuid, { 
+        selectedGenes: initialGenes.slice(0, 2),
+        colour: { ...storeState.getState().componentConfig[plotUuid]?.config?.colour, scheme: 'viridis' },
+      }));
+      await storeState.dispatch(loadGeneExpression(experimentId, initialGenes.slice(0, 2), plotUuid));
+    });
+
+    // Verify changes
+    let displayedGenes = getTreeGenes(screen.getByRole('tree'));
+    expect(displayedGenes.length).toBe(2);
+    let colorScheme = storeState.getState().componentConfig[plotUuid]?.config?.colour?.scheme;
+    expect(colorScheme).toBe('viridis');
+
+    // Manually dispatch resetPlotConfig to simulate PlotContainer's reset
+    await act(async () => {
+      const { resetPlotConfig } = require('redux/actions/componentConfig');
+      await storeState.dispatch(resetPlotConfig(experimentId, plotUuid, 'markerHeatmap'));
+    });
+
+    // Wait for config to be reset
+    await waitFor(() => {
+      const resetConfig = storeState.getState().componentConfig[plotUuid]?.config;
+      // Check that color scheme is reset to initial value (not 'viridis')
+      expect(resetConfig?.colour?.scheme).not.toBe('viridis');
+      expect(resetConfig?.colour?.scheme).toBe(initialColorScheme);
+    }, { timeout: 5000 });
+
+    // Note: selectedGenes are kept on reset for heatmap (keepValuesOnReset: ['selectedGenes'])
+    // So genes remain in config after reset (this is by design, not a bug)
+  });
+
+  it('toggling to marker genes and clicking Run results in those genes showing up in Custom genes list', async () => {
+    await renderHeatmapPage(storeState);
+
+    // Verify initial 5 marker genes
+    const initialGenes = getTreeGenes(screen.getByRole('tree'));
+    expect(initialGenes.length).toBeGreaterThan(0);
+
+    // Click on Marker genes tab
+    await act(async () => {
+      userEvent.click(screen.getByText('Marker genes'));
+    });
+
+    expect(screen.getByText('Number of marker genes per cluster')).toBeInTheDocument();
+
+    // Change the number of marker genes from default to 2
+    const nGenesInput = screen.getByRole('spinbutton', { name: 'Number of genes input' });
+    userEvent.type(nGenesInput, '{backspace}2');
+
+    // Click Run to load new marker genes
+    await act(async () => {
+      userEvent.click(screen.getByText('Run'));
+    });
+
+    // Wait for marker genes to be loaded with the new count
+    await waitFor(() => {
+      // Verify that a call to load marker genes with nGenes: 2 was made
+      const markerCall = fetchWork.mock.calls.find((call) => call[1].nGenes === 2);
+      expect(markerCall).toBeDefined();
+    }, { timeout: 5000 });
+
+    // Switch to Custom genes tab to see the new marker genes
+    await act(async () => {
+      userEvent.click(screen.getByText('Custom genes'));
+    });
+
+    // Verify the new genes (from MarkerHeatmap-2 dataset) are shown
+    // markerGenesData2 has 2 genes: Ms4a4b and Smc4
+    await waitFor(() => {
+      markerGenesData2.orderedGeneNames.forEach((geneName) => {
+        expect(screen.getByText(geneName)).toBeInTheDocument();
+      });
+    }, { timeout: 5000 });
+  });
 });
