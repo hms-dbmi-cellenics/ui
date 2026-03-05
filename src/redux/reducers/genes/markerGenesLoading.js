@@ -8,7 +8,7 @@ const markerGenesLoading = produce((draft, action) => {
 
   draft.markers.loading = true;
   draft.markers.error = false;
-  draft.expression.downsampled.ETag = ETag;
+  draft.markers.ETag = ETag;
 }, getInitialState());
 
 export default markerGenesLoading;

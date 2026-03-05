@@ -5,23 +5,6 @@ exports[`loadMarkerGenes action Doesnt dispatch MARKER_GENES_LOADED if theres a 
   {
     "ETag": "new-etag",
   },
-  {
-    "ETag": "new-etag",
-    "data": {
-      "orderedGeneNames": [
-        "geneA",
-      ],
-    },
-    "plotUuid": "interactiveHeatmap",
-  },
-  {
-    "configChanges": {
-      "selectedGenes": [
-        "geneA",
-      ],
-    },
-    "plotUuid": "interactiveHeatmap",
-  },
 ]
 `;
 

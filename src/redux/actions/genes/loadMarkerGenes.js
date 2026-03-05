@@ -47,7 +47,7 @@ const loadMarkerGenes = (
 
     // If the ETag is different, that means that a new request was sent in between
     // So we don't need to handle this outdated result
-    if (getState().genes.markerGenes.ETag !== requestETag) {
+    if (getState().genes.markers.ETag !== requestETag) {
       return;
     }
 

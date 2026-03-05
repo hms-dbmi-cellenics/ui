@@ -48,12 +48,7 @@ describe('loadMarkerGenes action', () => {
         ...getInitialState(),
         markers: {
           ...getInitialState().markers,
-        },
-        expression: {
-          downsampled: {
-            ...getInitialState().expression.downsampled,
-            ETag: 'new-etag',
-          },
+          ETag: 'new-etag',
         },
       },
       experimentSettings,
@@ -125,12 +120,7 @@ describe('loadMarkerGenes action', () => {
         ...getInitialState(),
         markers: {
           ...getInitialState().markers,
-        },
-        expression: {
-          downsampled: {
-            ...getInitialState().expression.downsampled,
-            ETag: 'different-etag',
-          },
+          ETag: 'different-etag',
         },
       },
       experimentSettings,
@@ -151,7 +141,8 @@ describe('loadMarkerGenes action', () => {
     await store.dispatch(loadMarkerGenes(experimentId, 'interactiveHeatmap'));
 
     const actions = store.getActions();
-    expect(_.map(actions, 'type')).toEqual([MARKER_GENES_LOADING, MARKER_GENES_LOADED, 'componentConfig/update']);
+    // Should only have the loading action, not loaded, since ETag doesnt match
+    expect(_.map(actions, 'type')).toEqual([MARKER_GENES_LOADING]);
     expect(_.map(actions, 'payload')).toMatchSnapshot();
   });
 });
