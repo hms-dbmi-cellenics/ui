@@ -30,7 +30,6 @@ import {
   getDotPlot,
   updatePlotData,
 } from 'redux/actions/componentConfig';
-import { initialPlotConfigStates } from 'redux/reducers/componentConfig/initialState';
 
 import { getCellSets } from 'redux/selectors';
 import { plotNames, plotTypes } from 'utils/constants';
@@ -100,7 +99,6 @@ const DotPlotPage = (props) => {
 
   const cellSets = useSelector(getCellSets());
   const [moreThanTwoGroups, setMoreThanTwoGroups] = useState(false);
-  const [isResetDisabled, setIsResetDisabled] = useState(true);
 
   const experimentName = useSelector((state) => state.experimentSettings.info.experimentName);
   const csvFileName = plotCsvFilename(experimentName, 'DOT_PLOT', [config?.selectedCellSet, config?.selectedPoints]);
@@ -109,36 +107,6 @@ const DotPlotPage = (props) => {
     if (!config) dispatch(loadPlotConfig(experimentId, plotUuid, plotType));
     if (cellSets.hierarchy.length === 0) dispatch(loadCellSets(experimentId));
   }, []);
-
-  const isConfigEqual = (currentConfig, initialConfig) => {
-    const removeDefaultValues = (obj) => {
-      if (!obj || typeof obj !== 'object') return obj;
-      const cleaned = { ...obj };
-      delete cleaned.defaultValues;
-      return cleaned;
-    };
-
-    const isEqual = Object.keys(initialConfig).every((key) => {
-      // By pass plot data because we want to compare settings not data
-      if (key === 'plotData') return true;
-      if (initialConfig.keepValuesOnReset?.includes(key)) return true;
-      if (currentConfig[key] && typeof currentConfig[key] === 'object' && initialConfig[key] && typeof initialConfig[key] === 'object') {
-        // For nested objects, exclude defaultValues from comparison as it's metadata about defaults
-        const currentObj = removeDefaultValues(currentConfig[key]);
-        const initialObj = removeDefaultValues(initialConfig[key]);
-        return JSON.stringify(currentObj) === JSON.stringify(initialObj);
-      }
-
-      return currentConfig[key] === initialConfig[key];
-    });
-
-    return isEqual;
-  };
-
-  useEffect(() => {
-    if (!config) return;
-    setIsResetDisabled(isConfigEqual(config, initialPlotConfigStates[plotType]));
-  }, [config]);
 
   const previousComparedConfig = useRef(null);
   const getComparedConfig = (updatedConfig) => _.pick(
