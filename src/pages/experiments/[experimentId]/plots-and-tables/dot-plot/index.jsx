@@ -529,9 +529,9 @@ const DotPlotPage = (props) => {
       );
     }
 
-    // If we have selected genes but no plot data, we're likely waiting for data to load
-    // This handles the case where data was cleared to fetch new results
-    if (config?.selectedGenes?.length > 0 && !plotData?.length) {
+    // Show loader while waiting for plot data to load (regardless of selected genes)
+    // This prevents flashing "no data" messages during data fetch
+    if (plotDataLoading) {
       return (
         <center>
           <Loader experimentId={experimentId} />
