@@ -211,8 +211,6 @@ const DotPlotPage = (props) => {
 
     const currentComparedConfig = getComparedConfig(config);
 
-    if (config && !_.isEqual(previousComparedConfig.current, currentComparedConfig)) {
-      // previous compared config is null on first load, use [] for previous selected genes instead
       const previousSelected = previousComparedConfig.current?.selectedGenes ?? [];
       const currentSelected = currentComparedConfig.selectedGenes;
       const previousUseMarker = previousComparedConfig.current?.useMarkerGenes ?? false;
@@ -235,13 +233,19 @@ const DotPlotPage = (props) => {
       if (_.isEqual(currentSelected, previousSelected)) {
         // Genes haven't changed but other fields did (cell set, points, etc.)
         // Fetch new data (spec generator will reorder by selectedGenes)
+
         dispatch(getDotPlot(experimentId, plotUuid, config));
         return;
       }
 
       // if a gene was added
       if (currentSelected.length > previousSelected.length) {
-        // Gene added, fetch new data (spec generator will reorder by selectedGenes)
+        // Gene added - but skip if we're in marker genes mode (selectedGenes changed due to sync from getDotPlot)
+        // In marker genes mode, getDotPlot was already called and genes synced back, don't fetch again
+        if (config.useMarkerGenes) {
+          return;
+        }
+        // Gene added in custom genes mode, fetch new data (spec generator will reorder by selectedGenes)
         dispatch(getDotPlot(experimentId, plotUuid, config));
         return;
       }
