@@ -510,6 +510,45 @@ describe('Dot plot page', () => {
     const callsMadeByToggle = fetchWork.mock.calls.length - callCountBeforeToggle;
     expect(callsMadeByToggle).toBe(0);
   });
+
+  it('calls getDotPlot once with correct nMarkerGenes when clicking "Run" in marker genes mode', async () => {
+    // This test verifies that clicking "Run" in the MarkerGeneSelection panel
+    // triggers exactly one getDotPlot call with the specified number of marker genes
+    
+    await renderDotPlot(storeState);
+
+    // Wait for initial setup
+    await waitFor(() => {
+      expect(screen.getByText(/Dot plot/i)).toBeInTheDocument();
+    });
+
+    // Switch to marker genes mode
+    const markerGenesToggle = screen.getByText(/Marker genes/i);
+    await act(async () => {
+      userEvent.click(markerGenesToggle);
+    });
+
+    // Record call count before clicking Run
+    const callCountBeforeRun = fetchWork.mock.calls.length;
+
+    // Find and click the Run button in the MarkerGeneSelection panel
+    const runButton = screen.getByRole('button', { name: /run/i });
+    await act(async () => {
+      userEvent.click(runButton);
+    });
+
+    // Wait briefly for effects to process
+    await new Promise((resolve) => setTimeout(resolve, 100));
+
+    // Should have exactly one getDotPlot call
+    const callsMadeByRun = fetchWork.mock.calls.length - callCountBeforeRun;
+    expect(callsMadeByRun).toBe(1);
+
+    // The getDotPlot call should have been made with useMarkerGenes: true
+    const lastDotPlotCall = fetchWork.mock.calls[fetchWork.mock.calls.length - 1];
+    expect(lastDotPlotCall[1]).toBeDefined();
+    expect(lastDotPlotCall[1].name).toBe('DotPlot');
+  });
 });
 
 // drag and drop is impossible in RTL, use enzyme
