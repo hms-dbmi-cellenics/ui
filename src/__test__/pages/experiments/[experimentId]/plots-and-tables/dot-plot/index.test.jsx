@@ -445,6 +445,71 @@ describe('Dot plot page', () => {
     const callsAfterReset = fetchWork.mock.calls.length;
     expect(callsAfterReset - callsBeforeReset).toBeLessThanOrEqual(1);
   });
+
+  it('does not call getDotPlot twice when "Reset Plot" button is clicked from marker genes mode', async () => {
+    // This test verifies the fix: when the "Reset Plot" button (in PlotContainer toolbar) is clicked 
+    // while on marker genes toggle, getDotPlot should only be called once (from reset effect), not twice.
+    // Note: This is different from the "Reset" button in the Gene selection panel.
+    
+    await renderDotPlot(storeState);
+
+    // Wait for initial setup
+    await waitFor(() => {
+      expect(screen.getByText(/Dot plot/i)).toBeInTheDocument();
+    });
+
+    // Switch to marker genes mode
+    const markerGenesToggle = screen.getByText(/Marker genes/i);
+    await act(async () => {
+      userEvent.click(markerGenesToggle);
+    });
+
+    // Record call count before reset
+    const callCountBeforeReset = fetchWork.mock.calls.length;
+
+    // Click reset
+    const resetButton = screen.getByText('Reset Plot');
+    await act(async () => {
+      userEvent.click(resetButton);
+    });
+
+    // Wait briefly for effects to process
+    await new Promise((resolve) => setTimeout(resolve, 100));
+
+    // Count the getDotPlot calls made during reset
+    // With the fix, should be exactly 1 (from reset effect)
+    // Without the fix, would be 2 (one from marker genes sync, one from main effect)
+    const callsMadeForReset = fetchWork.mock.calls.length - callCountBeforeReset;
+    expect(callsMadeForReset).toBe(1);
+  });
+
+  it('does not call getDotPlot when toggling to "Marker genes" without changing nMarkerGenes', async () => {
+    // This test verifies that simply toggling the useMarkerGenes flag doesn't trigger a work request
+    // Only changes to nMarkerGenes or selectedGenes should trigger getDotPlot
+    
+    await renderDotPlot(storeState);
+
+    // Wait for initial setup (ListGenes + initial DotPlot)
+    await waitFor(() => {
+      expect(screen.getByText(/Dot plot/i)).toBeInTheDocument();
+    });
+
+    // Record call count before toggling marker genes
+    const callCountBeforeToggle = fetchWork.mock.calls.length;
+
+    // Switch to marker genes mode - this should NOT call getDotPlot
+    const markerGenesToggle = screen.getByText(/Marker genes/i);
+    await act(async () => {
+      userEvent.click(markerGenesToggle);
+    });
+
+    // Wait briefly
+    await new Promise((resolve) => setTimeout(resolve, 100));
+
+    // No new calls should have been made
+    const callsMadeByToggle = fetchWork.mock.calls.length - callCountBeforeToggle;
+    expect(callsMadeByToggle).toBe(0);
+  });
 });
 
 // drag and drop is impossible in RTL, use enzyme

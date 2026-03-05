@@ -230,12 +230,28 @@ const DotPlotPage = (props) => {
         return;
       }
 
+      // Capture previous data-affecting field values before updating reference
+      const previousCellSet = previousComparedConfig.current?.selectedCellSet;
+      const previousPoints = previousComparedConfig.current?.selectedPoints;
+
       previousComparedConfig.current = currentComparedConfig;
       // if the selected genes don't change
       if (_.isEqual(currentSelected, previousSelected)) {
-        // Genes haven't changed but other fields did (cell set, points, etc.)
-        // Fetch new data (spec generator will reorder by selectedGenes)
-        dispatch(getDotPlot(experimentId, plotUuid, config));
+        // Check if data-affecting fields (cell set or points) changed
+        const currentCellSet = currentComparedConfig.selectedCellSet;
+        const currentPoints = currentComparedConfig.selectedPoints;
+
+        const dataFieldsChanged = !_.isEqual(previousCellSet, currentCellSet)
+          || !_.isEqual(previousPoints, currentPoints);
+
+        if (dataFieldsChanged) {
+          // Clear old plot data before fetching new data to prevent rendering mismatch
+          // (stale data with new cell set configuration)
+          dispatch(updatePlotData(plotUuid, []));
+          // Cell set or points changed - fetch new data (spec generator will reorder by selectedGenes)
+          dispatch(getDotPlot(experimentId, plotUuid, config));
+        }
+        // If only styling fields changed (useAbsoluteScale, dimensions, colors, etc.), skip getDotPlot
         return;
       }
 
@@ -354,6 +370,8 @@ const DotPlotPage = (props) => {
   const onUpdateSelectData = (obj) => {
     const selectedCellSet = Object.values(obj)[0];
     const updateObj = { axes: { yAxisText: cellSets.properties[selectedCellSet]?.name }, ...obj };
+    // Clear plot data immediately when cell set/points change to avoid rendering mismatch
+    dispatch(updatePlotData(plotUuid, []));
     updatePlotWithChanges(updateObj);
   };
 
@@ -402,8 +420,30 @@ const DotPlotPage = (props) => {
   };
 
   const onReset = () => {
+    // Reset the ref so initialization effect can run again on next load
+    highestGenesLoadedRef.current = false;
+
+    // Calculate the 3 highest dispersion genes
+    const NUM_GENES_FOR_RESET = 3;
+    const highestDispersions = Object.values(geneData)
+      .map((gene) => gene.dispersions)
+      .sort()
+      .splice(-NUM_GENES_FOR_RESET);
+
+    const getKeyByValue = (value) => Object.keys(geneData)
+      .find((key) => geneData[key].dispersions === value);
+
+    const highestDispersionGenes = highestDispersions.map(
+      (dispersion) => getKeyByValue(dispersion),
+    );
+
+    // Update config with the 3 highest genes and disable marker genes mode
+    // This ensures getDotPlot fetches custom gene data and doesn't sync genes back
+    dispatch(updatePlotConfig(plotUuid, {
+      selectedGenes: highestDispersionGenes,
+      useMarkerGenes: false,
+    }));
     setReset(true);
-    setHighestDispersionGenes();
   };
 
   useEffect(() => {
@@ -489,6 +529,16 @@ const DotPlotPage = (props) => {
       );
     }
 
+    // If we have selected genes but no plot data, we're likely waiting for data to load
+    // This handles the case where data was cleared to fetch new results
+    if (config?.selectedGenes?.length > 0 && !plotData?.length) {
+      return (
+        <center>
+          <Loader experimentId={experimentId} />
+        </center>
+      );
+    }
+
     if (!plotData?.length > 0) {
       return (
         <center>
@@ -548,6 +598,7 @@ const DotPlotPage = (props) => {
         extraToolbarControls={<ExportAsCSV data={getCSVData()} filename={csvFileName} />}
         extraControlPanels={renderExtraPanels()}
         defaultActiveKey='gene-selection'
+        onPlotReset={onReset}
       >
         {renderPlot()}
       </PlotContainer>
