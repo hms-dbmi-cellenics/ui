@@ -326,19 +326,7 @@ const DotPlotPage = (props) => {
       return;
     }
 
-    const NUM_GENES_FOR_RESET = 3;
-    const highestDispersions = Object.values(geneData)
-      .map((gene) => gene.dispersions)
-      .sort()
-      .splice(-NUM_GENES_FOR_RESET);
-
-    const getKeyByValue = (value) => Object.keys(geneData)
-      .find((key) => geneData[key].dispersions === value);
-
-    const highestDispersionGenes = highestDispersions.map(
-      (dispersion) => getKeyByValue(dispersion),
-    );
-
+    const highestDispersionGenes = getHighestDispersionGenes();
     updatePlotWithChanges({ selectedGenes: highestDispersionGenes });
 
     // Update previousComparedConfig so the main effect knows to skip processing this gene change
