@@ -211,6 +211,8 @@ const DotPlotPage = (props) => {
 
     const currentComparedConfig = getComparedConfig(config);
 
+    if (config && !_.isEqual(previousComparedConfig.current, currentComparedConfig)) {
+      // previous compared config is null on first load, use [] for previous selected genes instead
       const previousSelected = previousComparedConfig.current?.selectedGenes ?? [];
       const currentSelected = currentComparedConfig.selectedGenes;
       const previousUseMarker = previousComparedConfig.current?.useMarkerGenes ?? false;
@@ -233,7 +235,6 @@ const DotPlotPage = (props) => {
       if (_.isEqual(currentSelected, previousSelected)) {
         // Genes haven't changed but other fields did (cell set, points, etc.)
         // Fetch new data (spec generator will reorder by selectedGenes)
-
         dispatch(getDotPlot(experimentId, plotUuid, config));
         return;
       }
@@ -319,11 +320,17 @@ const DotPlotPage = (props) => {
     updatePlotWithChanges({ selectedGenes: highestDispersionGenes });
   };
 
-  // load initial state, based on highest dispersion genes from all genes
+  // load initial state, based on highest dispersion genes from all genes (only on first load)
   useEffect(() => {
-    if (_.isEmpty(geneData) || !config || highestGenesLoadedRef.current || plotDataLoading) {
+    // Only run this initialization effect once, on initial load
+    if (highestGenesLoadedRef.current) {
       return;
     }
+
+    if (_.isEmpty(geneData) || !config || plotDataLoading) {
+      return;
+    }
+
     if (!config?.selectedGenes.length) {
       setHighestDispersionGenes();
     }
@@ -358,8 +365,8 @@ const DotPlotPage = (props) => {
     if (obj.nMarkerGenes) {
       // When nMarkerGenes changes, call getDotPlot to load marker genes
       dispatch(getDotPlot(experimentId, plotUuid, { ...config, ...obj }));
-    } else if (obj.selectedGenes) {
-      // When selectedGenes changes, call getDotPlot
+    } else if (obj.selectedGenes && obj.selectedGenes.length > 0) {
+      // When selectedGenes changes, call getDotPlot (but not when clearing all genes)
       dispatch(getDotPlot(experimentId, plotUuid, { ...config, ...obj }));
     }
   };
@@ -367,6 +374,10 @@ const DotPlotPage = (props) => {
   const onGenesChange = (genes) => {
     // Check if this is a reordering (same genes, different order) or an actual change (add/remove)
     const currentGenes = config?.selectedGenes || [];
+    
+    // Skip if genes haven't actually changed
+    if (_.isEqual(genes, currentGenes)) return;
+
     const isReordering = genes.length === currentGenes.length
       && _.isEqual(_.sortBy(genes), _.sortBy(currentGenes));
 
@@ -374,7 +385,7 @@ const DotPlotPage = (props) => {
       // Just update config without calling getDotPlot - the effect will handle reordering locally
       dispatch(updatePlotConfig(plotUuid, { selectedGenes: genes }));
     } else {
-      // Gene added or removed - need to fetch new data
+      // Gene added or removed - need to update config
       updatePlotWithChanges({ selectedGenes: genes });
     }
   };
