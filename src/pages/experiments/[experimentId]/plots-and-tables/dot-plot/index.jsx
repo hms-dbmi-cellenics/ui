@@ -374,7 +374,7 @@ const DotPlotPage = (props) => {
   const onGenesChange = (genes) => {
     // Check if this is a reordering (same genes, different order) or an actual change (add/remove)
     const currentGenes = config?.selectedGenes || [];
-    
+
     // Skip if genes haven't actually changed
     if (_.isEqual(genes, currentGenes)) return;
 
@@ -384,9 +384,12 @@ const DotPlotPage = (props) => {
     if (isReordering) {
       // Just update config without calling getDotPlot - the effect will handle reordering locally
       dispatch(updatePlotConfig(plotUuid, { selectedGenes: genes }));
-    } else {
-      // Gene added or removed - need to update config
+    } else if (genes.length > currentGenes.length) {
+      // Gene added - fetch new data from backend
       updatePlotWithChanges({ selectedGenes: genes });
+    } else {
+      // Gene removed - just update config, let effect handle deleteData locally
+      dispatch(updatePlotConfig(plotUuid, { selectedGenes: genes }));
     }
   };
 
