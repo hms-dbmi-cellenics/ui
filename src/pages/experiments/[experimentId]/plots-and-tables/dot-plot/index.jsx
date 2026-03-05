@@ -7,6 +7,8 @@ import {
   Empty,
   Form,
   Radio,
+  Button,
+  Space,
 } from 'antd';
 
 import _ from 'lodash';
@@ -28,6 +30,7 @@ import {
   loadPlotConfig,
   getDotPlot,
   updatePlotData,
+  resetPlotConfig,
 } from 'redux/actions/componentConfig';
 
 import { getCellSets } from 'redux/selectors';
@@ -423,27 +426,32 @@ const DotPlotPage = (props) => {
     // Reset the ref so initialization effect can run again on next load
     highestGenesLoadedRef.current = false;
 
-    // Calculate the 3 highest dispersion genes
-    const NUM_GENES_FOR_RESET = 3;
-    const highestDispersions = Object.values(geneData)
-      .map((gene) => gene.dispersions)
-      .sort()
-      .splice(-NUM_GENES_FOR_RESET);
+    // The PlotContainer's resetPlotConfig is async and would overwrite our gene selection
+    // So we dispatch it first, then wait for it to complete before setting our genes
+    dispatch(resetPlotConfig(experimentId, plotUuid, plotType)).then(() => {
+      // After reset config completes, set the 3 highest dispersion genes
+      const NUM_GENES_FOR_RESET = 3;
+      const highestDispersions = Object.values(geneData)
+        .map((gene) => gene.dispersions)
+        .sort()
+        .splice(-NUM_GENES_FOR_RESET);
 
-    const getKeyByValue = (value) => Object.keys(geneData)
-      .find((key) => geneData[key].dispersions === value);
+      const getKeyByValue = (value) => Object.keys(geneData)
+        .find((key) => geneData[key].dispersions === value);
 
-    const highestDispersionGenes = highestDispersions.map(
-      (dispersion) => getKeyByValue(dispersion),
-    );
+      const highestDispersionGenes = highestDispersions.map(
+        (dispersion) => getKeyByValue(dispersion),
+      );
 
-    // Update config with the 3 highest genes and disable marker genes mode
-    // This ensures getDotPlot fetches custom gene data and doesn't sync genes back
-    dispatch(updatePlotConfig(plotUuid, {
-      selectedGenes: highestDispersionGenes,
-      useMarkerGenes: false,
-    }));
-    setReset(true);
+      // Update config with the 3 highest genes and disable marker genes mode
+      dispatch(updatePlotConfig(plotUuid, {
+        selectedGenes: highestDispersionGenes,
+        useMarkerGenes: false,
+      }));
+
+      // Then set reset flag to trigger getDotPlot via the reset effect
+      setReset(true);
+    });
   };
 
   useEffect(() => {
@@ -454,7 +462,7 @@ const DotPlotPage = (props) => {
     previousComparedConfig.current = getComparedConfig(config);
     dispatch(getDotPlot(experimentId, plotUuid, config));
     setReset(false);
-  }, [config]);
+  }, [reset, config, experimentId, plotUuid]);
 
   const renderExtraPanels = () => (
     <>
@@ -595,10 +603,21 @@ const DotPlotPage = (props) => {
         plotUuid={plotUuid}
         plotType={plotType}
         plotStylingConfig={plotStylingConfig}
-        extraToolbarControls={<ExportAsCSV data={getCSVData()} filename={csvFileName} />}
+        extraToolbarControls={(
+          <Space>
+            <ExportAsCSV data={getCSVData()} filename={csvFileName} />
+            <Button
+              type='primary'
+              size='small'
+              onClick={onReset}
+            >
+              Reset Plot
+            </Button>
+          </Space>
+        )}
         extraControlPanels={renderExtraPanels()}
         defaultActiveKey='gene-selection'
-        onPlotReset={onReset}
+        showResetButton={false}
       >
         {renderPlot()}
       </PlotContainer>

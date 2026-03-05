@@ -393,6 +393,37 @@ describe('Dot plot page', () => {
     expect(screen.getAllByText('Apoe').length).toBe(2);
   });
 
+  it('shows genes in the Custom genes list after Reset Plot is clicked', async () => {
+    await renderDotPlot(storeState);
+
+    // Wait for initial load
+    const geneTree = await screen.findByRole('tree');
+    let genesDisplayed = getTreeGenes(geneTree).filter((g) => g);
+    const initialGenes = [...genesDisplayed];
+    expect(genesDisplayed.length).toBeGreaterThan(0);
+
+    // Toggle to Marker genes mode to enable Reset button
+    const markerGenesToggle = screen.getByText(/Marker genes/i);
+    await act(async () => {
+      userEvent.click(markerGenesToggle);
+    });
+
+    // Click Reset Plot button
+    const resetButton = screen.getByText('Reset Plot');
+    await act(async () => {
+      userEvent.click(resetButton);
+    });
+
+    // Wait for reset to complete and genes to reappear
+    await waitFor(() => {
+      genesDisplayed = getTreeGenes(geneTree).filter((g) => g);
+      // After reset, there should still be genes in the tree (the 3 highest dispersion genes)
+      expect(genesDisplayed.length).toBeGreaterThan(0);
+      // Verify they match the initial genes (should be the 3 highest dispersion genes)
+      expect(genesDisplayed).toEqual(initialGenes);
+    }, { timeout: 2000 });
+  });
+
   it('does not call getDotPlot twice when Clear All is clicked then Reset is clicked', async () => {
     await renderDotPlot(storeState);
 
