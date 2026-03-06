@@ -111,7 +111,6 @@ exports[`ErrorPage Should post error to Slack if environment is production 1`] =
       "expression": {
         "downsampled": {
           "ETag": null,
-          "cellOrder": [],
           "error": false,
           "loading": [],
           "matrix": ExpressionMatrix {
@@ -135,36 +134,11 @@ exports[`ErrorPage Should post error to Slack if environment is production 1`] =
               "rawStdev": [],
               "truncatedMax": [],
               "truncatedMin": [],
-            },
-            "truncatedGeneExpressions": {
-              "datatype": undefined,
-              "index": [],
-              "mathjs": "SparseMatrix",
-              "ptr": [
-                0,
-              ],
-              "size": [
-                0,
-                0,
-              ],
-              "values": [],
-            },
-            "zScore": {
-              "datatype": undefined,
-              "index": [],
-              "mathjs": "SparseMatrix",
-              "ptr": [
-                0,
-              ],
-              "size": [
-                0,
-                0,
-              ],
-              "values": [],
             },
           },
         },
         "full": {
+          "ETag": null,
           "error": false,
           "loading": [],
           "matrix": ExpressionMatrix {
@@ -188,32 +162,6 @@ exports[`ErrorPage Should post error to Slack if environment is production 1`] =
               "rawStdev": [],
               "truncatedMax": [],
               "truncatedMin": [],
-            },
-            "truncatedGeneExpressions": {
-              "datatype": undefined,
-              "index": [],
-              "mathjs": "SparseMatrix",
-              "ptr": [
-                0,
-              ],
-              "size": [
-                0,
-                0,
-              ],
-              "values": [],
-            },
-            "zScore": {
-              "datatype": undefined,
-              "index": [],
-              "mathjs": "SparseMatrix",
-              "ptr": [
-                0,
-              ],
-              "size": [
-                0,
-                0,
-              ],
-              "values": [],
             },
           },
         },
@@ -248,7 +196,7 @@ exports[`ErrorPage Should post error to Slack if environment is production 1`] =
           "splitPercentage": 50,
         },
         "second": "Genes",
-        "splitPercentage": 70,
+        "splitPercentage": 68,
       },
     },
     "networkResources": {
@@ -381,7 +329,6 @@ exports[`ErrorPage Should post error to Slack if environment is staging 1`] = `
       "expression": {
         "downsampled": {
           "ETag": null,
-          "cellOrder": [],
           "error": false,
           "loading": [],
           "matrix": ExpressionMatrix {
@@ -405,36 +352,11 @@ exports[`ErrorPage Should post error to Slack if environment is staging 1`] = `
               "rawStdev": [],
               "truncatedMax": [],
               "truncatedMin": [],
-            },
-            "truncatedGeneExpressions": {
-              "datatype": undefined,
-              "index": [],
-              "mathjs": "SparseMatrix",
-              "ptr": [
-                0,
-              ],
-              "size": [
-                0,
-                0,
-              ],
-              "values": [],
-            },
-            "zScore": {
-              "datatype": undefined,
-              "index": [],
-              "mathjs": "SparseMatrix",
-              "ptr": [
-                0,
-              ],
-              "size": [
-                0,
-                0,
-              ],
-              "values": [],
             },
           },
         },
         "full": {
+          "ETag": null,
           "error": false,
           "loading": [],
           "matrix": ExpressionMatrix {
@@ -458,32 +380,6 @@ exports[`ErrorPage Should post error to Slack if environment is staging 1`] = `
               "rawStdev": [],
               "truncatedMax": [],
               "truncatedMin": [],
-            },
-            "truncatedGeneExpressions": {
-              "datatype": undefined,
-              "index": [],
-              "mathjs": "SparseMatrix",
-              "ptr": [
-                0,
-              ],
-              "size": [
-                0,
-                0,
-              ],
-              "values": [],
-            },
-            "zScore": {
-              "datatype": undefined,
-              "index": [],
-              "mathjs": "SparseMatrix",
-              "ptr": [
-                0,
-              ],
-              "size": [
-                0,
-                0,
-              ],
-              "values": [],
             },
           },
         },
@@ -518,7 +414,7 @@ exports[`ErrorPage Should post error to Slack if environment is staging 1`] = `
           "splitPercentage": 50,
         },
         "second": "Genes",
-        "splitPercentage": 70,
+        "splitPercentage": 68,
       },
     },
     "networkResources": {

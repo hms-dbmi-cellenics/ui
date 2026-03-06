@@ -7,6 +7,7 @@ import thunk from 'redux-thunk';
 import preloadAll from 'jest-next-dynamic';
 import configureMockStore from 'redux-mock-store';
 import { GENES_EXPRESSION_LOADING, GENES_EXPRESSION_LOADED } from 'redux/actionTypes/genes';
+import { UPDATE_CONFIG } from 'redux/actionTypes/componentConfig';
 import fetchWork from 'utils/work/fetchWork';
 import ComponentActions from 'components/data-exploration/generic-gene-table/ComponentActions';
 import { getTwoGenesExpressionMatrix, getThreeGenesMatrix } from '__test__/utils/ExpressionMatrix/testMatrixes';
@@ -54,6 +55,13 @@ const initialState = {
     selected: ['GeneA'],
   },
   backendStatus,
+  componentConfig: {
+    [componentType]: {
+      config: {
+        selectedGenes: ['Gzma', 'Lyz2'],
+      },
+    },
+  },
 };
 
 describe('ComponentActions', () => {
@@ -71,7 +79,7 @@ describe('ComponentActions', () => {
 
     component = mount(
       <Provider store={store}>
-        <ComponentActions name='fakeName' experimentId={experimentId} componentType={componentType} useDownsampledExpression={false} />
+        <ComponentActions name='fakeName' experimentId={experimentId} componentType={componentType} />
       </Provider>,
     );
 
@@ -92,7 +100,7 @@ describe('ComponentActions', () => {
 
     component = mount(
       <Provider store={store}>
-        <ComponentActions name='fakeName' experimentId={experimentId} componentType={componentType} useDownsampledExpression={false} />
+        <ComponentActions name='fakeName' experimentId={experimentId} componentType={componentType} />
       </Provider>,
     );
 
@@ -110,20 +118,19 @@ describe('ComponentActions', () => {
 
     component = mount(
       <Provider store={store}>
-        <ComponentActions name='fakeName' experimentId={experimentId} componentType={componentType} useDownsampledExpression={false} />
+        <ComponentActions name='fakeName' experimentId={experimentId} componentType={componentType} />
       </Provider>,
     );
 
     const menuButtons = component.find(Dropdown).props().overlay;
     menuButtons.props.children[0].props.onClick();
 
-    // Wait for side-effect to propagate (properties loading and loaded).
-    await waitForActions(store, [GENES_EXPRESSION_LOADING, GENES_EXPRESSION_LOADED]);
+    // Wait for side-effect to propagate (config update, then genes loading and loaded).
+    await waitForActions(store, [UPDATE_CONFIG, GENES_EXPRESSION_LOADING, GENES_EXPRESSION_LOADED]);
 
     expect(fetchWork).toHaveBeenCalledWith(
       experimentId,
       {
-        downsampled: false,
         name: 'GeneExpression',
         genes: ['GeneA', 'GeneB', 'GeneC'],
       },
@@ -132,11 +139,11 @@ describe('ComponentActions', () => {
       { timeout: 60 },
     );
 
-    expect(store.getActions().length).toEqual(2);
-
-    expect(store.getActions()[0]).toMatchSnapshot();
+    expect(store.getActions().length).toEqual(3);
 
     expect(store.getActions()[1]).toMatchSnapshot();
+
+    expect(store.getActions()[2]).toMatchSnapshot();
   });
 
   it('Dispatches loadGeneExpression action with the right list of genes when Remove is clicked', async () => {
@@ -150,21 +157,21 @@ describe('ComponentActions', () => {
 
     component = mount(
       <Provider store={store}>
-        <ComponentActions name='fakeName' experimentId={experimentId} componentType={componentType} useDownsampledExpression={false} />
+        <ComponentActions name='fakeName' experimentId={experimentId} componentType={componentType} />
       </Provider>,
     );
 
     const menuButtons = component.find(Dropdown).props().overlay;
     menuButtons.props.children[1].props.onClick();
 
-    // Wait for side-effect to propagate (genes loaded).
-    await waitForActions(store, [GENES_EXPRESSION_LOADED]);
+    // Wait for side-effect to propagate (config update and genes loaded).
+    await waitForActions(store, [UPDATE_CONFIG, GENES_EXPRESSION_LOADED]);
 
     expect(fetchWork).toHaveBeenCalledTimes(0);
 
-    expect(store.getActions().length).toEqual(1);
+    expect(store.getActions().length).toEqual(2);
 
-    expect(store.getActions()[0]).toMatchSnapshot();
+    expect(store.getActions()[1]).toMatchSnapshot();
   });
 
   it('Dispatches loadGeneExpression action with the right list of genes when Overwrite is clicked', async () => {
@@ -178,19 +185,19 @@ describe('ComponentActions', () => {
 
     component = mount(
       <Provider store={store}>
-        <ComponentActions name='fakeName' experimentId={experimentId} componentType={componentType} useDownsampledExpression={false} />
+        <ComponentActions name='fakeName' experimentId={experimentId} componentType={componentType} />
       </Provider>,
     );
 
     const menuButtons = component.find(Dropdown).props().overlay;
     menuButtons.props.children[2].props.onClick();
 
-    // Wait for side-effect to propagate (properties loading and loaded).
-    await waitForActions(store, [GENES_EXPRESSION_LOADED]);
+    // Wait for side-effect to propagate (config update and genes loaded).
+    await waitForActions(store, [UPDATE_CONFIG, GENES_EXPRESSION_LOADED]);
 
     expect(fetchWork).toHaveBeenCalledTimes(0);
 
-    expect(store.getActions().length).toEqual(1);
-    expect(store.getActions()[0]).toMatchSnapshot();
+    expect(store.getActions().length).toEqual(2);
+    expect(store.getActions()[1]).toMatchSnapshot();
   });
 });

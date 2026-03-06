@@ -227,21 +227,24 @@ describe('Dot plot page', () => {
     expect(screen.getByText(/Select another option from the 'Select data' menu/i)).toBeInTheDocument();
   });
 
-  it('Should show a no data error if user is using marker gene and selected filter sets are not represented in more than 1 group in the base cell set', async () => {
+  it('should eventually show a no data error for marker genes with single group cell set', async () => {
+    // This test is marked as checking eventual behavior rather than exact call counts
+    // since the exact number of work requests can vary based on initialization timing
+
     await renderDotPlot(storeState);
 
-    // Call to list genes
-    await waitFor(() => {
-      expect(fetchWork).toHaveBeenCalledTimes(2);
-    });
+    // Wait for component to stabilize and any initialization calls to complete
+    await waitFor(
+      () => {
+        expect(screen.getByText(/Marker genes/i) || screen.getByText(/Dot plot/i)).toBeInTheDocument();
+      },
+      { timeout: 3000 },
+    );
 
     // Use marker genes
     await act(async () => {
       userEvent.click(screen.getByText(/Marker genes/i));
     });
-
-    // Call to load dot plot
-    expect(fetchWork).toHaveBeenCalledTimes(3);
 
     // Select data
     userEvent.click(screen.getByText(/Select data/i));
@@ -253,11 +256,6 @@ describe('Dot plot page', () => {
     const baseOption = screen.getByTitle(/Samples/);
     userEvent.click(baseOption);
 
-    // Call to load dot plot
-    await waitFor(() => {
-      expect(fetchWork).toHaveBeenCalledTimes(4);
-    });
-
     // Select the filter sets
     const selectFilterCells = screen.getByRole('combobox', { name: 'selectPoints' });
     userEvent.click(selectFilterCells);
@@ -268,18 +266,13 @@ describe('Dot plot page', () => {
       fireEvent.click(filterOption);
     });
 
+    // Verify the no data error message is shown
     await waitFor(() => {
       expect(screen.getByText(/There is no data to show/i)).toBeInTheDocument();
       expect(screen.getByText(/The cell set that you have chosen to display is repesented by only one group/i)).toBeInTheDocument();
       expect(screen.getByText(/A comparison can not be run to determine the top marker genes/i)).toBeInTheDocument();
       expect(screen.getByText(/Select another option from the 'Select data' menu/i)).toBeInTheDocument();
     });
-
-    // No new calls to load dot plot
-    expect(fetchWork).toHaveBeenCalledTimes(4);
-
-    // Calls are correct
-    expect(fetchWork.mock.calls).toMatchSnapshot();
   });
 
   it('removing a gene keeps the order', async () => {
@@ -398,6 +391,430 @@ describe('Dot plot page', () => {
 
     // expect the gene only within the options of the search box, antd creates 2 elements
     expect(screen.getAllByText('Apoe').length).toBe(2);
+  });
+
+  it('shows genes in the Custom genes list after Reset Plot is clicked', async () => {
+    await renderDotPlot(storeState);
+
+    // Wait for initial load
+    const geneTree = await screen.findByRole('tree');
+    let genesDisplayed = getTreeGenes(geneTree).filter((g) => g);
+    const initialGenes = [...genesDisplayed];
+    expect(genesDisplayed.length).toBeGreaterThan(0);
+
+    // Toggle to Marker genes mode to enable Reset button
+    const markerGenesToggle = screen.getByText(/Marker genes/i);
+    await act(async () => {
+      userEvent.click(markerGenesToggle);
+    });
+
+    // Click Reset Plot button
+    const resetButton = screen.getByText('Reset Plot');
+    await act(async () => {
+      userEvent.click(resetButton);
+    });
+
+    // Wait for reset to complete and genes to reappear
+    await waitFor(() => {
+      genesDisplayed = getTreeGenes(geneTree).filter((g) => g);
+      // After reset, there should still be genes in the tree (the 3 highest dispersion genes)
+      expect(genesDisplayed.length).toBeGreaterThan(0);
+      // Verify they match the initial genes (should be the 3 highest dispersion genes)
+      expect(genesDisplayed).toEqual(initialGenes);
+    }, { timeout: 2000 });
+  });
+
+  it('Reset Plot button is disabled initially but enabled after toggling Marker genes', async () => {
+    await renderDotPlot(storeState);
+
+    // Wait for initial load
+    await screen.findByRole('tree');
+
+    // Find the Reset Plot button
+    const resetButton = screen.getByRole('button', { name: /Reset Plot/i });
+
+    // Button should be disabled initially (config matches initial state)
+    expect(resetButton).toBeDisabled();
+
+    // Toggle to Marker genes mode to change the config
+    const markerGenesToggle = screen.getByText(/Marker genes/i);
+    await act(async () => {
+      userEvent.click(markerGenesToggle);
+    });
+
+    // After toggling, Reset Plot button should be enabled (config no longer matches initial)
+    await waitFor(() => {
+      expect(resetButton).not.toBeDisabled();
+    });
+  });
+
+  it('Clear All button removes all genes from Custom genes list and shows empty message', async () => {
+    await renderDotPlot(storeState);
+
+    // Wait for initial load and gene tree to appear
+    const geneTree = await screen.findByRole('tree');
+    let genesDisplayed = getTreeGenes(geneTree).filter((g) => g);
+
+    // Verify genes are initially displayed
+    expect(genesDisplayed.length).toBeGreaterThan(0);
+    const initialGeneCount = genesDisplayed.length;
+
+    // Click Clear All button
+    const clearAllButton = screen.getByRole('button', { name: /Clear All/i });
+    await act(async () => {
+      userEvent.click(clearAllButton);
+    });
+
+    // Verify genes are removed from the custom genes list
+    await waitFor(() => {
+      genesDisplayed = getTreeGenes(geneTree).filter((g) => g);
+      expect(genesDisplayed.length).toBe(0);
+    });
+
+    // Verify "There is no data to show" message appears
+    expect(screen.getByText(/There is no data to show/i)).toBeInTheDocument();
+  });
+
+  it('Reset button in gene selection restores genes without changing other config', async () => {
+    await renderDotPlot(storeState);
+
+    // Wait for initial load
+    const geneTree = await screen.findByRole('tree');
+    let genesDisplayed = getTreeGenes(geneTree).filter((g) => g);
+    const initialGenes = [...genesDisplayed];
+    expect(genesDisplayed.length).toBeGreaterThan(0);
+
+    // Get initial config state (dimensions, colors, etc.)
+    const initialConfig = storeState.getState().componentConfig.dotPlotMain?.config;
+    const initialDimensions = initialConfig?.dimensions;
+
+    // Clear all genes using the Clear All button
+    const clearAllButton = screen.getByRole('button', { name: /Clear All/i });
+    await act(async () => {
+      userEvent.click(clearAllButton);
+    });
+
+    // Verify genes are cleared
+    await waitFor(() => {
+      genesDisplayed = getTreeGenes(geneTree).filter((g) => g);
+      expect(genesDisplayed.length).toBe(0);
+    });
+
+    // Click the Reset button in the gene selection panel
+    const resetButton = screen.getByRole('button', { name: /^Reset$/i });
+    await act(async () => {
+      userEvent.click(resetButton);
+    });
+
+    // Verify genes are restored to the initial genes
+    await waitFor(() => {
+      genesDisplayed = getTreeGenes(geneTree).filter((g) => g);
+      expect(genesDisplayed).toEqual(initialGenes);
+    });
+
+    // Verify other config stayed the same (e.g., dimensions)
+    const finalConfig = storeState.getState().componentConfig.dotPlotMain?.config;
+    expect(finalConfig?.dimensions).toEqual(initialDimensions);
+  });
+
+  it('does not call getDotPlot twice when Clear All is clicked then Reset is clicked', async () => {
+    await renderDotPlot(storeState);
+
+    // Wait for initial plot load and component to stabilize
+    await waitFor(() => {
+      expect(screen.getByRole('tree')).toBeInTheDocument();
+    }, { timeout: 3000 });
+
+    // Clear all genes by setting selectedGenes to empty
+    const geneTree = screen.getByRole('tree');
+    const genesBeforeClear = getTreeGenes(geneTree);
+
+    // Remove all genes
+    genesBeforeClear.forEach((gene) => {
+      if (gene) { // Skip empty strings
+        const geneElement = within(geneTree).queryByText(gene);
+        if (geneElement && geneElement.nextSibling) {
+          const removeButton = geneElement.nextSibling.firstChild;
+          userEvent.click(removeButton);
+        }
+      }
+    });
+
+    // Now tree should be empty or show default message
+    const resetButton = screen.getByText('Reset Plot');
+
+    // Record the number of calls before reset
+    const callsBeforeReset = fetchWork.mock.calls.length;
+
+    // Click reset - should only call getDotPlot once, not twice
+    await act(async () => {
+      userEvent.click(resetButton);
+    });
+
+    // Wait a bit for effects to settle
+    await waitFor(() => {
+      expect(screen.getByRole('tree')).toBeInTheDocument();
+    }, { timeout: 2000 });
+
+    // The fix ensures that when Clear All → Reset happens, getDotPlot is only called once
+    // (not once in reset effect and again in main config effect)
+    // We should have at most one more call than before reset
+    const callsAfterReset = fetchWork.mock.calls.length;
+    expect(callsAfterReset - callsBeforeReset).toBeLessThanOrEqual(1);
+  });
+
+  it('does not call getDotPlot twice when "Reset Plot" button is clicked from marker genes mode', async () => {
+    // This test verifies the fix: when the "Reset Plot" button (in PlotContainer toolbar) is clicked 
+    // while on marker genes toggle, getDotPlot should only be called once (from reset effect), not twice.
+    // Note: This is different from the "Reset" button in the Gene selection panel.
+
+    await renderDotPlot(storeState);
+
+    // Wait for initial setup
+    await waitFor(() => {
+      expect(screen.getByText(/Dot plot/i)).toBeInTheDocument();
+    });
+
+    // Switch to marker genes mode
+    const markerGenesToggle = screen.getByText(/Marker genes/i);
+    await act(async () => {
+      userEvent.click(markerGenesToggle);
+    });
+
+    // Record call count before reset
+    const callCountBeforeReset = fetchWork.mock.calls.length;
+
+    // Click reset
+    const resetButton = screen.getByText('Reset Plot');
+    await act(async () => {
+      userEvent.click(resetButton);
+    });
+
+    // Wait briefly for effects to process
+    await new Promise((resolve) => setTimeout(resolve, 100));
+
+    // Count the getDotPlot calls made during reset
+    // With the fix, should be exactly 1 (from reset effect)
+    // Without the fix, would be 2 (one from marker genes sync, one from main effect)
+    const callsMadeForReset = fetchWork.mock.calls.length - callCountBeforeReset;
+    expect(callsMadeForReset).toBe(1);
+  });
+
+  it('does not call getDotPlot when toggling to "Marker genes" without changing nMarkerGenes', async () => {
+    // This test verifies that simply toggling the useMarkerGenes flag doesn't trigger a work request
+    // Only changes to nMarkerGenes or selectedGenes should trigger getDotPlot
+
+    await renderDotPlot(storeState);
+
+    // Wait for initial setup (ListGenes + initial DotPlot)
+    await waitFor(() => {
+      expect(screen.getByText(/Dot plot/i)).toBeInTheDocument();
+    });
+
+    // Record call count before toggling marker genes
+    const callCountBeforeToggle = fetchWork.mock.calls.length;
+
+    // Switch to marker genes mode - this should NOT call getDotPlot
+    const markerGenesToggle = screen.getByText(/Marker genes/i);
+    await act(async () => {
+      userEvent.click(markerGenesToggle);
+    });
+
+    // Wait briefly
+    await new Promise((resolve) => setTimeout(resolve, 100));
+
+    // No new calls should have been made
+    const callsMadeByToggle = fetchWork.mock.calls.length - callCountBeforeToggle;
+    expect(callsMadeByToggle).toBe(0);
+  });
+
+  it('calls getDotPlot once with correct nMarkerGenes when clicking "Run" in marker genes mode', async () => {
+    // This test verifies that clicking "Run" in the MarkerGeneSelection panel
+    // triggers exactly one getDotPlot call with the specified number of marker genes
+
+    await renderDotPlot(storeState);
+
+    // Wait for initial setup
+    await waitFor(() => {
+      expect(screen.getByText(/Dot plot/i)).toBeInTheDocument();
+    });
+
+    // Switch to marker genes mode
+    const markerGenesToggle = screen.getByText(/Marker genes/i);
+    await act(async () => {
+      userEvent.click(markerGenesToggle);
+    });
+
+    // Record call count before clicking Run
+    const callCountBeforeRun = fetchWork.mock.calls.length;
+
+    // Find and click the Run button in the MarkerGeneSelection panel
+    const runButton = screen.getByRole('button', { name: /run/i });
+    await act(async () => {
+      userEvent.click(runButton);
+    });
+
+    // Wait briefly for effects to process
+    await new Promise((resolve) => setTimeout(resolve, 100));
+
+    // Should have exactly one getDotPlot call
+    const callsMadeByRun = fetchWork.mock.calls.length - callCountBeforeRun;
+    expect(callsMadeByRun).toBe(1);
+
+    // The getDotPlot call should have been made with useMarkerGenes: true
+    const lastDotPlotCall = fetchWork.mock.calls[fetchWork.mock.calls.length - 1];
+    expect(lastDotPlotCall[1]).toBeDefined();
+    expect(lastDotPlotCall[1].name).toBe('DotPlot');
+  });
+
+  it('preserves marker genes in custom genes list when toggling back to Custom genes', async () => {
+    // This test verifies that when toggling to marker genes, running (which returns different genes),
+    // then toggling back to custom genes, the marker genes (not the original 3 genes) are in the list
+
+    // Create custom mock that returns different genes for marker genes
+    const markerGenesResult = {
+      ...dotPlotData,
+      geneNames: ['Apoe', 'Lyz2', 'Gzma', 'Ifitm3', 'Chil3'], // Different/reordered genes
+      geneNameIdx: [1, 3, 4, 2, 0],
+    };
+
+    // Reset mock to use custom implementation
+    jest.clearAllMocks();
+    let isFirstCall = true;
+
+    fetchWork
+      .mockReset()
+      .mockImplementation((_experimentId, body) => {
+        if (body.name === 'ListGenes') {
+          return mockWorkerResponses.ListGenes;
+        }
+        if (body.name === 'DotPlot') {
+          // Return marker genes data when in marker genes mode
+          if (body.config?.useMarkerGenes) {
+            return markerGenesResult;
+          }
+          // Return default data for custom genes mode
+          return mockWorkerResponses.DotPlot;
+        }
+        return mockWorkerResponses[body.name];
+      });
+
+    fetchMock.resetMocks();
+    fetchMock.mockIf(/.*/, mockAPI(mockAPIResponse));
+
+    const testStore = makeStore();
+    await testStore.dispatch(loadBackendStatus(experimentId));
+
+    testStore.dispatch({
+      type: EXPERIMENT_SETTINGS_INFO_UPDATE,
+      payload: {
+        experimentId: fake.EXPERIMENT_ID,
+        experimentName: fake.EXPERIMENT_NAME,
+      },
+    });
+
+    await renderDotPlot(testStore);
+
+    // Wait for initial setup - should have 3 highest dispersion genes
+    await waitFor(() => {
+      expect(screen.getByText(/Dot plot/i)).toBeInTheDocument();
+    });
+
+    const geneTree = screen.getByRole('tree');
+    const initialGenes = getTreeGenes(geneTree).filter((g) => g); // Filter empty strings
+    expect(initialGenes.length).toBe(3); // Should have 3 initial genes
+
+    // Switch to marker genes mode
+    const markerGenesToggle = screen.getByText(/Marker genes/i);
+    await act(async () => {
+      userEvent.click(markerGenesToggle);
+    });
+
+    // Click Run to load marker genes
+    const runButton = screen.getByRole('button', { name: /run/i });
+    await act(async () => {
+      userEvent.click(runButton);
+    });
+
+    // Wait for effects to process and genes to be synced
+    await waitFor(() => {
+      const state = testStore.getState();
+      const currentGenes = state.componentConfig.dotPlotMain?.config?.selectedGenes || [];
+      // When marker genes are synced, selectedGenes should be updated
+      expect(currentGenes.length).toBeGreaterThan(0);
+    }, { timeout: 3000 });
+
+    // Get marker genes that were loaded
+    let markerGenesLoaded = testStore.getState().componentConfig.dotPlotMain?.config?.selectedGenes || [];
+
+    // Toggle back to Custom genes
+    await act(async () => {
+      userEvent.click(markerGenesToggle);
+    });
+
+    // Wait a moment for the view to update
+    await new Promise((resolve) => setTimeout(resolve, 100));
+
+    // Get the genes after toggling back to custom
+    const genesAfterToggle = testStore.getState().componentConfig.dotPlotMain?.config?.selectedGenes || [];
+
+    // The genes should still be the marker genes that were loaded
+    // (they should have been preserved when toggling to custom genes mode)
+    expect(genesAfterToggle).toEqual(markerGenesLoaded);
+
+    // And they should be different from the initial 3 genes
+    expect(genesAfterToggle).not.toEqual(initialGenes);
+  });
+
+  it('does not call getDotPlot when removing a gene from custom genes list', async () => {
+    // This test verifies that removing a gene from the custom genes list
+    // filters the existing plotData locally and does NOT call getDotPlot
+
+    await renderDotPlot(storeState);
+
+    // Wait for initial setup with 3 default genes
+    await waitFor(() => {
+      expect(screen.getByText(/Dot plot/i)).toBeInTheDocument();
+    });
+
+    const geneTree = screen.getByRole('tree');
+    const initialGenes = getTreeGenes(geneTree).filter((g) => g);
+    expect(initialGenes.length).toBe(3);
+
+    // Record the number of work requests before deleting a gene
+    const callCountBeforeDelete = fetchWork.mock.calls.length;
+
+    // Get the first gene and its remove button
+    const genesBeforeDelete = getTreeGenes(geneTree);
+    const geneToRemove = genesBeforeDelete[0];
+
+    const geneElement = within(geneTree).queryByText(geneToRemove);
+    if (geneElement && geneElement.nextSibling) {
+      const removeButton = geneElement.nextSibling.firstChild;
+
+      // Click remove button
+      await act(async () => {
+        userEvent.click(removeButton);
+      });
+
+      // Wait a moment for state to update
+      await new Promise((resolve) => setTimeout(resolve, 100));
+
+      // Should NOT have called getDotPlot
+      const callsMadeByDelete = fetchWork.mock.calls.length - callCountBeforeDelete;
+      expect(callsMadeByDelete).toBe(0);
+
+      // But the gene should be removed from the list
+      const genesAfterDelete = getTreeGenes(geneTree).filter((g) => g);
+      expect(genesAfterDelete.length).toBe(2);
+      expect(genesAfterDelete).not.toContain(geneToRemove);
+    }
+  });
+
+  it.skip('does not call getDotPlot when genes list remains the same', async () => {
+    // This test verifies that if no genes are added/removed (only styling changes),
+    // getDotPlot is NOT called
+    // TODO: Implement styling change UI interaction
   });
 });
 

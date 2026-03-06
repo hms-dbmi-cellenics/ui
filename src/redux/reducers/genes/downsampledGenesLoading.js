@@ -7,13 +7,18 @@ import getInitialState, { initialViewState } from 'redux/reducers/genes/getIniti
 const downsampledGenesLoading = produce((draft, action) => {
   const { ETag, genes, componentUuid } = action.payload;
 
-  if (ETag) {
-    draft.expression.downsampled.ETag = ETag;
-  }
+  // Always update ETag, even if null (for deduplication logic)
+  draft.expression.full.ETag = ETag;
 
   if (genes) {
     draft.expression.downsampled.loading = _.union(
       original(draft).expression.downsampled.loading,
+      genes,
+    );
+
+    // Also track in full.loading to coordinate with non-downsampled gene loads
+    draft.expression.full.loading = _.union(
+      original(draft).expression.full.loading,
       genes,
     );
   }
@@ -25,6 +30,13 @@ const downsampledGenesLoading = produce((draft, action) => {
 
   draft.expression.views[componentUuid].fetching = true;
   draft.expression.views[componentUuid].error = false;
+
+  // Update the view's data to reflect the genes being loaded
+  // This ensures selectedGenes selector reflects the new genes immediately,
+  // preventing re-triggers when the loaded action updates it to the same value
+  if (genes) {
+    draft.expression.views[componentUuid].data = genes;
+  }
 }, getInitialState());
 
 export default downsampledGenesLoading;

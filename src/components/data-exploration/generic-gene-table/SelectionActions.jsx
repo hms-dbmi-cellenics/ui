@@ -101,7 +101,6 @@ const SelectionActions = (props) => {
             name='Heatmap'
             experimentId={experimentId}
             componentType={COMPONENT_TYPE}
-            useDownsampledExpression
           />
           <Button
             type='link'

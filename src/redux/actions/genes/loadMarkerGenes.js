@@ -1,42 +1,26 @@
-import { SparseMatrix } from 'mathjs';
-
 import {
   MARKER_GENES_ERROR, MARKER_GENES_LOADING, MARKER_GENES_LOADED,
 } from 'redux/actionTypes/genes';
 
 import fetchWork from 'utils/work/fetchWork';
-import getCellSetsThatAffectDownsampling from 'utils/work/getCellSetsThatAffectDownsampling';
 import getTimeoutForWorkerTask from 'utils/getTimeoutForWorkerTask';
 import handleError from 'utils/http/handleError';
 import endUserMessages from 'utils/endUserMessages';
+import { updatePlotConfig } from 'redux/actions/componentConfig';
 
 const loadMarkerGenes = (
   experimentId, plotUuid, options = {},
 ) => async (dispatch, getState) => {
   const {
     numGenes = 5,
-    groupedTracks = ['sample', 'louvain'],
-    selectedCellSetKey = 'louvain',
-    selectedPoints = 'All',
-    hiddenCellSets = [],
+    selectedCellSet = 'louvain',
   } = options;
 
-  const cellSets = await getCellSetsThatAffectDownsampling(
-    experimentId, selectedCellSetKey, groupedTracks, dispatch, getState,
-  );
-
-  const downsampleSettings = {
-    selectedCellSet: selectedCellSetKey,
-    groupedTracks,
-    cellSets,
-    selectedPoints,
-    hiddenCellSets: Array.from(hiddenCellSets),
-  };
-
+  // Send request to worker for marker genes (no downsampling in worker since we moved it to UI)
   const body = {
     name: 'MarkerHeatmap',
     nGenes: numGenes,
-    downsampleSettings,
+    selectedCellSet,
   };
 
   try {
@@ -47,11 +31,6 @@ const loadMarkerGenes = (
 
     const {
       orderedGeneNames,
-      rawExpression: rawExpressionJson,
-      truncatedExpression: truncatedExpressionJson,
-      zScore: zScoreJson,
-      stats,
-      cellOrder,
     } = await fetchWork(
       experimentId,
       body,
@@ -68,28 +47,23 @@ const loadMarkerGenes = (
 
     // If the ETag is different, that means that a new request was sent in between
     // So we don't need to handle this outdated result
-    if (getState().genes.expression.downsampled.ETag !== requestETag) {
+    if (getState().genes.markers.ETag !== requestETag) {
       return;
     }
-
-    const rawExpression = SparseMatrix.fromJSON(rawExpressionJson);
-    const truncatedExpression = SparseMatrix.fromJSON(truncatedExpressionJson);
-    const zScore = SparseMatrix.fromJSON(zScoreJson);
 
     dispatch({
       type: MARKER_GENES_LOADED,
       payload: {
         plotUuid,
+        ETag: requestETag,
         data: {
           orderedGeneNames,
-          rawExpression,
-          truncatedExpression,
-          zScore,
-          stats,
-          cellOrder,
         },
       },
     });
+
+    // Sync the ordered marker genes to config as the single source of truth for gene ordering
+    dispatch(updatePlotConfig(plotUuid, { selectedGenes: orderedGeneNames }));
   } catch (e) {
     if (e.message.includes('No cells found')) {
       dispatch({
@@ -98,14 +72,12 @@ const loadMarkerGenes = (
           plotUuid,
           data: {
             orderedGeneNames: [],
-            rawExpression: new SparseMatrix(),
-            truncatedExpression: new SparseMatrix(),
-            zScore: new SparseMatrix(),
-            stats: {},
-            cellOrder: [],
           },
         },
       });
+
+      // Empty result still needs to update config
+      dispatch(updatePlotConfig(plotUuid, { selectedGenes: [] }));
 
       return;
     }

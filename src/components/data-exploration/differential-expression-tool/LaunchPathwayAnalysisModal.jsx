@@ -112,7 +112,7 @@ const LaunchPathwayAnalysisModal = (props) => {
                   size='small'
                   onClick={() => onOpenAdvancedFilters()}
                 >
-                  Click here to open the advanced filtering options.
+                  Click here to open filtering for differential expression table
                 </Button>
               </>
             )}

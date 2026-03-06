@@ -1,12 +1,21 @@
 // The goal is to minimize space with the largest possible dot size along the larger axis
-const getDotDimensions = (config, numClusters) => {
+const getDotDimensions = (config, numClusters, plotData) => {
   const plotWidth = config.dimensions.width;
   const plotHeight = config.dimensions.height;
   const padding = 1;
 
-  const numGenes = config.useMarkerGenes
-    ? config.nMarkerGenes * numClusters
-    : config.selectedGenes.length;
+  // Calculate numGenes from actual data to avoid changing dot sizes when toggling between modes
+  let numGenes = 0;
+  if (plotData && plotData.length > 0) {
+    // Get unique genes from the actual plot data
+    const uniqueGenes = new Set(plotData.map((d) => d.geneName));
+    numGenes = uniqueGenes.size;
+  } else {
+    // Fallback to config-based calculation if no data
+    numGenes = config.useMarkerGenes
+      ? config.nMarkerGenes * numClusters
+      : (config.selectedGenes || []).length;
+  }
 
   // Adjustment is added to counter the blowing up of dot sizes
   // when there is a small number of data points. The effect of the
@@ -41,6 +50,18 @@ const getDotDimensions = (config, numClusters) => {
 };
 
 const generateSpec = (config, plotData, numClusters) => {
+  // Sort plotData by the gene order specified in config.selectedGenes
+  let sortedPlotData = plotData;
+  if (config.selectedGenes && config.selectedGenes.length > 0 && plotData?.length > 0) {
+    // Precompute gene index map for O(1) lookup instead of O(n) indexOf() per comparison
+    const geneIndexMap = new Map(config.selectedGenes.map((gene, index) => [gene, index]));
+    sortedPlotData = [...plotData].sort((a, b) => {
+      const aIndex = geneIndexMap.get(a.geneName) ?? Number.MAX_SAFE_INTEGER;
+      const bIndex = geneIndexMap.get(b.geneName) ?? Number.MAX_SAFE_INTEGER;
+      return aIndex - bIndex;
+    });
+  }
+
   let legend = [];
 
   if (config.legend.enabled) {
@@ -75,7 +96,7 @@ const generateSpec = (config, plotData, numClusters) => {
     ];
   }
 
-  const { minArea, radius, maxArea } = getDotDimensions(config, numClusters);
+  const { minArea, radius, maxArea } = getDotDimensions(config, numClusters, plotData);
 
   return {
     $schema: 'https://vega.github.io/schema/vega/v5.json',
@@ -88,7 +109,7 @@ const generateSpec = (config, plotData, numClusters) => {
     data: [
       {
         name: 'plotData',
-        values: plotData,
+        values: sortedPlotData,
         // Vega internally modifies objects during data transforms. If the plot data is frozen,
         // Vega is not able to carry out the transform and will throw an error.
         // https://github.com/vega/vega/issues/2453#issuecomment-604516777

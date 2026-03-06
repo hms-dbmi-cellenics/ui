@@ -42,7 +42,6 @@ const SpatialCategoricalPage = ({ experimentId }) => {
   const [selectedPlotUuid, setSelectedPlotUuid] = useState(`${plotUuid}-0`);
   const [updateAll, setUpdateAll] = useState(true);
 
-  console.log(plotConfigs);
 
   useEffect(() => {
     dispatch(loadCellSets(experimentId));

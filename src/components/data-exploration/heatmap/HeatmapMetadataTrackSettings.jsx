@@ -61,7 +61,6 @@ const HeatmapMetadataTrackSettings = (props) => {
     } else {
       _.pull(newSelectedTracks, key);
     }
-
     dispatch(
       updatePlotConfig(componentType, {
         selectedTracks: newSelectedTracks,

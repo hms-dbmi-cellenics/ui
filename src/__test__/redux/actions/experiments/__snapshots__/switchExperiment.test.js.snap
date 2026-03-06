@@ -174,7 +174,6 @@ exports[`switch experiment  Then updates the experiment info 1`] = `
     "expression": {
       "downsampled": {
         "ETag": null,
-        "cellOrder": [],
         "error": false,
         "loading": [],
         "matrix": ExpressionMatrix {
@@ -198,36 +197,11 @@ exports[`switch experiment  Then updates the experiment info 1`] = `
             "rawStdev": [],
             "truncatedMax": [],
             "truncatedMin": [],
-          },
-          "truncatedGeneExpressions": {
-            "datatype": undefined,
-            "index": [],
-            "mathjs": "SparseMatrix",
-            "ptr": [
-              0,
-            ],
-            "size": [
-              0,
-              0,
-            ],
-            "values": [],
-          },
-          "zScore": {
-            "datatype": undefined,
-            "index": [],
-            "mathjs": "SparseMatrix",
-            "ptr": [
-              0,
-            ],
-            "size": [
-              0,
-              0,
-            ],
-            "values": [],
           },
         },
       },
       "full": {
+        "ETag": null,
         "error": false,
         "loading": [],
         "matrix": ExpressionMatrix {
@@ -251,32 +225,6 @@ exports[`switch experiment  Then updates the experiment info 1`] = `
             "rawStdev": [],
             "truncatedMax": [],
             "truncatedMin": [],
-          },
-          "truncatedGeneExpressions": {
-            "datatype": undefined,
-            "index": [],
-            "mathjs": "SparseMatrix",
-            "ptr": [
-              0,
-            ],
-            "size": [
-              0,
-              0,
-            ],
-            "values": [],
-          },
-          "zScore": {
-            "datatype": undefined,
-            "index": [],
-            "mathjs": "SparseMatrix",
-            "ptr": [
-              0,
-            ],
-            "size": [
-              0,
-              0,
-            ],
-            "values": [],
           },
         },
       },
@@ -311,7 +259,7 @@ exports[`switch experiment  Then updates the experiment info 1`] = `
         "splitPercentage": 50,
       },
       "second": "Genes",
-      "splitPercentage": 70,
+      "splitPercentage": 68,
     },
   },
   "networkResources": {
@@ -605,7 +553,6 @@ exports[`switch experiment  switches the experiment to its initial values 1`] = 
     "expression": {
       "downsampled": {
         "ETag": null,
-        "cellOrder": [],
         "error": false,
         "loading": [],
         "matrix": ExpressionMatrix {
@@ -629,36 +576,11 @@ exports[`switch experiment  switches the experiment to its initial values 1`] = 
             "rawStdev": [],
             "truncatedMax": [],
             "truncatedMin": [],
-          },
-          "truncatedGeneExpressions": {
-            "datatype": undefined,
-            "index": [],
-            "mathjs": "SparseMatrix",
-            "ptr": [
-              0,
-            ],
-            "size": [
-              0,
-              0,
-            ],
-            "values": [],
-          },
-          "zScore": {
-            "datatype": undefined,
-            "index": [],
-            "mathjs": "SparseMatrix",
-            "ptr": [
-              0,
-            ],
-            "size": [
-              0,
-              0,
-            ],
-            "values": [],
           },
         },
       },
       "full": {
+        "ETag": null,
         "error": false,
         "loading": [],
         "matrix": ExpressionMatrix {
@@ -682,32 +604,6 @@ exports[`switch experiment  switches the experiment to its initial values 1`] = 
             "rawStdev": [],
             "truncatedMax": [],
             "truncatedMin": [],
-          },
-          "truncatedGeneExpressions": {
-            "datatype": undefined,
-            "index": [],
-            "mathjs": "SparseMatrix",
-            "ptr": [
-              0,
-            ],
-            "size": [
-              0,
-              0,
-            ],
-            "values": [],
-          },
-          "zScore": {
-            "datatype": undefined,
-            "index": [],
-            "mathjs": "SparseMatrix",
-            "ptr": [
-              0,
-            ],
-            "size": [
-              0,
-              0,
-            ],
-            "values": [],
           },
         },
       },
@@ -742,7 +638,7 @@ exports[`switch experiment  switches the experiment to its initial values 1`] = 
         "splitPercentage": 50,
       },
       "second": "Genes",
-      "splitPercentage": 70,
+      "splitPercentage": 68,
     },
   },
   "networkResources": {

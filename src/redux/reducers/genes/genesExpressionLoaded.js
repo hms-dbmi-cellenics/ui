@@ -17,16 +17,12 @@ const genesExpressionLoaded = (state, action) => {
     const {
       orderedGeneNames,
       rawExpression,
-      truncatedExpression,
-      zScore,
       stats,
     } = newGenes;
 
     state.expression.full.matrix.pushGeneExpression(
       orderedGeneNames,
       rawExpression,
-      truncatedExpression,
-      zScore,
       stats,
     );
   }

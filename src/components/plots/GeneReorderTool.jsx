@@ -6,7 +6,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 
 import { updatePlotConfig } from 'redux/actions/componentConfig';
-
 import { arrayMoveImmutable } from 'utils/arrayUtils';
 import HierarchicalTreeGenes from 'components/plots/hierarchical-tree-genes/HierarchicalTreeGenes';
 
@@ -14,17 +13,20 @@ import { Space, Button } from 'antd';
 import { CloseOutlined } from '@ant-design/icons';
 
 const GeneReorderTool = (props) => {
-  const { plotUuid, onDelete } = props;
+  const { plotUuid, onDelete, onReorder } = props;
 
   const dispatch = useDispatch();
 
   const config = useSelector((state) => state.componentConfig[plotUuid]?.config);
 
+  // Read selectedGenes from config
+  const selectedGenes = config?.selectedGenes || [];
+
   const [selectedGenesLocal, setSelectedGenesLocal] = useState([]);
 
   useEffect(() => {
-    setSelectedGenesLocal(config?.selectedGenes);
-  }, [config?.selectedGenes]);
+    setSelectedGenesLocal(selectedGenes);
+  }, [selectedGenes]);
 
   // Tree from antd requires format [{key: , title: }],
   // made from gene names from loadedMarkerGenes and config
@@ -47,13 +49,16 @@ const GeneReorderTool = (props) => {
   }, [selectedGenesLocal]);
 
   // geneKey is equivalent to it's index, moves a gene from pos geneKey to newPosition
-  // dispatches an action to update selectedGenes in config
+  // Triggers UI update via onReorder callback (which updates config.selectedGenes)
   const onGeneReorder = (geneKey, newPosition) => {
     const oldOrder = geneTreeData.map((treeNode) => treeNode.title);
 
     const newOrder = arrayMoveImmutable(Object.values(oldOrder), geneKey, newPosition);
 
-    dispatch(updatePlotConfig(plotUuid, { selectedGenes: newOrder }));
+    // Call the callback to update config.selectedGenes
+    if (onReorder) {
+      onReorder(newOrder);
+    }
   };
 
   const onNodeDelete = (geneKey) => {
@@ -105,11 +110,14 @@ const GeneReorderTool = (props) => {
   );
 };
 
-GeneReorderTool.defaultProps = {};
+GeneReorderTool.defaultProps = {
+  onReorder: null,
+};
 
 GeneReorderTool.propTypes = {
   plotUuid: PropTypes.string.isRequired,
   onDelete: PropTypes.func.isRequired,
+  onReorder: PropTypes.func,
 };
 
 export default GeneReorderTool;

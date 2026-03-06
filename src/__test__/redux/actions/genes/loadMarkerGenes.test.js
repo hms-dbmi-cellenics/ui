@@ -48,12 +48,7 @@ describe('loadMarkerGenes action', () => {
         ...getInitialState(),
         markers: {
           ...getInitialState().markers,
-        },
-        expression: {
-          downsampled: {
-            ...getInitialState().expression.downsampled,
-            ETag: 'new-etag',
-          },
+          ETag: 'new-etag',
         },
       },
       experimentSettings,
@@ -62,7 +57,6 @@ describe('loadMarkerGenes action', () => {
 
     const mockResult = {
       ...getOneGeneMatrix('geneA', 1),
-      cellOrder: [0],
     };
 
     fetchWork.mockImplementationOnce((_expId, _body, _getState, _dispatch, optionals) => {
@@ -75,7 +69,7 @@ describe('loadMarkerGenes action', () => {
     await store.dispatch(loadMarkerGenes(experimentId, 'interactiveHeatmap'));
 
     const actions = store.getActions();
-    expect(_.map(actions, 'type')).toEqual([MARKER_GENES_LOADING, MARKER_GENES_LOADED]);
+    expect(_.map(actions, 'type')).toEqual([MARKER_GENES_LOADING, MARKER_GENES_LOADED, 'componentConfig/update']);
     expect(_.map(actions, 'payload')).toMatchSnapshot();
   });
 
@@ -116,12 +110,7 @@ describe('loadMarkerGenes action', () => {
     expect(functionArgs[1]).toEqual({
       name: 'MarkerHeatmap',
       nGenes: 5,
-      downsampleSettings: {
-        selectedCellSet: 'louvain',
-        groupedTracks: ['sample', 'louvain'],
-        hiddenCellSets: [],
-        selectedPoints: 'All',
-      },
+      selectedCellSet: 'louvain',
     });
   });
 
@@ -131,12 +120,7 @@ describe('loadMarkerGenes action', () => {
         ...getInitialState(),
         markers: {
           ...getInitialState().markers,
-        },
-        expression: {
-          downsampled: {
-            ...getInitialState().expression.downsampled,
-            ETag: 'different-etag',
-          },
+          ETag: 'different-etag',
         },
       },
       experimentSettings,
@@ -145,7 +129,6 @@ describe('loadMarkerGenes action', () => {
 
     const mockResult = {
       ...getOneGeneMatrix('geneA', 1),
-      cellOrder: [0],
     };
 
     fetchWork.mockImplementationOnce((_expId, _body, _getState, _dispatch, optionals) => {
@@ -158,6 +141,7 @@ describe('loadMarkerGenes action', () => {
     await store.dispatch(loadMarkerGenes(experimentId, 'interactiveHeatmap'));
 
     const actions = store.getActions();
+    // Should only have the loading action, not loaded, since ETag doesnt match
     expect(_.map(actions, 'type')).toEqual([MARKER_GENES_LOADING]);
     expect(_.map(actions, 'payload')).toMatchSnapshot();
   });

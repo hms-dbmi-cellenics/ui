@@ -22,7 +22,7 @@ const valueComparator = (key) => (a, b) => {
 const GeneTable = (props) => {
   const {
     experimentId, error, loading, columns, propData, loadData,
-    initialTableState, width, height, extraOptions, geneColumnTooltipText,
+    initialTableState, width, height, extraOptions, geneColumnTooltipText, geneColumnWidth,
   } = props;
   const dispatch = useDispatch();
   const selectedGenes = useSelector((state) => state.genes.selected);
@@ -171,16 +171,20 @@ const GeneTable = (props) => {
         ),
         dataIndex: 'gene_names',
         key: 'gene_names',
+        ...(geneColumnWidth && { width: geneColumnWidth }),
         sorter: valueComparator('gene_names'),
         showSorterTooltip: false,
         render: (geneName) => (
-          <a
-            href={`https://www.genecards.org/cgi-bin/carddisp.pl?gene=${geneName}`}
-            target='_blank'
-            rel='noreferrer'
-          >
-            {geneName}
-          </a>
+          <Tooltip title={geneName} placement='top'>
+            <a
+              href={`https://www.genecards.org/cgi-bin/carddisp.pl?gene=${geneName}`}
+              target='_blank'
+              rel='noreferrer'
+              style={geneColumnWidth ? { display: 'block', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' } : undefined}
+            >
+              {geneName}
+            </a>
+          </Tooltip>
         ),
         sortOrder: getSortOrder('gene_names'),
       },
@@ -247,6 +251,7 @@ GeneTable.defaultProps = {
   initialTableState: {},
   extraOptions: null,
   geneColumnTooltipText: null,
+  geneColumnWidth: undefined,
 };
 
 GeneTable.propTypes = {
@@ -266,6 +271,7 @@ GeneTable.propTypes = {
   width: PropTypes.number.isRequired,
   height: PropTypes.number.isRequired,
   geneColumnTooltipText: PropTypes.string,
+  geneColumnWidth: PropTypes.string,
 };
 
 export default GeneTable;

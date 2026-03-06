@@ -1,21 +1,30 @@
 import generateVitessceHeatmapExpressionsMatrix from 'components/plots/helpers/heatmap/vitessce/utils/generateVitessceHeatmapExpressionsMatrix';
 import generateVitessceHeatmapTracksData from 'components/plots/helpers/heatmap/vitessce/utils/generateVitessceHeatmapTracksData';
-import { union } from 'utils/cellSetOperations';
+import getHeatmapCellOrder from 'utils/work/getHeatmapCellOrder';
 
 const generateVitessceData = (
-  cellOrder, selectedTracks,
-  expressionMatrix, selectedGenes, cellSets,
+  selectedTracks,
+  expressionMatrix, selectedGenes, cellSets, heatmapSettings,
 ) => {
-  // filter out hidden cells
-  const hiddenCells = union([...cellSets.hidden], cellSets.properties);
-  const cellOrderFiltered = cellOrder.filter((cell) => !hiddenCells.has(cell));
+  // Compute cellOrder internally based on heatmap settings
+  const {
+    selectedCellSet = 'louvain', groupedTracks = [],
+  } = heatmapSettings || {};
+
+  // Use only user-hidden cells (selectedPoints is always 'All' for vitessce)
+  const cellOrder = getHeatmapCellOrder(
+    selectedCellSet,
+    groupedTracks,
+    cellSets.hidden || [],
+    cellSets,
+  );
 
   const trackColorData = generateVitessceHeatmapTracksData(
-    selectedTracks, cellSets, cellOrderFiltered,
+    selectedTracks, cellSets, cellOrder,
   );
 
   const vitessceMatrix = generateVitessceHeatmapExpressionsMatrix(
-    cellOrderFiltered,
+    cellOrder,
     selectedGenes,
     expressionMatrix,
   );
@@ -23,10 +32,10 @@ const generateVitessceData = (
   const metadataTracksLabels = selectedTracks
     .map((cellClassKey) => cellSets.properties[cellClassKey].name);
 
-  return {
+  const result = {
     expressionMatrix: {
       cols: selectedGenes,
-      rows: cellOrderFiltered.map((x) => `${x}`),
+      rows: cellOrder.map((x) => `${x}`),
       matrix: Uint8Array.from(vitessceMatrix),
     },
     metadataTracks: {
@@ -34,6 +43,8 @@ const generateVitessceData = (
       labels: metadataTracksLabels,
     },
   };
+
+  return result;
 };
 
 export default generateVitessceData;

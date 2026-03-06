@@ -203,7 +203,7 @@ const heatmapInitialConfig = {
   selectedPoints: 'All',
   labelColour: 'transparent',
   selectedTracks: ['louvain'],
-  groupedTracks: ['sample', 'louvain'],
+  groupedTracks: ['louvain', 'sample'],
   expressionValue: 'raw',
   truncatedValues: true,
   geneLabelSize: 10,
@@ -219,6 +219,9 @@ const markerHeatmapInitialConfig = {
   nMarkerGenes: 5,
   showGeneLabels: true,
   keepValuesOnReset: ['selectedGenes'],
+  // Explicitly reset tracks to initial values when resetting plot
+  selectedTracks: heatmapInitialConfig.selectedTracks,
+  groupedTracks: heatmapInitialConfig.groupedTracks,
 };
 
 // PLOTS & TABLES - Volcano plot
@@ -384,7 +387,9 @@ const dotPlotConfig = {
   useAbsoluteScale: true,
   useMarkerGenes: false,
   nMarkerGenes: 3,
-  selectedGenes: [],
+  // When null, this indicates that the value is its initial one
+  // and the highest dispersion genes should be loaded
+  selectedGenes: null,
   selectedCellSet: 'louvain',
   selectedPoints: 'All',
   keepValuesOnReset: ['selectedGenes'],
@@ -622,9 +627,9 @@ const embeddingPreviewNumOfUmisInitialConfig = {
 
 const interactiveHeatmapInitialConfig = {
   selectedCellSet: 'louvain',
-  selectedPoints: 'All',
   selectedTracks: ['louvain'],
   groupedTracks: ['louvain', 'sample'],
+  selectedGenes: [],
   expressionValue: 'raw',
   legendIsVisible: true,
 };

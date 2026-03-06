@@ -4,9 +4,10 @@ import {
   GENES_SELECT, GENES_DESELECT,
   GENES_EXPRESSION_LOADING, GENES_EXPRESSION_LOADED, GENES_EXPRESSION_ERROR,
   MARKER_GENES_LOADING, MARKER_GENES_LOADED, MARKER_GENES_ERROR,
-  DOWNSAMPLED_GENES_EXPRESSION_LOADING,
-  DOWNSAMPLED_GENES_EXPRESSION_LOADED,
-  DOWNSAMPLED_GENES_EXPRESSION_ERROR,
+  HEATMAP_GENES_EXPRESSION_LOADING,
+  HEATMAP_GENES_EXPRESSION_LOADED,
+  HEATMAP_GENES_EXPRESSION_ERROR,
+  HEATMAP_GENES_EXPRESSION_UPDATE_GENE_ORDER,
 } from 'redux/actionTypes/genes';
 
 import { EXPERIMENT_SETTINGS_QC_START } from 'redux/actionTypes/experimentSettings';
@@ -21,6 +22,7 @@ import genesExpressionError from 'redux/reducers/genes/genesExpressionError';
 
 import downsampledGenesLoading from 'redux/reducers/genes/downsampledGenesLoading';
 import downsampledGenesLoaded from 'redux/reducers/genes/downsampledGenesLoaded';
+import downsampledGenesUpdateGeneOrder from 'redux/reducers/genes/downsampledGenesUpdateGeneOrder';
 
 import markerGenesLoading from 'redux/reducers/genes/markerGenesLoading';
 import markerGenesError from 'redux/reducers/genes/markerGenesError';
@@ -62,14 +64,17 @@ const genesReducer = (state = getInitialState(), action) => {
     case MARKER_GENES_LOADING: {
       return markerGenesLoading(state, action);
     }
-    case DOWNSAMPLED_GENES_EXPRESSION_LOADING: {
+    case HEATMAP_GENES_EXPRESSION_LOADING: {
       return downsampledGenesLoading(state, action);
     }
-    case DOWNSAMPLED_GENES_EXPRESSION_LOADED: {
+    case HEATMAP_GENES_EXPRESSION_LOADED: {
       return downsampledGenesLoaded(state, action);
     }
-    case DOWNSAMPLED_GENES_EXPRESSION_ERROR: {
+    case HEATMAP_GENES_EXPRESSION_ERROR: {
       return downsampledGenesError(state, action);
+    }
+    case HEATMAP_GENES_EXPRESSION_UPDATE_GENE_ORDER: {
+      return downsampledGenesUpdateGeneOrder(state, action);
     }
     case MARKER_GENES_LOADED: {
       return markerGenesLoaded(state, action);

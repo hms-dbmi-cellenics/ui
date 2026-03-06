@@ -1,12 +1,27 @@
 import generateVegaGeneExpressionsData from 'components/plots/helpers/heatmap/vega/utils/generateVegaGeneExpressionsData';
 import generateVegaHeatmapTracksData from 'components/plots/helpers/heatmap/vega/utils/generateVegaHeatmapTracksData';
 import { reversed } from 'utils/arrayUtils';
+import getHeatmapCellOrder, {
+  computeHiddenCellSets,
+} from 'utils/work/getHeatmapCellOrder';
 
 const generateVegaData = (
-  cellOrder, expressionMatrix, heatmapSettings, cellSets,
+  expressionMatrix, heatmapSettings, cellSets,
 ) => {
-  const { selectedGenes, selectedTracks, guardLines } = heatmapSettings;
+  const {
+    selectedGenes, selectedTracks, guardLines, selectedCellSet, selectedPoints, groupedTracks,
+  } = heatmapSettings;
   const trackOrder = reversed(selectedTracks);
+
+  // Compute which cell sets should be hidden based on selectedPoints
+  const hiddenCellSets = computeHiddenCellSets(selectedPoints, cellSets);
+
+  const cellOrder = getHeatmapCellOrder(
+    selectedCellSet,
+    groupedTracks,
+    hiddenCellSets,
+    cellSets,
+  );
 
   const data = {
     cellOrder,

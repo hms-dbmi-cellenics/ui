@@ -62,7 +62,6 @@ const loadGeneExpression = (
   const body = {
     name: 'GeneExpression',
     genes: genesToLoad,
-    downsampled: false,
   };
 
   const timeout = getTimeoutForWorkerTask(getState(), 'GeneExpression');
@@ -71,16 +70,12 @@ const loadGeneExpression = (
     const {
       orderedGeneNames,
       rawExpression: rawExpressionJson,
-      truncatedExpression: truncatedExpressionJson,
-      zScore: zScoreJson,
       stats,
     } = await fetchWork(
       experimentId, body, getState, dispatch, { timeout },
     );
 
     const rawExpression = SparseMatrix.fromJSON(rawExpressionJson);
-    const truncatedExpression = SparseMatrix.fromJSON(truncatedExpressionJson);
-    const zScore = SparseMatrix.fromJSON(zScoreJson);
 
     const fetchedGenes = _.concat(genesAlreadyLoaded, orderedGeneNames);
 
@@ -93,8 +88,6 @@ const loadGeneExpression = (
           orderedGeneNames,
           stats,
           rawExpression,
-          truncatedExpression,
-          zScore,
         },
       },
     });

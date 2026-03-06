@@ -1,30 +1,28 @@
 import { initialViewState } from 'redux/reducers/genes/getInitialState';
+import _ from 'lodash';
 
 const downsampledGenesLoaded = (state, action) => {
-  const { componentUuid, genes, newGenes = undefined } = action.payload;
+  const {
+    componentUuid, genes, ETag, newGenes = undefined,
+  } = action.payload;
 
-  let cellOrderToStore = state.expression.downsampled.cellOrder;
-
-  // If there's any data to store, load it
+  // If there's any data to store, load it into the full matrix
+  // Use pushGeneExpression to append genes (don't replace), in case there's already data
   if (newGenes) {
     const {
       orderedGeneNames,
       rawExpression,
-      truncatedExpression,
-      zScore,
       stats,
-      cellOrder,
     } = newGenes;
 
-    state.expression.downsampled.matrix.setGeneExpression(
-      orderedGeneNames,
-      rawExpression,
-      truncatedExpression,
-      zScore,
-      stats,
-    );
-
-    cellOrderToStore = cellOrder;
+    // Only push to matrix if rawExpression is provided (i.e., new data from worker)
+    if (rawExpression) {
+      state.expression.full.matrix.pushGeneExpression(
+        orderedGeneNames,
+        rawExpression,
+        stats,
+      );
+    }
   }
 
   return {
@@ -46,7 +44,12 @@ const downsampledGenesLoaded = (state, action) => {
         ...state.expression.downsampled,
         loading: [],
         error: false,
-        cellOrder: cellOrderToStore,
+      },
+      full: {
+        ...state.expression.full,
+        loading: _.difference(state.expression.full.loading, genes),
+        error: false,
+        ETag,
       },
     },
   };

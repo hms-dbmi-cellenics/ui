@@ -14,6 +14,7 @@ import { Vega } from 'react-vega';
 import PropTypes from 'prop-types';
 import 'vega-webgl-renderer';
 
+import ExpressionMatrix from 'utils/ExpressionMatrix/ExpressionMatrix';
 import { getCellSets, getCellSetsHierarchyByKeys } from 'redux/selectors';
 
 import HeatmapGroupBySettings from 'components/data-exploration/heatmap/HeatmapGroupBySettings';
@@ -25,7 +26,10 @@ import { updatePlotConfig, loadPlotConfig } from 'redux/actions/componentConfig'
 import Header from 'components/Header';
 import PlotContainer from 'components/plots/PlotContainer';
 import { generateSpec } from 'utils/plotSpecs/generateHeatmapSpec';
-import { loadDownsampledGeneExpression, loadMarkerGenes } from 'redux/actions/genes';
+import {
+  loadGeneExpression,
+  loadMarkerGenes,
+} from 'redux/actions/genes';
 import loadGeneList from 'redux/actions/genes/loadGeneList';
 import { loadCellSets } from 'redux/actions/cellSets';
 import PlatformError from 'components/PlatformError';
@@ -48,13 +52,26 @@ const MarkerHeatmap = ({ experimentId }) => {
   const dispatch = useDispatch();
 
   const [vegaSpec, setVegaSpec] = useState();
+  const [cellOrder, setCellOrder] = useState(null);
 
   const config = useSelector((state) => state.componentConfig[plotUuid]?.config);
   const configIsLoaded = useSelector((state) => !_.isNil(state.componentConfig[plotUuid]));
 
+  // Extract specific config properties as separate selectors to prevent render effect 
+  // from re-running when other config properties change (colors, sizes, etc)
+
+  const selectedTracks = useSelector((state) => state.componentConfig[plotUuid]?.config?.selectedTracks);
+  const selectedCellSetConfig = useSelector((state) => state.componentConfig[plotUuid]?.config?.selectedCellSet);
+
   const {
-    error, loading, matrix, cellOrder,
-  } = useSelector((state) => state.genes.expression.downsampled);
+    error, matrix: rawMatrix, loading: expressionLoading,
+  } = useSelector((state) => state.genes.expression.full);
+
+  const { error: downsampledError } = useSelector((state) => state.genes.expression.downsampled);
+
+  const { fetching: expressionFetching } = useSelector(
+    (state) => state.genes.expression.views[plotUuid],
+  ) || {};
 
   const cellSets = useSelector(getCellSets());
   const { hierarchy } = cellSets;
@@ -67,9 +84,7 @@ const MarkerHeatmap = ({ experimentId }) => {
     getCellSetsHierarchyByKeys([config?.selectedCellSet]),
   )[0]?.children?.length;
 
-  const { data: loadedGenes = [], markers: loadedGenesAreMarkers = false } = useSelector(
-    (state) => state.genes.expression.views[plotUuid],
-  ) || {};
+  const loadedGenes = config?.selectedGenes || [];
 
   const {
     loading: markerGenesLoading,
@@ -80,13 +95,6 @@ const MarkerHeatmap = ({ experimentId }) => {
     (state) => state.experimentSettings.processing
       .configureEmbedding?.clusteringSettings.methodSettings.louvain.resolution,
   ) || false;
-
-  const groupedCellSets = useSelector((state) => {
-    if (!config?.groupedTracks) return undefined;
-
-    const groupedCellClasses = getCellSetsHierarchyByKeys(config.groupedTracks)(state);
-    return groupedCellClasses.map((cellClass) => cellClass.children).flat();
-  }, _.isEqual);
 
   useEffect(() => {
     if (!louvainClustersResolution) dispatch(loadProcessingSettings(experimentId));
@@ -121,7 +129,7 @@ const MarkerHeatmap = ({ experimentId }) => {
       ));
     } else if (updatesToDispatch.selectedGenes) {
       dispatch(
-        loadDownsampledGeneExpression(experimentId, updatesToDispatch.selectedGenes, plotUuid),
+        loadGeneExpression(experimentId, updatesToDispatch.selectedGenes, plotUuid),
       );
     }
   };
@@ -136,9 +144,10 @@ const MarkerHeatmap = ({ experimentId }) => {
     if (showAlert) userUpdatedPlotWithChanges({ legend: { showAlert, enabled: !showAlert } });
   }, [configIsLoaded, cellSets.accessible]);
 
-  // If the plot has never been loaded (so has no selectedGenes), then load the marker genes
+  // If the plot has never been loaded (so selectedGenes is null), then load the marker genes
+  // Only auto-load on initial render (null), not when user clears genes (empty array)
   useEffect(() => {
-    if (config?.selectedGenes === null) {
+    if (config?.selectedGenes === null && config?.nMarkerGenes) {
       dispatch(loadMarkerGenes(
         experimentId,
         plotUuid,
@@ -158,56 +167,98 @@ const MarkerHeatmap = ({ experimentId }) => {
     config?.selectedGenes,
   ]);
 
+  // Clear the spec when marker genes start loading to prevent showing stale spec with old genes
+  useEffect(() => {
+    if (markerGenesLoading) {
+      setVegaSpec(undefined);
+    }
+  }, [markerGenesLoading]);
+
+  // Fetch gene expression data if loadedGenes change and we don't have all the data yet
+  // Only run this when we're in marker genes mode (custom genes are handled by onGenesChange)
   useConditionalEffect(() => {
+
     const expectedConditions = (
       louvainClustersResolution
-      && config?.groupedTracks
       && config?.selectedCellSet
       && config?.selectedPoints
       && hierarchy?.length
       && selectedCellSetClassAvailable
-      && config?.selectedGenes?.length > 0
-      && !markerGenesLoading
+      && loadedGenes?.length > 0
     );
-    if (!expectedConditions) return;
 
-    dispatch(loadDownsampledGeneExpression(experimentId, config?.selectedGenes, plotUuid));
+    if (!expectedConditions) {
+      return;
+    }
+    dispatch(loadGeneExpression(experimentId, loadedGenes, plotUuid));
   }, [
-    config?.groupedTracks,
+    loadedGenes,
     config?.selectedCellSet,
     config?.selectedPoints,
     hierarchy,
     cellSets.accessible,
     louvainClustersResolution,
-    groupedCellSets,
   ]);
 
-  // When marker genes have been loaded, update the config with those
-  useConditionalEffect(() => {
-    if (!config || _.isEqual(loadedGenes, config.selectedGenes)) {
+  useEffect(() => {
+    // Don't create spec while marker genes are loading (prevents stale spec recreation)
+    if (markerGenesLoading || expressionFetching) {
       return;
     }
 
-    // IMPORTANT This update is NOT performed by a user action, but by loadMarkerGenes work result
-    // So don't replace this with userUpdatedPlotWithChanges
-    dispatch(updatePlotConfig(plotUuid, { selectedGenes: loadedGenes }));
-  }, [loadedGenes, loadedGenesAreMarkers]);
 
-  useEffect(() => {
+    // Check preconditions: data is loaded and ready
+    // cellOrder will be computed internally by generateVegaData
     if (
       !cellSets.accessible
-      || _.isEmpty(loadedGenes)
-      || !loading
+      || !cellSets.hierarchy?.length
+      || !loadedGenes?.length
       || !hierarchy?.length
-      || markerGenesLoadingError
-      || markerGenesLoading
-      || config?.selectedGenes === null
+      || !rawMatrix
     ) {
       return;
     }
 
-    const data = generateVegaData(cellOrder, matrix, config, cellSets);
-    const spec = generateSpec(config, 'Cluster ID', data, config.showGeneLabels);
+    // Check preconditions: no errors and data is not fetching
+    if (downsampledError || markerGenesLoadingError) {
+      return;
+    }
+
+    // Check that the expression data has actually been loaded into the matrix
+    // Just having geneIndexes isn't enough - we need the rawGeneExpressions data
+    const [cellCount, geneCount] = rawMatrix?.rawGeneExpressions?.size?.() || [0, 0];
+
+    if (!geneCount || geneCount === 0) {
+      // Data not ready yet, wait for the expression values to be populated
+      return;
+    }
+
+    // Verify that the matrix has ALL the genes we need to render
+    // Note: matrix can have MORE genes than loadedGenes (it accumulates genes from previous operations)
+    // We only care that all genes in loadedGenes are present in the matrix
+    const matrixGeneIndexes = rawMatrix?.geneIndexes || {};
+    const allGenesAvailable = loadedGenes.every((gene) => matrixGeneIndexes[gene] !== undefined);
+
+    if (!allGenesAvailable) {
+      // Not all genes are in the matrix yet, wait for expression data to be fully loaded
+      return;
+    }
+
+    // Reconstruct ExpressionMatrix from plain object (lost prototype after Redux hydration)
+    const matrix = new ExpressionMatrix();
+    if (rawMatrix?.geneIndexes && rawMatrix?.rawGeneExpressions && rawMatrix?.stats) {
+      matrix.geneIndexes = rawMatrix.geneIndexes;
+      matrix.rawGeneExpressions = rawMatrix.rawGeneExpressions;
+      matrix.stats = rawMatrix.stats;
+    }
+
+    // Pass loadedGenes as selectedGenes to vega data generator
+    // This ensures we render the loaded genes instead of config.selectedGenes which may be empty
+    // generateVegaData will internally compute cellOrder based on config
+    const vegaData = generateVegaData(matrix, { ...config, selectedGenes: loadedGenes }, cellSets);
+    const { cellOrder: computedCellOrder } = vegaData;
+    setCellOrder(computedCellOrder);
+    const spec = generateSpec(config, 'Cluster ID', vegaData, config.showGeneLabels);
 
     spec.description = 'Marker heatmap';
 
@@ -230,7 +281,7 @@ const MarkerHeatmap = ({ experimentId }) => {
     spec.marks.push(extraMarks);
 
     setVegaSpec(spec);
-  }, [config, cellOrder]);
+  }, [selectedTracks, loadedGenes, selectedCellSetConfig, config?.selectedPoints, config?.groupedTracks, downsampledError, cellSets.accessible, cellSets.hierarchy, cellSets.hidden, hierarchy, markerGenesLoadingError, markerGenesLoading, rawMatrix, expressionFetching]);
 
   useEffect(() => {
     dispatch(loadGeneList(experimentId));
@@ -281,16 +332,20 @@ const MarkerHeatmap = ({ experimentId }) => {
     },
   ];
 
-  const onGenesChange = useCallback(_.debounce((newGenes) => {
-    dispatch(loadDownsampledGeneExpression(experimentId, newGenes, plotUuid));
-  }, 1000), []);
+  const onGenesChange = useCallback((newGenes) => {
+    // Update config with the new gene order first (single source of truth)
+    dispatch(updatePlotConfig(plotUuid, { selectedGenes: newGenes }));
+    // Then load gene expression with the new order
+    dispatch(loadGeneExpression(experimentId, newGenes, plotUuid));
+  }, [experimentId, plotUuid, dispatch]);
 
   const onGenesSelect = (genes) => {
-    const allGenes = _.uniq([...config?.selectedGenes, ...genes]);
+    const allGenes = _.uniq([...loadedGenes, ...genes]);
 
-    if (_.isEqual(allGenes, config?.selectedGenes)) return;
+    if (_.isEqual(allGenes, loadedGenes)) return;
 
-    dispatch(loadDownsampledGeneExpression(experimentId, allGenes, plotUuid));
+    // Load the selected genes (updates genes.expression.views)
+    dispatch(loadGeneExpression(experimentId, allGenes, plotUuid));
   };
 
   const onReset = () => {
@@ -316,12 +371,12 @@ const MarkerHeatmap = ({ experimentId }) => {
         <MarkerGeneSelection
           config={config}
           plotUuid={plotUuid}
-          genesToDisable={config.selectedGenes}
+          genesToDisable={loadedGenes}
           onUpdate={userUpdatedPlotWithChanges}
           onReset={onReset}
           onGenesChange={onGenesChange}
           onGenesSelect={onGenesSelect}
-          showGeneTable={config.selectedGenes?.length > 0}
+          showGeneTable={loadedGenes?.length > 0}
         />
         <div style={{ paddingTop: '10px' }}>
           <p><strong>Gene labels:</strong></p>
@@ -446,7 +501,21 @@ const MarkerHeatmap = ({ experimentId }) => {
           error={error}
           onClick={() => {
             dispatch(
-              loadDownsampledGeneExpression(experimentId, config.selectedGenes, plotUuid),
+              loadGeneExpression(experimentId, loadedGenes, plotUuid),
+            );
+          }}
+        />
+      );
+    }
+
+    if (downsampledError) {
+      return (
+        <PlatformError
+          description='Could not load gene expression data.'
+          error={downsampledError}
+          onClick={() => {
+            dispatch(
+              loadGeneExpression(experimentId, loadedGenes, plotUuid),
             );
           }}
         />
@@ -478,37 +547,44 @@ const MarkerHeatmap = ({ experimentId }) => {
 
     if (
       !config
-      || loading.length > 0
       || !cellSets.accessible
       || markerGenesLoading
+      || expressionFetching
     ) {
       return (<Loader experimentId={experimentId} />);
     }
 
-    if (cellOrder.length === 0) {
+    if (cellOrder && cellOrder.length === 0) {
       return (
         <Empty description='No matching cells found, try changing your settings in Select Data.' />
       );
     }
 
-    if (loadedGenes.length === 0) {
+    if (!loadedGenes || loadedGenes.length === 0) {
       return (
         <Empty description='Add some genes to this heatmap to get started.' />
       );
     }
 
-    if (vegaSpec) {
+    // Only render if spec exists and expression data is loaded
+    // Don't show the plot while marker genes are loading (even if spec exists with old genes)
+    const specIsReady = vegaSpec && !markerGenesLoading;
+
+    if (specIsReady) {
       return (
         <Space direction='vertical'>
           {config.legend.showAlert
             && numLegendItems > MAX_LEGEND_ITEMS
             && <PlotLegendAlert />}
           <center>
-            <Vega spec={vegaSpec} renderer='webgl' />
+            <Vega key={`heatmap-${config.selectedTracks?.join(',')}`} spec={vegaSpec} renderer='webgl' />
           </center>
         </Space>
       );
     }
+
+    // If spec isn't ready yet, show loading
+    return (<Loader experimentId={experimentId} />);
   };
 
   return (

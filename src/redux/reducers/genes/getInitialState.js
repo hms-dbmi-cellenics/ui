@@ -17,13 +17,13 @@ const getInitialState = () => ({
     full: {
       loading: [],
       error: false,
+      ETag: null,
       matrix: new ExpressionMatrix(),
     },
     downsampled: {
       loading: [],
       error: false,
       matrix: new ExpressionMatrix(),
-      cellOrder: [],
       ETag: null,
     },
   },

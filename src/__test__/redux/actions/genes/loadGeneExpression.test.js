@@ -44,12 +44,11 @@ describe('loadGeneExpression action', () => {
     matrix.pushGeneExpression(
       ['a'],
       new SparseMatrix([0, 0, 0, 0, 0]),
-      new SparseMatrix([0, 0, 0, 0, 0]),
-      new SparseMatrix([0, 0, 0, 0, 0]),
       {
-        a: {
-          rawMean: 0, rawStdev: 0, truncatedMin: 0, truncatedMax: 0,
-        },
+        rawMean: [0],
+        rawStdev: [0],
+        truncatedMin: [0],
+        truncatedMax: [0],
       },
     );
   };

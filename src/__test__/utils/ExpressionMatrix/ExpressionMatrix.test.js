@@ -36,11 +36,11 @@ describe('ExpressionMatrix', () => {
 
     it('setGeneExpression works', () => {
       const {
-        orderedGeneNames, rawExpression, truncatedExpression, zScore, stats,
+        orderedGeneNames, rawExpression, stats,
       } = getTwoGenesMatrix();
 
       matrix.pushGeneExpression(
-        orderedGeneNames, rawExpression, truncatedExpression, zScore, stats,
+        orderedGeneNames, rawExpression, stats,
       );
 
       expect(matrix).toMatchSnapshot();
@@ -48,11 +48,11 @@ describe('ExpressionMatrix', () => {
 
     it('pushGeneExpression works', () => {
       const {
-        orderedGeneNames, rawExpression, truncatedExpression, zScore, stats,
+        orderedGeneNames, rawExpression, stats,
       } = getTwoGenesMatrix();
 
       matrix.pushGeneExpression(
-        orderedGeneNames, rawExpression, truncatedExpression, zScore, stats,
+        orderedGeneNames, rawExpression, stats,
       );
 
       expect(matrix).toMatchSnapshot();
@@ -63,11 +63,11 @@ describe('ExpressionMatrix', () => {
     beforeEach(() => {
       matrix = new ExpressionMatrix();
       const {
-        orderedGeneNames, rawExpression, truncatedExpression, zScore, stats,
+        orderedGeneNames, rawExpression, stats,
       } = getTwoGenesMatrix();
 
       matrix.pushGeneExpression(
-        orderedGeneNames, rawExpression, truncatedExpression, zScore, stats,
+        orderedGeneNames, rawExpression, stats,
       );
     });
 
@@ -120,11 +120,11 @@ describe('ExpressionMatrix', () => {
 
     it('pushGeneExpression adds new data keeping previous', () => {
       const {
-        orderedGeneNames, rawExpression, truncatedExpression, zScore, stats,
+        orderedGeneNames, rawExpression, stats,
       } = getOtherTwoGenesMatrix();
 
       matrix.pushGeneExpression(
-        orderedGeneNames, rawExpression, truncatedExpression, zScore, stats,
+        orderedGeneNames, rawExpression, stats,
       );
 
       expect(matrix).toMatchSnapshot();
@@ -132,11 +132,11 @@ describe('ExpressionMatrix', () => {
 
     it('pushGeneExpression adds only the data that is new, it skips columns that were already added ', () => {
       const {
-        orderedGeneNames, rawExpression, truncatedExpression, zScore, stats,
+        orderedGeneNames, rawExpression, stats,
       } = getOtherFourGenesMatrix();
 
       matrix.pushGeneExpression(
-        orderedGeneNames, rawExpression, truncatedExpression, zScore, stats,
+        orderedGeneNames, rawExpression, stats,
       );
 
       expect(matrix).toMatchSnapshot();
@@ -144,14 +144,14 @@ describe('ExpressionMatrix', () => {
 
     it('pushGeneExpression adds nothing is there is nothing new', () => {
       const {
-        orderedGeneNames, rawExpression, truncatedExpression, zScore, stats,
+        orderedGeneNames, rawExpression, stats,
       } = getTwoGenesMatrix();
 
       const previousMatrix = _.cloneDeep(matrix);
 
       // Add the same data matrix already has
       matrix.pushGeneExpression(
-        orderedGeneNames, rawExpression, truncatedExpression, zScore, stats,
+        orderedGeneNames, rawExpression, stats,
       );
 
       // Nothing changed

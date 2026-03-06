@@ -47,6 +47,11 @@ const mockWorkerResponses = {
   MarkerHeatmap: markerGenesData5,
   'FAKEGENE-expression': expressionDataFAKEGENE,
   ListGenes: geneList,
+  GeneExpression: {
+    orderedGeneNames: markerGenesData5.orderedGeneNames,
+    rawExpression: markerGenesData5.rawExpression,
+    stats: markerGenesData5.stats,
+  },
 };
 
 const experimentId = fake.EXPERIMENT_ID;
@@ -105,7 +110,7 @@ describe('Drag and drop enzyme tests', () => {
 
     fetchWork
       .mockReset()
-      .mockImplementation((_experimentId, body) => mockWorkerResponses[body.name]);
+      .mockImplementation((_experimentId, body) => Promise.resolve(mockWorkerResponses[body.name]));
 
     enableFetchMocks();
     fetchMock.resetMocks();
@@ -157,15 +162,18 @@ describe('Drag and drop enzyme tests', () => {
       node: { dragOver: false },
     };
 
-    tree.getElement().props.onDrop(info);
+    const expectedOrder = arrayMoveImmutable(markerGenesData5.orderedGeneNames, 1, 3);
 
+    // Simulate the drag-drop event
     await act(async () => {
-      component.update();
+      tree.getElement().props.onDrop(info);
+      // Give Redux time to process the action
+      await new Promise((resolve) => setTimeout(resolve, 100));
     });
 
+    // Wait for the actual reorder to take effect
+    component.update();
     const newOrder = getCurrentGeneOrder(component);
-
-    const expectedOrder = arrayMoveImmutable(markerGenesData5.orderedGeneNames, 1, 3);
 
     expect(_.isEqual(newOrder, expectedOrder)).toEqual(true);
   });

@@ -27,9 +27,9 @@ const presetFilters = [
 
 const criteriaOptions = [
   { value: 'logFC', label: 'logFC' },
-  { value: 'p_val_adj', label: 'adj p-value' },
-  { value: 'pct_1', label: 'Pct1' },
-  { value: 'pct_2', label: 'Pct2' },
+  { value: 'p_val_adj', label: 'FDR' },
+  { value: 'pct_1', label: 'Pct 1' },
+  { value: 'pct_2', label: 'Pct 2' },
   { value: 'auc', label: 'AUC' },
 ];
 
@@ -101,7 +101,7 @@ const AdvancedFilteringModal = (props) => {
   return (
     <Modal
       open
-      title='Advanced filters'
+      title='Filter differential expression table'
       onCancel={onCancel}
       footer={null}
       width='530px'

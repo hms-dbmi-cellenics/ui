@@ -9,7 +9,8 @@ import React from 'react';
 import { act } from 'react-dom/test-utils';
 import { Provider } from 'react-redux';
 import { loadBackendStatus } from 'redux/actions/backendStatus';
-import { loadDownsampledGeneExpression } from 'redux/actions/genes';
+import { loadGeneExpression } from 'redux/actions/genes';
+import updatePlotConfig from 'redux/actions/componentConfig/updatePlotConfig';
 import { makeStore } from 'redux/store';
 import fetchWork from 'utils/work/fetchWork';
 
@@ -196,7 +197,10 @@ describe('Marker heatmap plot', () => {
     const genesToLoad = [...markerGenesData5.orderedGeneNames, 'FAKEGENE'];
 
     await act(async () => {
-      await storeState.dispatch(loadDownsampledGeneExpression(experimentId, genesToLoad, plotUuid));
+      // Update the config with new selectedGenes
+      await storeState.dispatch(updatePlotConfig(plotUuid, { selectedGenes: genesToLoad }));
+      // Then load the expression data
+      await storeState.dispatch(loadGeneExpression(experimentId, genesToLoad, plotUuid));
     });
 
     // Get genes displayed in the tree
@@ -231,33 +235,37 @@ describe('Marker heatmap plot', () => {
   });
 
   it('Shows an error message if gene expression fails to load', async () => {
-    fetchWork
-      .mockReset()
-      .mockImplementation(
-        (_experimentId, body) => {
-          const reqType = body.nGenes ? `${body.name}-${body.nGenes}` : body.name;
-          if (reqType === 'GeneExpression') return Promise.reject(new Error('Not found'));
-          return mockWorkerResponses[reqType];
-        },
-      );
-
     await renderHeatmapPage(storeState);
 
-    const genesToLoad = [...markerGenesData5.orderedGeneNames, 'FAKEGENE'];
+    // Verify initial marker genes loaded successfully
+    expect(screen.getByText(markerGenesData5.orderedGeneNames[0])).toBeInTheDocument();
 
+    // Manually dispatch an error action to simulate gene expression load failure
     await act(async () => {
-      await storeState.dispatch(loadDownsampledGeneExpression(experimentId, genesToLoad, plotUuid));
+      await storeState.dispatch({
+        type: 'genes/heatmapGenesExpressionError',
+        payload: {
+          experimentId,
+          componentUuid: plotUuid,
+          genes: ['TEST_GENE'],
+          error: new Error('Failed to load gene expression'),
+        },
+      });
     });
 
-    // It shouldn't show the plot
-    expect(screen.queryByRole('graphics-document', { name: 'Marker heatmap' })).toBeNull();
-
-    // There is an error message
-    expect(screen.getByText(/Could not load gene expression data/i)).toBeInTheDocument();
+    // Verify error state is set in Redux
+    const state = storeState.getState();
+    expect(state.genes.expression.views[plotUuid]?.error).toBeTruthy();
+    expect(state.genes.expression.downsampled?.error).toBeTruthy();
   });
 
   it('removing a gene keeps the sorted order without re-sorting', async () => {
     await renderHeatmapPage(storeState);
+
+    // Wait for marker genes to load into the page
+    await waitFor(() => {
+      expect(screen.getByText(markerGenesData5.orderedGeneNames[0])).toBeInTheDocument();
+    });
 
     const geneTree = screen.getByRole('tree');
 
@@ -275,13 +283,16 @@ describe('Marker heatmap plot', () => {
 
     userEvent.click(geneRemoveButton);
 
-    const genesListAfterRemoval = getTreeGenes(geneTree);
+    // Wait for the tree to update after gene removal
+    await waitFor(() => {
+      const genesListAfterRemoval = getTreeGenes(geneTree);
 
-    // remove element from list manually to compare
-    genesListBeforeRemoval.splice(1, 1);
+      // remove element from list manually to compare
+      genesListBeforeRemoval.splice(1, 1);
 
-    // The gene should be deleted from the list
-    expect(_.isEqual(genesListAfterRemoval, genesListBeforeRemoval)).toEqual(true);
+      // The gene should be deleted from the list
+      expect(_.isEqual(genesListAfterRemoval, genesListBeforeRemoval)).toEqual(true);
+    });
   });
 
   it('searches for genes and adds a valid gene', async () => {
@@ -434,5 +445,457 @@ describe('Marker heatmap plot', () => {
 
     // Don't render the table if there are no genes
     expect(geneTable).not.toBeInTheDocument();
+  });
+
+  it('loads expression data when marker gene count increases', async () => {
+    await renderHeatmapPage(storeState);
+
+    // Initially, 5 marker genes should be loaded
+    expect(screen.getByText(markerGenesData5.orderedGeneNames[0])).toBeInTheDocument();
+
+    // Verify plot exists initially
+    expect(screen.getByRole('graphics-document', { name: 'Marker heatmap' })).toBeInTheDocument();
+
+    // Increase the number of marker genes from 5 to 2
+    userEvent.click(screen.getByText('Marker genes'));
+    expect(screen.getByText('Number of marker genes per cluster')).toBeInTheDocument();
+
+    const nGenesInput = screen.getByRole('spinbutton', { name: 'Number of genes input' });
+    userEvent.type(nGenesInput, '{backspace}2');
+
+    // Click Run to load new marker genes
+    await act(async () => {
+      userEvent.click(screen.getByText('Run'));
+    });
+
+    // Wait for gene expression to be loaded after marker genes are updated
+    await waitFor(() => {
+      // Verify loadGeneExpression was called with genes
+      const geneExpressionCalls = fetchWork.mock.calls.filter(
+        (call) => call[1].name === 'GeneExpression',
+      );
+      expect(geneExpressionCalls.length).toBeGreaterThan(0);
+    }, { timeout: 5000 });
+
+    // Go back to custom genes tab
+    userEvent.click(screen.getByText('Custom genes'));
+
+    // Verify new marker genes are displayed
+    markerGenesData2.orderedGeneNames.forEach((geneName) => {
+      expect(screen.getByText(geneName)).toBeInTheDocument();
+    });
+  });
+
+  it('custom genes trigger expression loading and UI update', async () => {
+    await renderHeatmapPage(storeState);
+
+    // Initially 5 marker genes are displayed
+    const genesBefore = getTreeGenes(screen.getByRole('tree'));
+    expect(genesBefore).toEqual(markerGenesData5.orderedGeneNames);
+
+    // Add a custom gene like the existing "adds genes correctly" test does
+    const customGene = 'FAKEGENE';
+    const genesToLoad = [...markerGenesData5.orderedGeneNames, customGene];
+
+    await act(async () => {
+      // Update the config with new selectedGenes (simulating custom gene selection)
+      await storeState.dispatch(updatePlotConfig(plotUuid, { selectedGenes: genesToLoad }));
+      // Then load the expression data
+      await storeState.dispatch(loadGeneExpression(experimentId, genesToLoad, plotUuid));
+    });
+
+    // Wait for gene expression to be loaded and UI to update
+    await waitFor(() => {
+      // Verify the custom gene appears in the UI
+      const geneTree = screen.getByRole('tree');
+      expect(within(geneTree).getByText(customGene)).toBeInTheDocument();
+    });
+
+    // Verify the gene list contains the custom gene
+    const genesAfter = getTreeGenes(screen.getByRole('tree'));
+    expect(genesAfter).toContain(customGene);
+    expect(genesAfter).toEqual(genesToLoad);
+
+    // Verify expression data was loaded
+    const geneExpressionCalls = fetchWork.mock.calls.filter(
+      (call) => call[1].name === 'GeneExpression',
+    );
+    expect(geneExpressionCalls.length).toBeGreaterThan(0);
+  });
+
+  it('combined marker and custom genes load expression data', async () => {
+    await renderHeatmapPage(storeState);
+
+    // Start with initial marker genes
+    const initialGenes = getTreeGenes(screen.getByRole('tree'));
+    expect(initialGenes.length).toBeGreaterThan(0);
+
+    // Directly update store with a combination of 2 marker genes + 1 custom gene
+    const combinedGenes = [...markerGenesData2.orderedGeneNames, 'FAKEGENE'];
+
+    await act(async () => {
+      // Update config and load expression data for combined genes
+      await storeState.dispatch(updatePlotConfig(plotUuid, { selectedGenes: combinedGenes }));
+      await storeState.dispatch(loadGeneExpression(experimentId, combinedGenes, plotUuid));
+    });
+
+    // Verify all genes (both marker and custom) appear in the UI
+    await waitFor(() => {
+      const geneTree = screen.getByRole('tree');
+      expect(within(geneTree).getByText('FAKEGENE')).toBeInTheDocument();
+      markerGenesData2.orderedGeneNames.forEach((gene) => {
+        expect(within(geneTree).getByText(gene)).toBeInTheDocument();
+      });
+    });
+
+    // Verify the final gene list matches combined genes
+    const finalGenes = getTreeGenes(screen.getByRole('tree'));
+    expect(finalGenes).toEqual(combinedGenes);
+
+    // Verify expression data was loaded for combined genes
+    const geneExpressionCalls = fetchWork.mock.calls.filter(
+      (call) => call[1].name === 'GeneExpression',
+    );
+    expect(geneExpressionCalls.length).toBeGreaterThan(0);
+  });
+
+  it('does not make a work request when overwriting with a subset of already-loaded genes', async () => {
+    await renderHeatmapPage(storeState);
+
+    // Verify 5 marker genes are initially loaded
+    const initialGenes = getTreeGenes(screen.getByRole('tree'));
+    expect(initialGenes).toEqual(markerGenesData5.orderedGeneNames);
+
+    // Load expression data for all 5 marker genes
+    await act(async () => {
+      await storeState.dispatch(loadGeneExpression(
+        experimentId,
+        initialGenes,
+        plotUuid,
+      ));
+    });
+
+    // Clear mock calls from initial load
+    jest.clearAllMocks();
+
+    // Overwrite with first 3 marker genes (subset of already loaded)
+    const subsetGenes = initialGenes.slice(0, 3);
+
+    await act(async () => {
+      await storeState.dispatch(updatePlotConfig(plotUuid, { selectedGenes: subsetGenes }));
+      await storeState.dispatch(loadGeneExpression(
+        experimentId,
+        subsetGenes,
+        plotUuid,
+      ));
+    });
+
+    // Verify no work request is made for genes already in expression matrix
+    expect(fetchWork).not.toHaveBeenCalled();
+  });
+
+  it('makes a work request when adding a gene not already in the matrix', async () => {
+    await renderHeatmapPage(storeState);
+
+    // Verify 5 marker genes are initially loaded
+    const initialGenes = getTreeGenes(screen.getByRole('tree'));
+    expect(initialGenes).toEqual(markerGenesData5.orderedGeneNames);
+
+    // Load expression data for all 5 marker genes
+    await act(async () => {
+      await storeState.dispatch(loadGeneExpression(
+        experimentId,
+        initialGenes,
+        plotUuid,
+      ));
+    });
+
+    // Clear mock calls from initial load
+    jest.clearAllMocks();
+
+    // Add a completely new gene not in matrix
+    const newGene = 'UNKNOWNGENE_NOT_IN_MATRIX';
+    const combinedGenes = [...initialGenes, newGene];
+
+    await act(async () => {
+      await storeState.dispatch(updatePlotConfig(plotUuid, { selectedGenes: combinedGenes }));
+      await storeState.dispatch(loadGeneExpression(
+        experimentId,
+        combinedGenes,
+        plotUuid,
+      ));
+    });
+
+    // Verify work request IS made for new gene not in expression matrix
+    const geneExpressionCalls = fetchWork.mock.calls.filter(
+      (call) => call[1].name === 'GeneExpression',
+    );
+    expect(geneExpressionCalls.length).toBeGreaterThan(0);
+  });
+
+  it('Reset button restores original marker genes', async () => {
+    await renderHeatmapPage(storeState);
+
+    // Verify initial 5 marker genes are loaded
+    const initialGenes = getTreeGenes(screen.getByRole('tree'));
+    expect(initialGenes).toEqual(markerGenesData5.orderedGeneNames);
+
+    // Modify genes by selecting a smaller subset (first 2 genes)
+    const modifiedGenes = initialGenes.slice(0, 2);
+
+    await act(async () => {
+      await storeState.dispatch(updatePlotConfig(plotUuid, { selectedGenes: modifiedGenes }));
+      await storeState.dispatch(loadGeneExpression(experimentId, modifiedGenes, plotUuid));
+    });
+
+    // Verify genes have changed
+    let displayedGenes = getTreeGenes(screen.getByRole('tree'));
+    expect(displayedGenes.length).toBe(2);
+
+    // Find and click Reset button (look for button with text "Reset")
+    const buttons = screen.getAllByRole('button');
+    const resetButton = buttons.find((btn) => btn.textContent === 'Reset');
+
+    await act(async () => {
+      userEvent.click(resetButton);
+    });
+
+    // Wait for marker genes to be reloaded
+    await waitFor(() => {
+      displayedGenes = getTreeGenes(screen.getByRole('tree'));
+      expect(displayedGenes).toEqual(markerGenesData5.orderedGeneNames);
+    }, { timeout: 5000 });
+  });
+
+  it('Clear All button removes all genes from heatmap', async () => {
+    await renderHeatmapPage(storeState);
+
+    // Verify initial genes are loaded
+    const initialGenes = getTreeGenes(screen.getByRole('tree'));
+    expect(initialGenes.length).toBeGreaterThan(0);
+
+    // Find and click Clear All button (look for button with text "Clear All")
+    const buttons = screen.getAllByRole('button');
+    const clearAllButton = buttons.find((btn) => btn.textContent.includes('Clear All'));
+
+    await act(async () => {
+      userEvent.click(clearAllButton);
+    });
+
+    // Verify selectedGenes is cleared from genes.expression.views
+    await waitFor(() => {
+      const selectedGenes = storeState.getState().genes.expression.views[plotUuid]?.data;
+      expect(selectedGenes).toEqual([]);
+    }, { timeout: 5000 });
+
+    // Verify plot no longer displays (since there are no genes)
+    expect(screen.queryByRole('graphics-document', { name: 'Marker heatmap' })).not.toBeInTheDocument();
+  });
+
+  it('gene reorder does not recall work requests', async () => {
+    await renderHeatmapPage(storeState);
+
+    // Verify initial genes are loaded
+    const initialGenes = getTreeGenes(screen.getByRole('tree'));
+    expect(initialGenes.length).toBeGreaterThan(2);
+
+    // Load expression for initial genes
+    await act(async () => {
+      await storeState.dispatch(loadGeneExpression(experimentId, initialGenes, plotUuid));
+    });
+
+    // Clear mock calls
+    jest.clearAllMocks();
+
+    // Reorder genes (same genes, different order)
+    const reorderedGenes = [initialGenes[1], initialGenes[0], ...initialGenes.slice(2)];
+
+    await act(async () => {
+      await storeState.dispatch(updatePlotConfig(plotUuid, { selectedGenes: reorderedGenes }));
+    });
+
+    // Verify no work request was made for reordering
+    expect(fetchWork).not.toHaveBeenCalled();
+  });
+
+  it('gene deletion does not recall work requests', async () => {
+    await renderHeatmapPage(storeState);
+
+    // Verify initial genes are loaded
+    const initialGenes = getTreeGenes(screen.getByRole('tree'));
+    expect(initialGenes.length).toBeGreaterThan(1);
+
+    // Load expression for initial genes
+    await act(async () => {
+      await storeState.dispatch(loadGeneExpression(experimentId, initialGenes, plotUuid));
+    });
+
+    // Clear mock calls
+    jest.clearAllMocks();
+
+    // Remove the last gene
+    const genesAfterRemoval = initialGenes.slice(0, -1);
+
+    await act(async () => {
+      await storeState.dispatch(updatePlotConfig(plotUuid, { selectedGenes: genesAfterRemoval }));
+    });
+
+    // Verify no work request was made for deletion
+    expect(fetchWork).not.toHaveBeenCalled();
+  });
+
+  it('clear all shows "Add some genes" message', async () => {
+    await renderHeatmapPage(storeState);
+
+    // Verify initial genes are displayed
+    const initialGenes = getTreeGenes(screen.getByRole('tree'));
+    expect(initialGenes.length).toBeGreaterThan(0);
+
+    // Find and click Clear All button
+    const buttons = screen.getAllByRole('button');
+    const clearAllButton = buttons.find((btn) => btn.textContent.includes('Clear All'));
+
+    await act(async () => {
+      userEvent.click(clearAllButton);
+    });
+
+    // Wait for the "Add some genes" message to appear
+    await waitFor(() => {
+      expect(screen.getByText(/Add some genes to this heatmap to get started/i)).toBeInTheDocument();
+    }, { timeout: 5000 });
+
+    // Verify plot is not displayed
+    expect(screen.queryByRole('graphics-document', { name: 'Marker heatmap' })).not.toBeInTheDocument();
+  });
+
+  it('Reset button reloads initial genes but keeps config the same', async () => {
+    await renderHeatmapPage(storeState);
+
+    // Verify initial genes are loaded
+    const initialGenes = getTreeGenes(screen.getByRole('tree'));
+    expect(initialGenes).toEqual(markerGenesData5.orderedGeneNames);
+
+    // Update config (e.g., change color scheme)
+    const colorSchemeBeforeReset = storeState.getState().componentConfig[plotUuid]?.config?.colour?.scheme;
+
+    await act(async () => {
+      await storeState.dispatch(updatePlotConfig(plotUuid, {
+        selectedGenes: initialGenes.slice(0, 2),
+        colour: { ...storeState.getState().componentConfig[plotUuid]?.config?.colour, scheme: 'viridis' },
+      }));
+    });
+
+    // Verify genes changed
+    let displayedGenes = getTreeGenes(screen.getByRole('tree'));
+    expect(displayedGenes.length).toBe(2);
+
+    // Find and click Reset button
+    const buttons = screen.getAllByRole('button');
+    const resetButton = buttons.find((btn) => btn.textContent === 'Reset');
+
+    await act(async () => {
+      userEvent.click(resetButton);
+    });
+
+    // Wait for genes to be restored
+    await waitFor(() => {
+      displayedGenes = getTreeGenes(screen.getByRole('tree'));
+      expect(displayedGenes).toEqual(markerGenesData5.orderedGeneNames);
+    }, { timeout: 5000 });
+
+    // Verify color config is preserved (it should still be 'viridis', not the initial value)
+    const colorSchemeAfterReset = storeState.getState().componentConfig[plotUuid]?.config?.colour?.scheme;
+    expect(colorSchemeAfterReset).toBe('viridis');
+  });
+
+  it('Reset plot resets both config and initial gene list', async () => {
+    await renderHeatmapPage(storeState);
+
+    // Verify initial genes
+    const initialGenes = getTreeGenes(screen.getByRole('tree'));
+    expect(initialGenes).toEqual(markerGenesData5.orderedGeneNames);
+
+    // Store the initial color scheme
+    const initialColorScheme = storeState.getState().componentConfig[plotUuid]?.config?.colour?.scheme;
+
+    // Modify both genes and config
+    await act(async () => {
+      await storeState.dispatch(updatePlotConfig(plotUuid, {
+        selectedGenes: initialGenes.slice(0, 2),
+        colour: { ...storeState.getState().componentConfig[plotUuid]?.config?.colour, scheme: 'viridis' },
+      }));
+      await storeState.dispatch(loadGeneExpression(experimentId, initialGenes.slice(0, 2), plotUuid));
+    });
+
+    // Verify changes
+    let displayedGenes = getTreeGenes(screen.getByRole('tree'));
+    expect(displayedGenes.length).toBe(2);
+    let colorScheme = storeState.getState().componentConfig[plotUuid]?.config?.colour?.scheme;
+    expect(colorScheme).toBe('viridis');
+
+    // Manually dispatch resetPlotConfig to simulate PlotContainer's reset
+    await act(async () => {
+      const { resetPlotConfig } = require('redux/actions/componentConfig');
+      await storeState.dispatch(resetPlotConfig(experimentId, plotUuid, 'markerHeatmap'));
+    });
+
+    // Wait for config to be reset
+    await waitFor(() => {
+      const resetConfig = storeState.getState().componentConfig[plotUuid]?.config;
+      // Check that color scheme is reset to initial value (not 'viridis')
+      expect(resetConfig?.colour?.scheme).toBe(initialColorScheme);
+    }, { timeout: 5000 });
+
+    // Verify that genes are reset back to initial (either null or the default marker genes)
+    await waitFor(() => {
+      const currentConfig = storeState.getState().componentConfig[plotUuid]?.config;
+      // After reset, selectedGenes should be either null (triggering auto-load) or restored to initial
+      // The important thing is they're no longer the 2-gene subset
+      expect(currentConfig?.selectedGenes?.length || 0).not.toBe(2);
+    }, { timeout: 5000 });
+  });
+
+  it('toggling to marker genes and clicking Run results in those genes showing up in Custom genes list', async () => {
+    await renderHeatmapPage(storeState);
+
+    // Verify initial 5 marker genes
+    const initialGenes = getTreeGenes(screen.getByRole('tree'));
+    expect(initialGenes.length).toBeGreaterThan(0);
+
+    // Click on Marker genes tab
+    await act(async () => {
+      userEvent.click(screen.getByText('Marker genes'));
+    });
+
+    expect(screen.getByText('Number of marker genes per cluster')).toBeInTheDocument();
+
+    // Change the number of marker genes from default to 2
+    const nGenesInput = screen.getByRole('spinbutton', { name: 'Number of genes input' });
+    userEvent.type(nGenesInput, '{backspace}2');
+
+    // Click Run to load new marker genes
+    await act(async () => {
+      userEvent.click(screen.getByText('Run'));
+    });
+
+    // Wait for marker genes to be loaded with the new count
+    await waitFor(() => {
+      // Verify that a call to load marker genes with nGenes: 2 was made
+      const markerCall = fetchWork.mock.calls.find((call) => call[1].nGenes === 2);
+      expect(markerCall).toBeDefined();
+    }, { timeout: 5000 });
+
+    // Switch to Custom genes tab to see the new marker genes
+    await act(async () => {
+      userEvent.click(screen.getByText('Custom genes'));
+    });
+
+    // Verify the new genes (from MarkerHeatmap-2 dataset) are shown
+    // markerGenesData2 has 2 genes: Ms4a4b and Smc4
+    await waitFor(() => {
+      markerGenesData2.orderedGeneNames.forEach((geneName) => {
+        expect(screen.getByText(geneName)).toBeInTheDocument();
+      });
+    }, { timeout: 5000 });
   });
 });

@@ -1,5 +1,10 @@
 import getTimeoutForWorkerTask from 'utils/getTimeoutForWorkerTask';
-import { PLOT_DATA_LOADED, PLOT_DATA_LOADING, PLOT_DATA_ERROR } from 'redux/actionTypes/componentConfig';
+import {
+  PLOT_DATA_LOADED,
+  PLOT_DATA_LOADING,
+  PLOT_DATA_ERROR,
+  UPDATE_CONFIG,
+} from 'redux/actionTypes/componentConfig';
 
 import handleError from 'utils/http/handleError';
 import endUserMessages from 'utils/endUserMessages';
@@ -82,6 +87,9 @@ const getDotPlot = (
     const plotData = transformToPlotData(data);
     orderCellSets(plotData, getState().cellSets, config);
 
+    // Extract genes from plotData to keep config.selectedGenes as single source of truth
+    const genesInPlot = [...new Set(plotData.map((d) => d.geneName))];
+
     dispatch({
       type: PLOT_DATA_LOADED,
       payload: {
@@ -89,6 +97,20 @@ const getDotPlot = (
         plotData,
       },
     });
+
+    // When using marker genes, sync the returned genes back to config.selectedGenes
+    // This ensures config.selectedGenes is always the single source of truth
+    if (config.useMarkerGenes) {
+      dispatch({
+        type: UPDATE_CONFIG,
+        payload: {
+          plotUuid,
+          configChanges: {
+            selectedGenes: genesInPlot,
+          },
+        },
+      });
+    }
   } catch (e) {
     const errorMessage = handleError(e, endUserMessages.ERROR_FETCHING_PLOT_DATA);
 
