@@ -9,11 +9,16 @@ import {
 import { LeftOutlined } from '@ant-design/icons';
 import PropTypes from 'prop-types';
 import _ from 'lodash';
+import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc';
+
+dayjs.extend(utc);
 
 import { getCellSets } from 'redux/selectors';
 import loadDifferentialExpression from 'redux/actions/differentialExpression/loadDifferentialExpression';
 
 import GeneTable from 'components/data-exploration/generic-gene-table/GeneTable';
+import ExportAsCSV from 'components/plots/ExportAsCSV';
 
 import AdvancedFilteringModal from 'components/data-exploration/differential-expression-tool/AdvancedFilteringModal';
 import LaunchPathwayAnalysisModal from 'components/data-exploration/differential-expression-tool/LaunchPathwayAnalysisModal';
@@ -34,9 +39,9 @@ const DiffExprResults = (props) => {
     advancedFilters,
   } = useSelector((state) => state.differentialExpression.comparison);
   const { properties } = useSelector(getCellSets());
+  const experimentName = useSelector((state) => state.experimentSettings.info.experimentName);
 
   const [dataShown, setDataShown] = useState(data);
-  const [exportAlert, setExportAlert] = useState(false);
   const [advancedFilteringModalVisible, setAdvancedFilteringModalVisible] = useState(false);
   const [pathwayAnalysisModalVisible, setPathwayAnalysisModalVisible] = useState(false);
   const [columns, setColumns] = useState([]);
@@ -105,23 +110,46 @@ const DiffExprResults = (props) => {
 
   const geneTooltipText = `All genes present in the dataset are shown in the differential expression results table. Note that a gene is typically considered 'differentially expressed' based on established thresholds on FDR and/or log fold change. You should apply your own criteria and thresholds to filter the resulting list of genes using the "Filter results" button.`;
 
+  const getCSVData = () => {
+    if (!dataShown?.length) return [];
+    return dataShown.map((row) => {
+      const { _row, ...csvRow } = row;
+      return csvRow;
+    });
+  };
+
+  const getCellSetKey = (word) => {
+    // Extract the cell set name part (after '/' if present)
+    const key = word?.split('/')[1] || word;
+    // Get the friendly name from properties or use the key as fallback
+    return (properties[key]?.name || _.capitalize(key || '')).replace(/\s+/g, '_');
+  };
+
+  const date = dayjs.utc().format('YYYY-MM-DD-HH-mm-ss');
+  const experimentNameClean = experimentName?.replace(/\s+/g, '_') || 'experiment';
+  const cellSetName = getCellSetKey(cellSet);
+  const compareWithName = getCellSetKey(compareWith);
+  const basisName = getCellSetKey(basis);
+  const csvFileName = `de_${experimentNameClean}_${cellSetName}_vs_${compareWithName}_in_${basisName}_${date}.csv`;
+
   return (
     <Space direction='vertical' style={{ width: '100%' }}>
 
       {/* This is needed so changes to the export alert don't cause the table to re-render. */}
       <Space direction='horizontal'>
-        <Button size='medium' onClick={onGoBack}>
+        <Button size='small' onClick={onGoBack}>
           <span>
             <LeftOutlined />
             Go back
           </span>
         </Button>
-        <Button size='medium' onClick={() => setAdvancedFilteringModalVisible(!advancedFilteringModalVisible)}>
+        <Button size='small' onClick={() => setAdvancedFilteringModalVisible(!advancedFilteringModalVisible)}>
           Filter results
         </Button>
-        <Button size='medium' onClick={() => setPathwayAnalysisModalVisible(!pathwayAnalysisModalVisible)}>
+        <Button size='small' onClick={() => setPathwayAnalysisModalVisible(!pathwayAnalysisModalVisible)}>
           Pathway analysis
         </Button>
+        <ExportAsCSV data={getCSVData()} filename={csvFileName} disabled={!dataShown?.length} />
       </Space>
       {advancedFilteringModalVisible && (
         <AdvancedFilteringModal
