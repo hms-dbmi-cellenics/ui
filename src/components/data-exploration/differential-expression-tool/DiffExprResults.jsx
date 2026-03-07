@@ -130,7 +130,7 @@ const DiffExprResults = (props) => {
   const cellSetName = getCellSetKey(cellSet);
   const compareWithName = getCellSetKey(compareWith);
   const basisName = getCellSetKey(basis);
-  const csvFileName = `de_${experimentNameClean}_${cellSetName}_vs_${compareWithName}_in_${basisName}_${date}.csv`;
+  const csvFileName = `${experimentNameClean}-${cellSetName}_vs_${compareWithName}_in_${basisName}.csv`;
 
   return (
     <Space direction='vertical' style={{ width: '100%' }}>
