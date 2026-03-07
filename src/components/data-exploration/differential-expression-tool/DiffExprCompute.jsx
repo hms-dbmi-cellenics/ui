@@ -230,13 +230,15 @@ const DiffExprCompute = (props) => {
       {selectedComparison === ComparisonType.WITHIN
         ? (
           <>
-            {
-              renderClusterSelectorItem({
-                title: 'Compare cell set:',
-                option: 'cellSet',
-                filterTypes: ['cellSets', 'CLM'],
-              })
-            }
+            <div style={{ marginTop: '16px' }}>
+              {
+                renderClusterSelectorItem({
+                  title: 'Compare cell set:',
+                  option: 'cellSet',
+                  filterTypes: ['cellSets', 'CLM'],
+                })
+              }
+            </div>
 
             {renderClusterSelectorItem({
               title: 'and cell set:',
@@ -252,11 +254,13 @@ const DiffExprCompute = (props) => {
           </>
         ) : (
           <>
-            {renderClusterSelectorItem({
-              title: 'Compare cell set:',
-              option: 'basis',
-              filterTypes: ['cellSets', 'CLM'],
-            })}
+            <div style={{ marginTop: '16px' }}>
+              {renderClusterSelectorItem({
+                title: 'Compare cell set:',
+                option: 'basis',
+                filterTypes: ['cellSets', 'CLM'],
+              })}
+            </div>
 
             {renderClusterSelectorItem({
               title: 'between sample/group:',
