@@ -161,7 +161,7 @@ const DiffExprResults = (props) => {
         loadData={loadData}
         extraOptions={null}
         geneColumnTooltipText={geneTooltipText}
-        geneColumnWidth="100px"
+        geneColumnWidth={columns.length < 4 ? '150px' : '100px'}
       />
       {
         pathwayAnalysisModalVisible && (
@@ -177,10 +177,12 @@ const DiffExprResults = (props) => {
 };
 
 const formatDecimal = (value, decimals) => {
+  if (value === undefined || value === null) return '';
   return parseFloat(value).toFixed(decimals).replace(/\.?0+$/, '');
 };
 
 const formatFDR = (value) => {
+  if (value === undefined || value === null) return '';
   const num = parseFloat(value);
 
   // If number is very small, use exponential notation with 1 decimal
