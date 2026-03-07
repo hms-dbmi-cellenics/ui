@@ -11,8 +11,8 @@ const FilterResultTable = (props) => {
     // Meanwhile, this data for this table is an object. So if tableData is an array
     // That means table data does not exist
     if (Array.isArray(tableData)
-        || !tableData?.after
-        || !tableData?.before
+      || !tableData?.after
+      || !tableData?.before
     ) {
       return <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />;
     }
@@ -30,7 +30,7 @@ const FilterResultTable = (props) => {
     const percentChanged = (number, total, decimalPoints = 2) => {
       const ratio = Math.round((number / total) * (10 ** decimalPoints)) / (10 ** decimalPoints);
       const percent = ratio * 100;
-      const fixedDecimal = percent.toFixed(3);
+      const fixedDecimal = percent.toFixed(1);
       return fixedDecimal > 0 ? `+${fixedDecimal}` : `${fixedDecimal}`;
     };
 
@@ -45,24 +45,27 @@ const FilterResultTable = (props) => {
     const columns = [
       {
         fixed: 'left',
-        title: 'Statistics',
+        title: 'Statistic',
         dataIndex: 'title',
         key: 'title',
       },
       {
-        title: '# before',
+        title: 'Before',
         dataIndex: 'before',
         key: 'before',
+        align: 'right',
       },
       {
-        title: '# after',
+        title: 'After',
         dataIndex: 'after',
         key: 'after',
+        align: 'right',
       },
       {
-        title: '% changed',
+        title: 'Change (%)',
         dataIndex: 'percentChanged',
         key: 'percentChanged',
+        align: 'right',
       },
     ];
 
