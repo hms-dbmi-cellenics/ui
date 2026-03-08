@@ -4,16 +4,12 @@ import {
   useDispatch,
 } from 'react-redux';
 import {
-  Space, Button, Alert, Tooltip,
+  Space, Button, Tooltip,
 } from 'antd';
-import { DownloadOutlined, LeftOutlined } from '@ant-design/icons';
+import { LeftOutlined } from '@ant-design/icons';
 import { CSVLink } from 'react-csv';
 import PropTypes from 'prop-types';
 import _ from 'lodash';
-import dayjs from 'dayjs';
-import utc from 'dayjs/plugin/utc';
-
-dayjs.extend(utc);
 
 import { getCellSets } from 'redux/selectors';
 import loadDifferentialExpression from 'redux/actions/differentialExpression/loadDifferentialExpression';
@@ -125,7 +121,6 @@ const DiffExprResults = (props) => {
     return (properties[key]?.name || _.capitalize(key || '')).replace(/\s+/g, '_');
   };
 
-  const date = dayjs.utc().format('YYYY-MM-DD-HH-mm-ss');
   const experimentNameClean = experimentName?.replace(/\s+/g, '_') || 'experiment';
   const cellSetName = getCellSetKey(cellSet);
   const compareWithName = getCellSetKey(compareWith);
