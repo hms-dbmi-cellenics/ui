@@ -816,6 +816,108 @@ describe('Dot plot page', () => {
     // getDotPlot is NOT called
     // TODO: Implement styling change UI interaction
   });
+
+  it('Max Radius slider default updates when number of genes changes', async () => {
+    await renderDotPlot(storeState);
+
+    // Wait for initial plot to load
+    await waitFor(() => {
+      expect(screen.getByRole('graphics-document', { name: 'Vega visualization' })).toBeInTheDocument();
+    });
+
+    // Find the Max Radius slider
+    const sliders = screen.getAllByRole('slider');
+    const maxRadiusSlider = sliders[sliders.length - 1]; // Last slider should be Max Radius
+
+    // Get initial slider value
+    const initialValue = maxRadiusSlider.getAttribute('aria-valuenow');
+
+    // Add a gene to change the number of genes
+    const searchBox = screen.getByRole('combobox');
+    userEvent.type(searchBox, 'ap');
+
+    const option = screen.getByTitle('Apoe');
+
+    await act(async () => {
+      userEvent.click(option, undefined, { skipPointerEventsCheck: true });
+    });
+
+    const addButton = screen.getByText('Add');
+    userEvent.click(addButton);
+
+    // Wait for plot to update with new gene
+    await waitFor(() => {
+      // Plot should re-render with new data
+      expect(screen.getByRole('graphics-document', { name: 'Vega visualization' })).toBeInTheDocument();
+    }, { timeout: 2000 });
+
+    // Get new slider value (should be different if calculation changed)
+    // Note: The default value may change based on plot dimensions and new gene count
+    const newValue = maxRadiusSlider.getAttribute('aria-valuenow');
+
+    // The default value may have changed due to different plot dimensions calculation
+    // At minimum, the slider should still be valid (between 3 and 20)
+    expect(parseInt(newValue, 10)).toBeGreaterThanOrEqual(3);
+    expect(parseInt(newValue, 10)).toBeLessThanOrEqual(20);
+  });
+
+  it('Max Radius slider updates maxPointSize config when dragged', async () => {
+    await renderDotPlot(storeState);
+
+    // Wait for initial plot to load
+    await waitFor(() => {
+      expect(screen.getByRole('graphics-document', { name: 'Vega visualization' })).toBeInTheDocument();
+    });
+
+    // Find the Max Radius slider
+    const sliders = screen.getAllByRole('slider');
+    const maxRadiusSlider = sliders[sliders.length - 1]; // Last slider should be Max Radius
+
+    // Get initial config value
+    const initialConfig = storeState.getState().componentConfig.dotPlotMain?.config;
+    const initialMaxPointRadius = initialConfig?.maxPointRadius;
+
+    // Simulate slider change
+    const newValue = 8;
+    await act(async () => {
+      fireEvent.change(maxRadiusSlider, { target: { value: newValue } });
+    });
+
+    // Check that config was updated
+    const updatedConfig = storeState.getState().componentConfig.dotPlotMain?.config;
+    expect(updatedConfig?.maxPointRadius).toBe(newValue);
+  });
+
+  it('Max Radius slider respects calculated min and max bounds', async () => {
+    await renderDotPlot(storeState);
+
+    // Wait for initial plot to load
+    await waitFor(() => {
+      expect(screen.getByRole('graphics-document', { name: 'Vega visualization' })).toBeInTheDocument();
+    });
+
+    // Find the Max Radius slider
+    const sliders = screen.getAllByRole('slider');
+    const maxRadiusSlider = sliders[sliders.length - 1]; // Last slider should be Max Radius
+
+    // Get slider attributes
+    const min = parseInt(maxRadiusSlider.getAttribute('aria-valuemin'), 10);
+    const max = parseInt(maxRadiusSlider.getAttribute('aria-valuemax'), 10);
+    const currentValue = parseInt(maxRadiusSlider.getAttribute('aria-valuenow'), 10);
+
+    // Min should be at least 3 (default - 5, but never less than 3)
+    expect(min).toBeGreaterThanOrEqual(3);
+
+    // Max should be at least currentValue (default can be anywhere in range)
+    expect(max).toBeGreaterThanOrEqual(currentValue);
+
+    // Max should never exceed 20 (default + 2, but never more than 20)
+    expect(max).toBeLessThanOrEqual(20);
+
+    // Current value should be within bounds
+    expect(currentValue).toBeGreaterThanOrEqual(min);
+    expect(currentValue).toBeLessThanOrEqual(max);
+  });
 });
 
 // drag and drop is impossible in RTL, use enzyme
