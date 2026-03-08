@@ -19,6 +19,7 @@ import ColourbarDesign from './ColourbarDesign';
 import ColourInversion from './ColourInversion';
 import ExpressionValuesType from './ExpressionValuesType';
 import ExpressionValuesCapping from './ExpressionValuesCapping';
+import DotPlotSizeScale from './DotPlotSizeScale';
 
 import ViolinMarkersEditor from './violin/MarkersEditor';
 
@@ -46,6 +47,7 @@ const PlotStyling = (props) => {
     markers: (attr) => <PointDesign key='markers' config={config} onUpdate={onUpdate} {...attr} />,
     legend: (attr) => <LegendEditor key='legend' onUpdate={onUpdate} config={config} {...attr} />,
     labels: (attr) => <LabelsDesign key='labels' onUpdate={onUpdate} config={config} {...attr} />,
+    dotPlotSizeScale: (attr) => <DotPlotSizeScale key='dotPlotSizeScale' config={config} onUpdate={onUpdate} {...attr} />,
     violinMarkers: (attr) => <ViolinMarkersEditor key='violinMarkers' config={config} onUpdate={onUpdate} {...attr} />,
     volcanoThresholds: (attr) => <VolcanoThresholdsGuidesEditor key='volcanoThresholds' config={config} onUpdate={onUpdate} {...attr} />,
     volcanoMarkers: (attr) => <VolcanoMarkersEditor key='volcanoMarkers' config={config} onUpdate={onUpdate} {...attr} />,
