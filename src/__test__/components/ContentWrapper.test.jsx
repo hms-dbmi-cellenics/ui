@@ -296,6 +296,24 @@ describe('ContentWrapper', () => {
     expect(screen.getByText(/We're working on your project.../i)).toBeInTheDocument();
   });
 
+  it('Data Management link is enabled while pipeline is running', async () => {
+    getBackendStatus.mockImplementation(() => () => ({
+      loading: false,
+      error: false,
+      status: { pipeline: { status: 'RUNNING' } },
+    }));
+
+    await renderContentWrapper(experimentId, experimentData);
+
+    // Data Management link should be enabled even during pipeline run
+    expect(screen.getByText('Data Management').closest('li')).toHaveAttribute('aria-disabled', 'false');
+
+    // Other links should be disabled during pipeline run
+    expect(screen.getByText('Data Processing').closest('li')).toHaveAttribute('aria-disabled', 'true');
+    expect(screen.getByText('Data Exploration').closest('li')).toHaveAttribute('aria-disabled', 'true');
+    expect(screen.getByText('Plots and Tables').closest('li')).toHaveAttribute('aria-disabled', 'true');
+  });
+
   it('Redirects to login if the user is unauthenticated', async () => {
     getBackendStatus.mockImplementation(() => () => ({
       [experimentId]: {
