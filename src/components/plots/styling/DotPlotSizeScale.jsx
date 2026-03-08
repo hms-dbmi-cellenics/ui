@@ -30,11 +30,11 @@ const DotPlotSizeScale = (props) => {
           label='Max Point Size'
         >
           <Slider
-            value={newConfig.maxPointSize || 20}
+            value={newConfig.maxPointRadius || 20}
             min={minSize}
             max={maxSize}
             onChange={(value) => {
-              handleChange({ maxPointSize: value });
+              handleChange({ maxPointRadius: value });
             }}
             marks={marks}
           />
