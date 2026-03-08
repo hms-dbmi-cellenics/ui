@@ -8,6 +8,7 @@ import {
   Form,
   Radio,
   Space,
+  Slider,
 } from 'antd';
 
 import _ from 'lodash';
@@ -77,6 +78,7 @@ const plotStylingConfig = [
           },
           showTitleInput: false,
           showTitleSizeInput: true,
+          showDirectionInput: false,
         },
       },
     ],
@@ -284,6 +286,33 @@ const DotPlotPage = (props) => {
     }
   }, [config, cellSets.properties]);
 
+  // Calculate the default radius based on plot dimensions and data
+  const calculateDefaultRadius = useMemo(() => {
+    if (!config || !plotData || plotData.length === 0) return 15; // fallback default
+
+    const plotWidth = config.dimensions.width;
+    const plotHeight = config.dimensions.height;
+    const padding = 1;
+    const adjustment = 2;
+
+    // Get unique genes from actual data
+    const uniqueGenes = new Set(plotData.map((d) => d.geneName));
+    const numGenes = uniqueGenes.size;
+
+    // Count unique clusters
+    const uniqueClusters = new Set(plotData.map((d) => d.cellSets));
+    const numClusters = uniqueClusters.size;
+
+    const heightPerDot = plotHeight / (numClusters + adjustment);
+    const widthPerDot = plotWidth / (numGenes + adjustment);
+
+    const radiusWithPadding = Math.floor(Math.min(heightPerDot, widthPerDot) / 2);
+    const radius = radiusWithPadding - padding;
+
+    // Cap to slider range [3, 20]
+    return Math.max(3, Math.min(20, radius));
+  }, [config, plotData]);
+
   // if all selected genes are removed, deleteData will not run. Remove plotData manually instead
   useEffect(() => {
     if (config?.useMarkerGenes
@@ -456,6 +485,18 @@ const DotPlotPage = (props) => {
               <Radio key='absolute' value>Absolute</Radio>
               <Radio key='relative' value={false}>Relative</Radio>
             </Radio.Group>
+          </Form.Item>
+          <Form.Item label='Max Radius' labelCol={{ span: 10, style: { textAlign: 'left' } }} wrapperCol={{ span: 12 }} style={{ marginBottom: 0, marginTop: '15px' }}>
+            <Slider
+              value={config.maxPointRadius || calculateDefaultRadius}
+              min={Math.max(3, calculateDefaultRadius - 5)}
+              max={Math.min(20, calculateDefaultRadius + 2)}
+              onChange={(value) => updatePlotWithChanges({ maxPointRadius: value })}
+              marks={{
+                [Math.max(3, calculateDefaultRadius - 5)]: Math.max(3, calculateDefaultRadius - 5),
+                [Math.min(20, calculateDefaultRadius + 2)]: Math.min(20, calculateDefaultRadius + 2),
+              }}
+            />
           </Form.Item>
         </Form>
       </Panel>
