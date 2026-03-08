@@ -307,11 +307,21 @@ const DotPlotPage = (props) => {
     const widthPerDot = plotWidth / (numGenes + adjustment);
 
     const radiusWithPadding = Math.floor(Math.min(heightPerDot, widthPerDot) / 2);
-    const radius = radiusWithPadding - padding;
+    let radius = radiusWithPadding - padding;
 
-    // Cap to slider range [3, 20]
-    return Math.max(3, Math.min(20, radius));
+    // Cap to valid slider range [3, 20] - max is 20
+    radius = Math.max(3, Math.min(20, radius));
+
+    return radius;
   }, [config, plotData]);
+
+  // Keep maxPointRadius in sync with calculateDefaultRadius whenever it changes (e.g., on gene selection change)
+  useEffect(() => {
+    if (!config) return;
+
+    // Reset to new default whenever calculateDefaultRadius changes
+    dispatch(updatePlotConfig(plotUuid, { maxPointRadius: calculateDefaultRadius }));
+  }, [calculateDefaultRadius, plotUuid, dispatch]);
 
   // if all selected genes are removed, deleteData will not run. Remove plotData manually instead
   useEffect(() => {

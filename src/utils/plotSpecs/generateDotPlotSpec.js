@@ -33,7 +33,8 @@ const getDotDimensions = (config, numClusters, plotData) => {
   // Small number of data will cause dots to appear very big. This limits the size
   // (via the radius) that the dots can be based on plot dimensions.
   // The slider (maxPointRadius) allows full control, defaulting to the calculated radius
-  const cappedRadius = config.maxPointRadius || radius;
+  // Cap to match slider range [3, 20]
+  const cappedRadius = Math.max(3, Math.min(20, config.maxPointRadius || radius));
 
   // Radius for 0 data
   const minArea = 10;
