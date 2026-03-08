@@ -1,12 +1,19 @@
 import PropTypes from 'prop-types';
-import { ClipLoader, BounceLoader } from 'react-spinners';
-import { Typography } from 'antd';
+import { BounceLoader } from 'react-spinners';
+import { Typography, Spin } from 'antd';
 import useSWR from 'swr';
 import React from 'react';
 import { useSelector } from 'react-redux';
 import fetchAPI from 'utils/http/fetchAPI';
+import colors from 'utils/styling/colors';
 
 const { Text } = Typography;
+
+const spinnerStyles = `
+  .loader-spinner .ant-spin-dot-item {
+    background-color: ${colors.darkRed};
+  }
+`;
 
 const slowLoad = () => (
   <>
@@ -37,11 +44,9 @@ const fastLoad = (message) => (
     display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
   }}
   >
+    <style>{spinnerStyles}</style>
     <div style={{ padding: 25 }}>
-      <ClipLoader
-        size={50}
-        color='#8f0b10'
-      />
+      <Spin size='large' className='loader-spinner' />
     </div>
     <p style={{ textAlign: 'center' }}>
       <Text>

@@ -14,6 +14,7 @@ import {
 
 import SubsetCellSetsOperation from 'components/data-exploration/cell-sets-tool/SubsetCellSetsOperation';
 import CellSetOperation from 'components/data-exploration/cell-sets-tool/CellSetOperation';
+import HideSelectedCellSetsOperation from 'components/data-exploration/cell-sets-tool/HideSelectedCellSetsOperation';
 import PlatformError from 'components/PlatformError';
 import HierarchicalTree from 'components/data-exploration/hierarchical-tree/HierarchicalTree';
 import AnnotateClustersTool from 'components/data-exploration/cell-sets-tool/AnnotateClustersTool';
@@ -162,6 +163,9 @@ const CellSetsTool = (props) => {
             }}
             ariaLabel='Complement of selected'
             helpTitle='Create new cell set from the complement of the selected sets in the current tab.'
+          />
+          <HideSelectedCellSetsOperation
+            selectedCellSetKeys={selectedCellSetKeys}
           />
           <Text type='primary' id='selectedCellSets'>
             {`${selectedCellsCount} cell${selectedCellsCount === 1 ? '' : 's'} selected`}

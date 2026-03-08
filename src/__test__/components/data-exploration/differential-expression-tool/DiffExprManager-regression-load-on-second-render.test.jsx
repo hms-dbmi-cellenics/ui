@@ -91,6 +91,11 @@ const storeState = {
       advancedFilters: [],
     },
   },
+  experimentSettings: {
+    info: {
+      experimentName: 'experiment',
+    },
+  },
   backendStatus,
 };
 

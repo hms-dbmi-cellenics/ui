@@ -4,9 +4,10 @@ import {
   useDispatch,
 } from 'react-redux';
 import {
-  Space, Button, Alert, Tooltip,
+  Space, Button, Tooltip,
 } from 'antd';
 import { LeftOutlined } from '@ant-design/icons';
+import { CSVLink } from 'react-csv';
 import PropTypes from 'prop-types';
 import _ from 'lodash';
 
@@ -34,9 +35,9 @@ const DiffExprResults = (props) => {
     advancedFilters,
   } = useSelector((state) => state.differentialExpression.comparison);
   const { properties } = useSelector(getCellSets());
+  const experimentName = useSelector((state) => state.experimentSettings.info.experimentName);
 
   const [dataShown, setDataShown] = useState(data);
-  const [exportAlert, setExportAlert] = useState(false);
   const [advancedFilteringModalVisible, setAdvancedFilteringModalVisible] = useState(false);
   const [pathwayAnalysisModalVisible, setPathwayAnalysisModalVisible] = useState(false);
   const [columns, setColumns] = useState([]);
@@ -50,13 +51,13 @@ const DiffExprResults = (props) => {
   useEffect(() => {
     if (!data.length || !Object.keys(properties).length) return;
     let cols = buildColumns(data);
-    // Remove FDR column if it's a within-group comparison
-    if (comparisonType === 'within') {
+    // Hide FDR column if AUC is present (within-group comparison)
+    if (cols.some(col => col.key === 'auc')) {
       cols = cols.filter(col => col.key !== 'p_val_adj');
     }
     setColumns(cols);
     setDataShown(data);
-  }, [data, properties, comparisonType]);
+  }, [data, properties]);
 
   const loadData = (loadAllState) => {
     geneTableState.current = loadAllState;
@@ -105,23 +106,50 @@ const DiffExprResults = (props) => {
 
   const geneTooltipText = `All genes present in the dataset are shown in the differential expression results table. Note that a gene is typically considered 'differentially expressed' based on established thresholds on FDR and/or log fold change. You should apply your own criteria and thresholds to filter the resulting list of genes using the "Filter results" button.`;
 
+  const getCSVData = () => {
+    if (!dataShown?.length) return [];
+    return dataShown.map((row) => {
+      const { _row, ...csvRow } = row;
+      return csvRow;
+    });
+  };
+
+  const getCellSetKey = (word) => {
+    // Extract the cell set name part (after '/' if present)
+    const key = word?.split('/')[1] || word;
+    // Get the friendly name from properties or use the key as fallback
+    return (properties[key]?.name || _.capitalize(key || '')).replace(/\s+/g, '_');
+  };
+
+  const experimentNameClean = experimentName?.replace(/\s+/g, '_') || 'experiment';
+  const cellSetName = getCellSetKey(cellSet);
+  const compareWithName = getCellSetKey(compareWith);
+  const basisName = getCellSetKey(basis);
+  const csvFileName = `${experimentNameClean}-${cellSetName}_vs_${compareWithName}_in_${basisName}.csv`;
+
   return (
     <Space direction='vertical' style={{ width: '100%' }}>
 
       {/* This is needed so changes to the export alert don't cause the table to re-render. */}
       <Space direction='horizontal'>
-        <Button size='medium' onClick={onGoBack}>
-          <span>
-            <LeftOutlined />
-            Go back
-          </span>
+        <Button size='small' onClick={onGoBack}>
+          <LeftOutlined />
         </Button>
-        <Button size='medium' onClick={() => setAdvancedFilteringModalVisible(!advancedFilteringModalVisible)}>
+        <Button size='small' onClick={() => setAdvancedFilteringModalVisible(!advancedFilteringModalVisible)}>
           Filter results
         </Button>
-        <Button size='medium' onClick={() => setPathwayAnalysisModalVisible(!pathwayAnalysisModalVisible)}>
+        <Button size='small' onClick={() => setPathwayAnalysisModalVisible(!pathwayAnalysisModalVisible)}>
           Pathway analysis
         </Button>
+        <CSVLink data={getCSVData()} filename={csvFileName}>
+          <Button
+            size='small'
+            disabled={!dataShown?.length}
+            onClick={(e) => e.stopPropagation()}
+          >
+            Export as CSV
+          </Button>
+        </CSVLink>
       </Space>
       {advancedFilteringModalVisible && (
         <AdvancedFilteringModal
@@ -161,7 +189,7 @@ const DiffExprResults = (props) => {
         loadData={loadData}
         extraOptions={null}
         geneColumnTooltipText={geneTooltipText}
-        geneColumnWidth="100px"
+        geneColumnWidth={columns.length < 4 ? '150px' : '100px'}
       />
       {
         pathwayAnalysisModalVisible && (
@@ -177,10 +205,12 @@ const DiffExprResults = (props) => {
 };
 
 const formatDecimal = (value, decimals) => {
+  if (value === undefined || value === null) return '';
   return parseFloat(value).toFixed(decimals).replace(/\.?0+$/, '');
 };
 
 const formatFDR = (value) => {
+  if (value === undefined || value === null) return '';
   const num = parseFloat(value);
 
   // If number is very small, use exponential notation with 1 decimal

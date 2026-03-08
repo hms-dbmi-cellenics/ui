@@ -100,6 +100,11 @@ const resultState = {
       advancedFilters: [],
     },
   },
+  experimentSettings: {
+    info: {
+      experimentName: 'experiment',
+    },
+  },
   backendStatus,
 };
 
@@ -162,14 +167,14 @@ describe('DiffExprResults', () => {
     const spin = component.find(Loader);
     expect(spin.length).toEqual(0);
     expect(table.length).toEqual(1);
-    expect(table.getElement().props.columns.length).toEqual(7);
+    // auc column present, so p_val_adj is filtered out
+    expect(table.getElement().props.columns.length).toEqual(6);
     expect(table.getElement().props.columns[0].key).toEqual('lookup');
     expect(table.getElement().props.columns[1].key).toEqual('gene_names');
     expect(table.getElement().props.columns[2].key).toEqual('logFC');
-    expect(table.getElement().props.columns[3].key).toEqual('p_val_adj');
-    expect(table.getElement().props.columns[4].key).toEqual('pct_1');
-    expect(table.getElement().props.columns[5].key).toEqual('pct_2');
-    expect(table.getElement().props.columns[6].key).toEqual('auc');
+    expect(table.getElement().props.columns[3].key).toEqual('pct_1');
+    expect(table.getElement().props.columns[4].key).toEqual('pct_2');
+    expect(table.getElement().props.columns[5].key).toEqual('auc');
 
     expect(table.getElement().props.dataSource.length).toEqual(5);
     expect(table.getElement().props.data.length).toEqual(5);
@@ -188,12 +193,12 @@ describe('DiffExprResults', () => {
     );
 
     const table = component.find('Table');
+    // logFC column (now at index 2 with p_val_adj filtered out) should still be sorted descending
     expect(table.getElement().props.columns[1].sortOrder).toEqual(null);
     expect(table.getElement().props.columns[2].sortOrder).toEqual('descend');
     expect(table.getElement().props.columns[3].sortOrder).toEqual(null);
     expect(table.getElement().props.columns[4].sortOrder).toEqual(null);
     expect(table.getElement().props.columns[5].sortOrder).toEqual(null);
-    expect(table.getElement().props.columns[6].sortOrder).toEqual(null);
   });
 
   it('fetches all the genes', async () => {
@@ -284,7 +289,8 @@ describe('DiffExprResults', () => {
 
     const entries = component.find('.ant-table-tbody').children();
 
-    expect(entries.at(1).text()).toEqual('A-1.41.651001000.1');
+    // p_val_adj column is filtered out when auc is present
+    expect(entries.at(1).text()).toEqual('A-1.41001000.1');
     expect(entries).toHaveLength(2);
   });
 
@@ -425,12 +431,12 @@ describe('DiffExprResults', () => {
     );
 
     const table = component.find('Table');
-    expect(table.getElement().props.columns.length).toEqual(5);
+    // pct_1 and pct_2 are not present in partial data, and auc is present so p_val_adj is filtered out
+    expect(table.getElement().props.columns.length).toEqual(4);
     expect(table.getElement().props.columns[0].key).toEqual('lookup');
     expect(table.getElement().props.columns[1].key).toEqual('gene_names');
     expect(table.getElement().props.columns[2].key).toEqual('logFC');
-    expect(table.getElement().props.columns[3].key).toEqual('p_val_adj');
-    expect(table.getElement().props.columns[4].key).toEqual('auc');
+    expect(table.getElement().props.columns[3].key).toEqual('auc');
   });
 
   it('Data without corresponding columns are not shown', async () => {
@@ -447,14 +453,14 @@ describe('DiffExprResults', () => {
 
     const table = component.find('Table');
 
-    expect(table.getElement().props.columns.length).toEqual(7);
+    // auc column present, so p_val_adj is filtered out
+    expect(table.getElement().props.columns.length).toEqual(6);
     expect(table.getElement().props.columns[0].key).toEqual('lookup');
     expect(table.getElement().props.columns[1].key).toEqual('gene_names');
     expect(table.getElement().props.columns[2].key).toEqual('logFC');
-    expect(table.getElement().props.columns[3].key).toEqual('p_val_adj');
-    expect(table.getElement().props.columns[4].key).toEqual('pct_1');
-    expect(table.getElement().props.columns[5].key).toEqual('pct_2');
-    expect(table.getElement().props.columns[6].key).toEqual('auc');
+    expect(table.getElement().props.columns[3].key).toEqual('pct_1');
+    expect(table.getElement().props.columns[4].key).toEqual('pct_2');
+    expect(table.getElement().props.columns[5].key).toEqual('auc');
   });
 
   it('The pathway analysis button is available', () => {
@@ -472,5 +478,85 @@ describe('DiffExprResults', () => {
     // Pathway analysis button should be present
     const pathwayButton = buttons.filterWhere(btn => btn.text() === 'Pathway analysis');
     expect(pathwayButton.length).toEqual(1);
+  });
+
+  it('CSV export button renders correctly and is enabled with data', () => {
+    const component = mount(
+      <Provider store={withResultStore}>
+        <DiffExprResults
+          experimentId={experimentId}
+          onGoBack={jest.fn()}
+          width={100}
+          height={200}
+        />
+      </Provider>,
+    );
+
+    // CSV export button should be present and enabled
+    const buttons = component.find('Button');
+    const csvButton = buttons.filterWhere(btn => btn.text() === 'Export as CSV');
+    expect(csvButton.length).toEqual(1);
+    expect(csvButton.props().disabled).toEqual(false);
+
+    // Check CSVLink is present with correct filename
+    const csvLink = component.find('CSVLink');
+    expect(csvLink.length).toEqual(1);
+    const expectedFilename = 'experiment-cluster_a_vs_cluster_b_in_New_Cluster.csv';
+    expect(csvLink.props().filename).toEqual(expectedFilename);
+  });
+
+  it('CSV export button is disabled when there is no data', () => {
+    const component = mount(
+      <Provider store={noResultStore}>
+        <DiffExprResults
+          experimentId={experimentId}
+          onGoBack={jest.fn()}
+          width={100}
+          height={200}
+        />
+      </Provider>,
+    );
+
+    const buttons = component.find('Button');
+    const csvButton = buttons.filterWhere(btn => btn.text() === 'Export as CSV');
+    expect(csvButton.length).toEqual(1);
+    expect(csvButton.props().disabled).toEqual(true);
+  });
+
+  it('CSV export data excludes _row field and includes all gene data', () => {
+    const component = mount(
+      <Provider store={withResultStore}>
+        <DiffExprResults
+          experimentId={experimentId}
+          onGoBack={jest.fn()}
+          width={100}
+          height={200}
+        />
+      </Provider>,
+    );
+
+    const csvLink = component.find('CSVLink');
+    const csvData = csvLink.props().data;
+
+    // Verify data is returned
+    expect(csvData.length).toBeGreaterThan(0);
+
+    // Verify _row field is not present in CSV data
+    csvData.forEach((row) => {
+      expect(row).not.toHaveProperty('_row');
+      // Verify expected fields are present
+      expect(row).toHaveProperty('gene_names');
+      expect(row).toHaveProperty('logFC');
+      expect(row).toHaveProperty('p_val');
+    });
+
+    // Verify it matches the input data (minus _row field)
+    expect(csvData.length).toEqual(mockGeneExpressionData.length);
+    csvData.forEach((csvRow, idx) => {
+      // Each row should match the original data without the _row field
+      Object.keys(csvRow).forEach((key) => {
+        expect(csvRow[key]).toEqual(mockGeneExpressionData[idx][key]);
+      });
+    });
   });
 });

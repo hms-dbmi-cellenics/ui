@@ -66,7 +66,7 @@ const AnnotateClustersTool = ({ experimentId, onRunAnnotation }) => {
   const [species, setSpecies] = useState(null);
 
   return (
-    <Space direction='vertical'>
+    <Space direction='vertical' size='large' style={{ width: '100%' }}>
       <Radio.Group>
         <Tooltip title={scTypeTooltipText}>
           <Radio>ScType</Radio>
@@ -74,12 +74,14 @@ const AnnotateClustersTool = ({ experimentId, onRunAnnotation }) => {
       </Radio.Group>
 
       <Space direction='vertical' style={{ width: '100%' }}>
-        Tissue Type:
+        Tissue type:
         <Select
           options={tissueOptions.map((option) => ({ label: option, value: option }))}
           value={tissue}
           placeholder='Select a tissue type'
           onChange={setTissue}
+          style={{ width: '100%' }}
+          size='small'
         />
       </Space>
 
@@ -90,6 +92,8 @@ const AnnotateClustersTool = ({ experimentId, onRunAnnotation }) => {
           value={species}
           placeholder='Select a species'
           onChange={setSpecies}
+          style={{ width: '100%' }}
+          size='small'
         />
       </Space>
 
@@ -99,7 +103,7 @@ const AnnotateClustersTool = ({ experimentId, onRunAnnotation }) => {
           onRunAnnotation();
         }}
         disabled={_.isNil(tissue) || _.isNil(species)}
-        style={{ marginTop: '20px' }}
+        size='small'
       >
         Compute
       </Button>

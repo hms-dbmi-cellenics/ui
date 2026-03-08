@@ -30,6 +30,11 @@ const emptyState = {
     ...getInitialState(),
     focused: undefined,
   },
+  experimentSettings: {
+    info: {
+      experimentName: 'experiment',
+    },
+  },
 };
 
 const experimentId = '1234';
@@ -88,6 +93,11 @@ const filledState = {
         },
       },
       advancedFilters: [],
+    },
+  },
+  experimentSettings: {
+    info: {
+      experimentName: 'experiment',
     },
   },
   backendStatus,

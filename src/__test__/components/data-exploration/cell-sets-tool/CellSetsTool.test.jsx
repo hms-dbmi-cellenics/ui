@@ -770,7 +770,7 @@ describe('AnnotateClustersTool', () => {
   it('Renders correctly', async () => {
     // Check displays correct text
     screen.getByText(/ScType/);
-    screen.getByText(/Tissue Type/);
+    screen.getByText(/Tissue type/);
     screen.getByText(/Species/);
     screen.getByText(/Compute/);
 
