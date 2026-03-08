@@ -50,6 +50,9 @@ const MitochondrialContent = (props) => {
       controls: [{
         name: 'legend',
         props: {
+          option: {
+            positions: 'top-bottom',
+          },
           defaultTitle: 'Status',
         },
       }],
