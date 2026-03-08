@@ -6,7 +6,8 @@ import {
 import {
   Space, Button, Alert, Tooltip,
 } from 'antd';
-import { LeftOutlined } from '@ant-design/icons';
+import { DownloadOutlined, LeftOutlined } from '@ant-design/icons';
+import { CSVLink } from 'react-csv';
 import PropTypes from 'prop-types';
 import _ from 'lodash';
 import dayjs from 'dayjs';
@@ -18,7 +19,6 @@ import { getCellSets } from 'redux/selectors';
 import loadDifferentialExpression from 'redux/actions/differentialExpression/loadDifferentialExpression';
 
 import GeneTable from 'components/data-exploration/generic-gene-table/GeneTable';
-import ExportAsCSV from 'components/plots/ExportAsCSV';
 
 import AdvancedFilteringModal from 'components/data-exploration/differential-expression-tool/AdvancedFilteringModal';
 import LaunchPathwayAnalysisModal from 'components/data-exploration/differential-expression-tool/LaunchPathwayAnalysisModal';
@@ -55,13 +55,13 @@ const DiffExprResults = (props) => {
   useEffect(() => {
     if (!data.length || !Object.keys(properties).length) return;
     let cols = buildColumns(data);
-    // Remove FDR column if it's a within-group comparison
-    if (comparisonType === 'within') {
+    // Hide FDR column if AUC is present (within-group comparison)
+    if (cols.some(col => col.key === 'auc')) {
       cols = cols.filter(col => col.key !== 'p_val_adj');
     }
     setColumns(cols);
     setDataShown(data);
-  }, [data, properties, comparisonType]);
+  }, [data, properties]);
 
   const loadData = (loadAllState) => {
     geneTableState.current = loadAllState;
@@ -138,10 +138,7 @@ const DiffExprResults = (props) => {
       {/* This is needed so changes to the export alert don't cause the table to re-render. */}
       <Space direction='horizontal'>
         <Button size='small' onClick={onGoBack}>
-          <span>
-            <LeftOutlined />
-            Go back
-          </span>
+          <LeftOutlined />
         </Button>
         <Button size='small' onClick={() => setAdvancedFilteringModalVisible(!advancedFilteringModalVisible)}>
           Filter results
@@ -149,7 +146,15 @@ const DiffExprResults = (props) => {
         <Button size='small' onClick={() => setPathwayAnalysisModalVisible(!pathwayAnalysisModalVisible)}>
           Pathway analysis
         </Button>
-        <ExportAsCSV data={getCSVData()} filename={csvFileName} disabled={!dataShown?.length} />
+        <CSVLink data={getCSVData()} filename={csvFileName}>
+          <Button
+            size='small'
+            disabled={!dataShown?.length}
+            onClick={(e) => e.stopPropagation()}
+          >
+            Export as CSV
+          </Button>
+        </CSVLink>
       </Space>
       {advancedFilteringModalVisible && (
         <AdvancedFilteringModal
