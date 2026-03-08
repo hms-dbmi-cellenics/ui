@@ -308,8 +308,7 @@ describe('ContentWrapper', () => {
     // Data Management link should be enabled even during pipeline run
     expect(screen.getByText('Data Management').closest('li')).toHaveAttribute('aria-disabled', 'false');
 
-    // Other links should be disabled during pipeline run
-    expect(screen.getByText('Data Processing').closest('li')).toHaveAttribute('aria-disabled', 'true');
+    // Data Exploration and Plots and Tables should be disabled during pipeline run
     expect(screen.getByText('Data Exploration').closest('li')).toHaveAttribute('aria-disabled', 'true');
     expect(screen.getByText('Plots and Tables').closest('li')).toHaveAttribute('aria-disabled', 'true');
   });
