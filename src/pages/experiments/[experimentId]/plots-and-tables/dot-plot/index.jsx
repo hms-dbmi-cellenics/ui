@@ -500,11 +500,11 @@ const DotPlotPage = (props) => {
             <Slider
               value={config.maxPointRadius || calculateDefaultRadius}
               min={Math.max(3, calculateDefaultRadius - 5)}
-              max={Math.min(20, calculateDefaultRadius + 2)}
+              max={Math.min(20, calculateDefaultRadius + 5)}
               onChange={(value) => updatePlotWithChanges({ maxPointRadius: value })}
               marks={{
                 [Math.max(3, calculateDefaultRadius - 5)]: Math.max(3, calculateDefaultRadius - 5),
-                [Math.min(20, calculateDefaultRadius + 2)]: Math.min(20, calculateDefaultRadius + 2),
+                [Math.min(20, calculateDefaultRadius + 5)]: Math.min(20, calculateDefaultRadius + 5),
               }}
             />
           </Form.Item>
