@@ -323,6 +323,12 @@ const DotPlotPage = (props) => {
     dispatch(updatePlotConfig(plotUuid, { maxPointRadius: calculateDefaultRadius }));
   }, [calculateDefaultRadius, plotUuid, dispatch]);
 
+  // Calculate slider bounds
+  const sliderBounds = useMemo(() => ({
+    min: Math.max(3, calculateDefaultRadius - 5),
+    max: Math.min(20, calculateDefaultRadius + 5),
+  }), [calculateDefaultRadius]);
+
   // if all selected genes are removed, deleteData will not run. Remove plotData manually instead
   useEffect(() => {
     if (config?.useMarkerGenes
@@ -499,12 +505,12 @@ const DotPlotPage = (props) => {
           <Form.Item label='Max Radius' labelCol={{ span: 10, style: { textAlign: 'left' } }} wrapperCol={{ span: 12 }} style={{ marginBottom: 0, marginTop: '15px' }}>
             <Slider
               value={config.maxPointRadius || calculateDefaultRadius}
-              min={Math.max(3, calculateDefaultRadius - 5)}
-              max={Math.min(20, calculateDefaultRadius + 5)}
+              min={sliderBounds.min}
+              max={sliderBounds.max}
               onChange={(value) => updatePlotWithChanges({ maxPointRadius: value })}
               marks={{
-                [Math.max(3, calculateDefaultRadius - 5)]: Math.max(3, calculateDefaultRadius - 5),
-                [Math.min(20, calculateDefaultRadius + 5)]: Math.min(20, calculateDefaultRadius + 5),
+                [sliderBounds.min]: sliderBounds.min,
+                [sliderBounds.max]: sliderBounds.max,
               }}
             />
           </Form.Item>
