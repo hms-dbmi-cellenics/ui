@@ -18,10 +18,14 @@ const generateSpec = (config, plotData) => {
     ? defaultLegendTitle
     : (config.legend.title === '' ? null : config.legend.title);
 
+  const isTopOrBottom = config.legend.position === 'top' || config.legend.position === 'bottom';
+  const legendDirection = isTopOrBottom ? 'horizontal' : 'vertical';
+
   legend = !config.legend.enabled ? null : [
     {
       fill: 'color',
       orient: config.legend.position,
+      direction: legendDirection,
       title: legendTitle,
       labelFont: config.fontStyle.font,
       titleFont: config.fontStyle.font,

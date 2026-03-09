@@ -92,9 +92,8 @@ const VolcanoPlotPage = (props) => {
   }, [plotData]);
 
   useEffect(() => {
-    if (config) {
-      setSpec(generateSpec(config, plotData));
-    }
+    if (!config || !plotData.length) return;
+    setSpec(generateSpec(config, plotData));
   }, [config, plotData]);
 
   const plotStylingConfig = [
@@ -269,7 +268,7 @@ const VolcanoPlotPage = (props) => {
       );
     }
 
-    if (plotData.length === 0 || diffExprLoading) {
+    if (plotData.length === 0 || diffExprLoading || !spec) {
       return <Loader experimentId={experimentId} />;
     }
 

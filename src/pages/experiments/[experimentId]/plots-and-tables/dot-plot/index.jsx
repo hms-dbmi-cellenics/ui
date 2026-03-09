@@ -8,6 +8,7 @@ import {
   Form,
   Radio,
   Space,
+  Slider,
 } from 'antd';
 
 import _ from 'lodash';
@@ -77,6 +78,7 @@ const plotStylingConfig = [
           },
           showTitleInput: false,
           showTitleSizeInput: true,
+          showDirectionInput: false,
         },
       },
     ],
@@ -284,6 +286,49 @@ const DotPlotPage = (props) => {
     }
   }, [config, cellSets.properties]);
 
+  // Calculate the default radius based on plot dimensions and data
+  const calculateDefaultRadius = useMemo(() => {
+    if (!config || !plotData || plotData.length === 0) return 15; // fallback default
+
+    const plotWidth = config.dimensions.width;
+    const plotHeight = config.dimensions.height;
+    const padding = 1;
+    const adjustment = 2;
+
+    // Get unique genes from actual data
+    const uniqueGenes = new Set(plotData.map((d) => d.geneName));
+    const numGenes = uniqueGenes.size;
+
+    // Count unique clusters
+    const uniqueClusters = new Set(plotData.map((d) => d.cellSets));
+    const numClusters = uniqueClusters.size;
+
+    const heightPerDot = plotHeight / (numClusters + adjustment);
+    const widthPerDot = plotWidth / (numGenes + adjustment);
+
+    const radiusWithPadding = Math.floor(Math.min(heightPerDot, widthPerDot) / 2);
+    let radius = radiusWithPadding - padding;
+
+    // Cap to valid slider range [3, 20] - max is 20
+    radius = Math.max(3, Math.min(20, radius));
+
+    return radius;
+  }, [config, plotData]);
+
+  // Keep maxPointRadius in sync with calculateDefaultRadius whenever it changes (e.g., on gene selection change)
+  useEffect(() => {
+    if (!config) return;
+
+    // Reset to new default whenever calculateDefaultRadius changes
+    dispatch(updatePlotConfig(plotUuid, { maxPointRadius: calculateDefaultRadius }));
+  }, [calculateDefaultRadius, plotUuid, dispatch]);
+
+  // Calculate slider bounds
+  const sliderBounds = useMemo(() => ({
+    min: Math.max(3, calculateDefaultRadius - 5),
+    max: Math.min(20, calculateDefaultRadius + 5),
+  }), [calculateDefaultRadius]);
+
   // if all selected genes are removed, deleteData will not run. Remove plotData manually instead
   useEffect(() => {
     if (config?.useMarkerGenes
@@ -456,6 +501,18 @@ const DotPlotPage = (props) => {
               <Radio key='absolute' value>Absolute</Radio>
               <Radio key='relative' value={false}>Relative</Radio>
             </Radio.Group>
+          </Form.Item>
+          <Form.Item label='Max Radius' labelCol={{ span: 10, style: { textAlign: 'left' } }} wrapperCol={{ span: 12 }} style={{ marginBottom: 0, marginTop: '15px' }}>
+            <Slider
+              value={config.maxPointRadius || calculateDefaultRadius}
+              min={sliderBounds.min}
+              max={sliderBounds.max}
+              onChange={(value) => updatePlotWithChanges({ maxPointRadius: value })}
+              marks={{
+                [sliderBounds.min]: sliderBounds.min,
+                [sliderBounds.max]: sliderBounds.max,
+              }}
+            />
           </Form.Item>
         </Form>
       </Panel>

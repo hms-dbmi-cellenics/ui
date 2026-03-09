@@ -181,7 +181,7 @@ const CalculationConfig = (props) => {
           {
             dataIntegration.method === 'seuratv4'
             && (
-              <Form.Item>
+              <Form.Item labelCol={{ span: 24 }} wrapperCol={{ span: 24 }}>
                 <Alert
                   type='warning'
                   description='SeuratV4 is a computationally expensive method. It is highly likely that the integration will fail as it requires more resources than are currently available. We recommended you to evaluate other methods before using SeuratV4.'

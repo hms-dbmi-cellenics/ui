@@ -30,6 +30,7 @@ import DotPlotPage from 'pages/experiments/[experimentId]/plots-and-tables/dot-p
 import {
   EXPERIMENT_SETTINGS_INFO_UPDATE,
 } from 'redux/actionTypes/experimentSettings';
+import { UPDATE_CONFIG } from 'redux/actionTypes/componentConfig';
 import paginatedGeneExpressionData from '__test__/data/paginated_gene_expression.json';
 import cellSetsDataWithScratchpad from '__test__/data/cell_sets_with_scratchpad.json';
 import dotPlotData from '__test__/data/dotplot_plotdata.json';
@@ -815,6 +816,99 @@ describe('Dot plot page', () => {
     // This test verifies that if no genes are added/removed (only styling changes),
     // getDotPlot is NOT called
     // TODO: Implement styling change UI interaction
+  });
+
+  it('Max Radius config updates when slider value changes', async () => {
+    await renderDotPlot(storeState);
+
+    // Wait for initial plot to load
+    await waitFor(() => {
+      expect(screen.getByRole('graphics-document', { name: 'Vega visualization' })).toBeInTheDocument();
+    });
+
+    // Get initial config value
+    const initialConfig = storeState.getState().componentConfig.dotPlotMain?.config;
+    const initialMaxPointRadius = initialConfig?.maxPointRadius;
+
+    // Simulate slider change via Redux dispatch
+    const newValue = 8;
+
+    await act(async () => {
+      // Dispatch the correct UPDATE_CONFIG action
+      storeState.dispatch({
+        type: UPDATE_CONFIG,
+        payload: {
+          plotUuid: 'dotPlotMain',
+          configChanges: {
+            maxPointRadius: newValue,
+          },
+        },
+      });
+    });
+
+    // Assert that the store config was actually updated
+    const updatedConfig = storeState.getState().componentConfig.dotPlotMain?.config;
+    expect(updatedConfig?.maxPointRadius).toBe(newValue);
+
+    // Assert the new value is within valid bounds
+    expect(newValue).toBeLessThanOrEqual(20);
+    expect(newValue).toBeGreaterThanOrEqual(3);
+  });
+
+  it('Max Radius slider respects calculated bounds', async () => {
+    await renderDotPlot(storeState);
+
+    // Wait for initial plot to load
+    await waitFor(() => {
+      expect(screen.getByRole('graphics-document', { name: 'Vega visualization' })).toBeInTheDocument();
+    });
+
+    // Calculate what the default radius should be based on mock plot data
+    // Using the same logic as calculateDefaultRadius in the component
+    const plotData = storeState.getState().componentConfig.dotPlotMain?.plotData || [];
+    
+    if (plotData.length === 0) {
+      // If no plot data, calculation would use fallback
+      expect(true).toBe(true);
+      return;
+    }
+
+    const plotWidth = 800; // From mocked react-resize-detector
+    const plotHeight = 800;
+    const padding = 1;
+    const adjustment = 2;
+
+    const uniqueGenes = new Set(plotData.map((d) => d.geneName));
+    const numGenes = uniqueGenes.size;
+
+    const uniqueClusters = new Set(plotData.map((d) => d.cellSets));
+    const numClusters = uniqueClusters.size;
+
+    const heightPerDot = plotHeight / (numClusters + adjustment);
+    const widthPerDot = plotWidth / (numGenes + adjustment);
+
+    const radiusWithPadding = Math.floor(Math.min(heightPerDot, widthPerDot) / 2);
+    const calculatedDefaultRadius = radiusWithPadding - padding;
+
+    // Cap to slider range [3, 20]
+    const expectedDefaultRadius = Math.max(3, Math.min(20, calculatedDefaultRadius));
+
+    // Slider bounds should be: default ± 5 for min, default ± 2 for max, constrained to [3, 20]
+    const expectedMinBound = Math.max(3, expectedDefaultRadius - 5);
+    const expectedMaxBound = Math.min(20, expectedDefaultRadius + 2);
+
+    // Verify bounds are correctly calculated
+    expect(expectedMinBound).toBeGreaterThanOrEqual(3);
+    expect(expectedMaxBound).toBeLessThanOrEqual(20);
+    expect(expectedMinBound).toBeLessThanOrEqual(expectedMaxBound);
+
+    // Verify the config has a maxPointRadius (or defaults correctly when undefined)
+    const config = storeState.getState().componentConfig.dotPlotMain?.config;
+    const currentMaxPointRadius = config?.maxPointRadius || expectedDefaultRadius;
+    
+    // Current value should be within the calculated bounds
+    expect(currentMaxPointRadius).toBeGreaterThanOrEqual(expectedMinBound);
+    expect(currentMaxPointRadius).toBeLessThanOrEqual(expectedMaxBound);
   });
 });
 

@@ -28,18 +28,19 @@ const getDotDimensions = (config, numClusters, plotData) => {
   // Use the smaller of the two dimensions to determine the max dot size
   // Radius is half the width or height. This radius still contain padding that we want to remove
   const radiusWithPadding = Math.floor(Math.min(heightPerDot, widthPerDot) / 2);
-  let radius = radiusWithPadding - padding;
+  const radius = radiusWithPadding - padding;
 
   // Small number of data will cause dots to appear very big. This limits the size
-  // (via the radius) that the dots can be.
-  const maxRadius = 20;
-  radius = Math.min(radius, maxRadius);
+  // (via the radius) that the dots can be based on plot dimensions.
+  // The slider (maxPointRadius) allows full control, defaulting to the calculated radius
+  // Cap to match slider range [3, 20]
+  const cappedRadius = Math.max(3, Math.min(20, config.maxPointRadius || radius));
 
   // Radius for 0 data
   const minArea = 10;
 
   // We have to calculate the area because that is what is expected Vega's draw function
-  const maxArea = minArea + Math.PI * (radius ** 2);
+  const maxArea = minArea + Math.PI * (cappedRadius ** 2);
 
   // The expected return value is the area of the circle
   return {
@@ -65,6 +66,9 @@ const generateSpec = (config, plotData, numClusters) => {
   let legend = [];
 
   if (config.legend.enabled) {
+    const isTopOrBottom = config.legend.position === 'top' || config.legend.position === 'bottom';
+    const legendDirection = isTopOrBottom ? 'horizontal' : 'vertical';
+
     legend = [
       {
         title: 'Avg. Expression',
@@ -77,7 +81,7 @@ const generateSpec = (config, plotData, numClusters) => {
         labelFontSize: config.legend.labelFontSize,
         type: 'gradient',
         fill: 'color',
-        direction: config.legend.direction,
+        direction: legendDirection,
       },
       {
         title: 'Percent Exp. (%)',
@@ -91,7 +95,7 @@ const generateSpec = (config, plotData, numClusters) => {
         size: 'dotSize',
         symbolType: 'circle',
         symbolFillColor: '#aaaaaa',
-        direction: config.legend.direction,
+        direction: legendDirection,
       },
     ];
   }

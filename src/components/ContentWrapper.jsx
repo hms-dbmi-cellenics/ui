@@ -308,7 +308,7 @@ const ContentWrapper = (props) => {
       icon: <FolderOpenOutlined />,
       name: 'Data Management',
       disableIfNoExperiment: false,
-      disabledByPipelineStatus: true,
+      disabledByPipelineStatus: false,
       disabledIfObj2sComplete: false,
     },
     {
@@ -405,7 +405,7 @@ const ContentWrapper = (props) => {
       icon,
       label: name,
       disabled: notProcessedExperimentDisable || pipelineStatusDisable
-      || obj2sCompleteDisable || nonExperimentModule,
+        || obj2sCompleteDisable || nonExperimentModule,
       onClick: () => navigateTo(
         module,
         { experimentId: currentExperimentId },

@@ -10,7 +10,7 @@ const defaultOption = {
 
 const LegendEditor = (props) => {
   const {
-    onUpdate, config, defaultTitle, showTitleInput = true, showTitleSizeInput = true,
+    onUpdate, config, defaultTitle, showTitleInput = true, showTitleSizeInput = true, showDirectionInput = true,
   } = props;
 
   let { option } = props;
@@ -78,7 +78,7 @@ const LegendEditor = (props) => {
                 }
               </Radio.Group>
             </Form.Item>
-            {config.legend.direction ? (
+            {showDirectionInput && config.legend.direction ? (
               <>
                 <p><strong>Direction:</strong></p>
                 <Form.Item>
@@ -177,11 +177,17 @@ LegendEditor.propTypes = {
   option: PropTypes.object,
   config: PropTypes.object.isRequired,
   defaultTitle: PropTypes.string,
+  showTitleInput: PropTypes.bool,
+  showTitleSizeInput: PropTypes.bool,
+  showDirectionInput: PropTypes.bool,
 };
 
 LegendEditor.defaultProps = {
   option: defaultOption,
   defaultTitle: null,
+  showTitleInput: true,
+  showTitleSizeInput: true,
+  showDirectionInput: true,
 };
 
 export default LegendEditor;

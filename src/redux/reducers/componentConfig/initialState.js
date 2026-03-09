@@ -361,7 +361,6 @@ const dotPlotConfig = {
   legend: {
     ...legendBaseState,
     enabled: true,
-    direction: 'vertical',
   },
   dimensions: {
     ...dimensionsBaseState,
