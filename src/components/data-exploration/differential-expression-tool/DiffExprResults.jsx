@@ -132,9 +132,11 @@ const DiffExprResults = (props) => {
 
       {/* This is needed so changes to the export alert don't cause the table to re-render. */}
       <Space direction='horizontal'>
-        <Button size='small' onClick={onGoBack}>
-          <LeftOutlined />
-        </Button>
+        <Tooltip title='Go back to settings'>
+          <Button size='small' onClick={onGoBack}>
+            <LeftOutlined />
+          </Button>
+        </Tooltip>
         <Button size='small' onClick={() => setAdvancedFilteringModalVisible(!advancedFilteringModalVisible)}>
           Filter results
         </Button>
