@@ -27,7 +27,7 @@ const ClusterPopover = (props) => {
 
   let style = {};
   if (popoverPosition) {
-    style = { position: 'absolute', left: popoverPosition.current.x + 20, top: popoverPosition.current.y + 20 };
+    style = { position: 'absolute', left: popoverPosition.x + 20, top: popoverPosition.y + 20 };
   }
 
   /* eslint-disable react/jsx-props-no-spreading */
