@@ -4,10 +4,6 @@ import {
   GENES_SELECT, GENES_DESELECT,
   GENES_EXPRESSION_LOADING, GENES_EXPRESSION_LOADED, GENES_EXPRESSION_ERROR,
   MARKER_GENES_LOADING, MARKER_GENES_LOADED, MARKER_GENES_ERROR,
-  HEATMAP_GENES_EXPRESSION_LOADING,
-  HEATMAP_GENES_EXPRESSION_LOADED,
-  HEATMAP_GENES_EXPRESSION_ERROR,
-  HEATMAP_GENES_EXPRESSION_UPDATE_GENE_ORDER,
 } from 'redux/actionTypes/genes';
 
 import { EXPERIMENT_SETTINGS_QC_START } from 'redux/actionTypes/experimentSettings';
@@ -20,17 +16,12 @@ import genesExpressionLoading from 'redux/reducers/genes/genesExpressionLoading'
 import genesExpressionLoaded from 'redux/reducers/genes/genesExpressionLoaded';
 import genesExpressionError from 'redux/reducers/genes/genesExpressionError';
 
-import downsampledGenesLoading from 'redux/reducers/genes/downsampledGenesLoading';
-import downsampledGenesLoaded from 'redux/reducers/genes/downsampledGenesLoaded';
-import downsampledGenesUpdateGeneOrder from 'redux/reducers/genes/downsampledGenesUpdateGeneOrder';
-
 import markerGenesLoading from 'redux/reducers/genes/markerGenesLoading';
 import markerGenesError from 'redux/reducers/genes/markerGenesError';
 import markerGenesLoaded from 'redux/reducers/genes/markerGenesLoaded';
 
 import genesSelect from 'redux/reducers/genes/genesSelect';
 import genesDeselect from 'redux/reducers/genes/genesDeselect';
-import downsampledGenesError from './downsampledGenesError';
 
 const genesReducer = (state = getInitialState(), action) => {
   switch (action.type) {
@@ -63,18 +54,6 @@ const genesReducer = (state = getInitialState(), action) => {
     }
     case MARKER_GENES_LOADING: {
       return markerGenesLoading(state, action);
-    }
-    case HEATMAP_GENES_EXPRESSION_LOADING: {
-      return downsampledGenesLoading(state, action);
-    }
-    case HEATMAP_GENES_EXPRESSION_LOADED: {
-      return downsampledGenesLoaded(state, action);
-    }
-    case HEATMAP_GENES_EXPRESSION_ERROR: {
-      return downsampledGenesError(state, action);
-    }
-    case HEATMAP_GENES_EXPRESSION_UPDATE_GENE_ORDER: {
-      return downsampledGenesUpdateGeneOrder(state, action);
     }
     case MARKER_GENES_LOADED: {
       return markerGenesLoaded(state, action);
