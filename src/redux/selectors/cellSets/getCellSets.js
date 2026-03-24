@@ -16,4 +16,11 @@ const getCellSets = () => (state) => {
   };
 };
 
+// Granular selector to prevent re-renders when only selection changes
+const getCellSetsSelected = () => (state) => {
+  const stateToReturn = (Object.keys(state).length ? state : initialState);
+  return stateToReturn.selected;
+};
+
 export default createMemoizedSelector(getCellSets);
+export const getCellSetsSelectedExport = createMemoizedSelector(getCellSetsSelected);

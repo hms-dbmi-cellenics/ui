@@ -13,6 +13,9 @@ const getBackendStatus = (...params) => (state) => (
 const getCellSets = (...params) => (state) => (
   cellSetsSelectors.getCellSets(...params)(state.cellSets));
 
+const getCellSetsSelected = (...params) => (state) => (
+  cellSetsSelectors.getCellSetsSelected(...params)(state.cellSets));
+
 const getCellSetsHierarchy = (...params) => (state) => (
   cellSetsSelectors.getCellSetsHierarchy(...params)(state.cellSets));
 
@@ -39,6 +42,7 @@ const getGroupSlidesBy = (...params) => (state) => (
 export {
   getBackendStatus,
   getCellSets,
+  getCellSetsSelected,
   getCellSetsHierarchy,
   getCellSetsHierarchyByType,
   getCellSetsHierarchyByKeys,
