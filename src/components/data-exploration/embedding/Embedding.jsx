@@ -10,7 +10,6 @@ import * as vega from 'vega';
 import { ScatterplotLayer } from '@deck.gl/layers';
 import { EditableGeoJsonLayer } from '@nebula.gl/layers';
 import { DrawPolygonByDraggingMode } from '@nebula.gl/edit-modes';
-import { WebMercatorViewport } from '@deck.gl/core';
 
 import ClusterPopover from 'components/data-exploration/embedding/ClusterPopover';
 import CrossHair from 'components/data-exploration/embedding/CrossHair';
@@ -328,30 +327,17 @@ const Embedding = (props) => {
     if (info.object) {
       setCellHighlight(info.object.cellId);
 
-      // Store both screen coordinates and cell position for centering
-      cellCoordinatesRef.current = { 
-        x: info.x, 
-        y: info.y, 
-        cellPosition: info.object.position,
-        width, 
-        height 
+      // Use hover coordinates (cursor position on the cell)
+      cellCoordinatesRef.current = {
+        x: info.x,
+        y: info.y,
+        width,
+        height
       };
     } else {
       clearCellHighlight();
     }
   }, [setCellHighlight, clearCellHighlight, width, height]);
-
-  // Center crosshair on cell center instead of hover position
-  useEffect(() => {
-    if (!cellCoordinatesRef.current.cellPosition || !viewState) return;
-
-    const viewport = new WebMercatorViewport(viewState);
-    const [worldX, worldY] = cellCoordinatesRef.current.cellPosition;
-    const [screenX, screenY] = viewport.project([worldX, worldY]);
-
-    cellCoordinatesRef.current.x = screenX;
-    cellCoordinatesRef.current.y = screenY;
-  }, [viewState]);
 
   // Transform cell data for deck.gl
   const deckglData = useMemo(
