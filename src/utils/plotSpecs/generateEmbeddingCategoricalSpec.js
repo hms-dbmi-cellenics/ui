@@ -173,7 +173,8 @@ const generateSpec = (config, method, plotData, cellSetLegendsData) => {
       },
     ];
   }
-  return {
+
+  const spec = {
     $schema: 'https://vega.github.io/schema/vega/v5.json',
     description: 'Categorical embedding plot',
     width: config?.dimensions.width,
@@ -297,6 +298,8 @@ const generateSpec = (config, method, plotData, cellSetLegendsData) => {
       fontSize: config?.title.fontSize,
     },
   };
+
+  return spec;
 };
 
 const filterCells = (cellSets, sampleKey, groupBy) => {
