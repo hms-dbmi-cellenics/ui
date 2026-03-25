@@ -44,7 +44,8 @@ const DeckGL = dynamic(() => import('@deck.gl/react').then((mod) => mod.DeckGL),
 });
 
 const INITIAL_ZOOM = 4.00;
-const cellRadiusFromZoom = (zoom) => zoom ** 3 / 2;
+// TODO: make dynamic based on number of cells
+const cellRadiusFromZoom = (zoom) => zoom ** 3 / 4;
 
 // Lasso tool constants - keep stable across renders
 const EMPTY_DATA = {
