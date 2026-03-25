@@ -27,6 +27,7 @@ import getContainingCellSetsProperties from 'utils/cellSets/getContainingCellSet
 import useConditionalEffect from 'utils/customHooks/useConditionalEffect';
 import generateVitessceData from 'components/plots/helpers/heatmap/vitessce/generateVitessceData';
 import { loadCellSets } from 'redux/actions/cellSets';
+import calculateNMarkerGenes from './calculateNMarkerGenes';
 
 const COMPONENT_TYPE = 'interactiveHeatmap';
 
@@ -38,7 +39,6 @@ const Heatmap = dynamic(
 // To avoid it sticking to the right too much (the left already has some margin)
 const heatmapRightMargin = 30;
 const heatmapBottomMargin = 40;
-const nMarkerGenes = 5;
 
 const HeatmapPlot = (props) => {
   const {
@@ -106,6 +106,29 @@ const HeatmapPlot = (props) => {
   } = useSelector((state) => state.genes.markers);
 
   const cellSets = useSelector(getCellSets());
+
+  // Calculate nMarkerGenes based on dataset size and cluster count
+  const nMarkerGenes = useMemo(() => {
+    if (!cellSets?.properties || !cellSets?.hierarchy) {
+      console.log('[nMarkerGenes] No cellSets data available');
+      return 5; // Default
+    }
+
+    // Get total cell count from 'sample' hierarchy
+    const sampleNode = cellSets.hierarchy.find((node) => node.key === 'sample');
+    const totalCells = sampleNode?.children?.reduce((sum, child) => {
+      const cellIds = cellSets.properties[child.key]?.cellIds;
+      return sum + (cellIds?.size || 0);
+    }, 0) || 0;
+
+    // Get cluster count from 'louvain' hierarchy
+    const louvainNode = cellSets.hierarchy.find((node) => node.key === 'louvain');
+    const clusterCount = louvainNode?.children?.length || 0;
+
+    const result = calculateNMarkerGenes(totalCells, clusterCount);
+    console.log('[nMarkerGenes] Calculated final result:', result);
+    return result;
+  }, [cellSets]);
 
   // Note: selectedPoints is not needed for vitessce heatmap as it's always 'All'
   const heatmapSettings = useSelector((state) => state.componentConfig[COMPONENT_TYPE]?.config,
