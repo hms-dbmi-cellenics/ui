@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
 import { Vega } from 'react-vega';
@@ -17,17 +17,25 @@ const ViolinFilterPlot = (props) => {
 
   const [plotSpec, setPlotSpec] = useState({});
 
-  useEffect(() => {
+  // Memoize data generation - only recompute when data-affecting properties change
+  const memoizedPlotData = useMemo(() => {
     if (config && plotData) {
-      const generatedPlotData = generateData(
+      return generateData(
         cellSets,
         plotData,
         'sample',
         config.selectedSample || 'All',
       );
-      setPlotSpec(generateSpec(config, generatedPlotData));
     }
-  }, [config, plotData]);
+    return null;
+  }, [cellSets, plotData, config?.selectedSample]);
+
+  // Separate effect for spec generation using memoized data
+  useEffect(() => {
+    if (config && memoizedPlotData) {
+      setPlotSpec(generateSpec(config, memoizedPlotData));
+    }
+  }, [config, memoizedPlotData]);
 
   if (error) {
     return (

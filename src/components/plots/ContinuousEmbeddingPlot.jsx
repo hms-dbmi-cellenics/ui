@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
 import { Vega } from 'react-vega';
@@ -49,27 +49,30 @@ const ContinuousEmbeddingPlot = (props) => {
     }
   }, [embeddingSettings?.method]);
 
-  useEffect(() => {
+  // Memoize data generation - only recompute when actual data changes
+  const memoizedPlotData = useMemo(() => {
     if (!embeddingLoading
       && !embeddingError
       && config
       && plotData?.length > 0
       && cellSets.accessible
       && embeddingData?.length) {
-      setPlotSpec(
-        generateSpec(
-          config,
-          embeddingSettings.method,
-          generateData(
-            cellSets,
-            config.selectedSample,
-            config.truncatedValues ? truncatedPlotData : plotData,
-            embeddingData,
-          ),
-        ),
+      return generateData(
+        cellSets,
+        config.selectedSample,
+        config.truncatedValues ? truncatedPlotData : plotData,
+        embeddingData,
       );
     }
-  }, [config, plotData, embeddingData, cellSets, embeddingLoading]);
+    return null;
+  }, [cellSets, plotData, truncatedPlotData, embeddingData, config?.selectedSample, config?.truncatedValues, embeddingLoading, embeddingError]);
+
+  // Separate effect for spec generation - fast operation using memoized data
+  useEffect(() => {
+    if (config && memoizedPlotData) {
+      setPlotSpec(generateSpec(config, embeddingSettings.method, memoizedPlotData));
+    }
+  }, [config, memoizedPlotData, embeddingSettings?.method]);
 
   const render = () => {
     if (error) {
