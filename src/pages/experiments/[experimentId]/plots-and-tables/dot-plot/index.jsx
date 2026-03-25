@@ -35,6 +35,7 @@ import {
 import { getCellSets } from 'redux/selectors';
 import { plotNames, plotTypes } from 'utils/constants';
 import PlatformError from 'components/PlatformError';
+import calculateNMarkerGenes from 'utils/calculateNMarkerGenes';
 
 import ScrollOnDrag from 'components/plots/ScrollOnDrag';
 
@@ -104,6 +105,26 @@ const DotPlotPage = (props) => {
 
   const experimentName = useSelector((state) => state.experimentSettings.info.experimentName);
   const csvFileName = plotCsvFilename(experimentName, 'DOT_PLOT', [config?.selectedCellSet, config?.selectedPoints]);
+
+  // Calculate nMarkerGenes based on dataset size and cluster count
+  const nMarkerGenes = useMemo(() => {
+    if (!cellSets?.properties || !cellSets?.hierarchy) {
+      return 3; // Default for dot-plot
+    }
+
+    // Get total cell count from 'sample' hierarchy
+    const sampleNode = cellSets.hierarchy.find((node) => node.key === 'sample');
+    const totalCells = sampleNode?.children?.reduce((sum, child) => {
+      const cellIds = cellSets.properties[child.key]?.cellIds;
+      return sum + (cellIds?.size || 0);
+    }, 0) || 0;
+
+    // Get cluster count from 'louvain' hierarchy
+    const louvainNode = cellSets.hierarchy.find((node) => node.key === 'louvain');
+    const clusterCount = louvainNode?.children?.length || 0;
+
+    return calculateNMarkerGenes(totalCells, clusterCount);
+  }, [cellSets]);
 
   useEffect(() => {
     if (!config) dispatch(loadPlotConfig(experimentId, plotUuid, plotType));
