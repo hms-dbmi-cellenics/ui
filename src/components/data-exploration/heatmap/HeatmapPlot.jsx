@@ -27,7 +27,7 @@ import getContainingCellSetsProperties from 'utils/cellSets/getContainingCellSet
 import useConditionalEffect from 'utils/customHooks/useConditionalEffect';
 import generateVitessceData from 'components/plots/helpers/heatmap/vitessce/generateVitessceData';
 import { loadCellSets } from 'redux/actions/cellSets';
-import calculateNMarkerGenes from './calculateNMarkerGenes';
+import calculateNMarkerGenes from 'utils/calculateNMarkerGenes';
 
 const COMPONENT_TYPE = 'interactiveHeatmap';
 
