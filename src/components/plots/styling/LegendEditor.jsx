@@ -1,8 +1,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Radio, Form, Input, Slider, Space } from 'antd';
+import { Radio, Form, Space } from 'antd';
 import _ from 'lodash';
-import useUpdateThrottled from 'utils/customHooks/useUpdateThrottled';
+import DebouncedSlider from './DebouncedSlider';
+import DebouncedInput from './DebouncedInput';
 
 const defaultOption = {
   positions: 'corners',
@@ -16,8 +17,6 @@ const LegendEditor = (props) => {
   let { option } = props;
 
   option = option ?? defaultOption;
-
-  const [newConfig, handleChange] = useUpdateThrottled(onUpdate, config);
 
   // Display title - show default if 'title' is in defaultValues, otherwise show custom title
   const displayTitle = config.legend.defaultValues?.includes('title')
@@ -99,14 +98,17 @@ const LegendEditor = (props) => {
                 labelCol={{ span: 8, style: { textAlign: 'left' } }}
                 wrapperCol={{ span: 19 }}
               >
-                <Input
+                <DebouncedInput
                   value={displayTitle || ''}
-                  onChange={(e) => onUpdate({
-                    legend: {
-                      title: e.target.value,
-                      defaultValues: _.without(config.legend.defaultValues, 'title'),
-                    },
-                  })}
+                  debounceMs={600}
+                  onUpdate={(value) => {
+                    onUpdate({
+                      legend: {
+                        title: value,
+                        defaultValues: _.without(config.legend.defaultValues, 'title'),
+                      },
+                    });
+                  }}
                 />
               </Form.Item>
             )}
@@ -118,13 +120,13 @@ const LegendEditor = (props) => {
                 wrapperCol={{ span: 16 }}
                 style={{ marginBottom: 0 }}
               >
-                <Slider
-                  value={newConfig.legend.titleFontSize || 12}
+                <DebouncedSlider
+                  value={config.legend.titleFontSize || 12}
                   min={8}
                   max={24}
-                  onChange={(value) => {
-                    handleChange({ legend: { titleFontSize: value } });
-                  }}
+                  path='legend.titleFontSize'
+                  onUpdate={onUpdate}
+                  debounceMs={300}
                   marks={{ 8: 8, 24: 24 }}
                 />
               </Form.Item>
@@ -137,13 +139,13 @@ const LegendEditor = (props) => {
                 wrapperCol={{ span: 16 }}
                 style={{ marginBottom: 0, marginTop: '15px' }}
               >
-                <Slider
-                  value={newConfig.legend.titleFontSize || 12}
+                <DebouncedSlider
+                  value={config.legend.titleFontSize || 12}
                   min={8}
                   max={24}
-                  onChange={(value) => {
-                    handleChange({ legend: { titleFontSize: value } });
-                  }}
+                  path='legend.titleFontSize'
+                  onUpdate={onUpdate}
+                  debounceMs={300}
                   marks={{ 8: 8, 24: 24 }}
                 />
               </Form.Item>
@@ -154,13 +156,13 @@ const LegendEditor = (props) => {
               wrapperCol={{ span: 16 }}
               style={{ marginBottom: 0, marginTop: '15px' }}
             >
-              <Slider
-                value={newConfig.legend.labelFontSize || 11}
+              <DebouncedSlider
+                value={config.legend.labelFontSize || 11}
                 min={8}
                 max={24}
-                onChange={(value) => {
-                  handleChange({ legend: { labelFontSize: value } });
-                }}
+                path='legend.labelFontSize'
+                onUpdate={onUpdate}
+                debounceMs={300}
                 marks={{ 8: 8, 24: 24 }}
               />
             </Form.Item>
