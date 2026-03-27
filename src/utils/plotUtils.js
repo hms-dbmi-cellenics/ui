@@ -128,8 +128,9 @@ const convertCellsData = (results, hidden, properties) => {
     if (hiddenCells.has(key)) {
       return;
     }
-    if (value.length !== 2) {
-      throw new Error('Unexpected number of embedding dimensions');
+    // Skip cells with no embedding data (empty array)
+    if (!value || !Array.isArray(value) || value.length !== 2) {
+      return;
     }
     data[0].push(value[0]);
     data[1].push(value[1]);
