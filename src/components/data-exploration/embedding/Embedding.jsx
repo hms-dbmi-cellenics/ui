@@ -43,9 +43,9 @@ const DeckGL = dynamic(() => import('@deck.gl/react').then((mod) => mod.DeckGL),
   loading: () => <div>Loading visualization...</div>,
 });
 
-const INITIAL_ZOOM = 4.00;
+const INITIAL_ZOOM = 3.5;
 // TODO: make dynamic based on number of cells
-const cellRadiusFromZoom = (zoom) => zoom ** 3 / 4;
+// const cellRadiusFromZoom = (zoom) => zoom ** 3 / 4;
 
 // Lasso tool constants - keep stable across renders
 const EMPTY_DATA = {
@@ -116,7 +116,6 @@ const Embedding = (props) => {
 
   const dispatch = useDispatch();
 
-  const [cellRadius, setCellRadius] = useState(cellRadiusFromZoom(INITIAL_ZOOM));
   const [activeTool, setActiveTool] = useState(null); // null for pan, 'polygon' for lasso
   const [cellsQuadTree, setCellsQuadTree] = useState(null);
 
@@ -155,13 +154,14 @@ const Embedding = (props) => {
   const [cellColors, setCellColors] = useState({});
   const [cellInfoVisible, setCellInfoVisible] = useState(true);
   const cellCoordinatesRef = useRef({ x: 0, y: 0, width, height });
-  const [viewState, setViewState] = useState({
+  const initialViewState = {
     longitude: 0,
     latitude: 0,
     zoom: INITIAL_ZOOM,
     pitch: 0,
     bearing: 0,
-  });
+  };
+  const [viewState, setViewState] = useState(initialViewState);
 
   const [convertedCellsData, setConvertedCellsData] = useState();
 
@@ -254,10 +254,6 @@ const Embedding = (props) => {
     setCellsQuadTree(qt);
   }, [deckglData]);
 
-  // Update cell radius based on zoom level
-  useEffect(() => {
-    setCellRadius(cellRadiusFromZoom(viewState.zoom));
-  }, [viewState.zoom]);
 
   useEffect(() => {
     if (selectedCell) {
@@ -347,35 +343,8 @@ const Embedding = (props) => {
   );
 
   const onRecenterClick = useCallback(() => {
-    if (!deckglData || deckglData.length === 0) return;
-
-    // Calculate bounds of all cells
-    let minX = Infinity;
-    let maxX = -Infinity;
-    let minY = Infinity;
-    let maxY = -Infinity;
-
-    deckglData.forEach((cell) => {
-      const [x, y] = cell.position;
-      if (x < minX) minX = x;
-      if (x > maxX) maxX = x;
-      if (y < minY) minY = y;
-      if (y > maxY) maxY = y;
-    });
-
-    // Calculate center
-    const centerX = (minX + maxX) / 2;
-    const centerY = (minY + maxY) / 2;
-
-    // Reset to initial zoom level, just center on cells
-    setViewState({
-      longitude: centerX,
-      latitude: centerY,
-      zoom: INITIAL_ZOOM,
-      pitch: 0,
-      bearing: 0,
-    });
-  }, [deckglData]);
+    setViewState(initialViewState);
+  }, []);
 
   // Handle lasso selection
   const handleEdit = useCallback(({ updatedData, editType }) => {
@@ -398,6 +367,9 @@ const Embedding = (props) => {
       return [];
     }
 
+    const cellCount = deckglData.length;
+    const isLargeDataset = cellCount > 100000;
+
     const baseLayers = [
       new ScatterplotLayer({
         id: 'cells-scatterplot',
@@ -406,14 +378,15 @@ const Embedding = (props) => {
         opacity: 0.8,
         getPosition: (d) => d.position,
         getFillColor: (d) => d.color,
-        getRadius: () => cellRadius * 100, // Scale up for visibility
-        radiusScale: 1,
         stroked: false,
-        getLineColor: [0, 0, 0, 255],
-        lineWidthMaxPixels: 0,
-        getLineColor: [51, 51, 51, 100],
+        getRadius: isLargeDataset ? 1 : 5,
+        radiusScale: Math.pow(2, viewState.zoom - 10),
         radiusMinPixels: 0,
-        radiusMaxPixels: 6, // Increased to allow larger cells when zoomed in
+        radiusUnits: 'common',
+        radiusMaxPixels: 6,
+        updateTriggers: {
+          radiusScale: [viewState.zoom],
+        },
       }),
     ];
 
@@ -552,8 +525,8 @@ const Embedding = (props) => {
               recenterOnClick={onRecenterClick}
             />
             <DeckGL
-              initialViewState={viewState}
-              onViewStateChange={(viewStateEvent) => setViewState(viewStateEvent.viewState)}
+              viewState={viewState}
+              onViewStateChange={(e) => setViewState(e.viewState)}
               controller={activeTool === 'polygon' ? { scrollZoom: true, dragPan: false, dragRotate: false, touchZoom: true, touchRotate: false } : true}
               layers={layers}
               onHover={activeTool !== 'polygon' ? handleDeckGLHover : null}
