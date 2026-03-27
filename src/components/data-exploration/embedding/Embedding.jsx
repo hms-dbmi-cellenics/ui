@@ -17,6 +17,7 @@ import CellInfo from 'components/data-exploration/CellInfo';
 import PlatformError from 'components/PlatformError';
 import Loader from 'components/Loader';
 import ToolMenu from 'components/data-exploration/embedding/ToolMenu';
+import calculateInitialViewState from 'components/data-exploration/embedding/calculateInitialViewState';
 import { buildCellsQuadTree, selectCellsInPolygon } from 'components/data-exploration/embedding/lassoUtils';
 
 import { loadEmbedding } from 'redux/actions/embedding';
@@ -34,7 +35,7 @@ import {
 } from 'utils/plotUtils';
 import getContainingCellSetsProperties from 'utils/cellSets/getContainingCellSetsProperties';
 
-const COLOR_SCHEME = 'lightorange';
+const COLOR_SCHEME = 'purplered';
 const colorInterpolator = vega.scheme(COLOR_SCHEME);
 
 // Dynamically import DeckGL to avoid SSR issues
@@ -42,10 +43,6 @@ const DeckGL = dynamic(() => import('@deck.gl/react').then((mod) => mod.DeckGL),
   ssr: false,
   loading: () => <div>Loading visualization...</div>,
 });
-
-const INITIAL_ZOOM = 3.5;
-// TODO: make dynamic based on number of cells
-// const cellRadiusFromZoom = (zoom) => zoom ** 3 / 4;
 
 // Lasso tool constants - keep stable across renders
 const EMPTY_DATA = {
@@ -154,16 +151,13 @@ const Embedding = (props) => {
   const [cellColors, setCellColors] = useState({});
   const [cellInfoVisible, setCellInfoVisible] = useState(true);
   const cellCoordinatesRef = useRef({ x: 0, y: 0, width, height });
-  const initialViewState = {
-    longitude: 0,
-    latitude: 0,
-    zoom: INITIAL_ZOOM,
-    pitch: 0,
-    bearing: 0,
-  };
-  const [viewState, setViewState] = useState(initialViewState);
+  const [viewState, setViewState] = useState(null);
 
   const [convertedCellsData, setConvertedCellsData] = useState();
+
+  useEffect(() => {
+    console.log('ViewState changed:', viewState);
+  }, [viewState]);
 
   useEffect(() => {
     // Update ref with latest width/height
@@ -342,9 +336,18 @@ const Embedding = (props) => {
     [convertedCellsData, cellColors],
   );
 
+  // Auto-fit view when data loads
+  useEffect(() => {
+    if (deckglData && deckglData.length > 0) {
+      const newViewState = calculateInitialViewState(deckglData, width, height);
+      setViewState(newViewState);
+    }
+  }, [deckglData, width, height]);
+
   const onRecenterClick = useCallback(() => {
-    setViewState(initialViewState);
-  }, []);
+    const newViewState = calculateInitialViewState(deckglData, width, height);
+    setViewState(newViewState);
+  }, [deckglData, width, height]);
 
   // Handle lasso selection
   const handleEdit = useCallback(({ updatedData, editType }) => {
@@ -363,7 +366,7 @@ const Embedding = (props) => {
 
   // Create the scatterplot layer and selection layer
   const layers = useMemo(() => {
-    if (!deckglData || deckglData.length === 0) {
+    if (!deckglData || deckglData.length === 0 || !viewState) {
       return [];
     }
 
@@ -379,11 +382,11 @@ const Embedding = (props) => {
         getPosition: (d) => d.position,
         getFillColor: (d) => d.color,
         stroked: false,
-        getRadius: isLargeDataset ? 1 : 5,
+        getRadius: isLargeDataset ? 1 : 10,
         radiusScale: Math.pow(2, viewState.zoom - 10),
         radiusMinPixels: 0,
         radiusUnits: 'common',
-        radiusMaxPixels: 6,
+        radiusMaxPixels: 4,
         updateTriggers: {
           radiusScale: [viewState.zoom],
         },
@@ -416,7 +419,7 @@ const Embedding = (props) => {
     }
 
     return baseLayers;
-  }, [activeTool, cellsQuadTree, handleEdit, deckglData.length]);
+  }, [activeTool, cellsQuadTree, handleEdit, deckglData.length, viewState]);
 
   const onCreateCluster = (clusterName, clusterColor) => {
     setCreateClusterPopover(false);
@@ -445,17 +448,21 @@ const Embedding = (props) => {
       ];
 
       return (
-        <div style={{ paddingTop: 40 }}>
+        <div style={{
+          position: 'absolute',
+          top: 50,
+          left: 10,
+          zIndex: 10,
+        }}>
           <label htmlFor='continuous data name'>
             <strong>{focusData.key}</strong>
           </label>
           <div
             style={{
-              position: 'absolute',
+              marginTop: 10,
               background: `linear-gradient(${colorGradient.join(', ')})`,
               height: 200,
               width: 20,
-              top: 70,
             }}
           />
         </div>
@@ -464,7 +471,12 @@ const Embedding = (props) => {
 
     if (focusData.store === 'cellSets') {
       return (
-        <div style={{ paddingTop: 40 }}>
+        <div style={{
+          position: 'absolute',
+          top: 50,
+          left: 10,
+          zIndex: 10,
+        }}>
           <label htmlFor='cell set name'>
             <strong>{cellSetProperties[focusData.key] ? cellSetProperties[focusData.key].name : ''}</strong>
           </label>
@@ -493,7 +505,8 @@ const Embedding = (props) => {
           width,
           height,
           position: 'relative',
-          display: showLoader ? 'none' : 'block',
+          display: showLoader ? 'none' : 'flex',
+          flexDirection: 'column',
         }}
         onMouseLeave={() => {
           if (activeTool !== 'polygon') {
@@ -524,14 +537,18 @@ const Embedding = (props) => {
               visibleTools={{ pan: true, selectLasso: true, recenter: true }}
               recenterOnClick={onRecenterClick}
             />
-            <DeckGL
-              viewState={viewState}
-              onViewStateChange={(e) => setViewState(e.viewState)}
-              controller={activeTool === 'polygon' ? { scrollZoom: true, dragPan: false, dragRotate: false, touchZoom: true, touchRotate: false } : true}
-              layers={layers}
-              onHover={activeTool !== 'polygon' ? handleDeckGLHover : null}
-              style={{ width: '100%', height: '100%' }}
-            />
+            <div style={{ flex: 1, position: 'relative' }}>
+              {viewState && (
+                <DeckGL
+                  initialViewState={viewState}
+                  onViewStateChange={(e) => setViewState(e.viewState)}
+                  controller={activeTool === 'polygon' ? { scrollZoom: true, dragPan: false, dragRotate: false, touchZoom: true, touchRotate: false } : true}
+                  layers={layers}
+                  onHover={activeTool !== 'polygon' ? handleDeckGLHover : null}
+                  style={{ width: '100%', height: '100%' }}
+                />
+              )}
+            </div>
           </>
         ) : (
           <></>

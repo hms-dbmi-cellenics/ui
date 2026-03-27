@@ -6,8 +6,8 @@ import { CenterFocusStrong } from '@vitessce/styles';
 
 const ToolContainer = styled.div`
   position: absolute;
-  top: 0;
-  left: 0;
+  top: 10px;
+  left: 10px;
   display: inline;
   z-index: 1000;
   opacity: 0.65;
