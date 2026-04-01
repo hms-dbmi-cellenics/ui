@@ -379,7 +379,7 @@ const Embedding = (props) => {
         data: deckglData,
         pickable: true,
         autoHighlight: true,
-        highlightColor: [211, 211, 211],
+        highlightColor: [51, 51, 51],
         opacity: 0.8,
         getPosition: (d) => d.position,
         getFillColor: (d) => d.color,
@@ -388,7 +388,7 @@ const Embedding = (props) => {
         radiusScale: Math.pow(2, viewState.zoom - 10),
         radiusMinPixels: 0,
         radiusUnits: 'common',
-        radiusMaxPixels: 4,
+        radiusMaxPixels: isLargeDataset ? 2 : 6,
         updateTriggers: {
           radiusScale: [viewState.zoom],
         },
