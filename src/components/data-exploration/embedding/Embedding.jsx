@@ -336,13 +336,13 @@ const Embedding = (props) => {
     [convertedCellsData, cellColors],
   );
 
-  // Auto-fit view when data loads
+  // Auto-fit view when embedding data loads (not when colors change)
   useEffect(() => {
     if (deckglData && deckglData.length > 0) {
       const newViewState = calculateInitialViewState(deckglData, width, height);
       setViewState(newViewState);
     }
-  }, [deckglData, width, height]);
+  }, [convertedCellsData, width, height]);
 
   const onRecenterClick = useCallback(() => {
     const newViewState = calculateInitialViewState(deckglData, width, height);
@@ -378,6 +378,8 @@ const Embedding = (props) => {
         id: 'cells-scatterplot',
         data: deckglData,
         pickable: true,
+        autoHighlight: true,
+        highlightColor: [211, 211, 211],
         opacity: 0.8,
         getPosition: (d) => d.position,
         getFillColor: (d) => d.color,
@@ -545,6 +547,7 @@ const Embedding = (props) => {
                   controller={activeTool === 'polygon' ? { scrollZoom: true, dragPan: false, dragRotate: false, touchZoom: true, touchRotate: false } : true}
                   layers={layers}
                   onHover={activeTool !== 'polygon' ? handleDeckGLHover : null}
+                  getCursor={() => activeTool === 'polygon' ? 'crosshair' : 'default'}
                   style={{ width: '100%', height: '100%' }}
                 />
               )}
