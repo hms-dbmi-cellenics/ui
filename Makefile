@@ -7,7 +7,7 @@
 # Targets
 #--------------------------------------------------
 install: ## Installs node dependencies
-	@npm ci
+	@npm ci --legacy-peer-deps
 build: ## Creates a production build
 	@npm run build
 test: ## Executes unit tests
