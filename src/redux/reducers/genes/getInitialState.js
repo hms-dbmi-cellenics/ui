@@ -20,12 +20,6 @@ const getInitialState = () => ({
       ETag: null,
       matrix: new ExpressionMatrix(),
     },
-    downsampled: {
-      loading: [],
-      error: false,
-      matrix: new ExpressionMatrix(),
-      ETag: null,
-    },
   },
   selected: [],
   focused: undefined,

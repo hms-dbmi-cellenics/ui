@@ -50,6 +50,9 @@ module.exports = {
     // couldn't get these to work in tests so mocking
     '^zarrita$': '<rootDir>/__mocks__/zarrita.js',
     '^@hms-dbmi/viv$': '<rootDir>/__mocks__/@hms-dbmi/viv.js',
+    '^@vitessce/icons$': '<rootDir>/__mocks__/@vitessce/icons.js',
+    '^@vitessce/styles$': '<rootDir>/__mocks__/@vitessce/styles.js',
+    '^d3-quadtree$': '<rootDir>/__mocks__/d3-quadtree.js',
   },
   moduleFileExtensions: [
     'web.js',

@@ -5,7 +5,9 @@ describe('markerGenesLoading', () => {
     const initialState = {
       markers: {},
       expression: {
-        downsampled: {},
+        full: {
+          ETag: null,
+        },
       },
     };
 

@@ -116,13 +116,6 @@ const Embedding = (props) => {
   const [activeTool, setActiveTool] = useState(null); // null for pan, 'polygon' for lasso
   const [cellsQuadTree, setCellsQuadTree] = useState(null);
 
-  // Ensure quadtree is built when lasso tool is activated
-  useEffect(() => {
-    if (activeTool === 'polygon' && !cellsQuadTree && deckglData && deckglData.length > 0) {
-      const qt = buildCellsQuadTree(deckglData);
-      setCellsQuadTree(qt);
-    }
-  }, [activeTool, cellsQuadTree, deckglData]);
   const rootClusterNodes = useSelector(getCellSetsHierarchyByType('cellSets')).map(({ key }) => key);
 
   const embeddingSettings = useSelector(
@@ -239,15 +232,6 @@ const Embedding = (props) => {
   }, [data, cellSetHidden, cellSetProperties]);
 
   // Build quadtree from cell data for efficient lasso selection
-  useEffect(() => {
-    if (!deckglData || deckglData.length === 0) {
-      setCellsQuadTree(null);
-      return;
-    }
-    const qt = buildCellsQuadTree(deckglData);
-    setCellsQuadTree(qt);
-  }, [deckglData]);
-
 
   useEffect(() => {
     if (selectedCell) {
@@ -343,6 +327,14 @@ const Embedding = (props) => {
       setViewState(newViewState);
     }
   }, [convertedCellsData, width, height]);
+
+  // Build quadtree when lasso tool is activated
+  useEffect(() => {
+    if (activeTool === 'polygon' && !cellsQuadTree && deckglData && deckglData.length > 0) {
+      const qt = buildCellsQuadTree(deckglData);
+      setCellsQuadTree(qt);
+    }
+  }, [activeTool, cellsQuadTree, deckglData]);
 
   const onRecenterClick = useCallback(() => {
     const newViewState = calculateInitialViewState(deckglData, width, height);

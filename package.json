@@ -61,6 +61,7 @@
     "@turf/boolean-within": "^7.3.4",
     "@turf/helpers": "^7.3.4",
     "@vitessce/heatmap": "^3.4.12",
+    "@vitessce/icons": "^3.9.8",
     "@vitessce/scatterplot": "^3.4.12",
     "@vitessce/spatial": "^3.4.12",
     "@vitessce/styles": "^3.9.5",

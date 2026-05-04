@@ -65,10 +65,8 @@ const MarkerHeatmap = ({ experimentId }) => {
   const selectedCellSetConfig = useSelector((state) => state.componentConfig[plotUuid]?.config?.selectedCellSet);
 
   const {
-    error, matrix: rawMatrix, loading: expressionLoading,
+    error: expressionError, matrix: rawMatrix, loading: expressionLoading,
   } = useSelector((state) => state.genes.expression.full);
-
-  const { error: downsampledError } = useSelector((state) => state.genes.expression.downsampled);
 
   const { fetching: expressionFetching } = useSelector(
     (state) => state.genes.expression.views[plotUuid],
@@ -241,7 +239,7 @@ const MarkerHeatmap = ({ experimentId }) => {
     }
 
     // Check preconditions: no errors and data is not fetching
-    if (downsampledError || markerGenesLoadingError) {
+    if (expressionError || markerGenesLoadingError) {
       return;
     }
 
@@ -302,7 +300,7 @@ const MarkerHeatmap = ({ experimentId }) => {
     spec.marks.push(extraMarks);
 
     setVegaSpec(spec);
-  }, [selectedTracks, loadedGenes, selectedCellSetConfig, config?.selectedPoints, config?.groupedTracks, downsampledError, cellSets.accessible, cellSets.hierarchy, cellSets.hidden, hierarchy, markerGenesLoadingError, markerGenesLoading, rawMatrix, expressionFetching]);
+  }, [selectedTracks, loadedGenes, selectedCellSetConfig, config?.selectedPoints, config?.groupedTracks, expressionError, cellSets.accessible, cellSets.hierarchy, cellSets.hidden, hierarchy, markerGenesLoadingError, markerGenesLoading, rawMatrix, expressionFetching]);
 
   useEffect(() => {
     dispatch(loadGeneList(experimentId));
@@ -515,25 +513,11 @@ const MarkerHeatmap = ({ experimentId }) => {
       );
     }
 
-    if (error) {
+    if (expressionError) {
       return (
         <PlatformError
           description='Could not load gene expression data.'
-          error={error}
-          onClick={() => {
-            dispatch(
-              loadGeneExpression(experimentId, loadedGenes, plotUuid),
-            );
-          }}
-        />
-      );
-    }
-
-    if (downsampledError) {
-      return (
-        <PlatformError
-          description='Could not load gene expression data.'
-          error={downsampledError}
+          error={expressionError}
           onClick={() => {
             dispatch(
               loadGeneExpression(experimentId, loadedGenes, plotUuid),
