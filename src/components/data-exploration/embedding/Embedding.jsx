@@ -322,11 +322,11 @@ const Embedding = (props) => {
 
   // Auto-fit view when embedding data loads (not when colors change)
   useEffect(() => {
-    if (deckglData && deckglData.length > 0) {
+    if (deckglData && deckglData.length > 0 && !viewState) {
       const newViewState = calculateInitialViewState(deckglData, width, height);
       setViewState(newViewState);
     }
-  }, [convertedCellsData, width, height]);
+  }, [deckglData, width, height, viewState]);
 
   // Build quadtree when lasso tool is activated
   useEffect(() => {
