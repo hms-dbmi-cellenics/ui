@@ -328,14 +328,15 @@ const Embedding = (props) => {
     }
   }, [deckglData, width, height, viewState]);
 
-  // Build quadtree when lasso tool is activated or data changes
+  // Keep quadtree in sync with the currently selectable cells for lasso selection
   useEffect(() => {
-    if (activeTool === 'polygon' && deckglData && deckglData.length > 0) {
-      const qt = buildCellsQuadTree(deckglData);
-      setCellsQuadTree(qt);
-    } else if (activeTool !== 'polygon') {
+    if (activeTool !== 'polygon' || !deckglData || deckglData.length === 0) {
       setCellsQuadTree(null);
+      return;
     }
+    const qt = buildCellsQuadTree(deckglData);
+    setCellsQuadTree(qt);
+
   }, [activeTool, deckglData]);
 
   const onRecenterClick = useCallback(() => {
