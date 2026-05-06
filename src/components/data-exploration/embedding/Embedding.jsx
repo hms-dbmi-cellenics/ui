@@ -328,13 +328,15 @@ const Embedding = (props) => {
     }
   }, [deckglData, width, height, viewState]);
 
-  // Build quadtree when lasso tool is activated
+  // Build quadtree when lasso tool is activated or data changes
   useEffect(() => {
-    if (activeTool === 'polygon' && !cellsQuadTree && deckglData && deckglData.length > 0) {
+    if (activeTool === 'polygon' && deckglData && deckglData.length > 0) {
       const qt = buildCellsQuadTree(deckglData);
       setCellsQuadTree(qt);
+    } else if (activeTool !== 'polygon') {
+      setCellsQuadTree(null);
     }
-  }, [activeTool, cellsQuadTree, deckglData]);
+  }, [activeTool, deckglData]);
 
   const onRecenterClick = useCallback(() => {
     const newViewState = calculateInitialViewState(deckglData, width, height);
