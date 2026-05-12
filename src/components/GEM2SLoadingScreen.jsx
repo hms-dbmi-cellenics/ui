@@ -147,7 +147,7 @@ const GEM2SLoadingScreen = (props) => {
 
   return (
     <Result
-      status={status}
+      status={status === 'error' ? 'error' : 'info'}
       title={title}
       subTitle={subTitle}
       icon={(
