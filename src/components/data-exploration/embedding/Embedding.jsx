@@ -149,10 +149,6 @@ const Embedding = (props) => {
   const [convertedCellsData, setConvertedCellsData] = useState();
 
   useEffect(() => {
-    console.log('ViewState changed:', viewState);
-  }, [viewState]);
-
-  useEffect(() => {
     // Update ref with latest width/height
     cellCoordinatesRef.current = {
       ...cellCoordinatesRef.current,
