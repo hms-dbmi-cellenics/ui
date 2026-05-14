@@ -191,7 +191,7 @@ const DiffExprResults = (props) => {
         loadData={loadData}
         extraOptions={null}
         geneColumnTooltipText={geneTooltipText}
-        geneColumnWidth={'150px'}
+        geneColumnWidth={columns.length < 4 ? '150px' : '120px'}
       />
       {
         pathwayAnalysisModalVisible && (
