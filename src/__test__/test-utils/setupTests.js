@@ -4,6 +4,15 @@ import preloadAll from 'jest-next-dynamic';
 import Enzyme from 'enzyme';
 import Adapter from '@wojtekmaj/enzyme-adapter-react-17';
 
+// Polyfill for structuredClone (used by vega/react-vega)
+// Available in Node.js 17+, but may not be in test environment
+if (typeof global.structuredClone === 'undefined') {
+  global.structuredClone = (obj) => {
+    if (obj === undefined) return undefined;
+    return JSON.parse(JSON.stringify(obj));
+  };
+}
+
 Enzyme.configure({ adapter: new Adapter() });
 
 jest.mock('localforage');
