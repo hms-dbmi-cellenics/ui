@@ -8,7 +8,6 @@ import {
   Typography,
   Slider,
   Radio,
-  Checkbox,
 } from 'antd';
 import SliderWithInput from 'components/SliderWithInput';
 import { useSelector, useDispatch } from 'react-redux';
@@ -139,52 +138,57 @@ const VolcanoPlotPage = (props) => {
           labelCol={{ span: 8, style: { textAlign: 'left' } }}
           wrapperCol={{ span: 16 }}
         >
-          <p><strong>Adjusted P-value Threshold:</strong></p>
-          <Form.Item
-            labelCol={{ span: 5, style: { textAlign: 'left' } }}
-            wrapperCol={{ span: 19 }}
-          >
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <SliderWithInput
-                min={0.00001}
-                max={0.25}
-                step={0.001}
-                value={config?.labelPvalueThreshold !== undefined ? config.labelPvalueThreshold : 0.05}
-                onUpdate={(val) => updatePlotWithChanges({ labelPvalueThreshold: val })}
-                sliderWidth={200}
-              />
-              <Checkbox
-                checked={config?.labels.enabled !== undefined ? config.labels.enabled : true}
-                onChange={(e) => {
-                  updatePlotWithChanges({ labels: { ...config.labels, enabled: e.target.checked } });
-                }}
-              />
-            </div>
+          <p><strong>Toggle Labels:</strong></p>
+          <Form.Item>
+            <Radio.Group onChange={(e) => updatePlotWithChanges({ labels: { ...config.labels, enabled: e.target.value } })} value={config?.labels.enabled !== undefined ? config.labels.enabled : true}>
+              <Radio value>Show</Radio>
+              <Radio value={false}>Hide</Radio>
+            </Radio.Group>
           </Form.Item>
-          <Form.Item
-            labelCol={{ span: 5 }}
-            wrapperCol={{ span: 19 }}
-          >
-            <Typography.Text type='secondary'>
-              -log₁₀(adj p-value) =
-              {' '}
-              {(config?.labelPvalueThreshold !== undefined ? config.labelPvalueThreshold : 0.05) > 0 ? (-Math.log10(config?.labelPvalueThreshold !== undefined ? config.labelPvalueThreshold : 0.05)).toPrecision(3) : 'Infinity'}
-            </Typography.Text>
-          </Form.Item>
-          <p style={{ marginTop: '15px' }}><strong>Text Size:</strong></p>
-          <Form.Item
-            labelCol={{ span: 5, style: { textAlign: 'left' } }}
-            wrapperCol={{ span: 19 }}
-          >
-            <Slider
-              min={8}
-              max={24}
-              value={config?.labels.size !== undefined ? config.labels.size : 11}
-              onChange={(val) => updatePlotWithChanges({ labels: { ...config.labels, size: val } })}
-              marks={{ 8: 8, 24: 24 }}
-              style={{ width: 200 }}
-            />
-          </Form.Item>
+          {(config?.labels.enabled !== undefined ? config.labels.enabled : true) && (
+            <>
+              <p><strong>Adjusted P-value Threshold:</strong></p>
+              <Form.Item
+                labelCol={{ span: 5, style: { textAlign: 'left' } }}
+                wrapperCol={{ span: 19 }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <SliderWithInput
+                    min={0.00001}
+                    max={0.25}
+                    step={0.001}
+                    value={config?.labelPvalueThreshold !== undefined ? config.labelPvalueThreshold : 0.05}
+                    onUpdate={(val) => updatePlotWithChanges({ labelPvalueThreshold: val })}
+                    sliderWidth={200}
+                  />
+                </div>
+              </Form.Item>
+              <Form.Item
+                labelCol={{ span: 5 }}
+                wrapperCol={{ span: 19 }}
+              >
+                <Typography.Text type='secondary'>
+                  -log₁₀(adj p-value) =
+                  {' '}
+                  {(config?.labelPvalueThreshold !== undefined ? config.labelPvalueThreshold : 0.05) > 0 ? (-Math.log10(config?.labelPvalueThreshold !== undefined ? config.labelPvalueThreshold : 0.05)).toPrecision(3) : 'Infinity'}
+                </Typography.Text>
+              </Form.Item>
+              <p style={{ marginTop: '15px' }}><strong>Text Size:</strong></p>
+              <Form.Item
+                labelCol={{ span: 5, style: { textAlign: 'left' } }}
+                wrapperCol={{ span: 19 }}
+              >
+                <Slider
+                  min={8}
+                  max={24}
+                  value={config?.labels.size !== undefined ? config.labels.size : 11}
+                  onChange={(val) => updatePlotWithChanges({ labels: { ...config.labels, size: val } })}
+                  marks={{ 8: 8, 24: 24 }}
+                  style={{ width: 200 }}
+                />
+              </Form.Item>
+            </>
+          )}
         </Form>
       ),
     },
