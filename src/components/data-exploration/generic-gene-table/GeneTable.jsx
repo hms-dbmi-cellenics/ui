@@ -152,7 +152,7 @@ const GeneTable = (props) => {
         title: '',
         dataIndex: 'lookup',
         key: 'lookup',
-        width: '50px',
+        width: '45px',
       },
       {
         fixed: 'left',
