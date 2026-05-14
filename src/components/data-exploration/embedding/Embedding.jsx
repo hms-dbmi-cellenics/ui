@@ -364,6 +364,15 @@ const Embedding = (props) => {
     const cellCount = deckglData.length;
     const isLargeDataset = cellCount > 100000;
 
+    // tsne tends to be more spread out than umap so larger points
+    let radiusMinPixels = 1;
+
+    if (embeddingType === 'umap') {
+      radiusMinPixels = 0;
+    } else if (embeddingType === 'tsne') {
+      radiusMinPixels = 1;
+    }
+
     const baseLayers = [
       new ScatterplotLayer({
         id: 'cells-scatterplot',
@@ -377,7 +386,7 @@ const Embedding = (props) => {
         stroked: false,
         getRadius: isLargeDataset ? 1 : 10,
         radiusScale: Math.pow(2, viewState.zoom - 10),
-        radiusMinPixels: 0,
+        radiusMinPixels: radiusMinPixels,
         radiusUnits: 'common',
         radiusMaxPixels: isLargeDataset ? 2 : 6,
         updateTriggers: {
