@@ -16,6 +16,7 @@ import 'vega-webgl-renderer';
 
 import ExpressionMatrix from 'utils/ExpressionMatrix/ExpressionMatrix';
 import { getCellSets, getCellSetsHierarchyByKeys } from 'redux/selectors';
+import calculateNMarkerGenes from 'utils/calculateNMarkerGenes';
 
 import HeatmapGroupBySettings from 'components/data-exploration/heatmap/HeatmapGroupBySettings';
 import HeatmapMetadataTracksSettings from 'components/data-exploration/heatmap/HeatmapMetadataTrackSettings';
@@ -64,10 +65,8 @@ const MarkerHeatmap = ({ experimentId }) => {
   const selectedCellSetConfig = useSelector((state) => state.componentConfig[plotUuid]?.config?.selectedCellSet);
 
   const {
-    error, matrix: rawMatrix, loading: expressionLoading,
+    error: expressionError, matrix: rawMatrix, loading: expressionLoading,
   } = useSelector((state) => state.genes.expression.full);
-
-  const { error: downsampledError } = useSelector((state) => state.genes.expression.downsampled);
 
   const { fetching: expressionFetching } = useSelector(
     (state) => state.genes.expression.views[plotUuid],
@@ -95,6 +94,26 @@ const MarkerHeatmap = ({ experimentId }) => {
     (state) => state.experimentSettings.processing
       .configureEmbedding?.clusteringSettings.methodSettings.louvain.resolution,
   ) || false;
+
+  // Calculate nMarkerGenes based on dataset size and cluster count
+  const nMarkerGenes = React.useMemo(() => {
+    if (!cellSets?.properties || !cellSets?.hierarchy) {
+      return 5; // Default
+    }
+
+    // Get total cell count from 'sample' hierarchy
+    const sampleNode = cellSets.hierarchy.find((node) => node.key === 'sample');
+    const totalCells = sampleNode?.children?.reduce((sum, child) => {
+      const cellIds = cellSets.properties[child.key]?.cellIds;
+      return sum + (cellIds?.size || 0);
+    }, 0) || 0;
+
+    // Get cluster count from 'louvain' hierarchy
+    const louvainNode = cellSets.hierarchy.find((node) => node.key === 'louvain');
+    const clusterCount = louvainNode?.children?.length || 0;
+
+    return calculateNMarkerGenes(totalCells, clusterCount);
+  }, [cellSets]);
 
   useEffect(() => {
     if (!louvainClustersResolution) dispatch(loadProcessingSettings(experimentId));
@@ -147,12 +166,12 @@ const MarkerHeatmap = ({ experimentId }) => {
   // If the plot has never been loaded (so selectedGenes is null), then load the marker genes
   // Only auto-load on initial render (null), not when user clears genes (empty array)
   useEffect(() => {
-    if (config?.selectedGenes === null && config?.nMarkerGenes) {
+    if (config?.selectedGenes === null && nMarkerGenes) {
       dispatch(loadMarkerGenes(
         experimentId,
         plotUuid,
         {
-          numGenes: config.nMarkerGenes,
+          numGenes: nMarkerGenes,
           groupedTracks: config.groupedTracks,
           selectedCellSet: config.selectedCellSet,
           selectedPoints: config.selectedPoints,
@@ -160,7 +179,7 @@ const MarkerHeatmap = ({ experimentId }) => {
       ));
     }
   }, [
-    config?.nMarkerGenes,
+    nMarkerGenes,
     JSON.stringify(config?.groupedTracks),
     config?.selectedCellSet,
     config?.selectedPoints,
@@ -220,7 +239,7 @@ const MarkerHeatmap = ({ experimentId }) => {
     }
 
     // Check preconditions: no errors and data is not fetching
-    if (downsampledError || markerGenesLoadingError) {
+    if (expressionError || markerGenesLoadingError) {
       return;
     }
 
@@ -281,7 +300,7 @@ const MarkerHeatmap = ({ experimentId }) => {
     spec.marks.push(extraMarks);
 
     setVegaSpec(spec);
-  }, [selectedTracks, loadedGenes, selectedCellSetConfig, config?.selectedPoints, config?.groupedTracks, downsampledError, cellSets.accessible, cellSets.hierarchy, cellSets.hidden, hierarchy, markerGenesLoadingError, markerGenesLoading, rawMatrix, expressionFetching]);
+  }, [selectedTracks, loadedGenes, selectedCellSetConfig, config?.selectedPoints, config?.groupedTracks, expressionError, cellSets.accessible, cellSets.hierarchy, cellSets.hidden, hierarchy, markerGenesLoadingError, markerGenesLoading, rawMatrix, expressionFetching]);
 
   useEffect(() => {
     dispatch(loadGeneList(experimentId));
@@ -353,7 +372,7 @@ const MarkerHeatmap = ({ experimentId }) => {
       experimentId,
       plotUuid,
       {
-        numGenes: config.nMarkerGenes,
+        numGenes: nMarkerGenes,
         groupedTracks: config.groupedTracks,
         selectedCellSet: config.selectedCellSet,
         selectedPoints: config.selectedPoints,
@@ -494,25 +513,11 @@ const MarkerHeatmap = ({ experimentId }) => {
       );
     }
 
-    if (error) {
+    if (expressionError) {
       return (
         <PlatformError
           description='Could not load gene expression data.'
-          error={error}
-          onClick={() => {
-            dispatch(
-              loadGeneExpression(experimentId, loadedGenes, plotUuid),
-            );
-          }}
-        />
-      );
-    }
-
-    if (downsampledError) {
-      return (
-        <PlatformError
-          description='Could not load gene expression data.'
-          error={downsampledError}
+          error={expressionError}
           onClick={() => {
             dispatch(
               loadGeneExpression(experimentId, loadedGenes, plotUuid),

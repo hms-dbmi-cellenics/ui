@@ -19,6 +19,24 @@ const valueComparator = (key) => (a, b) => {
   return 0;
 };
 
+/**
+ * Format ENS gene names by replacing everything after ENS up to the first non-zero digit with ellipses.
+ * E.g., "ENSG0000012345" becomes "ENS...12345", "SOD2 - ENSG000001234" becomes "SOD2 - ENS...1234"
+ */
+const formatEnsgGeneName = (geneName) => {
+  // Match ENS followed by anything, then capture from first non-zero digit onwards
+  // ENS can appear anywhere in the string (not just at the start)
+  const ensPattern = /ENS.*?([1-9]\d*)$/;
+  const match = geneName.match(ensPattern);
+
+  if (match) {
+    // match[0] = the matched ENS pattern, match[1] = the part starting from first non-zero digit
+    return geneName.replace(match[0], `ENS...${match[1]}`);
+  }
+
+  return geneName;
+};
+
 const GeneTable = (props) => {
   const {
     experimentId, error, loading, columns, propData, loadData,
@@ -180,9 +198,9 @@ const GeneTable = (props) => {
               href={`https://www.genecards.org/cgi-bin/carddisp.pl?gene=${geneName}`}
               target='_blank'
               rel='noreferrer'
-              style={geneColumnWidth ? { display: 'block', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' } : undefined}
+              style={{ display: 'block', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}
             >
-              {geneName}
+              {formatEnsgGeneName(geneName)}
             </a>
           </Tooltip>
         ),

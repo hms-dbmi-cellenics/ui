@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
 import { Vega } from 'react-vega';
@@ -30,26 +30,33 @@ const ViolinPlotMain = (props) => {
 
   const [plotSpec, setPlotSpec] = useState({});
 
-  useEffect(() => {
+  // Memoize data generation - only recompute when data-affecting properties change
+  const memoizedPlotData = useMemo(() => {
     if (config
       && !expression.error
       && expression.matrix.geneIsLoaded(config.shownGene)
-      && cellSets.accessible) {
+      && cellSets.accessible
+      && selectedCellSetClassAvailable) {
       const geneExpressionData = config.normalised === 'zScore'
         ? expression.matrix.getZScore(config.shownGene)
         : expression.matrix.getRawExpression(config.shownGene);
 
-      if (selectedCellSetClassAvailable) {
-        const generatedPlotData = generateData(
-          cellSets,
-          geneExpressionData,
-          config?.selectedCellSet,
-          config?.selectedPoints,
-        );
-        setPlotSpec(generateSpec(config, generatedPlotData));
-      }
+      return generateData(
+        cellSets,
+        geneExpressionData,
+        config?.selectedCellSet,
+        config?.selectedPoints,
+      );
     }
-  }, [experimentId, config, expression, cellSets]);
+    return null;
+  }, [config?.shownGene, config?.normalised, config?.selectedCellSet, config?.selectedPoints, expression, cellSets, selectedCellSetClassAvailable]);
+
+  // Separate effect for spec generation using memoized data
+  useEffect(() => {
+    if (config && memoizedPlotData) {
+      setPlotSpec(generateSpec(config, memoizedPlotData));
+    }
+  }, [config, memoizedPlotData]);
 
   const render = () => {
     if (cellSets.error) {

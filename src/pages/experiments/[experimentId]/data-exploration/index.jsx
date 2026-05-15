@@ -89,6 +89,7 @@ const ExplorationViewPage = ({
           height={height}
         />
       ),
+      style: { overflow: 'hidden', padding: 0 },
     },
     Spatial: {
       toolbarControls: (

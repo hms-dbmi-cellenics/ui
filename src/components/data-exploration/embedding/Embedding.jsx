@@ -3,17 +3,22 @@ import React, {
   useState, useEffect, useRef, useMemo, useCallback,
 } from 'react';
 
-import dynamic from 'next/dynamic';
-import {
-  useSelector, useDispatch,
-} from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
+import dynamic from 'next/dynamic';
 import * as vega from 'vega';
+import { ScatterplotLayer } from '@deck.gl/layers';
+import { EditableGeoJsonLayer } from '@nebula.gl/layers';
+import { DrawPolygonByDraggingMode } from '@nebula.gl/edit-modes';
+
 import ClusterPopover from 'components/data-exploration/embedding/ClusterPopover';
 import CrossHair from 'components/data-exploration/embedding/CrossHair';
 import CellInfo from 'components/data-exploration/CellInfo';
 import PlatformError from 'components/PlatformError';
 import Loader from 'components/Loader';
+import ToolMenu from 'components/data-exploration/embedding/ToolMenu';
+import calculateInitialViewState from 'components/data-exploration/embedding/calculateInitialViewState';
+import { buildCellsQuadTree, selectCellsInPolygon } from 'components/data-exploration/embedding/lassoUtils';
 
 import { loadEmbedding } from 'redux/actions/embedding';
 import { getCellSetsHierarchyByType, getCellSets } from 'redux/selectors';
@@ -21,6 +26,7 @@ import { createCellSet } from 'redux/actions/cellSets';
 import { loadGeneExpression } from 'redux/actions/genes';
 import { updateCellInfo } from 'redux/actions/cellInfo';
 import { loadProcessingSettings } from 'redux/actions/experimentSettings';
+
 
 import {
   convertCellsData,
@@ -32,13 +38,73 @@ import getContainingCellSetsProperties from 'utils/cellSets/getContainingCellSet
 const COLOR_SCHEME = 'purplered';
 const colorInterpolator = vega.scheme(COLOR_SCHEME);
 
-const Scatterplot = dynamic(
-  () => import('../DynamicVitessceWrappers').then((mod) => mod.Scatterplot),
-  { ssr: false },
-);
+// Dynamically import DeckGL to avoid SSR issues
+const DeckGL = dynamic(() => import('@deck.gl/react').then((mod) => mod.DeckGL), {
+  ssr: false,
+  loading: () => <div>Loading visualization...</div>,
+});
 
-const INITIAL_ZOOM = 4.00;
-const cellRadiusFromZoom = (zoom) => zoom ** 3 / 50;
+// Lasso tool constants - keep stable across renders
+const EMPTY_DATA = {
+  type: 'FeatureCollection',
+  features: [],
+};
+
+const LASSO_MODE_CONFIG = {
+  dragToDraw: true,
+};
+
+/**
+ * Convert color value (hex string or array) to RGB array
+ */
+const parseColor = (colorValue) => {
+  if (!colorValue) {
+    return [128, 128, 128, 255]; // default gray
+  }
+
+  // If already an array, return as-is (ensure alpha channel)
+  if (Array.isArray(colorValue)) {
+    return colorValue.length === 4 ? colorValue : [...colorValue, 255];
+  }
+
+  // Parse hex string
+  if (typeof colorValue === 'string') {
+    const hex = colorValue.startsWith('#') ? colorValue : `#${colorValue}`;
+    const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+    if (result) {
+      return [parseInt(result[1], 16), parseInt(result[2], 16), parseInt(result[3], 16), 255];
+    }
+  }
+
+  return [128, 128, 128, 255];
+};
+
+/**
+ * Transform cell data from embedding format to deck.gl format
+ * Input: { obsEmbedding: { data: [[x1, x2, ...], [y1, y2, ...]], shape }, obsEmbeddingIndex: ['cell1', 'cell2', ...] }
+ * Output: [{ position: [x, y], cellId: 'cell1', color: [r, g, b, 255] }, ...]
+ */
+const transformCellData = (convertedCellsData, cellColors) => {
+  if (!convertedCellsData || !convertedCellsData.obsEmbedding) {
+    return [];
+  }
+
+  const { obsEmbedding, obsEmbeddingIndex } = convertedCellsData;
+  const [xCoords, yCoords] = obsEmbedding.data;
+
+  return xCoords.map((x, index) => {
+    const y = yCoords[index];
+    const cellId = obsEmbeddingIndex[index];
+
+    // Get the color for this cell from cellColors map
+    const color = parseColor(cellColors[cellId]);
+    return {
+      position: [x, y],
+      cellId,
+      color,
+    };
+  });
+};
 
 const Embedding = (props) => {
   const {
@@ -47,7 +113,9 @@ const Embedding = (props) => {
 
   const dispatch = useDispatch();
 
-  const [cellRadius, setCellRadius] = useState(cellRadiusFromZoom(INITIAL_ZOOM));
+  const [activeTool, setActiveTool] = useState(null); // null for pan, 'polygon' for lasso
+  const [cellsQuadTree, setCellsQuadTree] = useState(null);
+
   const rootClusterNodes = useSelector(getCellSetsHierarchyByType('cellSets')).map(({ key }) => key);
 
   const embeddingSettings = useSelector(
@@ -70,14 +138,24 @@ const Embedding = (props) => {
   const expressionLoading = useSelector((state) => state.genes.expression.full.loading);
   const expressionMatrix = useSelector((state) => state.genes.expression.full.matrix);
 
-  const cellCoordinatesRef = useRef({ x: 200, y: 300 });
   const [cellInfoTooltip, setCellInfoTooltip] = useState();
   const [createClusterPopover, setCreateClusterPopover] = useState(false);
   const [selectedIds, setSelectedIds] = useState(new Set());
   const [cellColors, setCellColors] = useState({});
   const [cellInfoVisible, setCellInfoVisible] = useState(true);
-  const originalView = { target: [4, -4, 0], zoom: INITIAL_ZOOM };
-  const [view, setView] = useState(originalView);
+  const cellCoordinatesRef = useRef({ x: 0, y: 0, width, height });
+  const [viewState, setViewState] = useState(null);
+
+  const [convertedCellsData, setConvertedCellsData] = useState();
+
+  useEffect(() => {
+    // Update ref with latest width/height
+    cellCoordinatesRef.current = {
+      ...cellCoordinatesRef.current,
+      width,
+      height,
+    };
+  }, [width, height]);
 
   const showLoader = useMemo(() => {
     const dataIsLoaded = !data || loading;
@@ -99,6 +177,7 @@ const Embedding = (props) => {
       dispatch(loadEmbedding(experimentId, embeddingType));
     }
   }, [embeddingSettings]);
+
 
   // Handle focus change (e.g. a cell set or gene or metadata got selected).
   // Also handle here when the cell set properties or hierarchy change.
@@ -142,13 +221,13 @@ const Embedding = (props) => {
     setCellColors(colorByGeneExpression(truncatedExpression, colorInterpolator, truncatedMin, truncatedMax));
   }, [focusData.key, expressionLoading]);
 
-  const [convertedCellsData, setConvertedCellsData] = useState();
-
   useEffect(() => {
     if (!data || !cellSetHidden || !cellSetProperties) return;
 
     setConvertedCellsData(convertCellsData(data, cellSetHidden, cellSetProperties));
   }, [data, cellSetHidden, cellSetProperties]);
+
+  // Build quadtree from cell data for efficient lasso selection
 
   useEffect(() => {
     if (selectedCell) {
@@ -203,36 +282,146 @@ const Embedding = (props) => {
     dispatch(updateCellInfo({ cellId: null }));
   }, []);
 
-  const updateViewInfo = useCallback((viewInfo) => {
-    if (selectedCell && viewInfo.projectFromId) {
-      const [x, y] = viewInfo.projectFromId(selectedCell);
-      cellCoordinatesRef.current = {
-        x,
-        y,
-        width,
-        height,
-      };
-    }
-  }, [selectedCell]);
-
   const setCellsSelection = useCallback((selection) => {
-    if (Array.from(selection).length > 0) {
+    const selectionArray = selection instanceof Set ? Array.from(selection) : selection;
+    if (selectionArray && selectionArray.length > 0) {
       setCreateClusterPopover(true);
-      const selectedIdsToInt = new Set(Array.from(selection).map((id) => parseInt(id, 10)));
+      const selectedIdsToInt = new Set(selectionArray.map((id) => {
+        const num = parseInt(id, 10);
+        return Number.isNaN(num) ? id : num;
+      }));
       setSelectedIds(selectedIdsToInt);
     }
   }, []);
 
-  const cellColorsForVitessce = useMemo(() => new Map(Object.entries(cellColors)), [cellColors]);
+  const handleDeckGLHover = useCallback((info) => {
+    if (info.object) {
+      setCellHighlight(info.object.cellId);
 
-  const setViewState = useCallback(({ zoom, target }) => {
-    setCellRadius(cellRadiusFromZoom(zoom));
+      // Use hover coordinates (cursor position on the cell)
+      cellCoordinatesRef.current = {
+        x: info.x,
+        y: info.y,
+        width,
+        height
+      };
+    } else {
+      clearCellHighlight();
+    }
+  }, [setCellHighlight, clearCellHighlight, width, height]);
 
-    setView({ zoom, target });
-  }, []);
+  // Transform cell data for deck.gl
+  const deckglData = useMemo(
+    () => transformCellData(convertedCellsData, cellColors),
+    [convertedCellsData, cellColors],
+  );
 
-  const getExpressionValue = useCallback(() => { }, []);
-  const getCellIsSelected = useCallback(() => { }, []);
+  // Auto-fit view when embedding data loads (not when colors change)
+  useEffect(() => {
+    if (deckglData && deckglData.length > 0 && !viewState) {
+      const newViewState = calculateInitialViewState(deckglData, width, height);
+      setViewState(newViewState);
+    }
+  }, [deckglData, width, height, viewState]);
+
+  // Keep quadtree in sync with the currently selectable cells for lasso selection
+  useEffect(() => {
+    if (activeTool !== 'polygon' || !deckglData || deckglData.length === 0) {
+      setCellsQuadTree(null);
+      return;
+    }
+    const qt = buildCellsQuadTree(deckglData);
+    setCellsQuadTree(qt);
+
+  }, [activeTool, deckglData]);
+
+  const onRecenterClick = useCallback(() => {
+    const newViewState = calculateInitialViewState(deckglData, width, height);
+    setViewState(newViewState);
+  }, [deckglData, width, height]);
+
+  // Handle lasso selection
+  const handleEdit = useCallback(({ updatedData, editType }) => {
+    if (editType === 'addFeature' && updatedData.features.length > 0) {
+      const { coordinates } = updatedData.features[0].geometry;
+      const ring = Array.isArray(coordinates[0]) ? coordinates[0] : coordinates;
+
+      if (ring.length >= 3 && cellsQuadTree && deckglData) {
+        const selectedIds = selectCellsInPolygon(cellsQuadTree, deckglData, ring);
+        if (selectedIds.size > 0) {
+          setCellsSelection(selectedIds);
+        }
+      }
+    }
+  }, [cellsQuadTree, deckglData, setCellsSelection]);
+
+  // Create the scatterplot layer and selection layer
+  const layers = useMemo(() => {
+    if (!deckglData || deckglData.length === 0 || !viewState) {
+      return [];
+    }
+
+    const cellCount = deckglData.length;
+    const isLargeDataset = cellCount > 100000;
+
+    // tsne tends to be more spread out than umap so larger points
+    let radiusMinPixels = 1;
+
+    if (embeddingType === 'umap') {
+      radiusMinPixels = 0;
+    } else if (embeddingType === 'tsne') {
+      radiusMinPixels = 1;
+    }
+
+    const baseLayers = [
+      new ScatterplotLayer({
+        id: 'cells-scatterplot',
+        data: deckglData,
+        pickable: true,
+        autoHighlight: true,
+        highlightColor: [51, 51, 51],
+        opacity: 0.8,
+        getPosition: (d) => d.position,
+        getFillColor: (d) => d.color,
+        stroked: false,
+        getRadius: isLargeDataset ? 1 : 10,
+        radiusScale: Math.pow(2, viewState.zoom - 10),
+        radiusMinPixels: radiusMinPixels,
+        radiusUnits: 'common',
+        radiusMaxPixels: isLargeDataset ? 2 : 6,
+        updateTriggers: {
+          radiusScale: [viewState.zoom],
+        },
+      }),
+    ];
+
+    // Add selection layer for lasso tool (only if quadtree is ready)
+    if (activeTool === 'polygon' && cellsQuadTree) {
+      baseLayers.push(
+        new EditableGeoJsonLayer({
+          id: 'selection-geojson',
+          pickable: true,
+          mode: DrawPolygonByDraggingMode,
+          modeConfig: LASSO_MODE_CONFIG,
+          selectedFeatureIndexes: [],
+          data: EMPTY_DATA,
+          onEdit: handleEdit,
+          getTentativeFillColor: () => [255, 255, 255, 95],
+          getTentativeLineColor: () => [143, 143, 143, 255],
+          getTentativeLineDashArray: () => [7, 4],
+          lineWidthMinPixels: 2,
+          lineWidthMaxPixels: 2,
+          getEditHandlePointColor: () => [0xff, 0xff, 0xff, 0xff],
+          getEditHandlePointRadius: () => 5,
+          editHandlePointRadiusScale: 1,
+          editHandlePointRadiusMinPixels: 5,
+          editHandlePointRadiusMaxPixels: 10,
+        }),
+      );
+    }
+
+    return baseLayers;
+  }, [activeTool, cellsQuadTree, handleEdit, deckglData.length, viewState]);
 
   const onCreateCluster = (clusterName, clusterColor) => {
     setCreateClusterPopover(false);
@@ -245,16 +434,6 @@ const Embedding = (props) => {
       ),
     );
   };
-
-  // The embedding couldn't load. Display an error condition.
-  if (error) {
-    return (
-      <PlatformError
-        error={error}
-        onClick={() => dispatch(loadEmbedding(experimentId, embeddingType))}
-      />
-    );
-  }
 
   const renderExpressionView = () => {
     if (focusData.store === 'genes') {
@@ -271,17 +450,21 @@ const Embedding = (props) => {
       ];
 
       return (
-        <div style={{ paddingTop: 40 }}>
+        <div style={{
+          position: 'absolute',
+          top: 50,
+          left: 10,
+          zIndex: 10,
+        }}>
           <label htmlFor='continuous data name'>
             <strong>{focusData.key}</strong>
           </label>
           <div
             style={{
-              position: 'absolute',
+              marginTop: 10,
               background: `linear-gradient(${colorGradient.join(', ')})`,
               height: 200,
               width: 20,
-              top: 70,
             }}
           />
         </div>
@@ -290,7 +473,12 @@ const Embedding = (props) => {
 
     if (focusData.store === 'cellSets') {
       return (
-        <div style={{ paddingTop: 40 }}>
+        <div style={{
+          position: 'absolute',
+          top: 50,
+          left: 10,
+          zIndex: 10,
+        }}>
           <label htmlFor='cell set name'>
             <strong>{cellSetProperties[focusData.key] ? cellSetProperties[focusData.key].name : ''}</strong>
           </label>
@@ -301,63 +489,85 @@ const Embedding = (props) => {
     return <div />;
   };
 
+  // The embedding couldn't load. Display an error condition.
+  if (error) {
+    return (
+      <PlatformError
+        error={error}
+        onClick={() => dispatch(loadEmbedding(experimentId, embeddingType))}
+      />
+    );
+  }
+
   return (
     <>
       {showLoader && <center><Loader experimentId={experimentId} size='large' /></center>}
       <div
-        className='vitessce-container vitessce-theme-light'
         style={{
           width,
           height,
           position: 'relative',
-          display: showLoader ? 'none' : 'block',
+          display: showLoader ? 'none' : 'flex',
+          flexDirection: 'column',
         }}
-        // make sure that the crosshairs don't break zooming in and out of the embedding
-        onWheel={() => { setCellInfoVisible(false); }}
+        onMouseLeave={() => {
+          if (activeTool !== 'polygon') {
+            clearCellHighlight();
+          }
+        }}
         onMouseMove={() => {
           if (!cellInfoVisible) {
             setCellInfoVisible(true);
           }
         }}
-        onMouseLeave={clearCellHighlight}
-        onClick={clearCellHighlight}
-        onKeyPress={clearCellHighlight}
+        onClick={() => {
+          if (activeTool !== 'polygon') {
+            clearCellHighlight();
+          }
+        }}
+        onKeyPress={() => {
+          if (activeTool !== 'polygon') {
+            clearCellHighlight();
+          }
+        }}
       >
-        {
-          data ? (
-            <Scatterplot
-              cellColorEncoding='cellSetSelection'
-              cellOpacity={0.8}
-              cellRadius={cellRadius}
-              setCellHighlight={setCellHighlight}
-              theme='light'
-              uuid={embeddingType}
-              viewState={view}
-              setViewState={setViewState}
-              originalViewState={originalView}
-              updateViewInfo={updateViewInfo}
-              obsEmbedding={convertedCellsData?.obsEmbedding}
-              obsEmbeddingIndex={convertedCellsData?.obsEmbeddingIndex}
-              embeddingPointsVisible
-              cellColors={cellColorsForVitessce}
-              setCellSelection={setCellsSelection}
-              getExpressionValue={getExpressionValue}
-              getCellIsSelected={getCellIsSelected}
+        {data && deckglData.length > 0 ? (
+          <>
+            <ToolMenu
+              activeTool={activeTool}
+              onToolChange={setActiveTool}
+              visibleTools={{ pan: true, selectLasso: true, recenter: true }}
+              recenterOnClick={onRecenterClick}
             />
-          ) : ''
-        }
+            <div style={{ flex: 1, position: 'relative' }}>
+              {viewState && (
+                <DeckGL
+                  initialViewState={viewState}
+                  onViewStateChange={(e) => setViewState(e.viewState)}
+                  controller={activeTool === 'polygon' ? { scrollZoom: true, dragPan: false, dragRotate: false, touchZoom: true, touchRotate: false } : true}
+                  layers={layers}
+                  onHover={activeTool !== 'polygon' ? handleDeckGLHover : null}
+                  getCursor={() => activeTool === 'polygon' ? 'crosshair' : 'default'}
+                  style={{ width: '100%', height: '100%' }}
+                />
+              )}
+            </div>
+          </>
+        ) : (
+          <></>
+        )}
         {renderExpressionView()}
         {
           createClusterPopover
             ? (
               <ClusterPopover
                 visible
-                popoverPosition={cellCoordinatesRef}
+                popoverPosition={{ x: 0, y: 0 }}
                 onCreate={onCreateCluster}
                 onCancel={() => setCreateClusterPopover(false)}
               />
             ) : (
-              (cellInfoVisible && cellInfoTooltip) ? (
+              (cellInfoVisible && cellInfoTooltip && activeTool !== 'polygon') ? (
                 <div>
                   <CellInfo
                     containerWidth={width}

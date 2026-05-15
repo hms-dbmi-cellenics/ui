@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
+import _ from 'lodash';
 import { Vega } from 'react-vega';
 
 import { generateSpec, generateData } from 'utils/plotSpecs/generateEmbeddingCategoricalSpec';
@@ -47,18 +48,29 @@ const CategoricalEmbeddingPlot = (props) => {
     }
   }, [experimentId, embeddingSettings?.method]);
 
-  useEffect(() => {
-    if (!config || !cellSets.accessible) return;
-
-    if (embeddingData?.length) {
-      const {
-        plotData,
-        cellSetLegendsData,
-      } = generateData(cellSets, config.selectedSample, config.selectedCellSet, embeddingData);
-
-      setPlotSpec(generateSpec(config, embeddingSettings?.method, plotData, cellSetLegendsData));
+  // Memoize plotData - only recalculate when data-affecting properties change
+  // Dimensions/styling changes do NOT trigger this expensive recalculation
+  const memoizedPlotData = useMemo(() => {
+    if (!config || !cellSets.accessible || !embeddingData?.length) {
+      return null;
     }
-  }, [config, cellSets, embeddingData, config]);
+
+    return generateData(cellSets, config.selectedSample, config.selectedCellSet, embeddingData);
+  }, [
+    cellSets,
+    embeddingData,
+    config?.selectedSample,
+    config?.selectedCellSet,
+  ]);
+
+  // Regenerate spec when config (including dimensions/styling) changes
+  // This is fast since plotData is cached above
+  useEffect(() => {
+    if (!config || !cellSets.accessible || !memoizedPlotData) return;
+
+    const { plotData, cellSetLegendsData } = memoizedPlotData;
+    setPlotSpec(generateSpec(config, embeddingSettings?.method, plotData, cellSetLegendsData));
+  }, [config, cellSets.accessible, memoizedPlotData, embeddingSettings?.method]);
 
   const render = () => {
     if (cellSets.error) {
@@ -94,7 +106,11 @@ const CategoricalEmbeddingPlot = (props) => {
 
     return (
       <center>
-        <Vega spec={plotSpec} renderer='webgl' actions={actions} />
+        <Vega
+          spec={plotSpec}
+          renderer='webgl'
+          actions={actions}
+        />
       </center>
     );
   };

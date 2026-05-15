@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Vega } from 'react-vega';
 import PropTypes from 'prop-types';
@@ -29,8 +29,9 @@ const FrequencyPlot = (props) => {
     }
   }, []);
 
-  useEffect(() => {
-    if (!config || !cellSets.accessible) { return; }
+  // Memoize data generation - only recompute when hierarchy/properties change
+  const memoizedPlotData = useMemo(() => {
+    if (!config || !cellSets.accessible) { return null; }
 
     const {
       xNamesToDisplay,
@@ -39,8 +40,20 @@ const FrequencyPlot = (props) => {
     } = generateData(hierarchy, properties, config);
 
     formatCSVData(plotData);
-    setPlotSpec(generateSpec(config, plotData, xNamesToDisplay, yNamesToDisplay));
-  }, [hierarchy, properties, config]);
+
+    return {
+      plotData,
+      xNamesToDisplay,
+      yNamesToDisplay,
+    };
+  }, [hierarchy, properties, cellSets.accessible, config]);
+
+  // Separate effect for spec generation using memoized data
+  useEffect(() => {
+    if (!config || !memoizedPlotData) { return; }
+
+    setPlotSpec(generateSpec(config, memoizedPlotData.plotData, memoizedPlotData.xNamesToDisplay, memoizedPlotData.yNamesToDisplay));
+  }, [config, memoizedPlotData]);
 
   // If the plotSpec is empty then don't render it. This avoids a bug where
   // vega doesn't remove the initial plot if it was created with an empty plotSpec

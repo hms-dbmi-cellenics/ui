@@ -6,26 +6,36 @@ import {
 
 import _ from 'lodash';
 
-import useUpdateThrottled from 'utils/customHooks/useUpdateThrottled';
-
 const SliderWithInput = (props) => {
   const {
     min, max, value, onUpdate, disabled, step, containerStyle, sliderWidth,
   } = props;
 
-  const [, handleChange] = useUpdateThrottled(onUpdate, value);
-
   const [localValue, setLocalValue] = useState(value);
 
-  const debouncedOnChange = useCallback(
-    _.debounce((changedValue) => handleChange(changedValue), 1000), [],
+  // Single debounced update callback (400ms) instead of double throttle/debounce
+  const debouncedUpdate = useCallback(
+    _.debounce(onUpdate, 400),
+    [onUpdate]
   );
 
   useEffect(() => {
     setLocalValue(parseFloat(value));
   }, [value]);
 
+  // Cleanup debounced function on unmount
+  useEffect(() => {
+    return () => {
+      debouncedUpdate.cancel();
+    };
+  }, [debouncedUpdate]);
+
   const stepToSet = step ?? max / 200;
+
+  const handleSliderChange = (newValue) => {
+    setLocalValue(newValue);
+    debouncedUpdate(newValue);
+  };
 
   return (
     <Space align='start' style={containerStyle}>
@@ -33,8 +43,7 @@ const SliderWithInput = (props) => {
         value={localValue}
         min={min}
         max={max}
-        onChange={setLocalValue}
-        onAfterChange={handleChange}
+        onChange={handleSliderChange}
         step={stepToSet}
         disabled={disabled}
         style={{
@@ -52,12 +61,11 @@ const SliderWithInput = (props) => {
           const changedValueWithinBounds = Math.min(Math.max(changedValue, min), max);
 
           setLocalValue(changedValueWithinBounds);
-
-          debouncedOnChange(changedValueWithinBounds);
+          debouncedUpdate(changedValueWithinBounds);
         }}
-        onPressEnter={() => { handleChange(localValue); }}
+        onPressEnter={() => { onUpdate(localValue); }}
         onStep={(newValue) => {
-          handleChange(newValue);
+          onUpdate(newValue);
         }}
         step={stepToSet}
         disabled={disabled}

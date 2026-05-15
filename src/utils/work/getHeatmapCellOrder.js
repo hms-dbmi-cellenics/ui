@@ -88,12 +88,14 @@ const getHeatmapCellOrder = (
   // Get all enabled (non-hidden) cells
   const getAllEnabledCellIds = () => {
     // Get cells from the selected cell set
-    let cellIds = getCells(selectedCellSet, true);
+    const cellIds = getCells(selectedCellSet, true);
 
-    // Remove hidden cells
+    // Remove hidden cells - avoid array conversion
     normalizedHiddenCellSets.forEach((hiddenKey) => {
       const hiddenCellIds = getCells(hiddenKey);
-      cellIds = new Set([...cellIds].filter((id) => !hiddenCellIds.has(id)));
+      hiddenCellIds.forEach((id) => {
+        cellIds.delete(id);
+      });
     });
 
     return cellIds;
@@ -109,9 +111,22 @@ const getHeatmapCellOrder = (
     // For each child in the cell class
     cellClassNode.children.forEach((child) => {
       const childCellIds = properties[child.key]?.cellIds || new Set();
-      const intersection = new Set(
-        [...bucket].filter((id) => childCellIds.has(id)),
-      );
+      const intersection = new Set();
+
+      // Only iterate through the smaller set to build intersection
+      if (childCellIds.size < bucket.size) {
+        childCellIds.forEach((id) => {
+          if (bucket.has(id)) {
+            intersection.add(id);
+          }
+        });
+      } else {
+        bucket.forEach((id) => {
+          if (childCellIds.has(id)) {
+            intersection.add(id);
+          }
+        });
+      }
 
       if (intersection.size > 0) {
         intersections.push(intersection);
@@ -128,12 +143,13 @@ const getHeatmapCellOrder = (
     buckets.forEach((bucket) => {
       const intersections = getIntersections(bucket, cellClass);
 
-      // Calculate leftover cells (not in any intersection)
-      let leftoverCells = new Set(bucket);
+      // Calculate leftover cells (not in any intersection) - avoid array conversion
+      const leftoverCells = new Set(bucket);
       intersections.forEach((intersection) => {
-        leftoverCells = new Set(
-          [...leftoverCells].filter((id) => !intersection.has(id)),
-        );
+        // Remove intersection cells from leftover without converting to array
+        intersection.forEach((id) => {
+          leftoverCells.delete(id);
+        });
       });
 
       // Add all intersections

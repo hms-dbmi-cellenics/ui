@@ -3,34 +3,6 @@
 exports[`markerGenesLoaded returns correct state 1`] = `
 {
   "expression": {
-    "downsampled": {
-      "ETag": null,
-      "error": false,
-      "loading": [],
-      "matrix": ExpressionMatrix {
-        "geneIndexes": {},
-        "rawGeneExpressions": {
-          "datatype": undefined,
-          "index": [],
-          "mathjs": "SparseMatrix",
-          "ptr": [
-            0,
-          ],
-          "size": [
-            0,
-            0,
-          ],
-          "values": [],
-        },
-        "setGeneExpression": [Function],
-        "stats": {
-          "rawMean": [],
-          "rawStdev": [],
-          "truncatedMax": [],
-          "truncatedMin": [],
-        },
-      },
-    },
     "full": {
       "ETag": null,
       "error": false,

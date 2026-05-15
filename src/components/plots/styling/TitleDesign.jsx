@@ -1,16 +1,13 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import {
-  Slider, Form,
-  Radio, Input, Space,
-} from 'antd';
-import useUpdateThrottled from 'utils/customHooks/useUpdateThrottled';
+import { Form, Radio, Space } from 'antd';
+import DebouncedSlider from './DebouncedSlider';
+import DebouncedInput from './DebouncedInput';
 
 const TitleDesign = (props) => {
   const {
     onUpdate, config, allowTitleChange, placeHolder,
   } = props;
-  const [newConfig, handleChange] = useUpdateThrottled(onUpdate, config);
   return (
     <Space direction='vertical' style={{ width: '80%' }}>
       <Form
@@ -24,25 +21,23 @@ const TitleDesign = (props) => {
             <Form.Item
               label='Title Text'
             >
-              <Input
+              <DebouncedInput
                 placeholder={placeHolder}
-                value={newConfig.title.text}
-                onChange={(e) => {
-                  handleChange({ title: { text: e.target.value } });
-                }}
+                value={config.title.text}
+                path='title.text'
+                onUpdate={onUpdate}
               />
             </Form.Item>
           )}
         <Form.Item
           label='Title Font Size'
         >
-          <Slider
-            value={newConfig.title.fontSize}
+          <DebouncedSlider
+            value={config.title.fontSize}
             min={15}
             max={40}
-            onChange={(value) => {
-              handleChange({ title: { fontSize: value } });
-            }}
+            path='title.fontSize'
+            onUpdate={onUpdate}
             marks={{ 15: 15, 40: 40 }}
           />
         </Form.Item>

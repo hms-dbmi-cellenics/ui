@@ -2,13 +2,13 @@ import React from 'react';
 import _ from 'lodash';
 import PropTypes from 'prop-types';
 import {
-  Slider, Form, Input, Switch, Checkbox,
+  Form, Input, Switch, Checkbox,
 } from 'antd';
-import useUpdateThrottled from 'utils/customHooks/useUpdateThrottled';
+import DebouncedSlider from './DebouncedSlider';
+import DebouncedInput from './DebouncedInput';
 
 const AxesDesign = (props) => {
   const { onUpdate, config, showAxisLabelsToggle = true, embeddingMethod, defaultXAxisText: propDefaultX = '', defaultYAxisText: propDefaultY = '' } = props;
-  const [newConfig, handleChange] = useUpdateThrottled(onUpdate, config, 200);
 
   // Calculate default values based on embedding method (uppercase, no space)
   // Or use provided props if embeddingMethod is not available
@@ -37,7 +37,7 @@ const AxesDesign = (props) => {
               <Checkbox
                 checked={config.axes.xAxisLabels}
                 onChange={(e) => {
-                  handleChange({
+                  onUpdate({
                     axes: { xAxisLabels: e.target.checked },
                   });
                 }}
@@ -48,7 +48,7 @@ const AxesDesign = (props) => {
               <Checkbox
                 checked={config.axes.yAxisLabels}
                 onChange={(e) => {
-                  handleChange({
+                  onUpdate({
                     axes: { yAxisLabels: e.target.checked },
                   });
                 }}
@@ -62,82 +62,88 @@ const AxesDesign = (props) => {
       )}
       <p><strong>Axes Settings:</strong></p>
       <Form.Item label='X-Axis Title'>
-        <Input
+        <DebouncedInput
           value={displayXAxisText}
-          onChange={(e) => handleChange({
-            axes: {
-              xAxisText: e.target.value,
-              defaultValues: _.without(config.axes.defaultValues, 'x'),
-            },
-          })}
+          debounceMs={600}
+          onUpdate={(value) => {
+            onUpdate({
+              axes: {
+                xAxisText: value,
+                defaultValues: _.without(config.axes.defaultValues, 'x'),
+              },
+            });
+          }}
         />
       </Form.Item>
 
       <Form.Item label='Y-Axis Title'>
-        <Input
+        <DebouncedInput
           value={displayYAxisText}
-          onChange={(e) => handleChange({
-            axes: {
-              yAxisText: e.target.value,
-              defaultValues: _.without(config.axes.defaultValues, 'y'),
-            },
-          })}
+          debounceMs={600}
+          onUpdate={(value) => {
+            onUpdate({
+              axes: {
+                yAxisText: value,
+                defaultValues: _.without(config.axes.defaultValues, 'y'),
+              },
+            });
+          }}
         />
       </Form.Item>
 
       <Form.Item label='Rotate X-Axis Labels'>
         <Switch
-          checked={newConfig.axes.xAxisRotateLabels}
+          checked={config.axes.xAxisRotateLabels}
           onChange={(checked) => {
-            handleChange({ axes: { xAxisRotateLabels: checked } });
+            onUpdate({ axes: { xAxisRotateLabels: checked } });
           }}
         />
       </Form.Item>
 
       <Form.Item label='Axes Title Size'>
-        <Slider
-          value={newConfig.axes.titleFontSize}
+        <DebouncedSlider
+          value={config.axes.titleFontSize}
           min={5}
           max={21}
-          onChange={(value) => {
-            handleChange({ axes: { titleFontSize: value } });
-          }}
+          path='axes.titleFontSize'
+          onUpdate={onUpdate}
+          debounceMs={300}
           marks={{ 5: 5, 21: 21 }}
         />
       </Form.Item>
 
       <Form.Item label='Axes Label Size'>
-        <Slider
-          value={newConfig.axes.labelFontSize}
+        <DebouncedSlider
+          value={config.axes.labelFontSize}
           min={5}
           max={21}
-          onChange={(value) => {
-            handleChange({ axes: { labelFontSize: value } });
-          }}
+          path='axes.labelFontSize'
+          onUpdate={onUpdate}
+          debounceMs={300}
           marks={{ 5: 5, 21: 21 }}
         />
       </Form.Item>
 
       <Form.Item label='Offset Margins'>
-        <Slider
-          value={newConfig.axes.offset}
+        <DebouncedSlider
+          value={config.axes.offset}
           min={0}
           max={20}
-          onChange={(value) => {
-            handleChange({ axes: { offset: value } });
-          }}
+          path='axes.offset'
+          onUpdate={onUpdate}
+          debounceMs={300}
           marks={{ 0: 0, 20: 20 }}
         />
       </Form.Item>
 
       <Form.Item label='Grid Line Weight'>
-        <Slider
-          value={newConfig.axes.gridOpacity}
+        <DebouncedSlider
+          value={config.axes.gridOpacity}
           min={0}
           max={10}
-          onChange={(value) => {
-            handleChange({ axes: { gridOpacity: value } });
-          }}
+          path='axes.gridOpacity'
+          onUpdate={onUpdate}
+          debounceMs={300}
           marks={{ 0: 0, 10: 10 }}
         />
       </Form.Item>

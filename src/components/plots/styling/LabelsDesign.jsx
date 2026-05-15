@@ -1,13 +1,12 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {
-  Radio, Form, Slider,
+  Radio, Form,
 } from 'antd';
-import useUpdateThrottled from 'utils/customHooks/useUpdateThrottled';
+import DebouncedSlider from './DebouncedSlider';
 
 const LabelsDesign = (props) => {
   const { config, onUpdate } = props;
-  const [newConfig, handleChange] = useUpdateThrottled(onUpdate, config);
   const minLabelSize = 0;
   const maxLabelSize = 50;
 
@@ -26,14 +25,13 @@ const LabelsDesign = (props) => {
       <Form.Item
         label='Size'
       >
-        <Slider
-          value={newConfig.labels.size}
+        <DebouncedSlider
+          value={config.labels.size}
           min={minLabelSize}
           max={maxLabelSize}
           disabled={!config.labels.enabled}
-          onChange={(value) => {
-            handleChange({ labels: { size: value } });
-          }}
+          path='labels.size'
+          onUpdate={onUpdate}
           marks={{ 0: minLabelSize, 50: maxLabelSize }}
         />
       </Form.Item>

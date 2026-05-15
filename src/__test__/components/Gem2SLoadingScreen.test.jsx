@@ -33,7 +33,7 @@ describe('GEM2SLoadingScreen', () => {
 
     const display = component.find(Result);
 
-    expect(display.props().status).toEqual('toBeRun');
+    expect(display.props().status).toEqual('info');
     expect(display.find(Button).length).toEqual(1);
     expect(display.find(Progress).length).toEqual(0);
   });
@@ -88,7 +88,7 @@ describe('GEM2SLoadingScreen', () => {
 
     const display = component.find(Result);
 
-    expect(display.props().status).toEqual('running');
+    expect(display.props().status).toEqual('info');
     expect(display.find(Button).length).toEqual(0);
     expect(display.find(Progress).length).toEqual(1);
 

@@ -1,9 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import {
-  Slider, Form, Space,
-} from 'antd';
-import useUpdateThrottled from 'utils/customHooks/useUpdateThrottled';
+import { Form, Space } from 'antd';
+import DebouncedSlider from './DebouncedSlider';
 
 const DimensionsRangeEditor = (props) => {
   const {
@@ -19,7 +17,6 @@ const DimensionsRangeEditor = (props) => {
   const heighthMarks = {};
   heighthMarks[minHeight] = minHeight;
   heighthMarks[maxHeight] = maxHeight;
-  const [newConfig, handleChange] = useUpdateThrottled(onUpdate, config);
 
   return (
     <Space direction='vertical' style={{ width: '80%' }}>
@@ -32,26 +29,26 @@ const DimensionsRangeEditor = (props) => {
         <Form.Item
           label='Width'
         >
-          <Slider
-            value={newConfig.dimensions.width}
+          <DebouncedSlider
+            value={config.dimensions.width}
             min={minWidth}
             max={maxWidth}
-            onChange={(value) => {
-              handleChange({ dimensions: { width: value } });
-            }}
+            path='dimensions.width'
+            onUpdate={onUpdate}
+            debounceMs={400}
             marks={widthMarks}
           />
         </Form.Item>
         <Form.Item
           label='Height'
         >
-          <Slider
-            value={newConfig.dimensions.height}
+          <DebouncedSlider
+            value={config.dimensions.height}
             min={minHeight}
             max={maxHeight}
-            onChange={(value) => {
-              handleChange({ dimensions: { height: value } });
-            }}
+            path='dimensions.height'
+            onUpdate={onUpdate}
+            debounceMs={400}
             marks={heighthMarks}
           />
         </Form.Item>

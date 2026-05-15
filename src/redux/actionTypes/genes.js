@@ -60,33 +60,9 @@ const MARKER_GENES_LOADED = `${GENES}/markerGenesLoaded`;
  */
 const MARKER_GENES_ERROR = `${GENES}/markerGenesError`;
 
-/**
- * Heatmap genes expression load task
- */
-const HEATMAP_GENES_EXPRESSION_LOADING = `${GENES}/heatmapGenesExpressionLoading`;
-
-/**
- * Heatmap genes expression has been successfully loaded
- */
-const HEATMAP_GENES_EXPRESSION_LOADED = `${GENES}/heatmapGenesExpressionLoaded`;
-
-/**
- * Heatmap genes expression error
- */
-const HEATMAP_GENES_EXPRESSION_ERROR = `${GENES}/heatmapGenesExpressionError`;
-
-/**
- * Update ordered gene names for heatmap expression (without refetching data)
- */
-const HEATMAP_GENES_EXPRESSION_UPDATE_GENE_ORDER = `${GENES}/heatmapGenesExpressionUpdateGeneOrder`;
-
 export {
   GENES_PROPERTIES_LOADING, GENES_PROPERTIES_LOADED_PAGINATED, GENES_PROPERTIES_ERROR,
   GENES_SELECT, GENES_DESELECT,
   MARKER_GENES_LOADING, MARKER_GENES_LOADED, MARKER_GENES_ERROR,
   GENES_EXPRESSION_LOADING, GENES_EXPRESSION_LOADED, GENES_EXPRESSION_ERROR,
-  HEATMAP_GENES_EXPRESSION_LOADING,
-  HEATMAP_GENES_EXPRESSION_LOADED,
-  HEATMAP_GENES_EXPRESSION_ERROR,
-  HEATMAP_GENES_EXPRESSION_UPDATE_GENE_ORDER,
 };

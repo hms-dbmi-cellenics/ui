@@ -12,6 +12,7 @@ import { loadBackendStatus } from 'redux/actions/backendStatus';
 import { loadGeneExpression } from 'redux/actions/genes';
 import updatePlotConfig from 'redux/actions/componentConfig/updatePlotConfig';
 import { makeStore } from 'redux/store';
+import { GENES_EXPRESSION_ERROR } from 'redux/actionTypes/genes';
 import fetchWork from 'utils/work/fetchWork';
 
 import markerGenesData2 from '__test__/data/marker_genes_2.json';
@@ -243,7 +244,7 @@ describe('Marker heatmap plot', () => {
     // Manually dispatch an error action to simulate gene expression load failure
     await act(async () => {
       await storeState.dispatch({
-        type: 'genes/heatmapGenesExpressionError',
+        type: GENES_EXPRESSION_ERROR,
         payload: {
           experimentId,
           componentUuid: plotUuid,
@@ -256,7 +257,7 @@ describe('Marker heatmap plot', () => {
     // Verify error state is set in Redux
     const state = storeState.getState();
     expect(state.genes.expression.views[plotUuid]?.error).toBeTruthy();
-    expect(state.genes.expression.downsampled?.error).toBeTruthy();
+    expect(state.genes.expression.full?.error).toBeTruthy();
   });
 
   it('removing a gene keeps the sorted order without re-sorting', async () => {

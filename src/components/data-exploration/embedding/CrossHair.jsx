@@ -31,13 +31,17 @@ const CrossHair = (props) => {
   };
 
   if (crossHairsVisible && Object.keys(coordinates.current).length > 0) {
+    // Center the crosshair on the point by accounting for its rendered radius
+    const centerOffsetX = Math.round(coordinates.current.x - crosshairWidth / 2);
+    const centerOffsetY = Math.round(coordinates.current.y - crosshairWidth / 2);
+
     return (
       <div>
         <div style={{
           ...commonStyle,
           top: 0,
           width: '1px',
-          left: `${coordinates.current.x - crosshairWidth / 2}px`,
+          left: `${centerOffsetX}px`,
           height: `${coordinates.current.height}px`,
         }}
         />
@@ -45,7 +49,7 @@ const CrossHair = (props) => {
           ...commonStyle,
           left: 0,
           height: '1px',
-          top: `${coordinates.current.y - crosshairWidth / 2}px`,
+          top: `${centerOffsetY}px`,
           width: `${coordinates.current.width}px`,
         }}
         />
