@@ -500,37 +500,35 @@ const Embedding = (props) => {
   }
 
   return (
-    <>
-      {showLoader && <center><Loader experimentId={experimentId} size='large' /></center>}
-      <div
-        style={{
-          width,
-          height,
-          position: 'relative',
-          display: showLoader ? 'none' : 'flex',
-          flexDirection: 'column',
-        }}
-        onMouseLeave={() => {
-          if (activeTool !== 'polygon') {
-            clearCellHighlight();
-          }
-        }}
-        onMouseMove={() => {
-          if (!cellInfoVisible) {
-            setCellInfoVisible(true);
-          }
-        }}
-        onClick={() => {
-          if (activeTool !== 'polygon') {
-            clearCellHighlight();
-          }
-        }}
-        onKeyPress={() => {
-          if (activeTool !== 'polygon') {
-            clearCellHighlight();
-          }
-        }}
-      >
+    <div
+      style={{
+        width,
+        height,
+        position: 'relative',
+        display: 'flex',
+        flexDirection: 'column',
+      }}
+      onMouseLeave={() => {
+        if (activeTool !== 'polygon') {
+          clearCellHighlight();
+        }
+      }}
+      onMouseMove={() => {
+        if (!cellInfoVisible) {
+          setCellInfoVisible(true);
+        }
+      }}
+      onClick={() => {
+        if (activeTool !== 'polygon') {
+          clearCellHighlight();
+        }
+      }}
+      onKeyPress={() => {
+        if (activeTool !== 'polygon') {
+          clearCellHighlight();
+        }
+      }}
+    >
         {data && deckglData.length > 0 ? (
           <>
             <ToolMenu
@@ -539,7 +537,7 @@ const Embedding = (props) => {
               visibleTools={{ pan: true, selectLasso: true, recenter: true }}
               recenterOnClick={onRecenterClick}
             />
-            <div style={{ flex: 1, position: 'relative' }}>
+            <div style={{ flex: 1, position: 'relative', opacity: showLoader ? 0 : 1 }}>
               {viewState && (
                 <DeckGL
                   initialViewState={viewState}
@@ -584,8 +582,24 @@ const Embedding = (props) => {
               ) : <></>
             )
         }
-      </div>
-    </>
+      {showLoader && (
+        <div
+          style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 100,
+          }}
+        >
+          <Loader experimentId={experimentId} size='large' />
+        </div>
+      )}
+    </div>
   );
 };
 
