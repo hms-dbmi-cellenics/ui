@@ -1,7 +1,13 @@
 import endUserMessages from './endUserMessages';
 
-class ServerError extends Error {
+function ServerError(message) {
+  const err = new Error(message);
+  Object.setPrototypeOf(err, ServerError.prototype);
+  return err;
 }
+
+ServerError.prototype = Object.create(Error.prototype);
+ServerError.prototype.constructor = ServerError;
 
 const throwIfRequestFailed = (response, json, friendlyMessage) => {
   if (!response.ok) {
