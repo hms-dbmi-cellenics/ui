@@ -53,17 +53,21 @@ exports[`loadGeneExpression action Dispatches appropriately on success 1`] = `
       ],
       "rawExpression": {
         "datatype": undefined,
-        "index": [],
+        "index": [
+          0,
+        ],
         "mathjs": "SparseMatrix",
         "ptr": [
           0,
-          0,
+          1,
         ],
         "size": [
           1,
           1,
         ],
-        "values": [],
+        "values": [
+          1,
+        ],
       },
       "stats": {
         "rawMean": [

@@ -1,14 +1,16 @@
 import dayjs from 'dayjs';
 
-class WorkTimeoutError extends Error {
-  // we pass along both duration & date for debugging purposes
-  constructor(timeoutDuration, timeoutDate, request, ETag) {
-    super(`The request for ${ETag} took more than ${timeoutDuration}s, past ${timeoutDate} to complete at ${dayjs().toISOString()}`);
-    this.timeoutDuration = timeoutDuration;
-    this.timeout = timeoutDate;
-    this.request = request;
-    this.ETag = ETag;
-  }
+function WorkTimeoutError(timeoutDuration, timeoutDate, request, ETag) {
+  const err = new Error(`The request for ${ETag} took more than ${timeoutDuration}s, past ${timeoutDate} to complete at ${dayjs().toISOString()}`);
+  Object.setPrototypeOf(err, WorkTimeoutError.prototype);
+  err.timeoutDuration = timeoutDuration;
+  err.timeout = timeoutDate;
+  err.request = request;
+  err.ETag = ETag;
+  return err;
 }
+
+WorkTimeoutError.prototype = Object.create(Error.prototype);
+WorkTimeoutError.prototype.constructor = WorkTimeoutError;
 
 module.exports = WorkTimeoutError;

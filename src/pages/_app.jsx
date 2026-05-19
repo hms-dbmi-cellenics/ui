@@ -179,54 +179,66 @@ const WrappedApp = ({ Component, pageProps }) => {
 
 /* eslint-disable global-require */
 WrappedApp.getInitialProps = async ({ Component, ctx }) => {
-  const {
-    store, req, query, res, err,
-  } = ctx;
-
-  // If a render error occurs, NextJS bypasses the normal page rendering
-  // and returns `_error.jsx` instead, returning these parameters
-  if (err) { return { pageProps: { errorObject: err } }; }
-
-  // Do nothing if not server-side
-  if (!req) { return { pageProps: {} }; }
-
-  const pageProps = Component.getInitialProps
-    ? await Component.getInitialProps(ctx)
-    : {};
-
-  const promises = [];
-
-  const { default: getEnvironmentInfo } = (await import('utils/ssr/getEnvironmentInfo'));
-  promises.push(getEnvironmentInfo);
-
-  const { default: getAuthenticationInfo } = (await import('utils/ssr/getAuthenticationInfo'));
-  promises.push(getAuthenticationInfo);
-
-  const results = await Promise.all(promises.map((f) => f(ctx, store)));
-  const { amplifyConfig } = results[1];
-
   try {
-    const { withSSRContext } = (await import('aws-amplify'));
+    const {
+      store, req, query, res, err,
+    } = ctx || {};
 
-    const { Auth } = withSSRContext(ctx);
-    Auth.configure(amplifyConfig.Auth);
+    // If a render error occurs, NextJS bypasses the normal page rendering
+    // and returns `_error.jsx` instead, returning these parameters
+    if (err) { return { pageProps: { errorObject: err } }; }
 
-    if (query?.experimentId) {
-      const { default: getExperimentInfo } = (await import('utils/ssr/getExperimentInfo'));
-      await getExperimentInfo(ctx, store, Auth);
+    // Do nothing if not server-side
+    if (!req) { return { pageProps: {} }; }
+
+    // If store is not available, try to initialize it manually for v8 compatibility
+    let reduxStore = store;
+    if (!reduxStore) {
+      const { makeStore } = (await import('redux/store'));
+      reduxStore = makeStore();
     }
 
-    return { pageProps: { ...pageProps, amplifyConfig } };
-  } catch (e) {
-    console.error(e);
+    const pageProps = Component.getInitialProps
+      ? await Component.getInitialProps(ctx)
+      : {};
 
-    if (!(e instanceof APIError)) {
-      // eslint-disable-next-line no-ex-assign
-      e = new APIError(500);
+    const promises = [];
+
+    const { default: getEnvironmentInfo } = (await import('utils/ssr/getEnvironmentInfo'));
+    promises.push(getEnvironmentInfo);
+
+    const { default: getAuthenticationInfo } = (await import('utils/ssr/getAuthenticationInfo'));
+    promises.push(getAuthenticationInfo);
+
+    const results = await Promise.all(promises.map((f) => f(ctx, reduxStore)));
+    const { amplifyConfig } = results[1];
+
+    try {
+      const { withSSRContext } = (await import('aws-amplify'));
+
+      const { Auth } = withSSRContext(ctx);
+      Auth.configure(amplifyConfig.Auth);
+
+      if (query?.experimentId) {
+        const { default: getExperimentInfo } = (await import('utils/ssr/getExperimentInfo'));
+        await getExperimentInfo(ctx, reduxStore, Auth);
+      }
+
+      return { pageProps: { ...pageProps, amplifyConfig } };
+    } catch (e) {
+      console.error(e);
+
+      if (!(e instanceof APIError)) {
+        // eslint-disable-next-line no-ex-assign
+        e = new APIError(500);
+      }
+      res.statusCode = e.statusCode;
+
+      return { pageProps: { ...pageProps, amplifyConfig, httpError: e.statusCode || true } };
     }
-    res.statusCode = e.statusCode;
-
-    return { pageProps: { ...pageProps, amplifyConfig, httpError: e.statusCode || true } };
+  } catch (err) {
+    console.error('Error in getInitialProps:', err);
+    return { pageProps: {} };
   }
 };
 /* eslint-enable global-require */

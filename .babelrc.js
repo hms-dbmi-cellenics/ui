@@ -1,81 +1,31 @@
 module.exports = (api) => {
   api.cache(() => process.env.NODE_ENV);
 
-  let babelConfig = {
+  // For production and development, use next/babel with transform-runtime
+  if (process.env.NODE_ENV !== 'test') {
+    return {
+      presets: ['next/babel'],
+      plugins: [
+        ['@babel/plugin-transform-runtime', {
+          corejs: false,
+        }]
+      ]
+    };
+  }
+
+  // For tests, use a simpler setup
+  return {
     presets: [
-      "@babel/preset-react"
+      ['@babel/preset-env', { targets: { node: 'current' } }],
+      ['@babel/preset-react', { runtime: 'automatic' }],
     ],
     plugins: [
-      "lodash",
-      "babel-plugin-add-module-exports",
-      "@babel/plugin-transform-runtime"
+      'babel-plugin-add-module-exports',
+      '@babel/plugin-transform-class-properties',
+      '@babel/plugin-transform-private-methods',
+      '@babel/plugin-transform-private-property-in-object',
+      ['babel-plugin-dynamic-import-node']
     ]
   };
-
-  if (process.env.NODE_ENV === 'test') {
-    babelConfig = {
-      ...babelConfig,
-      presets: [
-        ...babelConfig.presets,
-        [
-          "next/babel",
-          {
-            "preset-env": {
-              useBuiltIns: "usage",
-              corejs: 2,
-              targets: {
-                ie: 11
-              },
-            },
-            "transform-runtime": {
-              corejs: false
-            },
-          }
-        ]
-      ],
-      plugins: [
-        ...babelConfig.plugins,
-        [
-          "babel-plugin-dynamic-import-node"
-        ]
-      ]
-    }
-  }
-
-  // Jest has a bug where it cannot resolve imports from antd
-  // We will only add the `import` plugin to non-test runs of Babel.
-  // See https://github.com/facebook/jest/issues/6938
-  if (process.env.NODE_ENV !== 'test') {
-    babelConfig = {
-      ...babelConfig,
-      presets: [
-        ...babelConfig.presets,
-        [
-          "next/babel",
-          {
-            "preset-env": {
-              useBuiltIns: "usage",
-              corejs: 2,
-              targets: {
-                ie: 11
-              }
-            }
-          }
-        ]
-      ],
-      plugins: [
-        ...babelConfig.plugins,
-        [
-          "import",
-          {
-            libraryName: "antd",
-            style: true
-          }
-        ],
-      ]
-    }
-  }
-
-  return babelConfig;
 };
 
