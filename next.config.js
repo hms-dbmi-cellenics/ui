@@ -64,14 +64,15 @@ const nextConfig = {
       },
     ];
   },
-  experimental: {
-    esmExternals: 'loose',
-  },
   publicRuntimeConfig: {
     domainName: process.env.DOMAIN_NAME,
     accountId,
   },
   productionBrowserSourceMaps: true,
+  compiler: {
+    reactRemoveProperties: process.env.NODE_ENV === 'production',
+    removeConsole: process.env.NODE_ENV === 'production' ? { exclude: ['error', 'warn'] } : false,
+  },
   webpack: (config, params) => {
     const { dev } = params;
 

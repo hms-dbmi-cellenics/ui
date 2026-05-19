@@ -5,7 +5,7 @@ import ExpressionMatrix from 'utils/ExpressionMatrix/ExpressionMatrix';
 
 const getOneGeneMatrix = (geneSymbol, cellsCount = 10) => ({
   orderedGeneNames: [geneSymbol],
-  rawExpression: new SparseMatrix(_.times(cellsCount, 1)),
+  rawExpression: new SparseMatrix(_.times(cellsCount, () => 1)),
   stats: {
     rawMean: [1],
     rawStdev: [0],
