@@ -178,10 +178,10 @@ const WrappedApp = ({ Component, pageProps }) => {
 };
 
 /* eslint-disable global-require */
-WrappedApp.getInitialProps = async ({ Component, ctx }) => {
+WrappedApp.getInitialProps = wrapper.getInitialAppProps((store) => async ({ Component, ctx }) => {
   try {
     const {
-      store, req, query, res, err,
+      req, query, res, err,
     } = ctx || {};
 
     // If a render error occurs, NextJS bypasses the normal page rendering
@@ -190,13 +190,6 @@ WrappedApp.getInitialProps = async ({ Component, ctx }) => {
 
     // Do nothing if not server-side
     if (!req) { return { pageProps: {} }; }
-
-    // If store is not available, try to initialize it manually for v8 compatibility
-    let reduxStore = store;
-    if (!reduxStore) {
-      const { makeStore } = (await import('redux/store'));
-      reduxStore = makeStore();
-    }
 
     const pageProps = Component.getInitialProps
       ? await Component.getInitialProps(ctx)
@@ -210,7 +203,7 @@ WrappedApp.getInitialProps = async ({ Component, ctx }) => {
     const { default: getAuthenticationInfo } = (await import('utils/ssr/getAuthenticationInfo'));
     promises.push(getAuthenticationInfo);
 
-    const results = await Promise.all(promises.map((f) => f(ctx, reduxStore)));
+    const results = await Promise.all(promises.map((f) => f(ctx, store)));
     const { amplifyConfig } = results[1];
 
     try {
@@ -221,7 +214,7 @@ WrappedApp.getInitialProps = async ({ Component, ctx }) => {
 
       if (query?.experimentId) {
         const { default: getExperimentInfo } = (await import('utils/ssr/getExperimentInfo'));
-        await getExperimentInfo(ctx, reduxStore, Auth);
+        await getExperimentInfo(ctx, store, Auth);
       }
 
       return { pageProps: { ...pageProps, amplifyConfig } };
@@ -240,7 +233,7 @@ WrappedApp.getInitialProps = async ({ Component, ctx }) => {
     console.error('Error in getInitialProps:', err);
     return { pageProps: {} };
   }
-};
+});
 /* eslint-enable global-require */
 
 WrappedApp.propTypes = {
