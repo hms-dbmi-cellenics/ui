@@ -18,9 +18,9 @@ const getTimeoutForWorkerTask = (state, taskName) => {
       // all of this calls can happen at the same time and each of them can potentially have to
       // wait for the others to finish before it starts processing (due to the SQS) so the timeout
       // needs to be large enough for the slowest task to finish
-      // the 900s (15min) is based on the time it takes to create the marker heatmap
-      // for a 430k cells
-      return 900;
+      // the 1800s (30min) is based on the time it takes to run the UMAP embedding
+      // for 1M cells
+      return 1800;
     }
     case 'ClusterCells': {
       return 0.002 * nCells + baseTimeout;
