@@ -83,10 +83,7 @@ const ConfigureEmbedding = (props) => {
     },
     {
       panelTitle: 'Markers',
-      controls: [{
-        name: 'markers',
-        props: { showShapeType: false },
-      }],
+      controls: ['markers'],
     },
     {
       panelTitle: 'Legend',
@@ -116,10 +113,7 @@ const ConfigureEmbedding = (props) => {
     },
     {
       panelTitle: 'Markers',
-      controls: [{
-        name: 'markers',
-        props: { showShapeType: false },
-      }],
+      controls: ['markers'],
     },
     {
       panelTitle: 'Legend',
@@ -145,10 +139,7 @@ const ConfigureEmbedding = (props) => {
     },
     {
       panelTitle: 'Markers',
-      controls: [{
-        name: 'markers',
-        props: { showShapeType: false },
-      }],
+      controls: ['markers'],
     },
     {
       panelTitle: 'Legend',
@@ -424,6 +415,30 @@ const ConfigureEmbedding = (props) => {
     }
   }, [currentPlot]);
 
+  // When switching between embedding plots, sync marker settings across all embedding plots
+  useEffect(() => {
+    if (plotType !== 'embedding' || !selectedConfig?.marker) return;
+
+    // Get all embedding plot UUIDs
+    const embeddingPlotUuids = [];
+    Object.values(plots).forEach(({ subPlots }) => {
+      if (subPlots.embedding) {
+        embeddingPlotUuids.push(subPlots.embedding.plotUuid);
+      }
+    });
+
+    // Apply current plot's marker settings to all other embedding plots
+    embeddingPlotUuids.forEach((plotUuid) => {
+      if (plotUuid !== activePlotUuid) {
+        const otherPlotConfig = plotConfigs[plotUuid];
+        if (otherPlotConfig && 
+            JSON.stringify(otherPlotConfig.marker) !== JSON.stringify(selectedConfig.marker)) {
+          dispatch(updatePlotConfig(plotUuid, { marker: selectedConfig.marker }));
+        }
+      }
+    });
+  }, [activePlotUuid, plotType, selectedConfig?.marker]);
+
   useEffect(() => {
     if (!selectedConfig) {
       return;
@@ -432,14 +447,32 @@ const ConfigureEmbedding = (props) => {
     const plotActions = {
       export: true,
     };
+    
     if (cellSets.accessible && selectedConfig) {
       setPlot(currentPlot.plot(selectedConfig, plotActions));
     }
-  }, [selectedConfig, cellSets, cellMeta]);
+  }, [selectedConfig, cellSets, cellMeta, plotType]);
 
   const updatePlotWithChanges = (obj) => {
-    dispatch(updatePlotConfig(currentPlot.plotUuid, obj));
-    debounceSave(currentPlot.plotUuid);
+    // Get all embedding plot UUIDs
+    const embeddingPlotUuids = [];
+    Object.values(plots).forEach(({ subPlots }) => {
+      if (subPlots.embedding) {
+        embeddingPlotUuids.push(subPlots.embedding.plotUuid);
+      }
+    });
+
+    // If updating marker settings on an embedding plot, apply to all embedding plots
+    if (plotType === 'embedding' && obj.marker) {
+      embeddingPlotUuids.forEach((plotUuid) => {
+        dispatch(updatePlotConfig(plotUuid, { marker: obj.marker }));
+        debounceSave(plotUuid);
+      });
+    } else {
+      // For non-marker changes, only update current plot
+      dispatch(updatePlotConfig(currentPlot.plotUuid, obj));
+      debounceSave(currentPlot.plotUuid);
+    }
   };
 
   const isConfigEqual = (currentConfig, initialConfig) => {
