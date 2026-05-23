@@ -20,12 +20,14 @@ const getTotalCellCount = (cellSets) => {
 };
 
 /**
- * Determines if a plot is an embedding preview plot used in data-processing
+ * Determines if a plot is an embedding plot that should get large-dataset defaults
+ * Includes both data-processing embedding preview plots and Plots-Tables embedding plots
  * @param {string} plotType - The plot type
  * @returns {boolean}
  */
-const isEmbeddingPreviewPlot = (plotType) => {
-  const embeddingPreviewPlots = [
+const isEmbeddingPlotType = (plotType) => {
+  const embeddingPlots = [
+    // Data-processing embedding preview plots
     'embeddingPreviewBySample',
     'embeddingPreviewByCellSets',
     'embeddingPreviewMitochondrialContent',
@@ -33,13 +35,16 @@ const isEmbeddingPreviewPlot = (plotType) => {
     'embeddingPreviewNumOfGenes',
     'embeddingPreviewNumOfUmis',
     'dataIntegrationEmbedding',
+    // Plots and Tables embedding plots
+    'embeddingContinuous',
+    'embeddingCategorical',
   ];
-  return embeddingPreviewPlots.includes(plotType);
+  return embeddingPlots.includes(plotType);
 };
 
 /**
  * Gets the initial configuration for an embedding plot, adjusted based on cell count.
- * For data-processing embedding plots with >100k cells:
+ * For embedding plots with >100k cells:
  * - Sets marker.outline to false
  * - Sets marker.size to 1
  *
@@ -50,8 +55,8 @@ const isEmbeddingPreviewPlot = (plotType) => {
 const getEmbeddingInitialConfig = (plotType, cellSets = null) => {
   const baseConfig = { ...initialPlotConfigStates[plotType] };
 
-  // Apply conditional defaults for embedding preview plots with large datasets
-  if (isEmbeddingPreviewPlot(plotType) && cellSets) {
+  // Apply conditional defaults for embedding plots with large datasets
+  if (isEmbeddingPlotType(plotType) && cellSets) {
     const totalCells = getTotalCellCount(cellSets);
 
     if (totalCells > 100000) {
@@ -75,4 +80,4 @@ const getEmbeddingInitialConfig = (plotType, cellSets = null) => {
   return baseConfig;
 };
 
-export { getEmbeddingInitialConfig, getTotalCellCount, isEmbeddingPreviewPlot };
+export { getEmbeddingInitialConfig, getTotalCellCount, isEmbeddingPlotType };
