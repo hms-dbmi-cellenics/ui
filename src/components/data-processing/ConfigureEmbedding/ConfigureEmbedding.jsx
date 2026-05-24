@@ -26,6 +26,7 @@ import loadCellMeta from 'redux/actions/cellMeta';
 import { generateDataProcessingPlotUuid } from 'utils/generateCustomPlotUuid';
 import Loader from 'components/Loader';
 import { getCellSets } from 'redux/selectors';
+import { getEmbeddingInitialConfig } from 'utils/plotConfig/getEmbeddingInitialConfig';
 import CalculationConfig from 'components/data-processing/ConfigureEmbedding/CalculationConfig';
 import PlotLegendAlert, { MAX_LEGEND_ITEMS } from 'components/plots/helpers/PlotLegendAlert';
 import EmptyPlot from 'components/plots/helpers/EmptyPlot';
@@ -408,6 +409,35 @@ const ConfigureEmbedding = (props) => {
     if (showAlert) updatePlotWithChanges({ legend: { showAlert, enabled: !showAlert } });
   }, [!selectedConfig, activePlotType, cellSets.accessible]);
 
+  // Apply cell-count-aware marker defaults for large datasets in embedding plots
+  // Only applies once when config is first loaded and hasn't been customized yet
+  useEffect(() => {
+    if (!selectedConfig || !cellSets.accessible || plotType !== 'embedding' || !currentPlot) return;
+
+    const initialConfig = getEmbeddingInitialConfig(currentPlot.plotType, cellSets);
+
+    // Check if we should apply large dataset defaults
+    if (initialConfig.defaultValues?.largeDatasetDefaults) {
+      // Get the standard (non-adjusted) initial config to check if marker was already customized
+      const standardConfig = initialPlotConfigStates[currentPlot.plotType];
+
+      // Only apply if marker config currently matches standard defaults (not yet customized)
+      const isUsingStandardDefaults = selectedConfig.marker.outline === standardConfig.marker.outline
+        && selectedConfig.marker.size === standardConfig.marker.size;
+
+      if (isUsingStandardDefaults) {
+        dispatch(updatePlotConfig(activePlotUuid, {
+          marker: {
+            ...selectedConfig.marker,
+            outline: false,
+            size: 1,
+          },
+        }));
+        debounceSave(activePlotUuid);
+      }
+    }
+  }, [activePlotUuid, currentPlot?.plotType, cellSets?.accessible]);
+
   useEffect(() => {
     // if we change a plot and the config is not saved yet
     if (outstandingChanges) {
@@ -431,8 +461,8 @@ const ConfigureEmbedding = (props) => {
     embeddingPlotUuids.forEach((plotUuid) => {
       if (plotUuid !== activePlotUuid) {
         const otherPlotConfig = plotConfigs[plotUuid];
-        if (otherPlotConfig && 
-            JSON.stringify(otherPlotConfig.marker) !== JSON.stringify(selectedConfig.marker)) {
+        if (otherPlotConfig &&
+          JSON.stringify(otherPlotConfig.marker) !== JSON.stringify(selectedConfig.marker)) {
           dispatch(updatePlotConfig(plotUuid, { marker: selectedConfig.marker }));
         }
       }
@@ -447,7 +477,7 @@ const ConfigureEmbedding = (props) => {
     const plotActions = {
       export: true,
     };
-    
+
     if (cellSets.accessible && selectedConfig) {
       setPlot(currentPlot.plot(selectedConfig, plotActions));
     }
@@ -486,6 +516,8 @@ const ConfigureEmbedding = (props) => {
     const isEqual = Object.keys(initialConfig).every((key) => {
       // By pass plot data because we want to compare settings not data
       if (key === 'plotData') return true;
+      // Skip defaultValues as it's metadata about defaults, not actual config
+      if (key === 'defaultValues') return true;
       if (initialConfig.keepValuesOnReset?.includes(key)) return true;
       if (currentConfig[key] && typeof currentConfig[key] === 'object' && initialConfig[key] && typeof initialConfig[key] === 'object') {
         // For nested objects, exclude defaultValues from comparison as it's metadata about defaults
@@ -503,12 +535,15 @@ const ConfigureEmbedding = (props) => {
   useEffect(() => {
     if (!selectedConfig || !currentPlot) return;
 
-    const initialConfig = initialPlotConfigStates[currentPlot.plotType];
+    const initialConfig = getEmbeddingInitialConfig(currentPlot.plotType, cellSets);
     setIsResetDisabled(isConfigEqual(selectedConfig, initialConfig));
-  }, [selectedConfig]);
+  }, [selectedConfig, cellSets]);
 
   const onClickReset = () => {
-    dispatch(resetPlotConfig(experimentId, currentPlot.plotUuid, currentPlot.plotType));
+    // For embedding preview plots, use cell-count-aware defaults
+    const initialConfig = getEmbeddingInitialConfig(currentPlot.plotType, cellSets);
+    dispatch(updatePlotConfig(currentPlot.plotUuid, initialConfig));
+    debounceSave(currentPlot.plotUuid);
   };
 
   const renderExtraControlPanels = () => (

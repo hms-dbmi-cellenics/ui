@@ -25,6 +25,7 @@ import FrequencyPlot from 'components/plots/FrequencyPlot';
 import ElbowPlot from 'components/plots/ElbowPlot';
 import { generateDataProcessingPlotUuid } from 'utils/generateCustomPlotUuid';
 import EmptyPlot from 'components/plots/helpers/EmptyPlot';
+import { getEmbeddingInitialConfig } from 'utils/plotConfig/getEmbeddingInitialConfig';
 import PlotStyling from 'components/plots/styling/PlotStyling';
 import { getIsUnisample } from 'utils/experimentPredicates';
 import PlotLegendAlert, { MAX_LEGEND_ITEMS } from 'components/plots/helpers/PlotLegendAlert';
@@ -246,6 +247,8 @@ const DataIntegration = (props) => {
     const isEqual = Object.keys(initialConfig).every((key) => {
       // By pass plot data because we want to compare settings not data
       if (key === 'plotData') return true;
+      // Skip defaultValues as it's metadata about defaults, not actual config
+      if (key === 'defaultValues') return true;
       if (initialConfig.keepValuesOnReset?.includes(key)) return true;
       if (currentConfig[key] && typeof currentConfig[key] === 'object' && initialConfig[key] && typeof initialConfig[key] === 'object') {
         // For nested objects, exclude defaultValues from comparison as it's metadata about defaults
@@ -263,12 +266,15 @@ const DataIntegration = (props) => {
   useEffect(() => {
     if (!selectedConfig || !plots[selectedPlot]) return;
 
-    const initialConfig = initialPlotConfigStates[activePlotType];
+    const initialConfig = getEmbeddingInitialConfig(activePlotType, cellSets);
     setIsResetDisabled(isConfigEqual(selectedConfig, initialConfig));
-  }, [selectedConfig]);
+  }, [selectedConfig, cellSets]);
 
   const onClickReset = () => {
-    dispatch(resetPlotConfig(experimentId, activePlotUuid, activePlotType));
+    // For embedding plots in data integration, use cell-count-aware defaults
+    const initialConfig = getEmbeddingInitialConfig(activePlotType, cellSets);
+    dispatch(updatePlotConfig(activePlotUuid, initialConfig));
+    debounceSave(activePlotUuid);
   };
 
   useEffect(() => {
@@ -280,6 +286,35 @@ const DataIntegration = (props) => {
 
     if (showAlert) updatePlotWithChanges({ legend: { showAlert, enabled: !showAlert } });
   }, [!selectedConfig, activePlotType, cellSets.accessible]);
+
+  // Apply cell-count-aware marker defaults for large datasets in embedding plots
+  // Only applies once when config is first loaded and hasn't been customized yet
+  useEffect(() => {
+    if (!selectedConfig || !cellSets.accessible || activePlotType !== 'dataIntegrationEmbedding') return;
+
+    const initialConfig = getEmbeddingInitialConfig(activePlotType, cellSets);
+
+    // Check if we should apply large dataset defaults
+    if (initialConfig.defaultValues?.largeDatasetDefaults) {
+      // Get the standard (non-adjusted) initial config to check if marker was already customized
+      const standardConfig = initialPlotConfigStates[activePlotType];
+
+      // Only apply if marker config currently matches standard defaults (not yet customized)
+      const isUsingStandardDefaults = selectedConfig.marker.outline === standardConfig.marker.outline
+        && selectedConfig.marker.size === standardConfig.marker.size;
+
+      if (isUsingStandardDefaults) {
+        dispatch(updatePlotConfig(activePlotUuid, {
+          marker: {
+            ...selectedConfig.marker,
+            outline: false,
+            size: 1,
+          },
+        }));
+        debounceSave(activePlotUuid);
+      }
+    }
+  }, [activePlotUuid, activePlotType, cellSets?.accessible]);
 
   const completedSteps = useSelector(getBackendStatus(experimentId))
     .status?.pipeline?.completedSteps;

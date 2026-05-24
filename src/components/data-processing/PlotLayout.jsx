@@ -76,6 +76,8 @@ const PlotLayout = ({
     const isEqual = Object.keys(initialConfig).every((key) => {
       // By pass plot data because we want to compare settings not data
       if (key === 'plotData') return true;
+      // Skip defaultValues as it's metadata about defaults, not actual config
+      if (key === 'defaultValues') return true;
       if (initialConfig.keepValuesOnReset?.includes(key)) return true;
       if (currentConfig[key] && typeof currentConfig[key] === 'object' && initialConfig[key] && typeof initialConfig[key] === 'object') {
         // For nested objects, exclude defaultValues from comparison as it's metadata about defaults

@@ -13,9 +13,11 @@ import {
   resetPlotConfig,
   savePlotConfig,
 } from 'redux/actions/componentConfig';
+import { getCellSets } from 'redux/selectors';
 import _ from 'lodash';
 import PlotStyling from 'components/plots/styling/PlotStyling';
 import MultiTileContainer from 'components/MultiTileContainer';
+import { getEmbeddingInitialConfig, isEmbeddingPlotType } from 'utils/plotConfig/getEmbeddingInitialConfig';
 
 const PLOT = 'Plot';
 const CONTROLS = 'Controls';
@@ -39,6 +41,7 @@ const PlotContainer = (props) => {
   const [tileDirection, setTileDirection] = useState(DEFAULT_ORIENTATION);
 
   const { config } = useSelector((state) => state.componentConfig[plotUuid] || {});
+  const cellSets = useSelector(getCellSets());
   const debounceSave = useCallback(
     _.debounce(() => dispatch(savePlotConfig(experimentId, plotUuid)), saveDebounceTime), [plotUuid],
   );
@@ -57,6 +60,8 @@ const PlotContainer = (props) => {
     const isEqual = Object.keys(initialConfig).every((key) => {
       // By pass plot data because we want to compare settings not data
       if (key === 'plotData') return true;
+      // Skip defaultValues as it's metadata about defaults, not actual config
+      if (key === 'defaultValues') return true;
       if (initialConfig.keepValuesOnReset?.includes(key)) return true;
       if (currentConfig[key] && typeof currentConfig[key] === 'object' && initialConfig[key] && typeof initialConfig[key] === 'object') {
         // For nested objects, exclude defaultValues from comparison as it's metadata about defaults
@@ -87,15 +92,63 @@ const PlotContainer = (props) => {
 
     debounceSave();
 
+    // For embedding plots with cellSets available, use large-dataset-aware comparison
+    let initialConfig;
+    if (isEmbeddingPlotType(plotType) && cellSets?.properties && cellSets?.hierarchy) {
+      const embeddingConfig = getEmbeddingInitialConfig(plotType, cellSets);
+      initialConfig = embeddingConfig || initialPlotConfigStates[plotType];
+    } else {
+      initialConfig = initialPlotConfigStates[plotType];
+    }
+
     setIsResetDisabled(
-      isConfigEqual(config, initialPlotConfigStates[plotType]),
+      isConfigEqual(config, initialConfig),
     );
-  }, [config]);
+  }, [config, cellSets, plotType]);
+
+  // Auto-apply large-dataset defaults for embedding plots when config first loads with cellSets
+  useEffect(() => {
+    if (!isEmbeddingPlotType(plotType) || !config || !cellSets?.properties || !cellSets?.hierarchy) return;
+    if (config.defaultValues?.largeDatasetDefaults) return; // Already applied
+
+    const cellCount = cellSets.hierarchy?.find((node) => node.key === 'sample')
+      ?.children?.reduce((sum, child) => {
+        const cellIds = cellSets.properties[child.key]?.cellIds;
+        return sum + (cellIds?.size || 0);
+      }, 0);
+
+    if (cellCount > 100000) {
+      const largeDatasetConfig = getEmbeddingInitialConfig(plotType, cellSets);
+      if (largeDatasetConfig && largeDatasetConfig !== initialPlotConfigStates[plotType]) {
+        dispatch(updatePlotConfig(plotUuid, largeDatasetConfig));
+        debounceSave();
+      }
+    }
+  }, [config, cellSets, plotType, plotUuid, experimentId]);
 
   const onClickReset = () => {
+    // For embedding plots with large datasets, use optimized defaults
+    if (isEmbeddingPlotType(plotType)) {
+      const initialConfig = getEmbeddingInitialConfig(plotType, cellSets);
+      if (initialConfig && initialConfig !== initialPlotConfigStates[plotType]) {
+        // Preserve fields marked with keepValuesOnReset
+        const keysToPreserve = initialConfig.keepValuesOnReset || [];
+        const resetConfig = keysToPreserve.reduce((acc, key) => {
+          if (config?.[key] !== undefined) {
+            acc[key] = config[key];
+          }
+          return acc;
+        }, initialConfig);
+        
+        dispatch(updatePlotConfig(plotUuid, resetConfig));
+        debounceSave();
+        onPlotReset();
+        return;
+      }
+    }
+    
     dispatch(resetPlotConfig(experimentId, plotUuid, plotType));
     onPlotReset();
-    setIsResetDisabled(true);
   };
 
   const renderPlotToolbarControls = () => (
