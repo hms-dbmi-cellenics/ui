@@ -71,7 +71,7 @@ const largeCellSets = {
     { key: 'sample', children: [{ key: 'sample-1' }] },
   ],
   properties: {
-    'louvain-0': { cellIds: { size: LARGE_CELL_COUNT, has: () => true, forEach: () => {} } },
+    'louvain-0': { cellIds: { size: LARGE_CELL_COUNT, has: () => true, forEach: () => { } } },
     'sample-1': { cellIds: { size: LARGE_CELL_COUNT } },
   },
   loading: false,
@@ -221,7 +221,7 @@ describe('loadHeatmapExpression', () => {
     // Precomputed: cappedTotal = n_buckets * min(bucket.size, 1000) >= LARGE_DATASET_THRESHOLD
     // 60 buckets of size 1000 → cappedTotal = 60000 >= 50000
     getBuckets.mockReturnValueOnce({
-      buckets: Array.from({ length: 60 }, () => ({ size: 1000, forEach: () => {} })),
+      buckets: Array.from({ length: 60 }, () => ({ size: 1000, forEach: () => { } })),
       totalSize: 60000,
     });
     getHeatmapCellOrder.mockReturnValueOnce([0, 1, 2]);
@@ -237,7 +237,7 @@ describe('loadHeatmapExpression', () => {
 
   it('sends cellIds in downsampleSettings for precomputed path', async () => {
     getBuckets.mockReturnValueOnce({
-      buckets: Array.from({ length: 60 }, () => ({ size: 1000, forEach: () => {} })),
+      buckets: Array.from({ length: 60 }, () => ({ size: 1000, forEach: () => { } })),
       totalSize: 60000,
     });
     const precomputedCellIds = [10, 11, 12];
