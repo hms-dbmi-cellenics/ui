@@ -436,7 +436,7 @@ const ConfigureEmbedding = (props) => {
         debounceSave(activePlotUuid);
       }
     }
-  }, [activePlotUuid, currentPlot?.plotType, cellSets?.accessible]);
+  }, [activePlotUuid, currentPlot?.plotType, cellSets?.accessible, !!selectedConfig]);
 
   useEffect(() => {
     // if we change a plot and the config is not saved yet
