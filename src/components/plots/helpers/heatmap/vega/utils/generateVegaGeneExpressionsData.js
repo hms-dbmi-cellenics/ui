@@ -7,7 +7,7 @@ const cartesian = (...array) => (
 );
 
 const generateVegaGeneExpressionsData = (
-  cellOrder, geneOrder, expressionMatrix, heatmapSettings,
+  cellOrder, geneOrder, expressionMatrix, heatmapSettings, cellIdToMatrixIndex = null,
 ) => {
   const { expressionValue, truncatedValues } = heatmapSettings;
 
@@ -17,19 +17,25 @@ const generateVegaGeneExpressionsData = (
     return;
   }
 
+  // For downsampled matrices, cellOrder contains cell IDs but the matrix is indexed
+  // by position in workerCellIds. cellIdToMatrixIndex maps cell ID → column index.
+  const matrixIndices = cellIdToMatrixIndex
+    ? cellOrder.map((id) => cellIdToMatrixIndex.get(id))
+    : cellOrder;
+
   // Preload all genes so that their arrays are generated only once
   const preloadedExpressions = {};
   geneOrder.forEach((gene) => {
     if (expressionValue === 'zScore') {
-      preloadedExpressions[gene] = { zScore: expressionMatrix.getZScore(gene, cellOrder) };
+      preloadedExpressions[gene] = { zScore: expressionMatrix.getZScore(gene, matrixIndices) };
       return;
     }
 
-    const geneExpression = { rawExpression: expressionMatrix.getRawExpression(gene, cellOrder) };
+    const geneExpression = { rawExpression: expressionMatrix.getRawExpression(gene, matrixIndices) };
 
     if (truncatedValues) {
       geneExpression.truncatedExpression = expressionMatrix.getTruncatedExpression(
-        gene, cellOrder,
+        gene, matrixIndices,
       );
     }
 

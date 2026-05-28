@@ -12,8 +12,10 @@ import {
 } from 'redux/selectors';
 
 import {
-  loadGeneExpression, loadMarkerGenes,
+  loadHeatmapExpression, loadMarkerGenes,
 } from 'redux/actions/genes';
+import { LARGE_DATASET_THRESHOLD } from 'redux/actions/genes/loadHeatmapExpression';
+import { computeBucketedDisplayCellIds } from 'utils/work/getHeatmapCellOrder';
 import { loadComponentConfig } from 'redux/actions/componentConfig';
 import { updateCellInfo } from 'redux/actions/cellInfo';
 
@@ -27,9 +29,9 @@ import getContainingCellSetsProperties from 'utils/cellSets/getContainingCellSet
 import useConditionalEffect from 'utils/customHooks/useConditionalEffect';
 import generateVitessceData from 'components/plots/helpers/heatmap/vitessce/generateVitessceData';
 import { loadCellSets } from 'redux/actions/cellSets';
-import calculateNMarkerGenes from 'utils/calculateNMarkerGenes';
 
 const COMPONENT_TYPE = 'interactiveHeatmap';
+const NUM_MARKER_GENES = 5;
 
 const Heatmap = dynamic(
   () => import('../DynamicVitessceWrappers').then((mod) => mod.Heatmap),
@@ -47,9 +49,9 @@ const HeatmapPlot = (props) => {
 
   const dispatch = useDispatch();
 
-  const debouncedLoadGeneExpression = useMemo(() => {
+  const debouncedLoadHeatmapExpression = useMemo(() => {
     const debounced = _.debounce((...params) => {
-      dispatch(loadGeneExpression(...params));
+      dispatch(loadHeatmapExpression(...params));
     }, 1000);
     return debounced;
   }, [dispatch]);
@@ -57,11 +59,19 @@ const HeatmapPlot = (props) => {
   // Cancel pending debounced calls on unmount to prevent unexpected dispatches
   useEffect(() => {
     return () => {
-      debouncedLoadGeneExpression.cancel();
+      debouncedLoadHeatmapExpression.cancel();
     };
-  }, [debouncedLoadGeneExpression]);
+  }, [debouncedLoadHeatmapExpression]);
 
-  const loadingGenes = useSelector((state) => state.genes.expression.full.loading);
+  const {
+    loading: downsampledLoading,
+    error: downsampledError,
+    cellIds: workerCellIds,
+    downsampleType,
+    lastFetchSettings,
+  } = useSelector((state) => state.genes.expression.downsampled);
+
+  const downsampledMatrix = useSelector((state) => state.genes.expression.downsampled.matrix);
 
   const config = useSelector((state) => state.componentConfig[COMPONENT_TYPE]?.config) || {};
 
@@ -90,15 +100,19 @@ const HeatmapPlot = (props) => {
   } = useSelector((state) => state.genes.expression.full);
 
   // Create a stable reference that only changes when the heatmap's selected genes
-  // are loaded in the matrix (ignoring other genes added by other components)
+  // are loaded in the relevant matrix (full for small datasets, downsampled for large datasets)
   const heatmapGenesLoadedKey = useSelector((state) => {
     if (!selectedGenes?.length) return null;
-    const matrix = state.genes.expression.full.matrix;
-    // Check which of the heatmap's genes are currently loaded
-    const loadedCount = selectedGenes.filter((gene) => matrix.geneIsLoaded(gene)).length;
-    // Return a key that only changes when the loaded genes for heatmap actually change
-    const key = `${selectedGenes.length}_${loadedCount}`;
-    return key;
+    const sampleNode = state.cellSets.hierarchy?.find((node) => node.key === 'sample');
+    const cells = sampleNode?.children?.reduce((sum, child) => {
+      const cellIds = state.cellSets.properties[child.key]?.cellIds;
+      return sum + (cellIds?.size || 0);
+    }, 0) || 0;
+    const mat = cells >= LARGE_DATASET_THRESHOLD
+      ? state.genes.expression.downsampled.matrix
+      : state.genes.expression.full.matrix;
+    const loadedCount = selectedGenes.filter((gene) => mat.geneIsLoaded(gene)).length;
+    return `${cells >= LARGE_DATASET_THRESHOLD ? 'd' : 'f'}_${selectedGenes.length}_${loadedCount}`;
   });
 
   const {
@@ -107,28 +121,15 @@ const HeatmapPlot = (props) => {
 
   const cellSets = useSelector(getCellSets());
 
-  // Calculate nMarkerGenes based on dataset size and cluster count
-  const nMarkerGenes = useMemo(() => {
-    if (!cellSets?.properties || !cellSets?.hierarchy) {
-      console.log('[nMarkerGenes] No cellSets data available');
-      return 5; // Default
-    }
-
-    // Get total cell count from 'sample' hierarchy
-    const sampleNode = cellSets.hierarchy.find((node) => node.key === 'sample');
-    const totalCells = sampleNode?.children?.reduce((sum, child) => {
+  const totalCells = useMemo(() => {
+    const sampleNode = cellSets.hierarchy?.find((node) => node.key === 'sample');
+    return sampleNode?.children?.reduce((sum, child) => {
       const cellIds = cellSets.properties[child.key]?.cellIds;
       return sum + (cellIds?.size || 0);
     }, 0) || 0;
+  }, [cellSets.hierarchy, cellSets.properties]);
 
-    // Get cluster count from 'louvain' hierarchy
-    const louvainNode = cellSets.hierarchy.find((node) => node.key === 'louvain');
-    const clusterCount = louvainNode?.children?.length || 0;
-
-    const result = calculateNMarkerGenes(totalCells, clusterCount);
-    console.log('[nMarkerGenes] Calculated final result:', result);
-    return result;
-  }, [cellSets]);
+  const isLargeDataset = totalCells >= LARGE_DATASET_THRESHOLD;
 
   // Note: selectedPoints is not needed for vitessce heatmap as it's always 'All'
   const heatmapSettings = useSelector((state) => state.componentConfig[COMPONENT_TYPE]?.config,
@@ -150,6 +151,40 @@ const HeatmapPlot = (props) => {
   const expressionMatrix = useSelector((state) => state.genes.expression.full.matrix);
 
   const viewError = useSelector((state) => state.genes.expression.views[COMPONENT_TYPE]?.error);
+
+  // Map from cell ID → matrix column index for downsampled expression data
+  const cellIdToMatrixIndex = useMemo(() => {
+    if (!isLargeDataset || !workerCellIds?.length) return null;
+    return new Map(workerCellIds.map((id, i) => [id, i]));
+  }, [isLargeDataset, workerCellIds]);
+
+  // Bucketed downsampling: re-sample display cells from worker-returned cells applying hidden sets.
+  // Deps intentionally exclude cellSets.properties / cellSets.hierarchy so that adding a custom
+  // cell set to the scratchpad does not trigger a re-run.
+  const bucketedDisplayCellIds = useMemo(() => {
+    if (!isLargeDataset || downsampleType !== 'bucketed' || !workerCellIds?.length) return null;
+    return computeBucketedDisplayCellIds(
+      heatmapSettings.selectedCellSet,
+      heatmapSettings.groupedTracks,
+      Array.from(cellSets.hidden || []),
+      cellSets,
+      workerCellIds,
+    );
+  }, [
+    isLargeDataset,
+    downsampleType,
+    workerCellIds,
+    cellSets.hidden,
+    heatmapSettings.selectedCellSet,
+    heatmapSettings.groupedTracks,
+  ]);
+
+  const finalDisplayCellIds = useMemo(() => {
+    if (!isLargeDataset) return null;
+    if (downsampleType === 'bucketed') return bucketedDisplayCellIds;
+    if (downsampleType === 'precomputed') return workerCellIds;
+    return null;
+  }, [isLargeDataset, downsampleType, bucketedDisplayCellIds, workerCellIds]);
 
   const updateCellCoordinates = (newView) => {
     if (cellHighlight && newView.projectFromId) {
@@ -180,38 +215,25 @@ const HeatmapPlot = (props) => {
   }, [heatmapSettings]);
 
   useEffect(() => {
-    // Check if genes are currently being loaded
-    // For downsampled expressions, we just need to check fetchingGenes
-    const selectedGenesLoading = fetchingGenes
-      || (_.intersection(selectedGenes, loadingGenes).length > 0);
+    const selectedGenesLoading = isLargeDataset
+      ? downsampledLoading
+      : fetchingGenes || false;
 
-    // markerGenesLoading only happen on the first load
-    // selectedGenesLoading happens every time the selected genes are changed
     if (selectedGenesLoading || markerGenesLoading) {
       setIsHeatmapGenesLoading(true);
       return;
     }
 
     setIsHeatmapGenesLoading(false);
-  }, [selectedGenes, loadingGenes, markerGenesLoading, fetchingGenes]);
+  }, [markerGenesLoading, fetchingGenes, isLargeDataset, downsampledLoading]);
 
+  // Small dataset: generate heatmap from full expression matrix
   useEffect(() => {
-    if (
-      !selectedGenes?.length
-      || !cellSets.hierarchy?.length
-    ) { return; }
-    // Check that the expression data has actually been loaded into the matrix
-    // Just having geneIndexes isn't enough - we need the rawGeneExpressions data
-    const [cellCount, geneCount] = matrix?.rawGeneExpressions?.size?.() || [0, 0];
-    if (!geneCount || geneCount === 0) {
-      // Data not ready yet, wait for the expression values to be populated
-      return;
-    }
+    if (isLargeDataset) return;
+    if (!selectedGenes?.length || !cellSets.hierarchy?.length) return;
 
-    // Selected genes is not contained in heatmap settings for the
-    // data exploration marker heatmap, so must be passed spearatedly.
-    // Trying to assign it to heatmapSettings will throw an error because
-    // heatmapSettings is is frozen in redux by immer.
+    const [, geneCount] = matrix?.rawGeneExpressions?.size?.() || [0, 0];
+    if (!geneCount) return;
 
     const data = generateVitessceData(
       selectedTracks,
@@ -222,9 +244,72 @@ const HeatmapPlot = (props) => {
     );
     setHeatmapData(data);
   }, [
+    isLargeDataset,
     selectedGenes,
     selectedTracks,
     heatmapGenesLoadedKey,
+    cellSets.properties,
+    cellSets.hierarchy,
+    cellSets.hidden,
+    heatmapSettings?.selectedCellSet,
+    heatmapSettings?.groupedTracks,
+  ]);
+
+  // Large dataset: generate heatmap from downsampled expression matrix.
+  // cellSets.properties and cellSets.hierarchy are included so that track labels/colours
+  // stay correct; the expensive getBuckets computation is avoided because finalDisplayCellIds
+  // is pre-computed and passed in directly.
+  useEffect(() => {
+    if (!isLargeDataset) return;
+    if (!selectedGenes?.length || !cellSets.hierarchy?.length) return;
+    if (downsampledLoading || finalDisplayCellIds === null) return;
+
+    // Don't render until all selected genes are present in the downsampled matrix.
+    // This prevents a flash of wrong data when genes are added but haven't been fetched yet.
+    const allGenesLoaded = selectedGenes.every((gene) => downsampledMatrix?.geneIsLoaded(gene));
+    if (!allGenesLoaded) return;
+
+    // Prevent rendering stale data while a new work request is in-flight.
+    // The matrix was built with the settings in lastFetchSettings; if those differ from
+    // the current heatmap settings, the new request hasn't completed yet.
+    if (lastFetchSettings) {
+      const matrixMatchesSettings = (
+        lastFetchSettings.selectedCellSet === heatmapSettings.selectedCellSet
+        && _.isEqual(lastFetchSettings.groupedTracks, heatmapSettings.groupedTracks)
+      );
+      if (!matrixMatchesSettings) return;
+    }
+
+    // All cells hidden — generate empty data to show the "unhide" message
+    if (finalDisplayCellIds.length === 0) {
+      setHeatmapData(generateVitessceData(
+        selectedTracks, downsampledMatrix, selectedGenes, cellSets, heatmapSettings,
+        [], cellIdToMatrixIndex,
+      ));
+      return;
+    }
+
+    const [, geneCount] = downsampledMatrix?.rawGeneExpressions?.size?.() || [0, 0];
+    if (!geneCount) return;
+
+    const data = generateVitessceData(
+      selectedTracks,
+      downsampledMatrix,
+      selectedGenes,
+      cellSets,
+      heatmapSettings,
+      finalDisplayCellIds,
+      cellIdToMatrixIndex,
+    );
+    setHeatmapData(data);
+  }, [
+    isLargeDataset,
+    downsampledLoading,
+    finalDisplayCellIds,
+    selectedGenes,
+    selectedTracks,
+    cellIdToMatrixIndex,
+    lastFetchSettings,
     cellSets.properties,
     cellSets.hierarchy,
     cellSets.hidden,
@@ -247,7 +332,7 @@ const HeatmapPlot = (props) => {
     dispatch(loadMarkerGenes(
       experimentId,
       COMPONENT_TYPE,
-      { numGenes: nMarkerGenes, selectedCellSet },
+      { numGenes: NUM_MARKER_GENES, selectedCellSet },
     ));
   }, [
     louvainClustersResolution,
@@ -256,7 +341,6 @@ const HeatmapPlot = (props) => {
     groupedCellSets,
   ]);
 
-  // Only fetch gene expression if selectedGenes or selectedCellSet change
   useConditionalEffect(
     () => {
       if (
@@ -265,21 +349,26 @@ const HeatmapPlot = (props) => {
         || !heatmapSettings.groupedTracks
         || !heatmapSettings.selectedCellSet
         || selectedGenes.length === 0
-        || fetchingGenes
       ) { return; }
 
-      // Only fetch if selectedGenes or selectedCellSet changed
-      debouncedLoadGeneExpression(
+      debouncedLoadHeatmapExpression(
         experimentId,
         selectedGenes,
-        COMPONENT_TYPE,
+        {
+          selectedCellSet: heatmapSettings.selectedCellSet,
+          groupedTracks: heatmapSettings.groupedTracks,
+          hiddenCellSets: Array.from(cellSets.hidden || []),
+          plotUuid: COMPONENT_TYPE,
+        },
       );
     },
     [
       louvainClustersResolution,
       cellSets.accessible,
       heatmapSettings?.selectedCellSet,
+      heatmapSettings?.groupedTracks,
       selectedGenes,
+      cellSets.hidden,
     ],
   );
 
@@ -294,10 +383,11 @@ const HeatmapPlot = (props) => {
     [],
   );
 
-  if (markerGenesLoadingError || expressionDataError || viewError) {
+  const expressionError = isLargeDataset ? downsampledError : expressionDataError;
+  if (markerGenesLoadingError || expressionError || viewError) {
     return (
       <PlatformError
-        error={expressionDataError}
+        error={expressionError}
         onClick={() => {
           if (markerGenesLoadingError) {
             const { selectedCellSet } = heatmapSettings;
@@ -306,15 +396,22 @@ const HeatmapPlot = (props) => {
               experimentId,
               COMPONENT_TYPE,
               {
-                numGenes: nMarkerGenes,
+                numGenes: NUM_MARKER_GENES,
                 selectedCellSet,
               },
             ));
           }
 
-          if ((expressionDataError || viewError) && selectedGenes.length > 0) {
-            debouncedLoadGeneExpression(
-              experimentId, selectedGenes, COMPONENT_TYPE, true,
+          if ((expressionError || viewError) && selectedGenes.length > 0) {
+            debouncedLoadHeatmapExpression(
+              experimentId,
+              selectedGenes,
+              {
+                selectedCellSet: heatmapSettings.selectedCellSet,
+                groupedTracks: heatmapSettings.groupedTracks,
+                hiddenCellSets: Array.from(cellSets.hidden || []),
+                plotUuid: COMPONENT_TYPE,
+              },
             );
           }
         }}
@@ -333,7 +430,8 @@ const HeatmapPlot = (props) => {
   }
 
   // Also check if the expression matrix has actual gene data loaded
-  if (!matrix?.geneIndexes || Object.keys(matrix.geneIndexes).length === 0) {
+  const activeMatrix = isLargeDataset ? downsampledMatrix : matrix;
+  if (!activeMatrix?.geneIndexes || Object.keys(activeMatrix.geneIndexes).length === 0) {
     return (
       <center>
         <Loader experimentId={experimentId} />
@@ -426,7 +524,14 @@ const HeatmapPlot = (props) => {
               cellId={cellHighlight}
               geneName={geneHighlight}
               geneExpression={
-                expressionMatrix.getRawExpression(geneHighlight, [parseInt(cellHighlight, 10)])
+                isLargeDataset
+                  ? cellIdToMatrixIndex?.has(parseInt(cellHighlight, 10))
+                    ? downsampledMatrix.getRawExpression?.(
+                      geneHighlight,
+                      [cellIdToMatrixIndex.get(parseInt(cellHighlight, 10))],
+                    )
+                    : undefined
+                  : expressionMatrix.getRawExpression(geneHighlight, [parseInt(cellHighlight, 10)])
               }
               coordinates={cellCoordinatesRef.current}
             />

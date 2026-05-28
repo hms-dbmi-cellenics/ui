@@ -203,7 +203,7 @@ const heatmapInitialConfig = {
   selectedPoints: 'All',
   labelColour: 'transparent',
   selectedTracks: ['louvain'],
-  groupedTracks: ['louvain', 'sample'],
+  groupedTracks: ['louvain'],
   expressionValue: 'raw',
   truncatedValues: true,
   geneLabelSize: 10,
@@ -639,7 +639,7 @@ const embeddingPreviewNumOfUmisInitialConfig = {
 const interactiveHeatmapInitialConfig = {
   selectedCellSet: 'louvain',
   selectedTracks: ['louvain'],
-  groupedTracks: ['louvain', 'sample'],
+  groupedTracks: ['louvain'],
   selectedGenes: [],
   expressionValue: 'raw',
   legendIsVisible: true,

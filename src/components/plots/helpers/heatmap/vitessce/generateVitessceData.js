@@ -5,14 +5,16 @@ import getHeatmapCellOrder from 'utils/work/getHeatmapCellOrder';
 const generateVitessceData = (
   selectedTracks,
   expressionMatrix, selectedGenes, cellSets, heatmapSettings,
+  preComputedCellOrder = null,
+  cellIdToMatrixIndex = null,
 ) => {
-  // Compute cellOrder internally based on heatmap settings
+  // Compute cellOrder internally based on heatmap settings, or use the pre-computed value
+  // (used for large datasets where the cell order is determined by the worker response).
   const {
     selectedCellSet = 'louvain', groupedTracks = [],
   } = heatmapSettings || {};
 
-  // Use only user-hidden cells (selectedPoints is always 'All' for vitessce)
-  const cellOrder = getHeatmapCellOrder(
+  const cellOrder = preComputedCellOrder ?? getHeatmapCellOrder(
     selectedCellSet,
     groupedTracks,
     cellSets.hidden || [],
@@ -27,6 +29,7 @@ const generateVitessceData = (
     cellOrder,
     selectedGenes,
     expressionMatrix,
+    cellIdToMatrixIndex,
   );
 
   const metadataTracksLabels = selectedTracks

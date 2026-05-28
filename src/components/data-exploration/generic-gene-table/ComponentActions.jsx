@@ -7,7 +7,6 @@ import { useSelector, useDispatch } from 'react-redux';
 
 import _ from 'lodash';
 import { PlusOutlined, RedoOutlined, MinusOutlined } from '@ant-design/icons';
-import { loadGeneExpression } from 'redux/actions/genes';
 import { updatePlotConfig } from 'redux/actions/componentConfig';
 
 const geneOperations = {
@@ -36,10 +35,8 @@ const ComponentActions = (props) => {
       newGenes = displayedGenes.filter((gene) => !selectedGenes.includes(gene));
     }
 
-    // Update config with new gene list
+    // Update config with new gene list — the component's own effect handles expression loading
     dispatch(updatePlotConfig(componentType, { selectedGenes: newGenes }));
-
-    dispatch(loadGeneExpression(experimentId, newGenes, componentType));
   };
 
   const menu = (
