@@ -1,7 +1,5 @@
 /* eslint-disable no-param-reassign */
 
-import { getAllCells, getSampleCells } from 'utils/cellSets';
-
 const generateSpec = (config, method, plotData) => {
   const xScaleDomain = config.axesRanges.xAxisAuto
     ? { data: 'plotData', field: 'x' }
@@ -181,15 +179,10 @@ const generateSpec = (config, method, plotData) => {
 };
 
 const filterCells = (cellSets, selectedSample) => {
-  let filteredCells = [];
-
-  if (selectedSample === 'All') {
-    filteredCells = getAllCells(cellSets);
-  } else {
-    filteredCells = getSampleCells(cellSets, selectedSample);
-  }
-
-  return new Set(filteredCells.map((cell) => cell.cellId));
+  // For 'All', return null to indicate no sample filter — avoids building a 1M-entry Set
+  if (selectedSample === 'All') return null;
+  // Reuse the existing cellIds Set from properties rather than constructing a new one
+  return cellSets.properties[selectedSample]?.cellIds ?? new Set();
 };
 
 const generateData = (
@@ -198,21 +191,19 @@ const generateData = (
   plotData,
   embeddingData,
 ) => {
-  const filteredCells = filterCells(cellSets, selectedSample, embeddingData);
+  const filteredCells = filterCells(cellSets, selectedSample);
 
-  const cells = embeddingData
-    .map((coordinates, cellId) => ({ cellId, coordinates }))
-    .filter(({ coordinates }) => coordinates !== undefined)
-    .filter(({ cellId }) => filteredCells.has(cellId))
-    .map((data) => {
-      const { cellId, coordinates } = data;
-
-      return {
-        x: coordinates[0],
-        y: coordinates[1],
-        value: plotData[cellId],
-      };
+  // Single-pass forEach avoids chained .map()/.filter() intermediate arrays
+  const cells = [];
+  embeddingData.forEach((coordinates, cellId) => {
+    if (coordinates === undefined) return;
+    if (filteredCells !== null && !filteredCells.has(cellId)) return;
+    cells.push({
+      x: coordinates[0],
+      y: coordinates[1],
+      value: plotData[cellId],
     });
+  });
 
   return cells;
 };

@@ -1099,128 +1099,7 @@ exports[`generateData generates correct data with 1 cluster 1`] = `
       "name": "Cluster 5",
     },
   ],
-  "plotData": [
-    {
-      "x": 1,
-      "y": 2,
-    },
-    {
-      "x": 1,
-      "y": 2,
-    },
-    {
-      "x": 1,
-      "y": 2,
-    },
-    {
-      "x": 1,
-      "y": 2,
-    },
-    {
-      "x": 1,
-      "y": 2,
-    },
-    {
-      "x": 1,
-      "y": 2,
-    },
-    {
-      "x": 1,
-      "y": 2,
-    },
-    {
-      "x": 1,
-      "y": 2,
-    },
-    {
-      "x": 1,
-      "y": 2,
-    },
-    {
-      "x": 1,
-      "y": 2,
-    },
-    {
-      "x": 1,
-      "y": 2,
-    },
-    {
-      "x": 1,
-      "y": 2,
-    },
-    {
-      "x": 1,
-      "y": 2,
-    },
-    {
-      "x": 1,
-      "y": 2,
-    },
-    {
-      "x": 1,
-      "y": 2,
-    },
-    {
-      "x": 1,
-      "y": 2,
-    },
-    {
-      "x": 1,
-      "y": 2,
-    },
-    {
-      "x": 1,
-      "y": 2,
-    },
-    {
-      "x": 1,
-      "y": 2,
-    },
-    {
-      "x": 1,
-      "y": 2,
-    },
-    {
-      "x": 1,
-      "y": 2,
-    },
-    {
-      "x": 1,
-      "y": 2,
-    },
-    {
-      "x": 1,
-      "y": 2,
-    },
-    {
-      "x": 1,
-      "y": 2,
-    },
-    {
-      "x": 1,
-      "y": 2,
-    },
-    {
-      "x": 1,
-      "y": 2,
-    },
-    {
-      "x": 1,
-      "y": 2,
-    },
-    {
-      "x": 1,
-      "y": 2,
-    },
-    {
-      "x": 1,
-      "y": 2,
-    },
-    {
-      "x": 1,
-      "y": 2,
-    },
-  ],
+  "plotData": [],
 }
 `;
 
@@ -1299,10 +1178,6 @@ exports[`generateData generates correct data with all louvain clusters 1`] = `
     },
   ],
   "plotData": [
-    {
-      "x": 1,
-      "y": 2,
-    },
     {
       "cellId": 1,
       "cellSetKey": "louvain-0",
@@ -1396,18 +1271,6 @@ exports[`generateData generates correct data with all louvain clusters 1`] = `
       "cellSetKey": "louvain-0",
       "cellSetName": "Cluster 0",
       "color": "#e377c2",
-      "x": 1,
-      "y": 2,
-    },
-    {
-      "x": 1,
-      "y": 2,
-    },
-    {
-      "x": 1,
-      "y": 2,
-    },
-    {
       "x": 1,
       "y": 2,
     },
