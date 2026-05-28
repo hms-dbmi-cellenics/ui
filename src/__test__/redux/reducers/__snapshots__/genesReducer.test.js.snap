@@ -3,6 +3,36 @@
 exports[`genesReducer Deselecting all genes updates to empty list 1`] = `
 {
   "expression": {
+    "downsampled": {
+      "cellIds": [],
+      "downsampleType": null,
+      "error": false,
+      "lastFetchSettings": null,
+      "loading": false,
+      "matrix": ExpressionMatrix {
+        "geneIndexes": {},
+        "rawGeneExpressions": {
+          "datatype": undefined,
+          "index": [],
+          "mathjs": "SparseMatrix",
+          "ptr": [
+            0,
+          ],
+          "size": [
+            0,
+            0,
+          ],
+          "values": [],
+        },
+        "setGeneExpression": [Function],
+        "stats": {
+          "rawMean": [],
+          "rawStdev": [],
+          "truncatedMax": [],
+          "truncatedMin": [],
+        },
+      },
+    },
     "full": {
       "ETag": null,
       "error": false,
@@ -51,6 +81,36 @@ exports[`genesReducer Deselecting all genes updates to empty list 1`] = `
 exports[`genesReducer Deselecting non-selected genes is handled gracefully 1`] = `
 {
   "expression": {
+    "downsampled": {
+      "cellIds": [],
+      "downsampleType": null,
+      "error": false,
+      "lastFetchSettings": null,
+      "loading": false,
+      "matrix": ExpressionMatrix {
+        "geneIndexes": {},
+        "rawGeneExpressions": {
+          "datatype": undefined,
+          "index": [],
+          "mathjs": "SparseMatrix",
+          "ptr": [
+            0,
+          ],
+          "size": [
+            0,
+            0,
+          ],
+          "values": [],
+        },
+        "setGeneExpression": [Function],
+        "stats": {
+          "rawMean": [],
+          "rawStdev": [],
+          "truncatedMax": [],
+          "truncatedMin": [],
+        },
+      },
+    },
     "full": {
       "ETag": null,
       "error": false,
@@ -103,6 +163,36 @@ exports[`genesReducer Deselecting non-selected genes is handled gracefully 1`] =
 exports[`genesReducer Deselecting part of all genes updates list as set 1`] = `
 {
   "expression": {
+    "downsampled": {
+      "cellIds": [],
+      "downsampleType": null,
+      "error": false,
+      "lastFetchSettings": null,
+      "loading": false,
+      "matrix": ExpressionMatrix {
+        "geneIndexes": {},
+        "rawGeneExpressions": {
+          "datatype": undefined,
+          "index": [],
+          "mathjs": "SparseMatrix",
+          "ptr": [
+            0,
+          ],
+          "size": [
+            0,
+            0,
+          ],
+          "values": [],
+        },
+        "setGeneExpression": [Function],
+        "stats": {
+          "rawMean": [],
+          "rawStdev": [],
+          "truncatedMax": [],
+          "truncatedMin": [],
+        },
+      },
+    },
     "full": {
       "ETag": null,
       "error": false,
@@ -154,6 +244,36 @@ exports[`genesReducer Deselecting part of all genes updates list as set 1`] = `
 exports[`genesReducer Error state handled appropriately 1`] = `
 {
   "expression": {
+    "downsampled": {
+      "cellIds": [],
+      "downsampleType": null,
+      "error": false,
+      "lastFetchSettings": null,
+      "loading": false,
+      "matrix": ExpressionMatrix {
+        "geneIndexes": {},
+        "rawGeneExpressions": {
+          "datatype": undefined,
+          "index": [],
+          "mathjs": "SparseMatrix",
+          "ptr": [
+            0,
+          ],
+          "size": [
+            0,
+            0,
+          ],
+          "values": [],
+        },
+        "setGeneExpression": [Function],
+        "stats": {
+          "rawMean": [],
+          "rawStdev": [],
+          "truncatedMax": [],
+          "truncatedMin": [],
+        },
+      },
+    },
     "full": {
       "ETag": null,
       "error": false,
@@ -208,6 +328,36 @@ exports[`genesReducer Error state handled appropriately 1`] = `
 exports[`genesReducer Expression loaded state handled appropriately when other things are still loading 1`] = `
 {
   "expression": {
+    "downsampled": {
+      "cellIds": [],
+      "downsampleType": null,
+      "error": false,
+      "lastFetchSettings": null,
+      "loading": false,
+      "matrix": ExpressionMatrix {
+        "geneIndexes": {},
+        "rawGeneExpressions": {
+          "datatype": undefined,
+          "index": [],
+          "mathjs": "SparseMatrix",
+          "ptr": [
+            0,
+          ],
+          "size": [
+            0,
+            0,
+          ],
+          "values": [],
+        },
+        "setGeneExpression": [Function],
+        "stats": {
+          "rawMean": [],
+          "rawStdev": [],
+          "truncatedMax": [],
+          "truncatedMin": [],
+        },
+      },
+    },
     "full": {
       "ETag": null,
       "error": false,
@@ -304,6 +454,36 @@ exports[`genesReducer Expression loaded state handled appropriately when other t
 exports[`genesReducer Loaded paginated state handled appropriately 1`] = `
 {
   "expression": {
+    "downsampled": {
+      "cellIds": [],
+      "downsampleType": null,
+      "error": false,
+      "lastFetchSettings": null,
+      "loading": false,
+      "matrix": ExpressionMatrix {
+        "geneIndexes": {},
+        "rawGeneExpressions": {
+          "datatype": undefined,
+          "index": [],
+          "mathjs": "SparseMatrix",
+          "ptr": [
+            0,
+          ],
+          "size": [
+            0,
+            0,
+          ],
+          "values": [],
+        },
+        "setGeneExpression": [Function],
+        "stats": {
+          "rawMean": [],
+          "rawStdev": [],
+          "truncatedMax": [],
+          "truncatedMin": [],
+        },
+      },
+    },
     "full": {
       "ETag": null,
       "error": false,
@@ -373,6 +553,36 @@ exports[`genesReducer Loaded paginated state handled appropriately 1`] = `
 exports[`genesReducer Loaded paginated state handled appropriately when other things are still loading 1`] = `
 {
   "expression": {
+    "downsampled": {
+      "cellIds": [],
+      "downsampleType": null,
+      "error": false,
+      "lastFetchSettings": null,
+      "loading": false,
+      "matrix": ExpressionMatrix {
+        "geneIndexes": {},
+        "rawGeneExpressions": {
+          "datatype": undefined,
+          "index": [],
+          "mathjs": "SparseMatrix",
+          "ptr": [
+            0,
+          ],
+          "size": [
+            0,
+            0,
+          ],
+          "values": [],
+        },
+        "setGeneExpression": [Function],
+        "stats": {
+          "rawMean": [],
+          "rawStdev": [],
+          "truncatedMax": [],
+          "truncatedMin": [],
+        },
+      },
+    },
     "full": {
       "ETag": null,
       "error": false,
@@ -445,6 +655,36 @@ exports[`genesReducer Loaded paginated state handled appropriately when other th
 exports[`genesReducer Loading on error state causes error to reset 1`] = `
 {
   "expression": {
+    "downsampled": {
+      "cellIds": [],
+      "downsampleType": null,
+      "error": false,
+      "lastFetchSettings": null,
+      "loading": false,
+      "matrix": ExpressionMatrix {
+        "geneIndexes": {},
+        "rawGeneExpressions": {
+          "datatype": undefined,
+          "index": [],
+          "mathjs": "SparseMatrix",
+          "ptr": [
+            0,
+          ],
+          "size": [
+            0,
+            0,
+          ],
+          "values": [],
+        },
+        "setGeneExpression": [Function],
+        "stats": {
+          "rawMean": [],
+          "rawStdev": [],
+          "truncatedMax": [],
+          "truncatedMin": [],
+        },
+      },
+    },
     "full": {
       "ETag": null,
       "error": false,
@@ -502,6 +742,36 @@ exports[`genesReducer Loading on error state causes error to reset 1`] = `
 exports[`genesReducer Multiple components loading some of same expression triggers appropriate action 1`] = `
 {
   "expression": {
+    "downsampled": {
+      "cellIds": [],
+      "downsampleType": null,
+      "error": false,
+      "lastFetchSettings": null,
+      "loading": false,
+      "matrix": ExpressionMatrix {
+        "geneIndexes": {},
+        "rawGeneExpressions": {
+          "datatype": undefined,
+          "index": [],
+          "mathjs": "SparseMatrix",
+          "ptr": [
+            0,
+          ],
+          "size": [
+            0,
+            0,
+          ],
+          "values": [],
+        },
+        "setGeneExpression": [Function],
+        "stats": {
+          "rawMean": [],
+          "rawStdev": [],
+          "truncatedMax": [],
+          "truncatedMin": [],
+        },
+      },
+    },
     "error": false,
     "full": {
       "ETag": null,
@@ -566,6 +836,36 @@ exports[`genesReducer Multiple components loading some of same expression trigge
 exports[`genesReducer Multiple components loading some of same property triggers appropriate action 1`] = `
 {
   "expression": {
+    "downsampled": {
+      "cellIds": [],
+      "downsampleType": null,
+      "error": false,
+      "lastFetchSettings": null,
+      "loading": false,
+      "matrix": ExpressionMatrix {
+        "geneIndexes": {},
+        "rawGeneExpressions": {
+          "datatype": undefined,
+          "index": [],
+          "mathjs": "SparseMatrix",
+          "ptr": [
+            0,
+          ],
+          "size": [
+            0,
+            0,
+          ],
+          "values": [],
+        },
+        "setGeneExpression": [Function],
+        "stats": {
+          "rawMean": [],
+          "rawStdev": [],
+          "truncatedMax": [],
+          "truncatedMin": [],
+        },
+      },
+    },
     "full": {
       "ETag": null,
       "error": false,
@@ -629,6 +929,36 @@ exports[`genesReducer Multiple components loading some of same property triggers
 exports[`genesReducer Properties loading triggers appropriate changes 1`] = `
 {
   "expression": {
+    "downsampled": {
+      "cellIds": [],
+      "downsampleType": null,
+      "error": false,
+      "lastFetchSettings": null,
+      "loading": false,
+      "matrix": ExpressionMatrix {
+        "geneIndexes": {},
+        "rawGeneExpressions": {
+          "datatype": undefined,
+          "index": [],
+          "mathjs": "SparseMatrix",
+          "ptr": [
+            0,
+          ],
+          "size": [
+            0,
+            0,
+          ],
+          "values": [],
+        },
+        "setGeneExpression": [Function],
+        "stats": {
+          "rawMean": [],
+          "rawStdev": [],
+          "truncatedMax": [],
+          "truncatedMin": [],
+        },
+      },
+    },
     "full": {
       "ETag": null,
       "error": false,
@@ -686,6 +1016,36 @@ exports[`genesReducer Properties loading triggers appropriate changes 1`] = `
 exports[`genesReducer Selected genes get added as a set to a non-empty list 1`] = `
 {
   "expression": {
+    "downsampled": {
+      "cellIds": [],
+      "downsampleType": null,
+      "error": false,
+      "lastFetchSettings": null,
+      "loading": false,
+      "matrix": ExpressionMatrix {
+        "geneIndexes": {},
+        "rawGeneExpressions": {
+          "datatype": undefined,
+          "index": [],
+          "mathjs": "SparseMatrix",
+          "ptr": [
+            0,
+          ],
+          "size": [
+            0,
+            0,
+          ],
+          "values": [],
+        },
+        "setGeneExpression": [Function],
+        "stats": {
+          "rawMean": [],
+          "rawStdev": [],
+          "truncatedMax": [],
+          "truncatedMin": [],
+        },
+      },
+    },
     "full": {
       "ETag": null,
       "error": false,
@@ -738,6 +1098,36 @@ exports[`genesReducer Selected genes get added as a set to a non-empty list 1`] 
 exports[`genesReducer Selected genes get added on empty list 1`] = `
 {
   "expression": {
+    "downsampled": {
+      "cellIds": [],
+      "downsampleType": null,
+      "error": false,
+      "lastFetchSettings": null,
+      "loading": false,
+      "matrix": ExpressionMatrix {
+        "geneIndexes": {},
+        "rawGeneExpressions": {
+          "datatype": undefined,
+          "index": [],
+          "mathjs": "SparseMatrix",
+          "ptr": [
+            0,
+          ],
+          "size": [
+            0,
+            0,
+          ],
+          "values": [],
+        },
+        "setGeneExpression": [Function],
+        "stats": {
+          "rawMean": [],
+          "rawStdev": [],
+          "truncatedMax": [],
+          "truncatedMin": [],
+        },
+      },
+    },
     "full": {
       "ETag": null,
       "error": false,
@@ -790,6 +1180,36 @@ exports[`genesReducer Selected genes get added on empty list 1`] = `
 exports[`genesReducer Sets error state on expression error action 1`] = `
 {
   "expression": {
+    "downsampled": {
+      "cellIds": [],
+      "downsampleType": null,
+      "error": false,
+      "lastFetchSettings": null,
+      "loading": false,
+      "matrix": ExpressionMatrix {
+        "geneIndexes": {},
+        "rawGeneExpressions": {
+          "datatype": undefined,
+          "index": [],
+          "mathjs": "SparseMatrix",
+          "ptr": [
+            0,
+          ],
+          "size": [
+            0,
+            0,
+          ],
+          "values": [],
+        },
+        "setGeneExpression": [Function],
+        "stats": {
+          "rawMean": [],
+          "rawStdev": [],
+          "truncatedMax": [],
+          "truncatedMin": [],
+        },
+      },
+    },
     "full": {
       "ETag": null,
       "error": "asd",
@@ -844,6 +1264,36 @@ exports[`genesReducer Sets error state on expression error action 1`] = `
 exports[`genesReducer Sets loaded state on expression loading action 1`] = `
 {
   "expression": {
+    "downsampled": {
+      "cellIds": [],
+      "downsampleType": null,
+      "error": false,
+      "lastFetchSettings": null,
+      "loading": false,
+      "matrix": ExpressionMatrix {
+        "geneIndexes": {},
+        "rawGeneExpressions": {
+          "datatype": undefined,
+          "index": [],
+          "mathjs": "SparseMatrix",
+          "ptr": [
+            0,
+          ],
+          "size": [
+            0,
+            0,
+          ],
+          "values": [],
+        },
+        "setGeneExpression": [Function],
+        "stats": {
+          "rawMean": [],
+          "rawStdev": [],
+          "truncatedMax": [],
+          "truncatedMin": [],
+        },
+      },
+    },
     "full": {
       "ETag": null,
       "error": false,
@@ -926,6 +1376,36 @@ exports[`genesReducer Sets loaded state on expression loading action 1`] = `
 exports[`genesReducer Sets loading state on expression loading action 1`] = `
 {
   "expression": {
+    "downsampled": {
+      "cellIds": [],
+      "downsampleType": null,
+      "error": false,
+      "lastFetchSettings": null,
+      "loading": false,
+      "matrix": ExpressionMatrix {
+        "geneIndexes": {},
+        "rawGeneExpressions": {
+          "datatype": undefined,
+          "index": [],
+          "mathjs": "SparseMatrix",
+          "ptr": [
+            0,
+          ],
+          "size": [
+            0,
+            0,
+          ],
+          "values": [],
+        },
+        "setGeneExpression": [Function],
+        "stats": {
+          "rawMean": [],
+          "rawStdev": [],
+          "truncatedMax": [],
+          "truncatedMin": [],
+        },
+      },
+    },
     "error": false,
     "full": {
       "ETag": null,

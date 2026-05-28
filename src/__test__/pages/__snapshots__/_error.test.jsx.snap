@@ -109,6 +109,36 @@ exports[`ErrorPage Should post error to Slack if environment is production 1`] =
     },
     "genes": {
       "expression": {
+        "downsampled": {
+          "cellIds": [],
+          "downsampleType": null,
+          "error": false,
+          "lastFetchSettings": null,
+          "loading": false,
+          "matrix": ExpressionMatrix {
+            "geneIndexes": {},
+            "rawGeneExpressions": {
+              "datatype": undefined,
+              "index": [],
+              "mathjs": "SparseMatrix",
+              "ptr": [
+                0,
+              ],
+              "size": [
+                0,
+                0,
+              ],
+              "values": [],
+            },
+            "setGeneExpression": [Function],
+            "stats": {
+              "rawMean": [],
+              "rawStdev": [],
+              "truncatedMax": [],
+              "truncatedMin": [],
+            },
+          },
+        },
         "full": {
           "ETag": null,
           "error": false,
@@ -299,6 +329,36 @@ exports[`ErrorPage Should post error to Slack if environment is staging 1`] = `
     },
     "genes": {
       "expression": {
+        "downsampled": {
+          "cellIds": [],
+          "downsampleType": null,
+          "error": false,
+          "lastFetchSettings": null,
+          "loading": false,
+          "matrix": ExpressionMatrix {
+            "geneIndexes": {},
+            "rawGeneExpressions": {
+              "datatype": undefined,
+              "index": [],
+              "mathjs": "SparseMatrix",
+              "ptr": [
+                0,
+              ],
+              "size": [
+                0,
+                0,
+              ],
+              "values": [],
+            },
+            "setGeneExpression": [Function],
+            "stats": {
+              "rawMean": [],
+              "rawStdev": [],
+              "truncatedMax": [],
+              "truncatedMin": [],
+            },
+          },
+        },
         "full": {
           "ETag": null,
           "error": false,
