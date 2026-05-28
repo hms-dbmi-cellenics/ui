@@ -314,7 +314,7 @@ const DataIntegration = (props) => {
         debounceSave(activePlotUuid);
       }
     }
-  }, [activePlotUuid, activePlotType, cellSets?.accessible]);
+  }, [activePlotUuid, activePlotType, cellSets?.accessible, !!selectedConfig]);
 
   const completedSteps = useSelector(getBackendStatus(experimentId))
     .status?.pipeline?.completedSteps;

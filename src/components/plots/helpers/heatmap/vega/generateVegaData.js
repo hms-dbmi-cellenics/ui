@@ -7,6 +7,8 @@ import getHeatmapCellOrder, {
 
 const generateVegaData = (
   expressionMatrix, heatmapSettings, cellSets,
+  preComputedCellOrder = null,
+  cellIdToMatrixIndex = null,
 ) => {
   const {
     selectedGenes, selectedTracks, guardLines, selectedCellSet, selectedPoints, groupedTracks,
@@ -16,7 +18,7 @@ const generateVegaData = (
   // Compute which cell sets should be hidden based on selectedPoints
   const hiddenCellSets = computeHiddenCellSets(selectedPoints, cellSets);
 
-  const cellOrder = getHeatmapCellOrder(
+  const cellOrder = preComputedCellOrder ?? getHeatmapCellOrder(
     selectedCellSet,
     groupedTracks,
     hiddenCellSets,
@@ -33,7 +35,7 @@ const generateVegaData = (
   };
 
   data.geneExpressionsData = generateVegaGeneExpressionsData(
-    cellOrder, selectedGenes, expressionMatrix, heatmapSettings,
+    cellOrder, selectedGenes, expressionMatrix, heatmapSettings, cellIdToMatrixIndex,
   );
 
   const trackData = trackOrder.map(

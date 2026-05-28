@@ -16,7 +16,6 @@ import 'vega-webgl-renderer';
 
 import ExpressionMatrix from 'utils/ExpressionMatrix/ExpressionMatrix';
 import { getCellSets, getCellSetsHierarchyByKeys } from 'redux/selectors';
-import calculateNMarkerGenes from 'utils/calculateNMarkerGenes';
 
 import HeatmapGroupBySettings from 'components/data-exploration/heatmap/HeatmapGroupBySettings';
 import HeatmapMetadataTracksSettings from 'components/data-exploration/heatmap/HeatmapMetadataTrackSettings';
@@ -28,9 +27,11 @@ import Header from 'components/Header';
 import PlotContainer from 'components/plots/PlotContainer';
 import { generateSpec } from 'utils/plotSpecs/generateHeatmapSpec';
 import {
-  loadGeneExpression,
+  loadHeatmapExpression,
   loadMarkerGenes,
 } from 'redux/actions/genes';
+import { LARGE_DATASET_THRESHOLD } from 'redux/actions/genes/loadHeatmapExpression';
+import { computeBucketedDisplayCellIds, computeHiddenCellSets } from 'utils/work/getHeatmapCellOrder';
 import loadGeneList from 'redux/actions/genes/loadGeneList';
 import { loadCellSets } from 'redux/actions/cellSets';
 import PlatformError from 'components/PlatformError';
@@ -48,6 +49,7 @@ import useConditionalEffect from 'utils/customHooks/useConditionalEffect';
 const { Panel } = Collapse;
 const plotUuid = 'markerHeatmapPlotMain';
 const plotType = 'markerHeatmap';
+const NUM_MARKER_GENES = 5;
 
 const MarkerHeatmap = ({ experimentId }) => {
   const dispatch = useDispatch();
@@ -72,6 +74,14 @@ const MarkerHeatmap = ({ experimentId }) => {
     (state) => state.genes.expression.views[plotUuid],
   ) || {};
 
+  const {
+    loading: downsampledLoading,
+    error: downsampledError,
+    cellIds: workerCellIds,
+    downsampleType,
+  } = useSelector((state) => state.genes.expression.downsampled);
+  const downsampledMatrix = useSelector((state) => state.genes.expression.downsampled.matrix);
+
   const cellSets = useSelector(getCellSets());
   const { hierarchy } = cellSets;
 
@@ -95,25 +105,48 @@ const MarkerHeatmap = ({ experimentId }) => {
       .configureEmbedding?.clusteringSettings.methodSettings.louvain.resolution,
   ) || false;
 
-  // Calculate nMarkerGenes based on dataset size and cluster count
-  const nMarkerGenes = React.useMemo(() => {
-    if (!cellSets?.properties || !cellSets?.hierarchy) {
-      return 5; // Default
-    }
-
-    // Get total cell count from 'sample' hierarchy
-    const sampleNode = cellSets.hierarchy.find((node) => node.key === 'sample');
-    const totalCells = sampleNode?.children?.reduce((sum, child) => {
+  const totalCells = React.useMemo(() => {
+    const sampleNode = cellSets.hierarchy?.find((node) => node.key === 'sample');
+    return sampleNode?.children?.reduce((sum, child) => {
       const cellIds = cellSets.properties[child.key]?.cellIds;
       return sum + (cellIds?.size || 0);
     }, 0) || 0;
+  }, [cellSets.hierarchy, cellSets.properties]);
 
-    // Get cluster count from 'louvain' hierarchy
-    const louvainNode = cellSets.hierarchy.find((node) => node.key === 'louvain');
-    const clusterCount = louvainNode?.children?.length || 0;
+  const isLargeDataset = totalCells >= LARGE_DATASET_THRESHOLD;
 
-    return calculateNMarkerGenes(totalCells, clusterCount);
-  }, [cellSets]);
+  // Map from cell ID → matrix column index for downsampled expression data
+  const cellIdToMatrixIndex = React.useMemo(() => {
+    if (!isLargeDataset || !workerCellIds?.length) return null;
+    return new Map(workerCellIds.map((id, i) => [id, i]));
+  }, [isLargeDataset, workerCellIds]);
+
+  // Bucketed downsampling: re-sample display cells from worker-returned cells applying hidden sets
+  const bucketedDisplayCellIds = React.useMemo(() => {
+    if (!isLargeDataset || downsampleType !== 'bucketed' || !workerCellIds?.length) return null;
+    const hiddenCellSets = computeHiddenCellSets(config?.selectedPoints, cellSets);
+    return computeBucketedDisplayCellIds(
+      config?.selectedCellSet,
+      config?.groupedTracks,
+      hiddenCellSets,
+      cellSets,
+      workerCellIds,
+    );
+  }, [
+    isLargeDataset,
+    downsampleType,
+    workerCellIds,
+    config?.selectedPoints,
+    config?.selectedCellSet,
+    config?.groupedTracks,
+  ]);
+
+  const finalDisplayCellIds = React.useMemo(() => {
+    if (!isLargeDataset) return null;
+    if (downsampleType === 'bucketed') return bucketedDisplayCellIds;
+    if (downsampleType === 'precomputed') return workerCellIds;
+    return null;
+  }, [isLargeDataset, downsampleType, bucketedDisplayCellIds, workerCellIds]);
 
   useEffect(() => {
     if (!louvainClustersResolution) dispatch(loadProcessingSettings(experimentId));
@@ -147,9 +180,13 @@ const MarkerHeatmap = ({ experimentId }) => {
         },
       ));
     } else if (updatesToDispatch.selectedGenes) {
-      dispatch(
-        loadGeneExpression(experimentId, updatesToDispatch.selectedGenes, plotUuid),
-      );
+      const hiddenCellSets = computeHiddenCellSets(config?.selectedPoints, cellSets);
+      dispatch(loadHeatmapExpression(experimentId, updatesToDispatch.selectedGenes, {
+        selectedCellSet: config?.selectedCellSet,
+        groupedTracks: config?.groupedTracks,
+        hiddenCellSets,
+        plotUuid,
+      }));
     }
   };
 
@@ -166,12 +203,12 @@ const MarkerHeatmap = ({ experimentId }) => {
   // If the plot has never been loaded (so selectedGenes is null), then load the marker genes
   // Only auto-load on initial render (null), not when user clears genes (empty array)
   useEffect(() => {
-    if (config?.selectedGenes === null && nMarkerGenes) {
+    if (config?.selectedGenes === null) {
       dispatch(loadMarkerGenes(
         experimentId,
         plotUuid,
         {
-          numGenes: nMarkerGenes,
+          numGenes: NUM_MARKER_GENES,
           groupedTracks: config.groupedTracks,
           selectedCellSet: config.selectedCellSet,
           selectedPoints: config.selectedPoints,
@@ -179,7 +216,6 @@ const MarkerHeatmap = ({ experimentId }) => {
       ));
     }
   }, [
-    nMarkerGenes,
     JSON.stringify(config?.groupedTracks),
     config?.selectedCellSet,
     config?.selectedPoints,
@@ -209,25 +245,28 @@ const MarkerHeatmap = ({ experimentId }) => {
     if (!expectedConditions) {
       return;
     }
-    dispatch(loadGeneExpression(experimentId, loadedGenes, plotUuid));
+    const hiddenCellSets = computeHiddenCellSets(config.selectedPoints, cellSets);
+    dispatch(loadHeatmapExpression(experimentId, loadedGenes, {
+      selectedCellSet: config.selectedCellSet,
+      groupedTracks: config.groupedTracks,
+      hiddenCellSets,
+      plotUuid,
+    }));
   }, [
     loadedGenes,
     config?.selectedCellSet,
+    config?.groupedTracks,
     config?.selectedPoints,
     hierarchy,
     cellSets.accessible,
     louvainClustersResolution,
   ]);
 
+  // Small dataset: generate heatmap from full expression matrix
   useEffect(() => {
-    // Don't create spec while marker genes are loading (prevents stale spec recreation)
-    if (markerGenesLoading || expressionFetching) {
-      return;
-    }
+    if (isLargeDataset) return;
+    if (markerGenesLoading || expressionFetching) return;
 
-
-    // Check preconditions: data is loaded and ready
-    // cellOrder will be computed internally by generateVegaData
     if (
       !cellSets.accessible
       || !cellSets.hierarchy?.length
@@ -238,32 +277,23 @@ const MarkerHeatmap = ({ experimentId }) => {
       return;
     }
 
-    // Check preconditions: no errors and data is not fetching
     if (expressionError || markerGenesLoadingError) {
       return;
     }
 
-    // Check that the expression data has actually been loaded into the matrix
-    // Just having geneIndexes isn't enough - we need the rawGeneExpressions data
-    const [cellCount, geneCount] = rawMatrix?.rawGeneExpressions?.size?.() || [0, 0];
+    const [, geneCount] = rawMatrix?.rawGeneExpressions?.size?.() || [0, 0];
 
     if (!geneCount || geneCount === 0) {
-      // Data not ready yet, wait for the expression values to be populated
       return;
     }
 
-    // Verify that the matrix has ALL the genes we need to render
-    // Note: matrix can have MORE genes than loadedGenes (it accumulates genes from previous operations)
-    // We only care that all genes in loadedGenes are present in the matrix
     const matrixGeneIndexes = rawMatrix?.geneIndexes || {};
     const allGenesAvailable = loadedGenes.every((gene) => matrixGeneIndexes[gene] !== undefined);
 
     if (!allGenesAvailable) {
-      // Not all genes are in the matrix yet, wait for expression data to be fully loaded
       return;
     }
 
-    // Reconstruct ExpressionMatrix from plain object (lost prototype after Redux hydration)
     const matrix = new ExpressionMatrix();
     if (rawMatrix?.geneIndexes && rawMatrix?.rawGeneExpressions && rawMatrix?.stats) {
       matrix.geneIndexes = rawMatrix.geneIndexes;
@@ -271,9 +301,6 @@ const MarkerHeatmap = ({ experimentId }) => {
       matrix.stats = rawMatrix.stats;
     }
 
-    // Pass loadedGenes as selectedGenes to vega data generator
-    // This ensures we render the loaded genes instead of config.selectedGenes which may be empty
-    // generateVegaData will internally compute cellOrder based on config
     const vegaData = generateVegaData(matrix, { ...config, selectedGenes: loadedGenes }, cellSets);
     const { cellOrder: computedCellOrder } = vegaData;
     setCellOrder(computedCellOrder);
@@ -300,7 +327,116 @@ const MarkerHeatmap = ({ experimentId }) => {
     spec.marks.push(extraMarks);
 
     setVegaSpec(spec);
-  }, [selectedTracks, loadedGenes, selectedCellSetConfig, config?.selectedPoints, config?.groupedTracks, expressionError, cellSets.accessible, cellSets.hierarchy, cellSets.hidden, hierarchy, markerGenesLoadingError, markerGenesLoading, rawMatrix, expressionFetching]);
+  }, [
+    isLargeDataset,
+    selectedTracks,
+    loadedGenes,
+    selectedCellSetConfig,
+    config?.selectedPoints,
+    config?.groupedTracks,
+    expressionError,
+    cellSets.accessible,
+    cellSets.hierarchy,
+    cellSets.hidden,
+    hierarchy,
+    markerGenesLoadingError,
+    markerGenesLoading,
+    rawMatrix,
+    expressionFetching,
+  ]);
+
+  // Large dataset: generate heatmap from downsampled expression matrix
+  useEffect(() => {
+    if (!isLargeDataset) return;
+    if (markerGenesLoading || expressionFetching) return;
+
+    if (
+      !cellSets.accessible
+      || !cellSets.hierarchy?.length
+      || !loadedGenes?.length
+      || !hierarchy?.length
+      || downsampledLoading
+      || !finalDisplayCellIds?.length
+    ) {
+      return;
+    }
+
+    if (downsampledError || markerGenesLoadingError) {
+      return;
+    }
+
+    const [, geneCount] = downsampledMatrix?.rawGeneExpressions?.size?.() || [0, 0];
+
+    if (!geneCount || geneCount === 0) {
+      return;
+    }
+
+    const matrixGeneIndexes = downsampledMatrix?.geneIndexes || {};
+    const allGenesAvailable = loadedGenes.every((gene) => matrixGeneIndexes[gene] !== undefined);
+
+    if (!allGenesAvailable) {
+      return;
+    }
+
+    const matrix = new ExpressionMatrix();
+    if (downsampledMatrix?.geneIndexes && downsampledMatrix?.rawGeneExpressions && downsampledMatrix?.stats) {
+      matrix.geneIndexes = downsampledMatrix.geneIndexes;
+      matrix.rawGeneExpressions = downsampledMatrix.rawGeneExpressions;
+      matrix.stats = downsampledMatrix.stats;
+    }
+
+    const vegaData = generateVegaData(
+      matrix,
+      { ...config, selectedGenes: loadedGenes },
+      cellSets,
+      finalDisplayCellIds,
+      cellIdToMatrixIndex,
+    );
+    const { cellOrder: computedCellOrder } = vegaData;
+    setCellOrder(computedCellOrder);
+    const spec = generateSpec(config, 'Cluster ID', vegaData, config.showGeneLabels);
+
+    spec.description = 'Marker heatmap';
+
+    const extraMarks = {
+      type: 'rule',
+      from: { data: 'clusterSeparationLines' },
+      encode: {
+        enter: {
+          stroke: { value: 'white' },
+        },
+        update: {
+          x: { scale: 'x', field: 'data' },
+          y: 0,
+          y2: { field: { group: 'height' } },
+          strokeWidth: { value: 1 },
+          strokeOpacity: { value: 1 },
+        },
+      },
+    };
+    spec.marks.push(extraMarks);
+
+    setVegaSpec(spec);
+  }, [
+    isLargeDataset,
+    downsampledLoading,
+    finalDisplayCellIds,
+    selectedTracks,
+    loadedGenes,
+    selectedCellSetConfig,
+    config?.selectedPoints,
+    config?.groupedTracks,
+    downsampledError,
+    cellIdToMatrixIndex,
+    cellSets.accessible,
+    cellSets.hierarchy,
+    cellSets.hidden,
+    hierarchy,
+    markerGenesLoadingError,
+    markerGenesLoading,
+    downsampledMatrix,
+    expressionFetching,
+  ]);
 
   useEffect(() => {
     dispatch(loadGeneList(experimentId));
@@ -355,16 +491,27 @@ const MarkerHeatmap = ({ experimentId }) => {
     // Update config with the new gene order first (single source of truth)
     dispatch(updatePlotConfig(plotUuid, { selectedGenes: newGenes }));
     // Then load gene expression with the new order
-    dispatch(loadGeneExpression(experimentId, newGenes, plotUuid));
-  }, [experimentId, plotUuid, dispatch]);
+    const hiddenCellSets = computeHiddenCellSets(config?.selectedPoints, cellSets);
+    dispatch(loadHeatmapExpression(experimentId, newGenes, {
+      selectedCellSet: config?.selectedCellSet,
+      groupedTracks: config?.groupedTracks,
+      hiddenCellSets,
+      plotUuid,
+    }));
+  }, [experimentId, plotUuid, dispatch, config?.selectedCellSet, config?.groupedTracks, config?.selectedPoints, cellSets]);
 
   const onGenesSelect = (genes) => {
     const allGenes = _.uniq([...loadedGenes, ...genes]);
 
     if (_.isEqual(allGenes, loadedGenes)) return;
 
-    // Load the selected genes (updates genes.expression.views)
-    dispatch(loadGeneExpression(experimentId, allGenes, plotUuid));
+    const hiddenCellSets = computeHiddenCellSets(config?.selectedPoints, cellSets);
+    dispatch(loadHeatmapExpression(experimentId, allGenes, {
+      selectedCellSet: config?.selectedCellSet,
+      groupedTracks: config?.groupedTracks,
+      hiddenCellSets,
+      plotUuid,
+    }));
   };
 
   const onReset = () => {
@@ -372,7 +519,7 @@ const MarkerHeatmap = ({ experimentId }) => {
       experimentId,
       plotUuid,
       {
-        numGenes: nMarkerGenes,
+        numGenes: NUM_MARKER_GENES,
         groupedTracks: config.groupedTracks,
         selectedCellSet: config.selectedCellSet,
         selectedPoints: config.selectedPoints,
@@ -513,15 +660,20 @@ const MarkerHeatmap = ({ experimentId }) => {
       );
     }
 
-    if (expressionError) {
+    const expressionErr = isLargeDataset ? downsampledError : expressionError;
+    if (expressionErr) {
       return (
         <PlatformError
           description='Could not load gene expression data.'
-          error={expressionError}
+          error={expressionErr}
           onClick={() => {
-            dispatch(
-              loadGeneExpression(experimentId, loadedGenes, plotUuid),
-            );
+            const hiddenCellSets = computeHiddenCellSets(config?.selectedPoints, cellSets);
+            dispatch(loadHeatmapExpression(experimentId, loadedGenes, {
+              selectedCellSet: config?.selectedCellSet,
+              groupedTracks: config?.groupedTracks,
+              hiddenCellSets,
+              plotUuid,
+            }));
           }}
         />
       );
@@ -550,11 +702,12 @@ const MarkerHeatmap = ({ experimentId }) => {
       );
     }
 
+    const loadingExpr = isLargeDataset ? downsampledLoading : expressionFetching;
     if (
       !config
       || !cellSets.accessible
       || markerGenesLoading
-      || expressionFetching
+      || loadingExpr
     ) {
       return (<Loader experimentId={experimentId} />);
     }

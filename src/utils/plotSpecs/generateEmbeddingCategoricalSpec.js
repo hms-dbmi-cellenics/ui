@@ -1,6 +1,5 @@
 /* eslint-disable no-param-reassign */
 import _ from 'lodash';
-import { getAllCells, getSampleCells } from 'utils/cellSets';
 
 const paddingSize = 5;
 
@@ -186,13 +185,6 @@ const generateSpec = (config, method, plotData, cellSetLegendsData) => {
       {
         name: 'values',
         values: plotData,
-        // Vega internally modifies objects during data transforms. If the plot data is frozen,
-        // Vega is not able to carry out the transform and will throw an error.
-        // https://github.com/vega/vega/issues/2453#issuecomment-604516777
-        format: {
-          type: 'json',
-          copy: true,
-        },
       },
       {
         name: 'labels',
@@ -303,87 +295,65 @@ const generateSpec = (config, method, plotData, cellSetLegendsData) => {
 };
 
 const filterCells = (cellSets, sampleKey, groupBy) => {
-  let filteredCells = [];
+  const clusterEntries = cellSets.hierarchy
+    .find((rootNode) => rootNode.key === groupBy)?.children || [];
 
-  // Get all the filtered cells
-  if (sampleKey === 'All') {
-    filteredCells = getAllCells(cellSets, groupBy);
-  } else {
-    filteredCells = getSampleCells(cellSets, sampleKey);
-  }
+  const cellSetKeys = clusterEntries.map(({ key }) => key);
 
-  // Get the cell set names
-  const clusterEnteries = cellSets.hierarchy
-    .find(
-      (rootNode) => rootNode.key === groupBy,
-    )?.children || [];
+  // Build a reverse lookup map: cellId -> cluster info in O(n_cells).
+  // This replaces the previous O(n_cells × n_clusters) linear .find() per cell.
+  const cellIdToCluster = new Map();
+  cellSetKeys.forEach((key) => {
+    const { name, color, cellIds } = cellSets.properties[key];
+    cellIds.forEach((cellId) => cellIdToCluster.set(cellId, { key, name, color }));
+  });
 
-  const cellSetKeys = clusterEnteries.map(({ key }) => key);
+  // For a specific sample, keep the existing cellIds Set for O(1) membership checks.
+  const sampleCellIds = sampleKey === 'All'
+    ? null
+    : (cellSets.properties[sampleKey]?.cellIds ?? new Set());
 
-  const colorToCellIdsMap = cellSetKeys.reduce((acc, key) => {
-    acc.push({
-      cellIds: cellSets.properties[key].cellIds,
-      key,
-      name: cellSets.properties[key].name,
-      color: cellSets.properties[key].color,
-    });
-
-    return acc;
-  }, []);
-
-  let cellSetLegendsData = [];
+  const filteredCells = {};
+  const cellSetLegendsData = [];
   const addedCellSetKeys = new Set();
 
-  filteredCells = filteredCells.reduce((acc, cell) => {
-    if (!cell) return acc;
+  cellIdToCluster.forEach(({ key, name, color }, cellId) => {
+    if (sampleCellIds && !sampleCellIds.has(cellId)) return;
 
-    const inCellSet = colorToCellIdsMap.find((map) => map.cellIds.has(cell.cellId));
-
-    // If cell is not in the cell set, then return
-    if (!inCellSet) return acc;
-
-    const { key, name, color } = inCellSet;
-
-    if (!addedCellSetKeys.has(key)) {
-      addedCellSetKeys.add(key);
-      cellSetLegendsData.push({ key, name, color });
-    }
-
-    acc[cell.cellId] = {
-      ...cell,
+    filteredCells[cellId] = {
+      cellId,
       cellSetKey: key,
       cellSetName: name,
       color,
     };
 
-    return acc;
-  }, {});
+    if (!addedCellSetKeys.has(key)) {
+      addedCellSetKeys.add(key);
+      cellSetLegendsData.push({ key, name, color });
+    }
+  });
 
   // Sort legends to show them in the order that cellSetKeys are stored
-  cellSetLegendsData = _.sortBy(
-    cellSetLegendsData,
-    ({ key }) => _.indexOf(cellSetKeys, key),
-  );
-
-  return { filteredCells, cellSetLegendsData };
+  return {
+    filteredCells,
+    cellSetLegendsData: _.sortBy(cellSetLegendsData, ({ key }) => _.indexOf(cellSetKeys, key)),
+  };
 };
 
 // Generate dynamic data from redux store
 const generateData = (cellSets, sampleKey, groupBy, embeddingData) => {
   const { filteredCells, cellSetLegendsData } = filterCells(cellSets, sampleKey, groupBy);
 
-  const plotData = embeddingData
-    .map((coordinates, cellId) => ({ cellId, coordinates }))
-    .filter(({ coordinates }) => coordinates !== undefined)
-    .map((data) => {
-      const { cellId, coordinates } = data;
-
-      return {
-        ...filteredCells[cellId],
-        x: coordinates[0],
-        y: coordinates[1],
-      };
+  // Single-pass forEach avoids creating intermediate arrays / objects from chained .map()/.filter()
+  const plotData = [];
+  embeddingData.forEach((coordinates, cellId) => {
+    if (coordinates === undefined || !filteredCells[cellId]) return;
+    plotData.push({
+      ...filteredCells[cellId],
+      x: coordinates[0],
+      y: coordinates[1],
     });
+  });
 
   return { plotData, cellSetLegendsData };
 };

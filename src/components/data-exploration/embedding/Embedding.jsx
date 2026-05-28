@@ -7,6 +7,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
 import dynamic from 'next/dynamic';
 import * as vega from 'vega';
+import { WebMercatorViewport } from '@deck.gl/core';
 import { ScatterplotLayer } from '@deck.gl/layers';
 import { EditableGeoJsonLayer } from '@nebula.gl/layers';
 import { DrawPolygonByDraggingMode } from '@nebula.gl/edit-modes';
@@ -227,6 +228,19 @@ const Embedding = (props) => {
     setConvertedCellsData(convertCellsData(data, cellSetHidden, cellSetProperties));
   }, [data, cellSetHidden, cellSetProperties]);
 
+  // Transform cell data for deck.gl
+  const deckglData = useMemo(
+    () => transformCellData(convertedCellsData, cellColors),
+    [convertedCellsData, cellColors],
+  );
+
+  // Map cellId → data-space position for fast lookup during crosshair projection
+  const cellIdToPositionMap = useMemo(() => {
+    const map = new Map();
+    deckglData.forEach((d) => { map.set(String(d.cellId), d.position); });
+    return map;
+  }, [deckglData]);
+
   // Build quadtree from cell data for efficient lasso selection
 
   useEffect(() => {
@@ -266,10 +280,36 @@ const Embedding = (props) => {
         expression: expressionToDispatch,
         geneName,
       });
+
+      // Project the selected cell's data-space coordinates to screen coordinates so the
+      // crosshair updates correctly when the selection originates from the heatmap.
+      const position = cellIdToPositionMap.get(String(selectedCell));
+      if (position && viewState) {
+        try {
+          const viewport = new WebMercatorViewport({
+            width,
+            height,
+            longitude: viewState.longitude,
+            latitude: viewState.latitude,
+            zoom: viewState.zoom,
+            pitch: viewState.pitch || 0,
+            bearing: viewState.bearing || 0,
+          });
+          const [screenX, screenY] = viewport.project(position);
+          cellCoordinatesRef.current = {
+            x: screenX,
+            y: screenY,
+            width,
+            height,
+          };
+        } catch (_e) {
+          // Projection can fail for cells outside the current viewport; keep existing coords
+        }
+      }
     } else {
       setCellInfoTooltip(null);
     }
-  }, [selectedCell]);
+  }, [selectedCell, cellIdToPositionMap]);
 
   const setCellHighlight = useCallback((cell) => {
     // Keep last shown tooltip
@@ -309,12 +349,6 @@ const Embedding = (props) => {
       clearCellHighlight();
     }
   }, [setCellHighlight, clearCellHighlight, width, height]);
-
-  // Transform cell data for deck.gl
-  const deckglData = useMemo(
-    () => transformCellData(convertedCellsData, cellColors),
-    [convertedCellsData, cellColors],
-  );
 
   // Auto-fit view when embedding data loads (not when colors change)
   useEffect(() => {
@@ -388,7 +422,7 @@ const Embedding = (props) => {
         radiusScale: Math.pow(2, viewState.zoom - 10),
         radiusMinPixels: radiusMinPixels,
         radiusUnits: 'common',
-        radiusMaxPixels: isLargeDataset ? 2 : 6,
+        radiusMaxPixels: isLargeDataset ? 4 : 6,
         updateTriggers: {
           radiusScale: [viewState.zoom],
         },
@@ -529,59 +563,59 @@ const Embedding = (props) => {
         }
       }}
     >
-        {data && deckglData.length > 0 ? (
-          <>
-            <ToolMenu
-              activeTool={activeTool}
-              onToolChange={setActiveTool}
-              visibleTools={{ pan: true, selectLasso: true, recenter: true }}
-              recenterOnClick={onRecenterClick}
-            />
-            <div style={{ flex: 1, position: 'relative', opacity: showLoader ? 0 : 1 }}>
-              {viewState && (
-                <DeckGL
-                  initialViewState={viewState}
-                  onViewStateChange={(e) => setViewState(e.viewState)}
-                  controller={activeTool === 'polygon' ? { scrollZoom: true, dragPan: false, dragRotate: false, touchZoom: true, touchRotate: false } : true}
-                  layers={layers}
-                  onHover={activeTool !== 'polygon' ? handleDeckGLHover : null}
-                  getCursor={() => activeTool === 'polygon' ? 'crosshair' : 'default'}
-                  style={{ width: '100%', height: '100%' }}
-                />
-              )}
-            </div>
-          </>
-        ) : (
-          <></>
-        )}
-        {renderExpressionView()}
-        {
-          createClusterPopover
-            ? (
-              <ClusterPopover
-                visible
-                popoverPosition={{ x: 0, y: 0 }}
-                onCreate={onCreateCluster}
-                onCancel={() => setCreateClusterPopover(false)}
+      {data && deckglData.length > 0 ? (
+        <>
+          <ToolMenu
+            activeTool={activeTool}
+            onToolChange={setActiveTool}
+            visibleTools={{ pan: true, selectLasso: true, recenter: true }}
+            recenterOnClick={onRecenterClick}
+          />
+          <div style={{ flex: 1, position: 'relative', opacity: showLoader ? 0 : 1 }}>
+            {viewState && (
+              <DeckGL
+                initialViewState={viewState}
+                onViewStateChange={(e) => setViewState(e.viewState)}
+                controller={activeTool === 'polygon' ? { scrollZoom: true, dragPan: false, dragRotate: false, touchZoom: true, touchRotate: false } : true}
+                layers={layers}
+                onHover={activeTool !== 'polygon' ? handleDeckGLHover : null}
+                getCursor={() => activeTool === 'polygon' ? 'crosshair' : 'default'}
+                style={{ width: '100%', height: '100%' }}
               />
-            ) : (
-              (cellInfoVisible && cellInfoTooltip && activeTool !== 'polygon') ? (
-                <div>
-                  <CellInfo
-                    containerWidth={width}
-                    containerHeight={height}
-                    componentType={embeddingType}
-                    coordinates={cellCoordinatesRef.current}
-                    cellInfo={cellInfoTooltip}
-                  />
-                  <CrossHair
-                    componentType={embeddingType}
-                    coordinates={cellCoordinatesRef}
-                  />
-                </div>
-              ) : <></>
-            )
-        }
+            )}
+          </div>
+        </>
+      ) : (
+        <></>
+      )}
+      {renderExpressionView()}
+      {
+        createClusterPopover
+          ? (
+            <ClusterPopover
+              visible
+              popoverPosition={{ x: 0, y: 0 }}
+              onCreate={onCreateCluster}
+              onCancel={() => setCreateClusterPopover(false)}
+            />
+          ) : (
+            (cellInfoVisible && cellInfoTooltip && activeTool !== 'polygon') ? (
+              <div>
+                <CellInfo
+                  containerWidth={width}
+                  containerHeight={height}
+                  componentType={embeddingType}
+                  coordinates={cellCoordinatesRef.current}
+                  cellInfo={cellInfoTooltip}
+                />
+                <CrossHair
+                  componentType={embeddingType}
+                  coordinates={cellCoordinatesRef}
+                />
+              </div>
+            ) : <></>
+          )
+      }
       {showLoader && (
         <div
           style={{

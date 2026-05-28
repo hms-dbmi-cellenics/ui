@@ -60,9 +60,25 @@ const MARKER_GENES_LOADED = `${GENES}/markerGenesLoaded`;
  */
 const MARKER_GENES_ERROR = `${GENES}/markerGenesError`;
 
+/**
+ * Turns on the loading state for heatmap expression data (downsampled cases).
+ */
+const HEATMAP_EXPRESSION_LOADING = `${GENES}/heatmapExpressionLoading`;
+
+/**
+ * Sets the state of the heatmap downsampled expression store to successfully loaded.
+ */
+const HEATMAP_EXPRESSION_LOADED = `${GENES}/heatmapExpressionLoaded`;
+
+/**
+ * Sets an error condition for heatmap downsampled expression data.
+ */
+const HEATMAP_EXPRESSION_ERROR = `${GENES}/heatmapExpressionError`;
+
 export {
   GENES_PROPERTIES_LOADING, GENES_PROPERTIES_LOADED_PAGINATED, GENES_PROPERTIES_ERROR,
   GENES_SELECT, GENES_DESELECT,
   MARKER_GENES_LOADING, MARKER_GENES_LOADED, MARKER_GENES_ERROR,
   GENES_EXPRESSION_LOADING, GENES_EXPRESSION_LOADED, GENES_EXPRESSION_ERROR,
+  HEATMAP_EXPRESSION_LOADING, HEATMAP_EXPRESSION_LOADED, HEATMAP_EXPRESSION_ERROR,
 };
