@@ -2,11 +2,9 @@ import React from 'react';
 import { mount } from 'enzyme';
 import { Provider } from 'react-redux';
 import { Dropdown } from 'antd';
-import waitForActions from 'redux-mock-store-await-actions';
 import thunk from 'redux-thunk';
 import preloadAll from 'jest-next-dynamic';
 import configureMockStore from 'redux-mock-store';
-import { GENES_EXPRESSION_LOADING, GENES_EXPRESSION_LOADED } from 'redux/actionTypes/genes';
 import { UPDATE_CONFIG } from 'redux/actionTypes/componentConfig';
 import fetchWork from 'utils/work/fetchWork';
 import ComponentActions from 'components/data-exploration/generic-gene-table/ComponentActions';
@@ -107,7 +105,7 @@ describe('ComponentActions', () => {
     expect(component.find(Dropdown).length).toEqual(0);
   });
 
-  it('Dispatches loadGeneExpression action with the right list of genes when Add is clicked', async () => {
+  it('Updates selectedGenes config when Add is clicked', () => {
     const store = mockStore({
       ...initialState,
       genes: {
@@ -125,28 +123,15 @@ describe('ComponentActions', () => {
     const menuButtons = component.find(Dropdown).props().overlay;
     menuButtons.props.children[0].props.onClick();
 
-    // Wait for side-effect to propagate (config update, then genes loading and loaded).
-    await waitForActions(store, [UPDATE_CONFIG, GENES_EXPRESSION_LOADING, GENES_EXPRESSION_LOADED]);
-
-    expect(fetchWork).toHaveBeenCalledWith(
-      experimentId,
-      {
-        name: 'GeneExpression',
-        genes: ['GeneA', 'GeneB', 'GeneC'],
-      },
-      store.getState,
-      expect.any(Function),
-      { timeout: 60 },
+    expect(fetchWork).not.toHaveBeenCalled();
+    expect(store.getActions().length).toEqual(1);
+    expect(store.getActions()[0].type).toEqual(UPDATE_CONFIG);
+    expect(store.getActions()[0].payload.configChanges.selectedGenes).toEqual(
+      ['Gzma', 'Lyz2', 'GeneA', 'GeneB', 'GeneC'],
     );
-
-    expect(store.getActions().length).toEqual(3);
-
-    expect(store.getActions()[1]).toMatchSnapshot();
-
-    expect(store.getActions()[2]).toMatchSnapshot();
   });
 
-  it('Dispatches loadGeneExpression action with the right list of genes when Remove is clicked', async () => {
+  it('Updates selectedGenes config when Remove is clicked', () => {
     const store = mockStore({
       ...initialState,
       genes: {
@@ -164,17 +149,13 @@ describe('ComponentActions', () => {
     const menuButtons = component.find(Dropdown).props().overlay;
     menuButtons.props.children[1].props.onClick();
 
-    // Wait for side-effect to propagate (config update and genes loaded).
-    await waitForActions(store, [UPDATE_CONFIG, GENES_EXPRESSION_LOADED]);
-
-    expect(fetchWork).toHaveBeenCalledTimes(0);
-
-    expect(store.getActions().length).toEqual(2);
-
-    expect(store.getActions()[1]).toMatchSnapshot();
+    expect(fetchWork).not.toHaveBeenCalled();
+    expect(store.getActions().length).toEqual(1);
+    expect(store.getActions()[0].type).toEqual(UPDATE_CONFIG);
+    expect(store.getActions()[0].payload.configChanges.selectedGenes).toEqual(['Lyz2']);
   });
 
-  it('Dispatches loadGeneExpression action with the right list of genes when Overwrite is clicked', async () => {
+  it('Updates selectedGenes config when Overwrite is clicked', () => {
     const store = mockStore({
       ...initialState,
       genes: {
@@ -192,12 +173,9 @@ describe('ComponentActions', () => {
     const menuButtons = component.find(Dropdown).props().overlay;
     menuButtons.props.children[2].props.onClick();
 
-    // Wait for side-effect to propagate (config update and genes loaded).
-    await waitForActions(store, [UPDATE_CONFIG, GENES_EXPRESSION_LOADED]);
-
-    expect(fetchWork).toHaveBeenCalledTimes(0);
-
-    expect(store.getActions().length).toEqual(2);
-    expect(store.getActions()[1]).toMatchSnapshot();
+    expect(fetchWork).not.toHaveBeenCalled();
+    expect(store.getActions().length).toEqual(1);
+    expect(store.getActions()[0].type).toEqual(UPDATE_CONFIG);
+    expect(store.getActions()[0].payload.configChanges.selectedGenes).toEqual(['Gzma']);
   });
 });
