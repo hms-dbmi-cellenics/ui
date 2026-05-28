@@ -683,9 +683,9 @@ describe('Marker heatmap plot', () => {
       userEvent.click(clearAllButton);
     });
 
-    // Verify selectedGenes is cleared from genes.expression.views
+    // Verify selectedGenes is cleared from the plot config
     await waitFor(() => {
-      const selectedGenes = storeState.getState().genes.expression.views[plotUuid]?.data;
+      const selectedGenes = storeState.getState().componentConfig[plotUuid]?.config?.selectedGenes;
       expect(selectedGenes).toEqual([]);
     }, { timeout: 5000 });
 
