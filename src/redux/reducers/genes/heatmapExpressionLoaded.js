@@ -46,4 +46,3 @@ const heatmapExpressionLoaded = (state, action) => {
 };
 
 export default heatmapExpressionLoaded;
-

@@ -24,8 +24,8 @@ const getInitialState = () => ({
       loading: false,
       error: false,
       cellIds: [],
-      downsampleType: null,       // 'bucketed' | 'precomputed' | null
-      lastFetchSettings: null,    // { downsampleType, selectedCellSet, groupedTracks, cellIdsKey }
+      downsampleType: null, // 'bucketed' | 'precomputed' | null
+      lastFetchSettings: null, // { downsampleType, selectedCellSet, groupedTracks, cellIdsKey }
       matrix: new ExpressionMatrix(),
     },
   },

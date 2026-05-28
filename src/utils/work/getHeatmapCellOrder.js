@@ -165,8 +165,8 @@ const getBuckets = (selectedCellSet, groupedTracks, hiddenCellSets, cellSets) =>
 };
 
 /**
- * Bucketed downsampling second pass: compute display cell IDs after the worker has returned expression
- * data for up to maxCells cells per cartesian-product bucket.
+ * Bucketed downsampling second pass: compute display cell IDs after the worker has
+ * returned expression data for up to maxCells cells per cartesian-product bucket.
  *
  * Uses full-bucket proportions (no hidden sets) to determine per-bucket sample counts,
  * but restricts actual sampling to cells that are:
@@ -240,7 +240,7 @@ const computeBucketedDisplayCellIds = (
 
   // Pass 1: guarantee each non-empty bucket a minimum, capped to what's eligible.
   const minCellsBerBucket = Math.max(
-    1, Math.round(Math.min(totalEffectiveSize, maxCells) * 0.01)
+    1, Math.round(Math.min(totalEffectiveSize, maxCells) * 0.01),
   );
 
   const withGuarantee = bucketData.map(({ effectiveSize, eligible }) => ({
@@ -255,7 +255,9 @@ const computeBucketedDisplayCellIds = (
   // Pass 2: distribute remaining quota proportionally by effectiveSize among buckets
   // that have eligible cells beyond their guarantee.
   const totalExcessEffectiveSize = withGuarantee.reduce(
-    (sum, { effectiveSize, eligible, guaranteed }) => (eligible.length > guaranteed ? sum + effectiveSize : sum),
+    (sum, { effectiveSize, eligible, guaranteed }) => (
+      eligible.length > guaranteed ? sum + effectiveSize : sum
+    ),
     0,
   );
 
@@ -337,10 +339,16 @@ const getHeatmapCellOrder = (
     ? Array.from(hiddenCellSets)
     : (hiddenCellSets || []);
 
-  const seedString = `${selectedCellSet}|${groupedTracks.join(',')}|${normalizedHiddenCellSets.join(',')}`;
+  const seedString = [
+    selectedCellSet,
+    groupedTracks.join(','),
+    normalizedHiddenCellSets.join(','),
+  ].join('|');
   const random = seedrandom(seedString);
 
-  const { buckets, totalSize } = getBuckets(selectedCellSet, groupedTracks, hiddenCellSets, cellSets);
+  const { buckets, totalSize } = getBuckets(
+    selectedCellSet, groupedTracks, hiddenCellSets, cellSets,
+  );
 
   if (buckets.length === 0 || totalSize === 0) return [];
 

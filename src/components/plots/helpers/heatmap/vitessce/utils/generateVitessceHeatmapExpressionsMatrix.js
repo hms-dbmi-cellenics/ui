@@ -5,7 +5,9 @@ const scaledTo255 = (rowOfExpressions, min, max) => (
   rowOfExpressions.map((value) => convertRange(value, [min, max], [0, 255]))
 );
 
-const generateVitessceHeatmapExpressionsMatrix = (cellOrder, geneOrder, expressionMatrix, cellIdToMatrixIndex = null) => {
+const generateVitessceHeatmapExpressionsMatrix = (
+  cellOrder, geneOrder, expressionMatrix, cellIdToMatrixIndex = null,
+) => {
   const geneExpressionsDataMatrix = [];
 
   // For downsampled matrices, cellOrder contains cell IDs, not matrix indices.

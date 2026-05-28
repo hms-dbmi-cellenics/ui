@@ -11,8 +11,7 @@ import loadGeneExpression from 'redux/actions/genes/loadGeneExpression';
 import fetchWork from 'utils/work/fetchWork';
 import getTimeoutForWorkerTask from 'utils/getTimeoutForWorkerTask';
 import upperCaseArray from 'utils/upperCaseArray';
-import { getBuckets } from 'utils/work/getHeatmapCellOrder';
-import getHeatmapCellOrder from 'utils/work/getHeatmapCellOrder';
+import getHeatmapCellOrder, { getBuckets } from 'utils/work/getHeatmapCellOrder';
 import { getCellSets } from 'redux/selectors';
 
 const LARGE_DATASET_THRESHOLD = 50000;
@@ -52,24 +51,29 @@ const settingsHaveChanged = (lastFetchSettings, newSettings) => {
 /**
  * Loads heatmap expression data, routing to the appropriate strategy based on dataset size.
  *
- * Small datasets (< 50k cells): delegates to loadGeneExpression (full matrix, no downsampleSettings).
- * Bucketed downsampling (≥ 50k, capped bucket total < 50k): sends { downsampleSettings: { selectedCellSet, groupedTracks } }.
- *   The worker samples up to 1000 cells per bucket; client does a second-pass proportional downsampling.
- * Precomputed downsampling (capped bucket total ≥ 50k): sends { downsampleSettings: { cellIds } } with an explicit
- *   pre-computed list of 1000-per-bucket cells (hidden sets factored in).
+ * Small datasets (< 50k cells): delegates to loadGeneExpression (full matrix).
+ * Bucketed (≥ 50k, capped bucket total < 50k):
+ *   sends { downsampleSettings: { selectedCellSet, groupedTracks } }.
+ *   The worker samples up to 1000 cells per bucket;
+ *   client does a second-pass proportional downsampling.
+ * Precomputed (capped bucket total ≥ 50k):
+ *   sends { downsampleSettings: { cellIds } } with an explicit
+ *   pre-computed list of cells (up to 5000, hidden sets factored in).
  *
  * @param {string} experimentId
  * @param {string[]} genes
  * @param {object} options
  * @param {string}   options.selectedCellSet
  * @param {string[]} options.groupedTracks
- * @param {string[]} options.hiddenCellSets  - computed by computeHiddenCellSets (includes selectedPoints)
+ * @param {string[]} options.hiddenCellSets  - computed by computeHiddenCellSets
  * @param {string}   options.plotUuid        - used only for small dataset delegation
  */
 const loadHeatmapExpression = (
   experimentId,
   genes,
-  { selectedCellSet, groupedTracks, hiddenCellSets, plotUuid },
+  {
+    selectedCellSet, groupedTracks, hiddenCellSets, plotUuid,
+  },
 ) => async (dispatch, getState) => {
   if (!genes?.length) return null;
 

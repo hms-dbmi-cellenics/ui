@@ -31,7 +31,9 @@ const generateVegaGeneExpressionsData = (
       return;
     }
 
-    const geneExpression = { rawExpression: expressionMatrix.getRawExpression(gene, matrixIndices) };
+    const geneExpression = {
+      rawExpression: expressionMatrix.getRawExpression(gene, matrixIndices),
+    };
 
     if (truncatedValues) {
       geneExpression.truncatedExpression = expressionMatrix.getTruncatedExpression(
