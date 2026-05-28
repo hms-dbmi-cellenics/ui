@@ -228,6 +228,19 @@ const Embedding = (props) => {
     setConvertedCellsData(convertCellsData(data, cellSetHidden, cellSetProperties));
   }, [data, cellSetHidden, cellSetProperties]);
 
+  // Transform cell data for deck.gl
+  const deckglData = useMemo(
+    () => transformCellData(convertedCellsData, cellColors),
+    [convertedCellsData, cellColors],
+  );
+
+  // Map cellId → data-space position for fast lookup during crosshair projection
+  const cellIdToPositionMap = useMemo(() => {
+    const map = new Map();
+    deckglData.forEach((d) => { map.set(String(d.cellId), d.position); });
+    return map;
+  }, [deckglData]);
+
   // Build quadtree from cell data for efficient lasso selection
 
   useEffect(() => {
@@ -336,19 +349,6 @@ const Embedding = (props) => {
       clearCellHighlight();
     }
   }, [setCellHighlight, clearCellHighlight, width, height]);
-
-  // Transform cell data for deck.gl
-  const deckglData = useMemo(
-    () => transformCellData(convertedCellsData, cellColors),
-    [convertedCellsData, cellColors],
-  );
-
-  // Map cellId → data-space position for fast lookup during crosshair projection
-  const cellIdToPositionMap = useMemo(() => {
-    const map = new Map();
-    deckglData.forEach((d) => { map.set(String(d.cellId), d.position); });
-    return map;
-  }, [deckglData]);
 
   // Auto-fit view when embedding data loads (not when colors change)
   useEffect(() => {
