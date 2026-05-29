@@ -60,6 +60,7 @@ const extraHelpText = {
     </Paragraph>
   ),
   [sampleTech.PARSE]: () => <></>,
+  [sampleTech.VISIUM_HD]: () => <></>,
 };
 
 const emptyFiles = { valid: [], invalid: [] };

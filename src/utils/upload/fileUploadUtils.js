@@ -15,12 +15,14 @@ const techNamesToDisplay = {
   [sampleTech.ANNDATA_OBJECT]: 'AnnData',
   [sampleTech.H5]: '10X Chromium - H5',
   [sampleTech.PARSE]: 'Parse Evercode WT',
+  [sampleTech.VISIUM_HD]: 'Visium HD',
 };
 
 const techCategoryNames = {
   SINGLE_CELL_COUNT_MATRIX: 'SINGLE CELL - Sample Count Matrices',
   SINGLE_CELL_PREPROCESSED: 'SINGLE CELL - Preprocessed Object',
   SPATIAL_PREPROCESSED: 'SPATIAL - Preprocessed Object',
+  SPATIAL_COUNT_MATRIX: 'SPATIAL - Sample Count Matrices',
 };
 
 const matchFileName = (fileName, fileNames) => {
@@ -134,6 +136,49 @@ const fileUploadUtils = {
     filterFiles: filterFilesDefaultConstructor(sampleTech.H5),
     getFilePathToDisplay: getFilePathToDisplayDefaultConstructor(sampleTech.H5),
     getFileSampleAndName: getFileSampleAndNameDefault,
+  },
+  [sampleTech.VISIUM_HD]: {
+    category: techCategoryNames.SPATIAL_COUNT_MATRIX,
+    acceptedFiles: new Set([
+      'raw_feature_cell_matrix.h5',
+      'cell_segmentations.geojson',
+      'tissue_hires_image.png',
+      'scalefactors_json.json',
+    ]),
+    inputInfo: [
+      ['💡Only supports output of Space Ranger 4.0+'],
+      ['<code>raw_feature_cell_matrix.h5</code> - <span style="color: #acaaaa;">typically found in <code>segmented_outputs/</code></span>'],
+      ['<code>cell_segmentations.geojson</code> - <span style="color: #acaaaa;">typically found in <code>segmented_outputs/</code></span>'],
+      ['<code>tissue_hires_image.png</code> - <span style="color: #acaaaa;">typically found in <code>segmented_outputs/spatial/</code></span>'],
+      ['<code>scalefactors_json.json</code> - <span style="color: #acaaaa;">typically found in <code>segmented_outputs/spatial/</code></span>'],
+    ],
+    requiredFiles: [
+      sampleFileType.VISIUM_HD_RAW_FEATURE_CELL_MATRIX,
+      sampleFileType.VISIUM_HD_CELL_SEGMENTATIONS,
+      sampleFileType.VISIUM_HD_TISSUE_HIRES_IMAGE,
+      sampleFileType.VISIUM_HD_SCALEFACTORS_JSON,
+    ],
+    fileUploadParagraphs: [
+      'For each sample, upload a folder containing the 4 required files. The folder\'s name will be used to name the sample in it. You can change this name later in Data Management.',
+      'The required files for each sample are:',
+    ],
+    dropzoneText: 'Drag and drop folders here or click to browse.',
+    webkitdirectory: '',
+    isNameValid(fileName) { return matchFileName(fileName, this.acceptedFiles); },
+    getCorrespondingType(fileName) {
+      const fileNameToType = {
+        'raw_feature_cell_matrix.h5': sampleFileType.VISIUM_HD_RAW_FEATURE_CELL_MATRIX,
+        'cell_segmentations.geojson': sampleFileType.VISIUM_HD_CELL_SEGMENTATIONS,
+        'tissue_hires_image.png': sampleFileType.VISIUM_HD_TISSUE_HIRES_IMAGE,
+        'scalefactors_json.json': sampleFileType.VISIUM_HD_SCALEFACTORS_JSON,
+      };
+      const allowedNames = Array.from(this.acceptedFiles);
+      const name = allowedNames.find((allowedName) => fileName.endsWith(allowedName));
+      return fileNameToType[name];
+    },
+    filterFiles: filterFilesDefaultConstructor(sampleTech.VISIUM_HD),
+    getFileSampleAndName: getFileSampleAndNameDefault,
+    getFilePathToDisplay: getFilePathToDisplayDefaultConstructor(sampleTech.VISIUM_HD),
   },
   [sampleTech.RHAPSODY]: {
     category: techCategoryNames.SINGLE_CELL_COUNT_MATRIX,

@@ -15,6 +15,7 @@ const sampleValidators = {
   [sampleTech.ANNDATA_OBJECT]: validateObj2s,
   [sampleTech.H5]: validateH5,
   [sampleTech.PARSE]: validateParse,
+  [sampleTech.VISIUM_HD]: validateObj2s,
 };
 
 export default sampleValidators;

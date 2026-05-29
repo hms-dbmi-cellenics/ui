@@ -59,7 +59,7 @@ import { loadSamples } from 'redux/actions/samples';
 import { runQC } from 'redux/actions/pipeline';
 
 import { useAppRouter } from 'utils/AppRouteProvider';
-import { modules } from 'utils/constants';
+import { modules, spatialTechs } from 'utils/constants';
 import QCRerunDisabledModal from 'components/modals/QCRerunDisabledModal';
 import isUserAuthorized from 'utils/isUserAuthorized';
 import { getURL } from 'redux/actions/pipeline/runQC';
@@ -81,6 +81,9 @@ const DataProcessingPage = ({ experimentId, experimentData }) => {
   } = useSelector((state) => state.experimentSettings.info);
 
   const samples = useSelector((state) => state.samples);
+
+  const selectedTechnology = samples[sampleKeys?.[0]]?.type;
+  const isSpatial = spatialTechs.includes(selectedTechnology);
 
   const pipelineStatusKey = pipelineStatus?.status;
   const pipelineRunning = pipelineStatusKey === 'RUNNING';
@@ -171,7 +174,7 @@ const DataProcessingPage = ({ experimentId, experimentData }) => {
         processingConfig[step][key]?.prefiltered)));
   };
 
-  const steps = [
+  const allSteps = [
     {
       key: 'classifier',
       name: getUserFriendlyQCStepName('classifier'),
@@ -336,6 +339,17 @@ const DataProcessingPage = ({ experimentId, experimentData }) => {
     },
   ];
 
+  // check that the order and identities of the QC steps above match
+  // the canonical representation
+  console.assert(_.isEqual(qcSteps, allSteps.map((s) => s.key)));
+
+  // For spatial technologies, classifier and doubletScores are not applicable
+  // (cells are defined by segmentation; no ambient RNA removal or doublet detection needed)
+  const SPATIAL_HIDDEN_STEPS = ['classifier', 'doubletScores'];
+  const steps = isSpatial
+    ? allSteps.filter((s) => !SPATIAL_HIDDEN_STEPS.includes(s.key))
+    : allSteps;
+
   const currentStep = steps[stepIdx];
 
   const getStepHadErrors = (key) => pipelineHadErrors && !isStepComplete(key);
@@ -346,10 +360,6 @@ const DataProcessingPage = ({ experimentId, experimentData }) => {
 
     return disabledPendingExecution || disabledByError;
   };
-
-  // check that the order and identities of the QC steps above match
-  // the canonical representation
-  console.assert(_.isEqual(qcSteps, steps.map((s) => s.key)));
 
   const changeStepId = (newStepIdx) => {
     setStepIdx(newStepIdx);

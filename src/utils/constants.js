@@ -19,6 +19,7 @@ const modules = {
 const sampleTech = {
   '10X': '10x',
   H5: '10x_h5',
+  VISIUM_HD: 'visium_hd',
   SEURAT_OBJECT: 'seurat_object',
   SEURAT_SPATIAL_OBJECT: 'seurat_spatial_object',
   SCE_OBJECT: 'sce_object',
@@ -34,7 +35,7 @@ const obj2sTechs = [
   sampleTech.SEURAT_SPATIAL_OBJECT,
 ];
 
-const spatialTechs = [sampleTech.SEURAT_SPATIAL_OBJECT];
+const spatialTechs = [sampleTech.SEURAT_SPATIAL_OBJECT, sampleTech.VISIUM_HD];
 
 const plotTypes = {
   CONTINUOUS_EMBEDDING: 'embeddingContinuous',
