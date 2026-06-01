@@ -10,12 +10,12 @@ const techNamesToDisplay = {
   [sampleTech['10X']]: '10X Chromium',
   [sampleTech.RHAPSODY]: 'BD Rhapsody',
   [sampleTech.SEURAT_OBJECT]: 'Seurat',
-  [sampleTech.SEURAT_SPATIAL_OBJECT]: 'Seurat - Spatial',
   [sampleTech.SCE_OBJECT]: 'SingleCellExperiment',
   [sampleTech.ANNDATA_OBJECT]: 'AnnData',
   [sampleTech.H5]: '10X Chromium - H5',
   [sampleTech.PARSE]: 'Parse Evercode WT',
   [sampleTech.VISIUM_HD]: 'Visium HD',
+  [sampleTech.SEURAT_SPATIAL_OBJECT]: 'Seurat - Spatial',
 };
 
 const techCategoryNames = {
@@ -140,20 +140,20 @@ const fileUploadUtils = {
   [sampleTech.VISIUM_HD]: {
     category: techCategoryNames.SPATIAL_COUNT_MATRIX,
     acceptedFiles: new Set([
-      'raw_feature_cell_matrix.h5',
+      'filtered_feature_cell_matrix.h5',
       'cell_segmentations.geojson',
       'tissue_hires_image.png',
       'scalefactors_json.json',
     ]),
     inputInfo: [
       ['💡Only supports output of Space Ranger 4.0+'],
-      ['<code>raw_feature_cell_matrix.h5</code> - <span style="color: #acaaaa;">typically found in <code>segmented_outputs/</code></span>'],
+      ['<code>filtered_feature_cell_matrix.h5</code> - <span style="color: #acaaaa;">typically found in <code>segmented_outputs/</code></span>'],
       ['<code>cell_segmentations.geojson</code> - <span style="color: #acaaaa;">typically found in <code>segmented_outputs/</code></span>'],
       ['<code>tissue_hires_image.png</code> - <span style="color: #acaaaa;">typically found in <code>segmented_outputs/spatial/</code></span>'],
       ['<code>scalefactors_json.json</code> - <span style="color: #acaaaa;">typically found in <code>segmented_outputs/spatial/</code></span>'],
     ],
     requiredFiles: [
-      sampleFileType.VISIUM_HD_RAW_FEATURE_CELL_MATRIX,
+      sampleFileType.VISIUM_HD_FILTERED_FEATURE_CELL_MATRIX,
       sampleFileType.VISIUM_HD_CELL_SEGMENTATIONS,
       sampleFileType.VISIUM_HD_TISSUE_HIRES_IMAGE,
       sampleFileType.VISIUM_HD_SCALEFACTORS_JSON,
@@ -167,7 +167,7 @@ const fileUploadUtils = {
     isNameValid(fileName) { return matchFileName(fileName, this.acceptedFiles); },
     getCorrespondingType(fileName) {
       const fileNameToType = {
-        'raw_feature_cell_matrix.h5': sampleFileType.VISIUM_HD_RAW_FEATURE_CELL_MATRIX,
+        'filtered_feature_cell_matrix.h5': sampleFileType.VISIUM_HD_FILTERED_FEATURE_CELL_MATRIX,
         'cell_segmentations.geojson': sampleFileType.VISIUM_HD_CELL_SEGMENTATIONS,
         'tissue_hires_image.png': sampleFileType.VISIUM_HD_TISSUE_HIRES_IMAGE,
         'scalefactors_json.json': sampleFileType.VISIUM_HD_SCALEFACTORS_JSON,

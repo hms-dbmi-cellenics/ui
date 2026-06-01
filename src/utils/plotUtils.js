@@ -160,7 +160,7 @@ const offsetCentroids = (results, properties, sampleIds, perImageShape, gridShap
   // Map the results with pre-calculated offsets
   const offsetResults = results.map(([x, y], key) => {
     // Determine which sample this cell belongs to
-    const sampleId = sampleIds.find((id) => properties[id].cellIds.has(key));
+    const sampleId = sampleIds.find((id) => properties[id]?.cellIds?.has(key));
     if (!sampleId) {
       throw new Error(`Sample ID not found for cell ID: ${key}`);
     }

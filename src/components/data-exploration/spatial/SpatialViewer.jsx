@@ -40,7 +40,7 @@ const colorInterpolator = vega.scheme(COLOR_SCHEME);
 
 const COMPONENT_TYPE = 'interactiveSpatial';
 
-const RADIUS_DEFAULT = 3;
+const RADIUS_DEFAULT = 10;
 
 const Spatial = dynamic(
   () => import('../DynamicVitessceWrappers').then((mod) => mod.Spatial),
@@ -178,6 +178,8 @@ const SpatialViewer = (props) => {
 
   useEffect(() => {
     if (!data || !omeZarrSampleIds.length || !cellSetProperties || !perImageShape || !gridShape) return;
+    // Wait until cell set properties are populated for all sample IDs
+    if (omeZarrSampleIds.some((id) => !cellSetProperties[id])) return;
 
     setOffsetData(offsetCentroids(data, cellSetProperties, omeZarrSampleIds, perImageShape, gridShape));
   }, [data, omeZarrSampleIds, cellSetProperties, perImageShape, gridShape]);
@@ -236,17 +238,24 @@ const SpatialViewer = (props) => {
     setPerImageShape([perImageWidth, perImageHeight]);
   }, [loader]);
 
-  const originalView = {
-    zoom: -2,
-    target: [650, 400, null],
-    rotationX: 0,
-    rotationY: 0,
-    rotationZ: 0,
-    rotationOrbit: 0,
-    orbitAxis: 'Y',
-  };
+  const originalView = useMemo(() => {
+    const isLowRes = perImageShape && perImageShape[0] < 2000 && perImageShape[1] < 2000;
+    return {
+      zoom: isLowRes ? -2 : -5,
+      target: isLowRes ? [650, 400, null] : [6500, 4000, null],
+      rotationX: 0,
+      rotationY: 0,
+      rotationZ: 0,
+      rotationOrbit: 0,
+      orbitAxis: 'Y',
+    };
+  }, [perImageShape]);
 
   const [view, setView] = useState(originalView);
+
+  useEffect(() => {
+    setView(originalView);
+  }, [originalView]);
 
   const showLoader = useMemo(() => {
     const dataIsLoaded = !data || loading;
@@ -405,7 +414,6 @@ const SpatialViewer = (props) => {
   }, []);
 
   const getExpressionValue = useCallback(() => { }, []);
-  const getCellIsSelected = useCallback(() => { }, []);
 
   const onCreateCluster = (clusterName, clusterColor) => {
     setCreateClusterPopover(false);
@@ -474,6 +482,7 @@ const SpatialViewer = (props) => {
               setCellSelection={setCellSelection}
               updateViewInfo={updateViewInfo}
               setCellHighlight={setCellHighlight}
+              setHoverInfo={() => {}}
               originalViewState={originalView}
             />
           ) : ''

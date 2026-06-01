@@ -42,8 +42,8 @@ const inspectFile = async (file, technology) => {
     // TODO: look into adding validation
     return inspectParseFile(file);
   } if (technology === sampleTech.VISIUM_HD) {
-    // Visium HD files are not gzipped; name validation already passed above
-    return Verdict.VALID_UNZIPPED;
+    // Treat as already compressed so the uploader skips gzipping
+    return Verdict.VALID_ZIPPED;
   }
 
   return Verdict.INVALID_FORMAT;

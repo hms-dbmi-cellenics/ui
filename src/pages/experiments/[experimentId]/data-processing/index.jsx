@@ -563,7 +563,11 @@ const DataProcessingPage = ({ experimentId, experimentData }) => {
                   experimentId={experimentId}
                   allSteps={steps}
                   currentStep={stepIdx}
-                  completedSteps={completedSteps}
+                  completedSteps={completedSteps.filter(
+                    (stepPipelineName) => steps.some(
+                      (step) => stepPipelineName.toLowerCase().includes(step.key.toLowerCase()),
+                    ),
+                  )}
                 />
                 <Space size='small'>
                   <Tooltip title='Previous'>

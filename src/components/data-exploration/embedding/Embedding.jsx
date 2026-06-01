@@ -228,6 +228,8 @@ const Embedding = (props) => {
     setConvertedCellsData(convertCellsData(data, cellSetHidden, cellSetProperties));
   }, [data, cellSetHidden, cellSetProperties]);
 
+  const totalNumCells = useMemo(() => data?.length, [data]);
+
   // Transform cell data for deck.gl
   const deckglData = useMemo(
     () => transformCellData(convertedCellsData, cellColors),
@@ -395,12 +397,12 @@ const Embedding = (props) => {
       return [];
     }
 
-    const cellCount = deckglData.length;
-    const isLargeDataset = cellCount > 100000;
+    // use hidden and visible cells to determine radius
+    const isMediumDataset = totalNumCells > 20000;
+    const isLargeDataset = totalNumCells > 100000;
 
     // tsne tends to be more spread out than umap so larger points
-    let radiusMinPixels = 1;
-
+    let radiusMinPixels;
     if (embeddingType === 'umap') {
       radiusMinPixels = 0;
     } else if (embeddingType === 'tsne') {
@@ -418,11 +420,11 @@ const Embedding = (props) => {
         getPosition: (d) => d.position,
         getFillColor: (d) => d.color,
         stroked: false,
-        getRadius: isLargeDataset ? 1 : 10,
+        getRadius: isLargeDataset ? 1 : (isMediumDataset ? 3 : 10),
         radiusScale: Math.pow(2, viewState.zoom - 10),
         radiusMinPixels: radiusMinPixels,
         radiusUnits: 'common',
-        radiusMaxPixels: isLargeDataset ? 4 : 6,
+        radiusMaxPixels: isMediumDataset ? 4 : 6,
         updateTriggers: {
           radiusScale: [viewState.zoom],
         },
