@@ -26,7 +26,9 @@ import { root as zarrRoot } from 'zarrita';
 
 import {
   filterCentroidsData,
+  filterPolygonsData,
   offsetCentroids,
+  offsetPolygons,
   renderCellSetColors,
   colorByGeneExpression,
 } from 'utils/plotUtils';
@@ -105,6 +107,7 @@ const imageLayerDefsDefault = [
   },
 ];
 const EMBEDDING_TYPE = 'images';
+const SEGMENTATIONS_TYPE = 'polygons'
 
 const SpatialViewer = (props) => {
   const {
@@ -116,6 +119,7 @@ const SpatialViewer = (props) => {
   const rootClusterNodes = useSelector(getCellSetsHierarchyByType('cellSets')).map(({ key }) => key);
 
   const { data, loading, error } = useSelector((state) => state.embeddings[EMBEDDING_TYPE]) || {};
+  const { data: segmentationsData } = useSelector((state) => state.embeddings[SEGMENTATIONS_TYPE]) || {};
 
   const spatialSettings = useSelector((state) => state.componentConfig[COMPONENT_TYPE]?.config,
     _.isEqual) || {};
@@ -148,6 +152,7 @@ const SpatialViewer = (props) => {
   const [omeZarrUrls, setOmeZarrUrls] = useState([]);
   const [loader, setLoader] = useState(null);
   const [offsetData, setOffsetData] = useState();
+  const [offsetSegmentationsData, setOffsetSegmentationsData] = useState();
   const [perImageShape, setPerImageShape] = useState();
   const [gridShape, setGridShape] = useState();
   const [obsSegmentationsLayerDefs, setObsSegmentationsLayerDefs] = useState();
@@ -183,6 +188,14 @@ const SpatialViewer = (props) => {
 
     setOffsetData(offsetCentroids(data, cellSetProperties, omeZarrSampleIds, perImageShape, gridShape));
   }, [data, omeZarrSampleIds, cellSetProperties, perImageShape, gridShape]);
+
+  useEffect(() => {
+    if (!segmentationsData || !omeZarrSampleIds.length || !cellSetProperties || !perImageShape || !gridShape) return;
+    // Wait until cell set properties are populated for all sample IDs
+    if (omeZarrSampleIds.some((id) => !cellSetProperties[id])) return;
+
+    setOffsetSegmentationsData(offsetPolygons(segmentationsData, cellSetProperties, omeZarrSampleIds, perImageShape, gridShape));
+  }, [segmentationsData, omeZarrSampleIds, cellSetProperties, perImageShape, gridShape]);
 
   useEffect(() => {
     (async () => {
@@ -283,6 +296,12 @@ const SpatialViewer = (props) => {
     }
   }, [embeddingSettings]);
 
+  useEffect(() => {
+    if (embeddingSettings) {
+      dispatch(loadEmbedding(experimentId, SEGMENTATIONS_TYPE));
+    }
+  }, [embeddingSettings]);
+
   // Handle focus change (e.g. a cell set or gene or metadata got selected).
   // Also handle here when the cell set properties or hierarchy change.
   useEffect(() => {
@@ -326,6 +345,7 @@ const SpatialViewer = (props) => {
   }, [focusData.key, expressionLoading]);
 
   const [filteredData, setFilteredData] = useState();
+  const [filteredSegmentationsData, setFilteredSegmentationsData] = useState();
 
   useEffect(() => {
     if (!offsetData || !cellColors || !cellSetHidden || !cellSetProperties) return;
@@ -335,6 +355,15 @@ const SpatialViewer = (props) => {
 
     setFilteredData(newFilteredData);
   }, [offsetData, cellColors, cellSetHidden, cellSetProperties]);
+
+  useEffect(() => {
+    if (!offsetSegmentationsData || !cellColors || !cellSetHidden || !cellSetProperties) return;
+
+    const hiddenCells = union([...cellSetHidden], cellSetProperties);
+    const newFilteredSegmentationsData = filterPolygonsData(offsetSegmentationsData, cellColors, hiddenCells);
+
+    setFilteredSegmentationsData(newFilteredSegmentationsData);
+  }, [offsetSegmentationsData, cellColors, cellSetHidden, cellSetProperties]);
 
   useEffect(() => {
     if (selectedCell) {
@@ -472,6 +501,9 @@ const SpatialViewer = (props) => {
               imageLayerDefs={imageLayerDefs}
               obsCentroids={filteredData?.obsCentroids}
               obsCentroidsIndex={filteredData?.obsCentroidsIndex}
+              obsSegmentations={filteredSegmentationsData?.obsSegmentations}
+              obsSegmentationsIndex={filteredSegmentationsData?.obsSegmentationsIndex}
+              obsSegmentationsType='polygon'
               cellColors={filteredData?.centroidColors}
               obsSegmentationsLayerDefs={obsSegmentationsLayerDefs}
               cellSelection={filteredData?.obsCentroidsIndex}
@@ -482,7 +514,7 @@ const SpatialViewer = (props) => {
               setCellSelection={setCellSelection}
               updateViewInfo={updateViewInfo}
               setCellHighlight={setCellHighlight}
-              setHoverInfo={() => {}}
+              setHoverInfo={() => { }}
               originalViewState={originalView}
             />
           ) : ''

@@ -181,6 +181,79 @@ const offsetCentroids = (results, properties, sampleIds, perImageShape, gridShap
   return offsetResults;
 };
 
+const offsetPolygons = (results, properties, sampleIds, perImageShape, gridShape) => {
+  const [imageWidth, imageHeight] = perImageShape;
+  const numColumns = gridShape[1];
+
+  const sampleOffsets = sampleIds.map((sampleId, sampleIndex) => {
+    const row = Math.floor(sampleIndex / numColumns);
+    const column = sampleIndex % numColumns;
+    return {
+      xOffset: column * imageWidth,
+      yOffset: row * imageHeight,
+    };
+  });
+
+  const offsetResults = results.map((coords, key) => {
+    if (!coords) return null;
+
+    const sampleId = sampleIds.find((id) => properties[id]?.cellIds?.has(key));
+    if (!sampleId) {
+      throw new Error(`Sample ID not found for cell ID: ${key}`);
+    }
+
+    const sampleIndex = sampleIds.indexOf(sampleId);
+    if (sampleIndex === -1) {
+      throw new Error(`Sample ID ${sampleId} not found in sampleIds`);
+    }
+
+    const { xOffset, yOffset } = sampleOffsets[sampleIndex];
+
+    // coords is flat [x1, y1, x2, y2, ...]; apply xOffset to even indices, yOffset to odd
+    return coords.map((val, i) => (i % 2 === 0 ? val + xOffset : val + yOffset));
+  });
+
+  return offsetResults;
+};
+
+const filterPolygonsData = (results, colors, hiddenCells) => {
+  const data = [];
+  const obsSegmentationsIndex = [];
+  const segmentationColors = new Map();
+
+  results.forEach((coords, key) => {
+    if (hiddenCells.has(key) || !coords) {
+      return;
+    }
+
+    // Skip cells with no embedding data (empty array)
+    if (!coords || !Array.isArray(coords) || coords.length === 0) {
+      return;
+    }
+
+    if (coords.length < 2 || coords.length % 2 !== 0) {
+      console.log(coords);
+      throw new Error('Invalid polygon coordinates: expected flat array with even length');
+    }
+
+    // Convert flat [x1, y1, x2, y2, ...] to [[x1, y1], [x2, y2], ...] for vitessce
+    const polygon = [];
+    for (let i = 0; i < coords.length; i += 2) {
+      polygon.push([coords[i], coords[i + 1]]);
+    }
+
+    data.push(polygon);
+    segmentationColors.set(key.toString(), colors[key]);
+    obsSegmentationsIndex.push(key.toString());
+  });
+
+  return {
+    obsSegmentations: { data, shape: [data.length] },
+    obsSegmentationsIndex,
+    segmentationColors,
+  };
+};
+
 const updateStatus = () => { };
 const clearPleaseWait = () => { };
 
@@ -197,10 +270,12 @@ export {
   convertCellsData,
   convertCentroidsData,
   filterCentroidsData,
+  filterPolygonsData,
   updateStatus,
   clearPleaseWait,
   colorByGeneExpression,
   offsetCentroids,
+  offsetPolygons,
   hexToRgb,
   convertRange,
 };
