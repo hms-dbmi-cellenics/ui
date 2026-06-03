@@ -26,9 +26,7 @@ import { root as zarrRoot } from 'zarrita';
 
 import {
   filterCentroidsData,
-  filterPolygonsData,
   offsetCentroids,
-  offsetPolygons,
   renderCellSetColors,
   colorByGeneExpression,
 } from 'utils/plotUtils';
@@ -48,6 +46,22 @@ const Spatial = dynamic(
   () => import('../DynamicVitessceWrappers').then((mod) => mod.Spatial),
   { ssr: false },
 );
+
+const bitmaskLayerDefsDefault = [{
+  type: 'bitmask',
+  index: 0,
+  visible: true,
+  opacity: 0.75,
+  colormap: null,
+  domainType: 'Min/Max',
+  transparentColor: null,
+  channels: [{
+    selection: { c: 0 },
+    color: [255, 255, 255],
+    visible: true,
+    slider: [0, 2 ** 31 - 1],
+  }],
+}];
 
 const imageLayerDefsDefault = [
   {
@@ -107,7 +121,6 @@ const imageLayerDefsDefault = [
   },
 ];
 const EMBEDDING_TYPE = 'images';
-const SEGMENTATIONS_TYPE = 'polygons'
 
 const SpatialViewer = (props) => {
   const {
@@ -119,7 +132,6 @@ const SpatialViewer = (props) => {
   const rootClusterNodes = useSelector(getCellSetsHierarchyByType('cellSets')).map(({ key }) => key);
 
   const { data, loading, error } = useSelector((state) => state.embeddings[EMBEDDING_TYPE]) || {};
-  const { data: segmentationsData } = useSelector((state) => state.embeddings[SEGMENTATIONS_TYPE]) || {};
 
   const spatialSettings = useSelector((state) => state.componentConfig[COMPONENT_TYPE]?.config,
     _.isEqual) || {};
@@ -150,12 +162,13 @@ const SpatialViewer = (props) => {
 
   const [omeZarrSampleIds, setOmeZarrSampleIds] = useState([]);
   const [omeZarrUrls, setOmeZarrUrls] = useState([]);
+  const [segmentationsOmeZarrUrls, setSegmentationsOmeZarrUrls] = useState([]);
   const [loader, setLoader] = useState(null);
+  const [segmentationsLoader, setSegmentationsLoader] = useState(null);
   const [offsetData, setOffsetData] = useState();
-  const [offsetSegmentationsData, setOffsetSegmentationsData] = useState();
   const [perImageShape, setPerImageShape] = useState();
   const [gridShape, setGridShape] = useState();
-  const [obsSegmentationsLayerDefs, setObsSegmentationsLayerDefs] = useState();
+  const [obsSegmentationsLayerDefs, setObsSegmentationsLayerDefs] = useState(bitmaskLayerDefsDefault);
   const [imageLayerDefs, setImageLayerDefs] = useState(imageLayerDefsDefault);
 
   useEffect(() => {
@@ -165,14 +178,17 @@ const SpatialViewer = (props) => {
     dispatch(loadComponentConfig(experimentId, COMPONENT_TYPE, COMPONENT_TYPE));
   }, [spatialSettings]);
 
-  useEffect(() => {
-    setObsSegmentationsLayerDefs({
-      visible: spatialSettings.showSegmentations,
-      stroked: false,
-      radius: RADIUS_DEFAULT,
-      opacity: 1,
-    });
-  }, [spatialSettings.showSegmentations]);
+  // useEffect(() => {
+  //   setObsSegmentationsLayerDefs([{
+  //     type: 'bitmask',
+  //     index: 0,
+  //     visible: true,
+  //     opacity: 0.75,
+  //     colormap: null,
+  //     domainType: 'Min/Max',
+  //     transparentColor: null,
+  //   }]);
+  // }, [spatialSettings.showSegmentations]);
 
   useEffect(() => {
     setImageLayerDefs([{
@@ -190,32 +206,26 @@ const SpatialViewer = (props) => {
   }, [data, omeZarrSampleIds, cellSetProperties, perImageShape, gridShape]);
 
   useEffect(() => {
-    if (!segmentationsData || !omeZarrSampleIds.length || !cellSetProperties || !perImageShape || !gridShape) return;
-    // Wait until cell set properties are populated for all sample IDs
-    if (omeZarrSampleIds.some((id) => !cellSetProperties[id])) return;
-
-    setOffsetSegmentationsData(offsetPolygons(segmentationsData, cellSetProperties, omeZarrSampleIds, perImageShape, gridShape));
-  }, [segmentationsData, omeZarrSampleIds, cellSetProperties, perImageShape, gridShape]);
-
-  useEffect(() => {
     (async () => {
       try {
-        const results = (await Promise.all(
-          sampleIdsForFileUrls.map((sampleId) => getSampleFileUrls(experimentId, sampleId, 'ome_zarr_zip')),
-        )).flat();
+        const [results, segmentationsResults] = await Promise.all([
+          Promise.all(
+            sampleIdsForFileUrls.map((sampleId) => getSampleFileUrls(experimentId, sampleId, 'ome_zarr_zip')),
+          ).then((r) => r.flat()),
+          Promise.all(
+            sampleIdsForFileUrls.map((sampleId) => getSampleFileUrls(experimentId, sampleId, 'segmentations_ome_zarr_zip')),
+          ).then((r) => r.flat()),
+        ]);
 
         const signedUrls = results.map(({ url }) => url);
-
         setOmeZarrUrls(signedUrls);
 
-        if (isObj2s) {
-          // For obj2s, file IDs correspond to sample IDs
-          // whereas there is a single dummy sample ID in state
-          const fileIds = results.map(({ fileId }) => fileId);
-          setOmeZarrSampleIds(fileIds);
-        } else {
-          setOmeZarrSampleIds(sampleIdsForFileUrls);
-        }
+        const segmentationsSignedUrls = segmentationsResults.map(({ url }) => url);
+        setSegmentationsOmeZarrUrls(segmentationsSignedUrls);
+
+        // Use original sample IDs for cellSetProperties lookups in offsetCentroids
+        // The fileIds are random UUIDs from the backend but are embedded in the URLs
+        setOmeZarrSampleIds(sampleIdsForFileUrls);
       } catch (error) {
         console.error('Error fetching URLs:', error);
       }
@@ -250,6 +260,16 @@ const SpatialViewer = (props) => {
     const [_, perImageWidth, perImageHeight] = shape;
     setPerImageShape([perImageWidth, perImageHeight]);
   }, [loader]);
+
+  useEffect(() => {
+    if (!segmentationsOmeZarrUrls.length || !gridShape) return;
+
+    const roots = segmentationsOmeZarrUrls.map(url =>
+      zarrRoot(ZipFileStore.fromUrl(url))
+    );
+
+    loadOmeZarrGrid(roots, gridShape).then(setSegmentationsLoader);
+  }, [segmentationsOmeZarrUrls, gridShape]);
 
   const originalView = useMemo(() => {
     const isLowRes = perImageShape && perImageShape[0] < 2000 && perImageShape[1] < 2000;
@@ -296,12 +316,6 @@ const SpatialViewer = (props) => {
     }
   }, [embeddingSettings]);
 
-  useEffect(() => {
-    if (embeddingSettings) {
-      dispatch(loadEmbedding(experimentId, SEGMENTATIONS_TYPE));
-    }
-  }, [embeddingSettings]);
-
   // Handle focus change (e.g. a cell set or gene or metadata got selected).
   // Also handle here when the cell set properties or hierarchy change.
   useEffect(() => {
@@ -345,7 +359,6 @@ const SpatialViewer = (props) => {
   }, [focusData.key, expressionLoading]);
 
   const [filteredData, setFilteredData] = useState();
-  const [filteredSegmentationsData, setFilteredSegmentationsData] = useState();
 
   useEffect(() => {
     if (!offsetData || !cellColors || !cellSetHidden || !cellSetProperties) return;
@@ -355,15 +368,6 @@ const SpatialViewer = (props) => {
 
     setFilteredData(newFilteredData);
   }, [offsetData, cellColors, cellSetHidden, cellSetProperties]);
-
-  useEffect(() => {
-    if (!offsetSegmentationsData || !cellColors || !cellSetHidden || !cellSetProperties) return;
-
-    const hiddenCells = union([...cellSetHidden], cellSetProperties);
-    const newFilteredSegmentationsData = filterPolygonsData(offsetSegmentationsData, cellColors, hiddenCells);
-
-    setFilteredSegmentationsData(newFilteredSegmentationsData);
-  }, [offsetSegmentationsData, cellColors, cellSetHidden, cellSetProperties]);
 
   useEffect(() => {
     if (selectedCell) {
@@ -456,6 +460,49 @@ const SpatialViewer = (props) => {
     );
   };
 
+  // Memoize ALL props that feed into Vitessce's shallowDiff checks
+  const obsSegmentations = useMemo(
+    () => (segmentationsLoader ? { loaders: [segmentationsLoader] } : null),
+    [segmentationsLoader],    // only changes when loader actually changes
+  );
+
+  // Prepend a dummy entry so: pixel 1 → index[1] → '0', pixel 2 → index[2] → '1'
+  const obsSegmentationsIndex = useMemo(() => {
+    if (!filteredData?.obsCentroidsIndex) return [];
+    return ['', ...filteredData.obsCentroidsIndex];
+    // ['', '0', '1', '2', ..., '83950']
+    //   ↑ slot 0 = background (pixel 0)
+    //       ↑ slot 1 = cell '0' (pixel 1)
+  }, [filteredData?.obsCentroidsIndex]);
+
+  // Shift keys by +1 so LUT[1] = color of cell '0', LUT[2] = color of cell '1', etc.
+  const bitmaskCellColors = useMemo(() => {
+    if (!filteredData?.centroidColors) return new Map();
+    const shifted = new Map();
+    for (const [id, color] of filteredData.centroidColors) {
+      shifted.set(String(Number(id) + 1), color);
+      // '0' → '1', '1' → '2', etc.
+      // Now '1' > 0 === true so cell '0' passes the id > 0 check
+      // And LUT[Number('1') * 3] = color of original cell '0'
+    }
+    return shifted;
+  }, [filteredData?.centroidColors]);
+
+
+  const cellSelection = useMemo(
+    () => filteredData?.obsCentroidsIndex ?? [],
+    [filteredData?.obsCentroidsIndex],
+  );
+
+  const obsCentroids = useMemo(
+    () => filteredData?.obsCentroids,
+    [filteredData?.obsCentroids],
+  );
+
+  const imageLayerLoaders = useMemo(() => ({ 0: loader }), [loader]);
+
+  const setHoverInfo = useCallback(() => { }, []);
+
   // The embedding couldn't load. Display an error condition.
   if (error) {
     return (
@@ -497,16 +544,16 @@ const SpatialViewer = (props) => {
               width={width}
               height={height}
               theme='light2'
-              imageLayerLoaders={{ 0: loader }}
+              imageLayerLoaders={imageLayerLoaders}
               imageLayerDefs={imageLayerDefs}
-              obsCentroids={filteredData?.obsCentroids}
-              obsCentroidsIndex={filteredData?.obsCentroidsIndex}
-              obsSegmentations={filteredSegmentationsData?.obsSegmentations}
-              obsSegmentationsIndex={filteredSegmentationsData?.obsSegmentationsIndex}
-              obsSegmentationsType='polygon'
-              cellColors={filteredData?.centroidColors}
+              obsCentroids={obsCentroids}
+              obsCentroidsIndex={obsSegmentationsIndex}
+              obsSegmentationsIndex={obsSegmentationsIndex}
+              obsSegmentations={obsSegmentations}
+              obsSegmentationsType='bitmask'
+              cellColors={bitmaskCellColors}
               obsSegmentationsLayerDefs={obsSegmentationsLayerDefs}
-              cellSelection={filteredData?.obsCentroidsIndex}
+              cellSelection={cellSelection}
               cellColorEncoding='cellSetSelection'
               geneExpressionColormapRange={[0, 1]}
               geneExpressionColormap='plasma'
@@ -514,7 +561,7 @@ const SpatialViewer = (props) => {
               setCellSelection={setCellSelection}
               updateViewInfo={updateViewInfo}
               setCellHighlight={setCellHighlight}
-              setHoverInfo={() => { }}
+              setHoverInfo={setHoverInfo}
               originalViewState={originalView}
             />
           ) : ''
