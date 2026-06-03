@@ -61,23 +61,13 @@ async function loadMultiscales(root) {
 export class ZarritaPixelSource extends ZarrPixelSource {
   constructor(arr, labels, tileSize) {
     super(arr, labels, tileSize);
+    // We prevent reading chunks directly, since Zarrita does not
+    // handle x/y chunk differences the same as zarr.js.
+    // TODO: fix this once fixed in either zarrita getChunk or
+    // in createZarrArrayAdapter.
+    // Reference: https://github.com/hms-dbmi/vizarr/pull/172#issuecomment-1714497516
+    // eslint-disable-next-line no-underscore-dangle
     this._readChunks = false;
-    this._tileTimes = [];
-  }
-
-  async getTile(props) {
-    const t0 = performance.now();
-    const result = await super.getTile(props);
-    const elapsed = performance.now() - t0;
-
-    this._tileTimes.push(elapsed);
-    // Log stats every 20 tiles
-    if (this._tileTimes.length % 20 === 0) {
-      const avg = this._tileTimes.slice(-20).reduce((a, b) => a + b, 0) / 20;
-      const max = Math.max(...this._tileTimes.slice(-20));
-      console.log(`[TilePerf] avg=${avg.toFixed(1)}ms max=${max.toFixed(1)}ms (last 20 tiles)`);
-    }
-    return result;
   }
 }
 
