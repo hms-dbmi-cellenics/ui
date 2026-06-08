@@ -69,8 +69,6 @@
     "@turf/helpers": "^7.3.4",
     "@vitessce/heatmap": "^3.9.8",
     "@vitessce/icons": "^3.9.8",
-    "@vitessce/scatterplot": "^3.9.8",
-    "@vitessce/spatial": "^3.9.8",
     "@vitessce/styles": "^3.9.8",
     "antd": "^4.24.8",
     "aws-amplify": "^5.3.11",
