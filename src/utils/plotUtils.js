@@ -144,7 +144,7 @@ const convertCellsData = (results, hidden, properties) => {
 };
 
 const offsetCentroids = (results, properties, sampleIds, perImageShape, gridShape) => {
-  const [imageWidth, imageHeight] = perImageShape;
+  const [imageHeight, imageWidth] = perImageShape;
   const numColumns = gridShape[1];
 
   // Pre-calculate offsets for each sampleId
@@ -182,7 +182,7 @@ const offsetCentroids = (results, properties, sampleIds, perImageShape, gridShap
 };
 
 const offsetPolygons = (results, properties, sampleIds, perImageShape, gridShape) => {
-  const [imageWidth, imageHeight] = perImageShape;
+  const [imageHeight, imageWidth] = perImageShape;
   const numColumns = gridShape[1];
 
   const sampleOffsets = sampleIds.map((sampleId, sampleIndex) => {
