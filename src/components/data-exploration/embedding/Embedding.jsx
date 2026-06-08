@@ -83,9 +83,11 @@ const parseColor = (colorValue) => {
 /**
  * Transform cell data from embedding format to deck.gl format
  * Input: { obsEmbedding: { data: [[x1, x2, ...], [y1, y2, ...]], shape }, obsEmbeddingIndex: ['cell1', 'cell2', ...] }
- * Output: [{ position: [x, y], cellId: 'cell1', color: [r, g, b, 255] }, ...]
+ * Output: [{ position: [x, y], cellId: 'cell1' }, ...]
+ * Colors are intentionally excluded so that this array is stable across color changes.
+ * A color change only needs to re-upload the color GPU buffer, not reprocess positions.
  */
-const transformCellData = (convertedCellsData, cellColors) => {
+const transformCellData = (convertedCellsData) => {
   if (!convertedCellsData || !convertedCellsData.obsEmbedding) {
     return [];
   }
@@ -93,18 +95,10 @@ const transformCellData = (convertedCellsData, cellColors) => {
   const { obsEmbedding, obsEmbeddingIndex } = convertedCellsData;
   const [xCoords, yCoords] = obsEmbedding.data;
 
-  return xCoords.map((x, index) => {
-    const y = yCoords[index];
-    const cellId = obsEmbeddingIndex[index];
-
-    // Get the color for this cell from cellColors map
-    const color = parseColor(cellColors[cellId]);
-    return {
-      position: [x, y],
-      cellId,
-      color,
-    };
-  });
+  return xCoords.map((x, index) => ({
+    position: [x, yCoords[index]],
+    cellId: obsEmbeddingIndex[index],
+  }));
 };
 
 const Embedding = (props) => {
@@ -230,10 +224,12 @@ const Embedding = (props) => {
 
   const totalNumCells = useMemo(() => data?.length, [data]);
 
-  // Transform cell data for deck.gl
+  // Position-only data — stable when only colors change (cellColors intentionally excluded).
+  // Colors are read directly in the layer accessor + updateTriggers so that a color change
+  // (gene/cell-set selection) only re-uploads the color GPU buffer, not the position buffer.
   const deckglData = useMemo(
-    () => transformCellData(convertedCellsData, cellColors),
-    [convertedCellsData, cellColors],
+    () => transformCellData(convertedCellsData),
+    [convertedCellsData],
   );
 
   // Map cellId → data-space position for fast lookup during crosshair projection
@@ -418,7 +414,7 @@ const Embedding = (props) => {
         highlightColor: [51, 51, 51],
         opacity: 0.8,
         getPosition: (d) => d.position,
-        getFillColor: (d) => d.color,
+        getFillColor: (d) => parseColor(cellColors[d.cellId]),
         stroked: false,
         getRadius: isLargeDataset ? 1 : (isMediumDataset ? 3 : 10),
         radiusScale: Math.pow(2, viewState.zoom - 10),
@@ -426,6 +422,8 @@ const Embedding = (props) => {
         radiusUnits: 'common',
         radiusMaxPixels: isMediumDataset ? 4 : 6,
         updateTriggers: {
+          // Only re-upload color buffer when cellColors changes; position buffer is unaffected.
+          getFillColor: [cellColors],
           radiusScale: [viewState.zoom],
         },
       }),
@@ -457,7 +455,7 @@ const Embedding = (props) => {
     }
 
     return baseLayers;
-  }, [activeTool, cellsQuadTree, handleEdit, deckglData.length, viewState]);
+  }, [activeTool, cellsQuadTree, handleEdit, deckglData.length, viewState, cellColors]);
 
   const onCreateCluster = (clusterName, clusterColor) => {
     setCreateClusterPopover(false);
