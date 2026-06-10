@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import _ from 'lodash';
 import { useSelector, useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
 import {
@@ -17,16 +16,16 @@ const SpatialVisibleLayersSettings = (props) => {
   const dispatch = useDispatch();
 
   const { componentType } = props;
-  const { showImages, showSegmentations } = useSelector((state) => state.componentConfig[componentType].config);
+  const {
+    showImages,
+    showSegmentations,
+    showSegmentationOutlines,
+  } = useSelector((state) => state.componentConfig[componentType].config);
 
   const [listData, setListData] = useState([]);
 
   const setLayerVisible = (visible, key) => {
-    dispatch(
-      updatePlotConfig(componentType, {
-        [key]: visible,
-      }),
-    );
+    dispatch(updatePlotConfig(componentType, { [key]: visible }));
   };
 
   useEffect(() => {
@@ -34,26 +33,27 @@ const SpatialVisibleLayersSettings = (props) => {
       {
         key: 'showImages',
         name: 'Images',
-        visible: showImages,
+        visible: showImages !== false,
       },
       {
         key: 'showSegmentations',
         name: 'Segmentations',
-        visible: showSegmentations,
-
+        visible: showSegmentations !== false,
+      },
+      {
+        key: 'showSegmentationOutlines',
+        name: 'Segmentation Outlines',
+        visible: showSegmentationOutlines === true,
       },
     ]);
-  }, [showImages, showSegmentations]);
+  }, [showImages, showSegmentations, showSegmentationOutlines]);
 
   const leftItem = (layerItem) => (
     <Switch
       checkedChildren={<EyeOutlined />}
       unCheckedChildren={<EyeInvisibleOutlined />}
-      defaultChecked={layerItem.visible}
-      value={layerItem.key}
-      onChange={(selected) => {
-        setLayerVisible(selected, layerItem.key);
-      }}
+      checked={layerItem.visible}
+      onChange={(checked) => setLayerVisible(checked, layerItem.key)}
     />
   );
 
@@ -61,7 +61,6 @@ const SpatialVisibleLayersSettings = (props) => {
     <span style={{ marginLeft: 10 }}>{layerItem.name}</span>
   );
 
-  // This is so that a click on toggle doesn't close the menu
   const stopPropagationEvent = (e) => e.stopPropagation();
 
   const composeItem = (itemData, i) => (
@@ -84,8 +83,7 @@ const SpatialVisibleLayersSettings = (props) => {
   );
 };
 
-SpatialVisibleLayersSettings.defaultProps = {
-};
+SpatialVisibleLayersSettings.defaultProps = {};
 
 SpatialVisibleLayersSettings.propTypes = {
   componentType: PropTypes.string.isRequired,
