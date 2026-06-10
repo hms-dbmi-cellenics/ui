@@ -120,7 +120,8 @@ const SpatialViewer = (props) => {
   const [activeTool, setActiveTool] = useState(null);
   const [cellsQuadTree, setCellsQuadTree] = useState(null);
 
-  const rootClusterNodes = useSelector(getCellSetsHierarchyByType('cellSets')).map(({ key }) => key);
+  const cellSetsHierarchyNodes = useSelector(getCellSetsHierarchyByType('cellSets'));
+  const rootClusterNodes = cellSetsHierarchyNodes.map(({ key }) => key);
 
   const { data, loading, error } = useSelector((state) => state.embeddings[EMBEDDING_TYPE]) || {};
 
@@ -306,6 +307,22 @@ const SpatialViewer = (props) => {
     return union([...cellSetHidden], cellSetProperties);
   }, [cellSetHidden, cellSetProperties]);
 
+  // Cells absent from every 'cellSets'-type cluster (louvain, leiden, …) were
+  // filtered out during the analysis pipeline. They must never be rendered,
+  // regardless of the active colouring scheme or which cell sets are hidden.
+  const cellsInAnyCluster = useMemo(() => {
+    const validIds = new Set();
+    cellSetsHierarchyNodes.forEach(({ children }) => {
+      children?.forEach(({ key }) => {
+        const props = cellSetProperties[key];
+        if (props?.cellIds) {
+          props.cellIds.forEach((id) => validIds.add(id));
+        }
+      });
+    });
+    return validIds;
+  }, [cellSetsHierarchyNodes, cellSetProperties]);
+
   // ── Centroid positions ────────────────────────────────────────────────────
   // Only excludes explicitly hidden cell sets. Cells without a colour
   // assignment in the active scheme are kept (they render grey in the LUT).
@@ -316,10 +333,11 @@ const SpatialViewer = (props) => {
     const result = [];
     offsetData.forEach(([x, y], key) => {
       if (hiddenCellIds.has(key)) return;
+      if (!cellsInAnyCluster.has(key)) return;
       result.push({ position: [x, y], cellId: key.toString() });
     });
     return result;
-  }, [offsetData, hiddenCellIds]);
+  }, [offsetData, hiddenCellIds, cellsInAnyCluster]);
 
   // ── Colour LUT (RGBA) ─────────────────────────────────────────────────────
   // Cells absent from offsetData (filtered/QC-failed) are never iterated so
@@ -329,13 +347,13 @@ const SpatialViewer = (props) => {
   // embedding behaviour.
   const colorLUT = useMemo(() => {
     const lut = new Uint8Array(BITMASK_LUT_SIZE * BITMASK_LUT_SIZE * 4);
-
     if (!offsetData) return lut;
 
     const hasCellColors = Object.keys(cellColors).length > 0;
 
     offsetData.forEach((_, cellIdKey) => {
-      if (hiddenCellIds.has(cellIdKey)) return; // alpha stays 0 → transparent
+      if (hiddenCellIds.has(cellIdKey)) return;
+      if (!cellsInAnyCluster.has(cellIdKey)) return;
 
       const pixelValue = Number(cellIdKey) + 1;
       if (pixelValue <= 0 || pixelValue >= BITMASK_LUT_SIZE * BITMASK_LUT_SIZE) return;
@@ -346,15 +364,10 @@ const SpatialViewer = (props) => {
         if (colorValue) {
           [r, g, b] = parseColor(colorValue);
         } else {
-          // No assignment in active scheme → grey, not hidden
-          r = DEFAULT_CELL_GREY;
-          g = DEFAULT_CELL_GREY;
-          b = DEFAULT_CELL_GREY;
+          r = DEFAULT_CELL_GREY; g = DEFAULT_CELL_GREY; b = DEFAULT_CELL_GREY;
         }
       } else {
-        r = DEFAULT_CELL_GREY;
-        g = DEFAULT_CELL_GREY;
-        b = DEFAULT_CELL_GREY;
+        r = DEFAULT_CELL_GREY; g = DEFAULT_CELL_GREY; b = DEFAULT_CELL_GREY;
       }
 
       lut[pixelValue * 4] = r;
@@ -364,7 +377,7 @@ const SpatialViewer = (props) => {
     });
 
     return lut;
-  }, [cellColors, offsetData, hiddenCellIds]);
+  }, [cellColors, offsetData, hiddenCellIds, cellsInAnyCluster]);
 
   // ── Diamond fallback ──────────────────────────────────────────────────────
   const polygonShapeData = useMemo(() => {
@@ -372,6 +385,7 @@ const SpatialViewer = (props) => {
     const shapes = [];
     offsetData.forEach(([x, y], key) => {
       if (hiddenCellIds.has(key)) return;
+      if (!cellsInAnyCluster.has(key)) return;
       const r = DIAMOND_RADIUS;
       shapes.push({
         polygon: new Float32Array([x, y + r, x + r, y, x, y - r, x - r, y, x, y + r]),
@@ -379,7 +393,7 @@ const SpatialViewer = (props) => {
       });
     });
     return shapes.length > 0 ? shapes : null;
-  }, [offsetData, hiddenCellIds, segmentationsLoader]);
+  }, [offsetData, hiddenCellIds, cellsInAnyCluster, segmentationsLoader]);
 
   const polygonColorMap = useMemo(() => {
     if (!polygonShapeData) return null;
