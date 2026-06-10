@@ -63,10 +63,10 @@ const spatialCategoricalInitialConfig = {
   },
   axesRanges: {
     ...axesRangesBaseState,
-    xMin: 50,
-    xMax: 450,
-    yMin: 70,
-    yMax: 450,
+    xMin: 2000,
+    xMax: 2500,
+    yMin: 2000,
+    yMax: 2500,
   },
   title: {
     ...titleBaseState,
@@ -141,10 +141,10 @@ const spatialFeatureInitialConfig = {
   },
   axesRanges: {
     ...axesRangesBaseState,
-    xMin: 50,
-    xMax: 450,
-    yMin: 70,
-    yMax: 450,
+    xMin: 2000,
+    xMax: 2500,
+    yMin: 2000,
+    yMax: 2500,
   },
   title: {
     ...titleBaseState,

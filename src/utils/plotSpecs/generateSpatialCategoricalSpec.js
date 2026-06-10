@@ -5,8 +5,25 @@ import _ from 'lodash';
 
 const paddingSize = 5;
 
-const generateSpec = (config, method, imageData, plotData, cellSetLegendsData) => {
-  const { imageUrl, imageWidth, imageHeight } = imageData;
+/**
+ * @param {object}      config
+ * @param {string}      method
+ * @param {object}      imageData          { imageUrl, imageWidth, imageHeight }
+ * @param {Array}       plotData
+ * @param {Array}       cellSetLegendsData
+ * @param {object|null} segmentationOverlay
+ *   When provided: { overlayUrl, overlayWidth, overlayHeight }
+ *   When null:     centroid dot symbols are rendered instead.
+ */
+const generateSpec = (
+  config,
+  method,
+  imageData,
+  plotData,
+  cellSetLegendsData,
+  segmentationOverlay = null,
+) => {
+  const { imageWidth, imageHeight } = imageData;
 
   const xScaleDomain = config.axesRanges.xAxisAuto
     ? [0, imageWidth]
@@ -23,158 +40,174 @@ const generateSpec = (config, method, imageData, plotData, cellSetLegendsData) =
 
   if (config.legend.enabled) {
     const positionIsRight = config.legend.position === 'right';
-
-    // Approximate the size of each name.
-    // All names can have that size or less, so can use it calculate the amount of columns
-    //
-    // The size of each name is calculated by getting the amount of chars in
-    //  each name and multiplying by each approx char size, 5.5
-    //  plus 30 for the color symbol and offset
     const colorSymbolSize = 30;
     const characterSizeHorizontal = 5.5;
     const characterSizeVertical = 11;
     const xTickSize = 140;
 
     const maxLegendItemsPerCol = Math.floor(
-      (config.dimensions.height - xTickSize - (2 * paddingSize))
-      / characterSizeVertical,
+      (config.dimensions.height - xTickSize - (2 * paddingSize)) / characterSizeVertical,
     );
-
     const legendSize = colorSymbolSize + _.max(
       cellSetLegendsData.map((legendData) => legendData.name.length * characterSizeHorizontal),
     );
-
-    // only 20 rows per column if the legend is on the right
     const legendColumns = positionIsRight
       ? Math.ceil(cellSetLegendsData.length / maxLegendItemsPerCol)
-      : Math.floor((config.dimensions.width) / legendSize);
+      : Math.floor(config.dimensions.width / legendSize);
     const labelLimit = positionIsRight ? 0 : legendSize;
 
-    legend = [
-      {
-        fill: 'cellSetLabelColors',
-        title: config?.legend.title === '' ? null : (config?.legend.title || 'Cluster Name'),
-        titleColor: config?.colour.masterColour,
-        type: 'symbol',
-        orient: config?.legend.position,
-        offset: 40,
-        symbolType: 'circle',
-        symbolSize: 100,
-        encode: {
-          labels: {
-            update: {
-              text: {
-                scale: 'sampleToName', field: 'label',
-              },
-              fill: { value: config?.colour.masterColour },
-            },
-          },
-        },
-        direction: 'horizontal',
-        labelFont: config?.fontStyle.font,
-        titleFont: config?.fontStyle.font,
-        symbolLimit: 0,
-        columns: legendColumns,
-        labelLimit,
-      },
-    ];
-  }
-
-  let marks = [{
-    type: 'symbol',
-    clip: true,
-    from: { data: 'values' },
-    encode: {
-      update: {
-        x: { scale: 'x', field: 'x' },
-        y: { scale: 'y', field: 'flipped_y' },
-        size: [
-          { value: config?.marker.size },
-        ],
-        stroke: config?.marker.outline ? {
-          scale: 'cellSetMarkColors',
-          field: 'cellSetKey',
-        } : null,
-        fill: {
-          scale: 'cellSetMarkColors',
-          field: 'cellSetKey',
-        },
-        shape: { value: config?.marker.shape },
-        fillOpacity: { value: config.marker.opacity / 10 },
-      },
-    },
-  }];
-  if (config.showImage) {
-    marks = [
-      {
-        type: 'image',
-        clip: true,
-        encode: {
+    legend = [{
+      fill: 'cellSetLabelColors',
+      title: config?.legend.title === '' ? null : (config?.legend.title || 'Cluster Name'),
+      titleColor: config?.colour.masterColour,
+      type: 'symbol',
+      orient: config?.legend.position,
+      offset: 40,
+      symbolType: 'circle',
+      symbolSize: 100,
+      encode: {
+        labels: {
           update: {
-            url: { value: imageUrl },
-            x: { signal: 'scale("x", 1)' }, // Use scale signal directly
-            y: { signal: `scale("y", ${imageHeight})` }, // Use "scale" function with y
-            width: { signal: `scale("x", ${imageWidth}) - scale("x", 1)` }, // Calculate width using scale domain
-            height: { signal: `scale("y", 0) - scale("y", ${imageHeight})` }, // Calculate height using scale domain
-            aspect: { value: false },
-            opacity: { value: 1 },
-          },
-        },
-      },
-      ...marks,
-
-    ];
-  }
-
-  if (config?.labels.enabled) {
-    marks.push(
-      {
-        name: 'clusterLabels',
-        type: 'text',
-        clip: true,
-        from: { data: 'labels' },
-        zindex: 1,
-        encode: {
-          update: {
-            x: { scale: 'x', field: 'medianX' },
-            y: { scale: 'y', field: 'medianY' },
-            text: { field: 'cellSetName' },
-            fontSize: { value: config?.labels.size },
-            strokeWidth: { value: 1.2 },
+            text: { scale: 'sampleToName', field: 'label' },
             fill: { value: config?.colour.masterColour },
-            fillOpacity: { value: config?.labels.enabled },
-            font: { value: config?.fontStyle.font },
-          },
-        },
-        transform: [
-          {
-            type: 'label',
-            size: { signal: '[width, height]' },
-            anchor: ['left', 'right', 'top', 'bottom', 'middle'],
-            avoidBaseMark: false,
-          },
-        ],
-      },
-    );
-
-    marks.push(
-      {
-        type: 'rect',
-        from: { data: 'clusterLabels' },
-        encode: {
-          update: {
-            x: { field: 'bounds.x1', offset: -2 },
-            x2: { field: 'bounds.x2', offset: 2 },
-            y: { field: 'bounds.y1', offset: -2 },
-            y2: { field: 'bounds.y2', offset: 2 },
-            fill: { value: 'white' },
-            opacity: { value: 0.5 },
           },
         },
       },
-    );
+      direction: 'horizontal',
+      labelFont: config?.fontStyle.font,
+      titleFont: config?.fontStyle.font,
+      symbolLimit: 0,
+      columns: legendColumns,
+      labelLimit,
+    }];
   }
 
+  // ── Marks ───────────────────────────────────────────────────────────────────
+  // Rendering order (bottom → top):
+  //   1. Tissue image          (optional, config.showImage)
+  //   2a. Segmentation overlay (when segmentationOverlay is available)
+  //   2b. Centroid dots        (fallback when no overlay)
+  //   3. Cluster labels        (optional, config.labels.enabled)
+  //   4. Label background rect (optional, config.labels.enabled)
+  const marks = [];
+
+  // 1. Tissue image — positioned using imageExtent so the cropped PNG aligns
+  //    correctly regardless of which pyramid level was loaded.
+  if (config.showImage) {
+    const { imageUrl, imageExtent } = imageData;
+    const {
+      xMin: ix1, xMax: ix2, yMin: iy1, yMax: iy2,
+    } = imageExtent;
+    marks.push({
+      type: 'image',
+      clip: true,
+      encode: {
+        update: {
+          url: { value: imageUrl },
+          x: { signal: `scale("x", ${ix1})` },
+          y: { signal: `scale("y", ${iy2})` }, // anchor at data yMax
+          width: { signal: `scale("x", ${ix2}) - scale("x", ${ix1})` },
+          height: { signal: `scale("y", ${iy1}) - scale("y", ${iy2})` }, // negative → flip
+          aspect: { value: false },
+          opacity: { value: 1 },
+        },
+      },
+    });
+  }
+
+  // 2a. Segmentation overlay — positioned using its exact data-space extent
+  if (segmentationOverlay) {
+    const { overlayUrl, overlayExtent } = segmentationOverlay;
+    const {
+      xMin: ox1, xMax: ox2, yMin: oy1, yMax: oy2,
+    } = overlayExtent;
+
+    // The Vega y-scale maps data-y=0 to screen-top and data-y=imageHeight to
+    // screen-bottom. A negative height flips the image vertically so that zarr
+    // row 0 (top of the physical image = high data-y) appears at the top of the
+    // displayed region, matching the tissue image orientation.
+    marks.push({
+      type: 'image',
+      clip: true,
+      encode: {
+        update: {
+          url: { value: overlayUrl },
+          x: { signal: `scale("x", ${ox1})` },
+          y: { signal: `scale("y", ${oy2})` }, // data yMax → anchor point
+          width: { signal: `scale("x", ${ox2}) - scale("x", ${ox1})` },
+          height: { signal: `scale("y", ${oy1}) - scale("y", ${oy2})` }, // negative → flip
+          aspect: { value: false },
+          opacity: { value: 1 },
+        },
+      },
+    });
+  } else {
+    // 2b. Centroid dots — permanent fallback when no segmentation zarr is available
+    marks.push({
+      type: 'symbol',
+      clip: true,
+      from: { data: 'values' },
+      encode: {
+        update: {
+          x: { scale: 'x', field: 'x' },
+          y: { scale: 'y', field: 'flipped_y' },
+          size: [{ value: config?.marker.size }],
+          stroke: config?.marker.outline
+            ? { scale: 'cellSetMarkColors', field: 'cellSetKey' }
+            : null,
+          fill: { scale: 'cellSetMarkColors', field: 'cellSetKey' },
+          shape: { value: config?.marker.shape },
+          fillOpacity: { value: config.marker.opacity / 10 },
+        },
+      },
+    });
+  }
+
+  // 3 + 4. Cluster labels and their background rects
+  if (config?.labels.enabled) {
+    marks.push({
+      name: 'clusterLabels',
+      type: 'text',
+      clip: true,
+      from: { data: 'labels' },
+      zindex: 1,
+      encode: {
+        update: {
+          x: { scale: 'x', field: 'medianX' },
+          y: { scale: 'y', field: 'medianY' },
+          text: { field: 'cellSetName' },
+          fontSize: { value: config?.labels.size },
+          strokeWidth: { value: 1.2 },
+          fill: { value: config?.colour.masterColour },
+          fillOpacity: { value: config?.labels.enabled },
+          font: { value: config?.fontStyle.font },
+        },
+      },
+      transform: [{
+        type: 'label',
+        size: { signal: '[width, height]' },
+        anchor: ['left', 'right', 'top', 'bottom', 'middle'],
+        avoidBaseMark: false,
+      }],
+    });
+
+    marks.push({
+      type: 'rect',
+      from: { data: 'clusterLabels' },
+      encode: {
+        update: {
+          x: { field: 'bounds.x1', offset: -2 },
+          x2: { field: 'bounds.x2', offset: 2 },
+          y: { field: 'bounds.y1', offset: -2 },
+          y2: { field: 'bounds.y2', offset: 2 },
+          fill: { value: 'white' },
+          opacity: { value: 0.5 },
+        },
+      },
+    });
+  }
+
+  // ── Axes ────────────────────────────────────────────────────────────────────
   const axes = [];
 
   if (config.axes.xAxisLabels) {
@@ -226,24 +259,17 @@ const generateSpec = (config, method, imageData, plotData, cellSetLegendsData) =
 
   return {
     $schema: 'https://vega.github.io/schema/vega/v5.json',
-    description: 'Continuous embedding plot',
+    description: 'Spatial categorical embedding plot',
     width: plotWidth,
     height: plotHeight,
     autosize: { type: 'pad', resize: true },
-
     background: config.colour.toggleInvert,
     padding: 5,
     data: [
       {
         name: 'values',
         values: plotData,
-        // Vega internally modifies objects during data transforms. If the plot data is frozen,
-        // Vega is not able to carry out the transform and will throw an error.
-        // https://github.com/vega/vega/issues/2453#issuecomment-604516777
-        format: {
-          type: 'json',
-          copy: true,
-        },
+        format: { type: 'json', copy: true },
         transform: [
           {
             type: 'formula',
@@ -257,7 +283,11 @@ const generateSpec = (config, method, imageData, plotData, cellSetLegendsData) =
         source: 'values',
         transform: [
           {
-            type: 'aggregate', groupby: ['cellSetKey', 'cellSetName'], fields: ['x', 'flipped_y'], ops: ['median', 'median'], as: ['medianX', 'medianY'],
+            type: 'aggregate',
+            groupby: ['cellSetKey', 'cellSetName'],
+            fields: ['x', 'flipped_y'],
+            ops: ['median', 'median'],
+            as: ['medianX', 'medianY'],
           },
         ],
       },
@@ -300,8 +330,7 @@ const generateSpec = (config, method, imageData, plotData, cellSetLegendsData) =
     axes,
     marks,
     legends: legend,
-    title:
-    {
+    title: {
       text: config?.title.text,
       color: config.colour.masterColour,
       anchor: config.title.anchor,
@@ -312,21 +341,19 @@ const generateSpec = (config, method, imageData, plotData, cellSetLegendsData) =
   };
 };
 
+// ── filterCells, generateData — unchanged ──────────────────────────────────────
+
 const filterCells = (cellSets, sampleKey, groupBy) => {
   let filteredCells = [];
 
-  // Get all the filtered cells
   if (sampleKey === 'All') {
     filteredCells = getAllCells(cellSets, groupBy);
   } else {
     filteredCells = getSampleCells(cellSets, sampleKey);
   }
 
-  // Get the cell set names
   const clusterEntries = cellSets.hierarchy
-    .find(
-      (rootNode) => rootNode.key === groupBy,
-    )?.children || [];
+    .find((rootNode) => rootNode.key === groupBy)?.children || [];
 
   const cellSetKeys = clusterEntries.map(({ key }) => key);
 
@@ -337,7 +364,6 @@ const filterCells = (cellSets, sampleKey, groupBy) => {
       name: cellSets.properties[key].name,
       color: cellSets.properties[key].color,
     });
-
     return acc;
   }, []);
 
@@ -348,8 +374,6 @@ const filterCells = (cellSets, sampleKey, groupBy) => {
     if (!cell) return acc;
 
     const inCellSet = colorToCellIdsMap.find((map) => map.cellIds.has(cell.cellId));
-
-    // If cell is not in the cell set, then return
     if (!inCellSet) return acc;
 
     const { key, name, color } = inCellSet;
@@ -360,16 +384,11 @@ const filterCells = (cellSets, sampleKey, groupBy) => {
     }
 
     acc[cell.cellId] = {
-      ...cell,
-      cellSetKey: key,
-      cellSetName: name,
-      color,
+      ...cell, cellSetKey: key, cellSetName: name, color,
     };
-
     return acc;
   }, {});
 
-  // Sort legends to show them in the order that cellSetKeys are stored
   cellSetLegendsData = _.sortBy(
     cellSetLegendsData,
     ({ key }) => _.indexOf(cellSetKeys, key),
@@ -378,7 +397,6 @@ const filterCells = (cellSets, sampleKey, groupBy) => {
   return { filteredCells, cellSetLegendsData };
 };
 
-// Generate dynamic data from redux store
 const generateData = (cellSets, sampleKey, groupBy, embeddingData) => {
   const { filteredCells, cellSetLegendsData } = filterCells(cellSets, sampleKey, groupBy);
 
@@ -386,21 +404,13 @@ const generateData = (cellSets, sampleKey, groupBy, embeddingData) => {
     .map((coordinates, cellId) => ({ cellId, coordinates }))
     .filter(({ coordinates }) => coordinates !== undefined)
     .filter(({ cellId }) => Object.hasOwn(filteredCells, cellId))
-    .map((data) => {
-      const { cellId, coordinates } = data;
-
-      return {
-        ...filteredCells[cellId],
-        x: coordinates[0],
-        y: coordinates[1],
-      };
-    });
+    .map(({ cellId, coordinates }) => ({
+      ...filteredCells[cellId],
+      x: coordinates[0],
+      y: coordinates[1],
+    }));
 
   return { plotData, cellSetLegendsData };
 };
 
-export {
-  generateSpec,
-  generateData,
-  filterCells,
-};
+export { generateSpec, generateData, filterCells };
