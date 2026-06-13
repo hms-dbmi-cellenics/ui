@@ -55,7 +55,9 @@ const MultiViewGenesEditor = (props) => {
     return uuids.map((uuid, index) => {
       const row = Math.floor(index / localNCols) + 1;
       const col = (index % localNCols) + 1;
-      return { label: `${row}.${col} ${shownGenes[index]}`, value: uuid };
+      const gene = shownGenes[index];
+      // omit the gene until it has loaded so the option doesn't read "1.1 undefined"
+      return { label: gene ? `${row}.${col} ${gene}` : `${row}.${col}`, value: uuid };
     });
   };
 
@@ -66,7 +68,8 @@ const MultiViewGenesEditor = (props) => {
   useEffect(() => {
     if (!multiViewConfig) return;
 
-    if ((!selectedPlotUuid && multiViewPlotUuids.length) || !multiViewPlotUuids.includes(selectedPlotUuid)) {
+    if ((!selectedPlotUuid && multiViewPlotUuids.length)
+      || !multiViewPlotUuids.includes(selectedPlotUuid)) {
       setSelectedPlotUuid(multiViewPlotUuids[0]);
     }
     if (localNRows !== multiViewConfig.nrows) {
@@ -82,7 +85,7 @@ const MultiViewGenesEditor = (props) => {
     if (!multiViewConfig || !localNRows || !localNCols) return;
 
     if (!_.isEqual((options.map((option) => option?.value)), multiViewConfig.plotUuids)
-      || !options.every((option, i) => option?.label.includes(shownGenes[i]))) {
+      || !options.every((option, i) => option?.label.includes(shownGenes[i] ?? ''))) {
       setOptions(renderUuidOptions(multiViewConfig.plotUuids));
     }
   }, [multiViewConfig, shownGenes, localNRows, localNCols]);

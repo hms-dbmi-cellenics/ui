@@ -2,6 +2,7 @@ import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
 import { loadGeneExpression } from 'redux/actions/genes';
+import { updatePlotConfig } from 'redux/actions/componentConfig';
 import SpatialFeaturePlot from './SpatialFeaturePlot';
 
 // wrapper component used in plots and tables
@@ -28,6 +29,7 @@ const SpatialFeatureReduxWrapper = (props) => {
       reloadPlotData={() => dispatch(loadGeneExpression(
         experimentId, [config?.shownGene], plotUuid,
       ))}
+      onZoomChange={(axesRanges) => dispatch(updatePlotConfig(plotUuid, { axesRanges }))}
     />
   );
 };

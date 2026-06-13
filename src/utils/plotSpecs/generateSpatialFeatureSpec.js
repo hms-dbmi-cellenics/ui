@@ -1,6 +1,7 @@
 /* eslint-disable no-param-reassign */
 
 import { getAllCells, getSampleCells } from 'utils/cellSets';
+import spatialZoomSignals from 'utils/plotSpecs/spatialZoomSignals';
 
 /**
  * @param {object}      config
@@ -9,18 +10,26 @@ import { getAllCells, getSampleCells } from 'utils/cellSets';
  * @param {Array}       plotData
  * @param {object|null} segmentationOverlay  { overlayUrl, overlayExtent } | null
  */
-const generateSpec = (config, method, imageData, plotData, segmentationOverlay = null) => {
+// hasSegmentation controls whether the (data-driven) segmentation overlay mark or
+// the centroid-dot fallback is rendered. The overlay image itself is supplied at
+// runtime through the Vega `data` prop (dataset 'segOverlayData'), so recolouring
+// updates the view in place without rebuilding it (and without re-decoding the
+// full-resolution tissue image).
+const generateSpec = (
+  config, method, imageData, plotData, hasSegmentation = false,
+) => {
   const {
     imageUrl, imageWidth, imageHeight, imageExtent,
   } = imageData;
 
-  const xScaleDomain = config.axesRanges.xAxisAuto
-    ? [0, imageWidth]
-    : [config.axesRanges.xMin, config.axesRanges.xMax];
-
-  const yScaleDomain = config.axesRanges.yAxisAuto
-    ? [0, imageHeight]
-    : [config.axesRanges.yMin, config.axesRanges.yMax];
+  // Initial zoom/pan domains are ALWAYS the full image extent — the spec is
+  // intentionally invariant to config.axesRanges so that persisting a zoom (which
+  // re-renders with a fresh plotData reference) never produces a different spec and
+  // thus never rebuilds the view (which would flicker the slide). The persisted
+  // zoom (config.axesRanges) is re-applied imperatively after (re)build via the
+  // plot's onNewView, by setting the initXdom/initYdom signals.
+  const initXdom = [0, imageWidth];
+  const initYdom = [0, imageHeight];
 
   const plotWidth = config.dimensions.width;
   const plotHeight = config.dimensions.height;
@@ -36,6 +45,8 @@ const generateSpec = (config, method, imageData, plotData, segmentationOverlay =
       title: config.shownGene,
       labelColor: config.colour.masterColour,
       titleColor: config.colour.masterColour,
+      titleFontSize: config.legend.titleFontSize,
+      labelFontSize: config.legend.labelFontSize,
       symbolType: 'circle',
       symbolSize: 100,
       offset: 40,
@@ -66,22 +77,20 @@ const generateSpec = (config, method, imageData, plotData, segmentationOverlay =
     });
   }
 
-  // 2a. Segmentation overlay
-  if (segmentationOverlay) {
-    const { overlayUrl, overlayExtent } = segmentationOverlay;
-    const {
-      xMin: ox1, xMax: ox2, yMin: oy1, yMax: oy2,
-    } = overlayExtent;
+  // 2a. Segmentation overlay — data-driven (image supplied via the `data` prop)
+  // so recolouring is an in-place dataset update, not a view rebuild.
+  if (hasSegmentation) {
     marks.push({
       type: 'image',
       clip: true,
+      from: { data: 'segOverlayData' },
       encode: {
         update: {
-          url: { value: overlayUrl },
-          x: { signal: `scale("x", ${ox1})` },
-          y: { signal: `scale("y", ${oy2})` },
-          width: { signal: `scale("x", ${ox2}) - scale("x", ${ox1})` },
-          height: { signal: `scale("y", ${oy1}) - scale("y", ${oy2})` },
+          url: { field: 'url' },
+          x: { signal: "scale('x', datum.x1)" },
+          y: { signal: "scale('y', datum.y2)" },
+          width: { signal: "scale('x', datum.x2) - scale('x', datum.x1)" },
+          height: { signal: "scale('y', datum.y1) - scale('y', datum.y2)" },
           aspect: { value: false },
           opacity: { value: 1 },
         },
@@ -109,10 +118,15 @@ const generateSpec = (config, method, imageData, plotData, segmentationOverlay =
 
   const axes = [];
 
-  if (config.axes.xAxisLabels) {
+  // Mini previews render just the image + overlay (no axes/padding) so the whole
+  // thumbnail fits the fixed 92×92 tile exactly — matching the histogram preview,
+  // with no size snap and no clipping.
+  if (!config.miniPlot && config.axes.xAxisLabels) {
     axes.push({
       scale: 'x',
       grid: true,
+      // draw the axis (and its grid) above the tissue image and overlay
+      zindex: 1,
       domain: true,
       orient: 'bottom',
       title: config.axes.xAxisText,
@@ -122,7 +136,7 @@ const generateSpec = (config, method, imageData, plotData, segmentationOverlay =
       tickColor: config.colour.masterColour,
       gridColor: config.colour.masterColour,
       gridOpacity: (config.axes.gridOpacity / 20),
-      gridWidth: (config.gridWidth / 20),
+      gridWidth: (config.axes.gridWidth / 20),
       offset: config.axes.offset,
       titleFontSize: config.axes.titleFontSize,
       titleColor: config.colour.masterColour,
@@ -133,10 +147,13 @@ const generateSpec = (config, method, imageData, plotData, segmentationOverlay =
     });
   }
 
-  if (config.axes.yAxisLabels) {
+  if (!config.miniPlot && config.axes.yAxisLabels) {
     axes.push({
       scale: 'y',
-      grid: false,
+      // horizontal gridlines (companion to the x-axis vertical gridlines)
+      grid: true,
+      // draw the axis (and its grid) above the tissue image and overlay
+      zindex: 1,
       domain: true,
       orient: 'left',
       titlePadding: 5,
@@ -161,9 +178,12 @@ const generateSpec = (config, method, imageData, plotData, segmentationOverlay =
     description: 'Continuous embedding plot',
     width: plotWidth,
     height: plotHeight,
-    autosize: { type: 'pad', resize: true },
+    // resize:false — the plot/legend layout stays fixed during zoom/pan
+    // (resize:true re-fits the view each frame, making the legend bounce)
+    autosize: { type: 'pad', resize: false },
     background: config.colour.toggleInvert,
-    padding: 5,
+    // no padding for mini previews so the image fills the 92×92 tile exactly
+    padding: config.miniPlot ? 0 : 5,
     data: [
       {
         name: 'plotData',
@@ -180,14 +200,19 @@ const generateSpec = (config, method, imageData, plotData, segmentationOverlay =
           },
         ],
       },
+      // segmentation overlay image ({ url, x1, x2, y1, y2 }), supplied/updated
+      // in place via the react-vega `data` prop
+      { name: 'segOverlayData', values: [] },
     ],
+    // clamp zoom/pan to the full image extent so you can always zoom back out to it
+    signals: spatialZoomSignals(initXdom, initYdom, [0, imageWidth], [0, imageHeight]),
     scales: [
       {
         name: 'x',
         type: 'linear',
         nice: false,
         zero: false,
-        domain: xScaleDomain,
+        domain: { signal: 'xdom' },
         range: 'width',
       },
       {
@@ -195,7 +220,7 @@ const generateSpec = (config, method, imageData, plotData, segmentationOverlay =
         type: 'linear',
         nice: false,
         zero: false,
-        domain: yScaleDomain,
+        domain: { signal: 'ydom' },
         range: 'height',
       },
       {

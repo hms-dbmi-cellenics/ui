@@ -1,6 +1,7 @@
 import React from 'react';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
+import { updatePlotConfig } from 'redux/actions/componentConfig';
 import SpatialCategoricalPlot from './SpatialCategoricalPlot';
 
 // wrapper component used in plots and tables
@@ -11,6 +12,7 @@ const SpatialCategoricalReduxWrapper = (props) => {
     experimentId, actions, plotUuid,
   } = props;
 
+  const dispatch = useDispatch();
   const config = useSelector((state) => state.componentConfig[plotUuid]?.config);
 
   return (
@@ -18,6 +20,7 @@ const SpatialCategoricalReduxWrapper = (props) => {
       experimentId={experimentId}
       config={config}
       actions={actions}
+      onZoomChange={(axesRanges) => dispatch(updatePlotConfig(plotUuid, { axesRanges }))}
     />
   );
 };

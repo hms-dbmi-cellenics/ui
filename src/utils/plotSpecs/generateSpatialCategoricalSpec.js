@@ -2,6 +2,7 @@
 
 import { getAllCells, getSampleCells } from 'utils/cellSets';
 import _ from 'lodash';
+import spatialZoomSignals from 'utils/plotSpecs/spatialZoomSignals';
 
 const paddingSize = 5;
 
@@ -15,23 +16,27 @@ const paddingSize = 5;
  *   When provided: { overlayUrl, overlayWidth, overlayHeight }
  *   When null:     centroid dot symbols are rendered instead.
  */
+// hasSegmentation chooses the (data-driven) overlay mark vs the centroid fallback.
+// The overlay image is supplied at runtime via the Vega `data` prop (dataset
+// 'segOverlayData') so recolouring updates the view in place — no rebuild, no
+// re-decode of the full-resolution tissue image.
 const generateSpec = (
   config,
   method,
   imageData,
   plotData,
   cellSetLegendsData,
-  segmentationOverlay = null,
+  hasSegmentation = false,
 ) => {
   const { imageWidth, imageHeight } = imageData;
 
-  const xScaleDomain = config.axesRanges.xAxisAuto
-    ? [0, imageWidth]
-    : [config.axesRanges.xMin, config.axesRanges.xMax];
-
-  const yScaleDomain = config.axesRanges.yAxisAuto
-    ? [0, imageHeight]
-    : [config.axesRanges.yMin, config.axesRanges.yMax];
+  // Initial zoom/pan domains are ALWAYS the full image extent — the spec is
+  // intentionally invariant to config.axesRanges so persisting a zoom never
+  // produces a different spec and thus never rebuilds the view (which would
+  // flicker the slide). The persisted zoom (config.axesRanges) is re-applied
+  // imperatively after (re)build via the plot's onNewView.
+  const initXdom = [0, imageWidth];
+  const initYdom = [0, imageHeight];
 
   const plotWidth = config.dimensions.width;
   const plotHeight = config.dimensions.height;
@@ -60,6 +65,8 @@ const generateSpec = (
       fill: 'cellSetLabelColors',
       title: config?.legend.title === '' ? null : (config?.legend.title || 'Cluster Name'),
       titleColor: config?.colour.masterColour,
+      titleFontSize: config?.legend.titleFontSize,
+      labelFontSize: config?.legend.labelFontSize,
       type: 'symbol',
       orient: config?.legend.position,
       offset: 40,
@@ -115,27 +122,22 @@ const generateSpec = (
     });
   }
 
-  // 2a. Segmentation overlay — positioned using its exact data-space extent
-  if (segmentationOverlay) {
-    const { overlayUrl, overlayExtent } = segmentationOverlay;
-    const {
-      xMin: ox1, xMax: ox2, yMin: oy1, yMax: oy2,
-    } = overlayExtent;
-
-    // The Vega y-scale maps data-y=0 to screen-top and data-y=imageHeight to
-    // screen-bottom. A negative height flips the image vertically so that zarr
-    // row 0 (top of the physical image = high data-y) appears at the top of the
-    // displayed region, matching the tissue image orientation.
+  // 2a. Segmentation overlay — data-driven (image supplied via the `data` prop)
+  // so recolouring is an in-place dataset update, not a view rebuild. The datum
+  // carries the overlay extent { x1, x2, y1, y2 }; the negative height flips the
+  // image vertically to match the tissue image orientation.
+  if (hasSegmentation) {
     marks.push({
       type: 'image',
       clip: true,
+      from: { data: 'segOverlayData' },
       encode: {
         update: {
-          url: { value: overlayUrl },
-          x: { signal: `scale("x", ${ox1})` },
-          y: { signal: `scale("y", ${oy2})` }, // data yMax → anchor point
-          width: { signal: `scale("x", ${ox2}) - scale("x", ${ox1})` },
-          height: { signal: `scale("y", ${oy1}) - scale("y", ${oy2})` }, // negative → flip
+          url: { field: 'url' },
+          x: { signal: "scale('x', datum.x1)" },
+          y: { signal: "scale('y', datum.y2)" },
+          width: { signal: "scale('x', datum.x2) - scale('x', datum.x1)" },
+          height: { signal: "scale('y', datum.y1) - scale('y', datum.y2)" },
           aspect: { value: false },
           opacity: { value: 1 },
         },
@@ -214,6 +216,8 @@ const generateSpec = (
     axes.push({
       scale: 'x',
       grid: true,
+      // draw the axis (and its grid) above the tissue image and overlay
+      zindex: 1,
       domain: true,
       orient: 'bottom',
       title: config.axes.xAxisText,
@@ -223,7 +227,7 @@ const generateSpec = (
       tickColor: config.colour.masterColour,
       gridColor: config.colour.masterColour,
       gridOpacity: (config.axes.gridOpacity / 20),
-      gridWidth: (config.gridWidth / 20),
+      gridWidth: (config.axes.gridWidth / 20),
       offset: config.axes.offset,
       titleFontSize: config.axes.titleFontSize,
       titleColor: config.colour.masterColour,
@@ -237,7 +241,10 @@ const generateSpec = (
   if (config.axes.yAxisLabels) {
     axes.push({
       scale: 'y',
-      grid: false,
+      // horizontal gridlines (companion to the x-axis vertical gridlines)
+      grid: true,
+      // draw the axis (and its grid) above the tissue image and overlay
+      zindex: 1,
       domain: true,
       orient: 'left',
       titlePadding: 5,
@@ -262,7 +269,8 @@ const generateSpec = (
     description: 'Spatial categorical embedding plot',
     width: plotWidth,
     height: plotHeight,
-    autosize: { type: 'pad', resize: true },
+    // resize:false — keeps the plot/legend layout fixed during zoom/pan
+    autosize: { type: 'pad', resize: false },
     background: config.colour.toggleInvert,
     padding: 5,
     data: [
@@ -291,14 +299,19 @@ const generateSpec = (
           },
         ],
       },
+      // segmentation overlay image ({ url, x1, x2, y1, y2 }), supplied/updated
+      // in place via the react-vega `data` prop
+      { name: 'segOverlayData', values: [] },
     ],
+    // clamp zoom/pan to the full image extent so you can always zoom back out to it
+    signals: spatialZoomSignals(initXdom, initYdom, [0, imageWidth], [0, imageHeight]),
     scales: [
       {
         name: 'x',
         type: 'linear',
         nice: false,
         zero: false,
-        domain: xScaleDomain,
+        domain: { signal: 'xdom' },
         range: 'width',
       },
       {
@@ -306,7 +319,7 @@ const generateSpec = (
         type: 'linear',
         nice: false,
         zero: false,
-        domain: yScaleDomain,
+        domain: { signal: 'ydom' },
         range: 'height',
       },
       {

@@ -2,6 +2,7 @@ import {
   root as zarrRoot, open, get, slice,
 } from 'zarrita';
 import ZipFileStore from 'components/data-exploration/spatial/ZipFileStore';
+import { registerDrawable } from './loadSegmentationOverlay';
 
 export const getImageDimensions = async (omeZarrUrl) => {
   try {
@@ -13,7 +14,7 @@ export const getImageDimensions = async (omeZarrUrl) => {
       const rootAttrs = await Promise.resolve(rootGroup.attrs);
       firstPath = rootAttrs?.multiscales?.[0]?.datasets?.[0]?.path ?? '0';
     } catch (_e) {
-
+      // multiscale metadata is optional — fall back to the default dataset path
     }
     const arr = await open(rootNode.resolve(firstPath), { kind: 'array' });
     const { shape } = arr;
@@ -44,7 +45,9 @@ const getImageUrls = async (omeZarrUrl, viewport) => {
       const rootAttrs = await Promise.resolve(rootGroup.attrs);
       datasets = rootAttrs?.multiscales?.[0]?.datasets || datasets;
       axesMetadata = rootAttrs?.multiscales?.[0]?.axes || null;
-    } catch (_e) { }
+    } catch (_e) {
+      // multiscale metadata is optional — fall back to the default dataset path
+    }
 
     const levels = await Promise.all(
       datasets.map(async ({ path }) => {
@@ -67,7 +70,7 @@ const getImageUrls = async (omeZarrUrl, viewport) => {
 
     // ── Pick pyramid level ────────────────────────────────────────────────
     let chosenIdx = 0;
-    for (let i = levels.length - 1; i >= 0; i--) {
+    for (let i = levels.length - 1; i >= 0; i -= 1) {
       const lw = levels[i].shape[levels[i].shape.length - 1];
       const lh = levels[i].shape[levels[i].shape.length - 2];
       if (fracX * lw >= outputWidth && fracY * lh >= outputHeight) {
@@ -121,7 +124,7 @@ const getImageUrls = async (omeZarrUrl, viewport) => {
     const px = imgData.data; // Uint8ClampedArray — clamps to [0,255] automatically
 
     const [rData, gData, bData] = channels;
-    for (let i = 0; i < regionW * regionH; i++) {
+    for (let i = 0; i < regionW * regionH; i += 1) {
       // Assign directly without normalization — matches the original code.
       // Uint8ClampedArray clamps any value outside [0,255] automatically,
       // so uint8 (0–255) and uint16 data with values in 0–255 range both
@@ -135,7 +138,11 @@ const getImageUrls = async (omeZarrUrl, viewport) => {
     ctx.putImageData(imgData, 0, 0);
 
     return {
-      imageUrl: canvas.toDataURL('image/png'),
+      // hand Vega the canvas directly (via patchResourceLoader) instead of
+      // PNG-encoding it: no toDataURL here, and no re-decode when Vega rebuilds
+      // the view (e.g. the first plot adjustment after a zoom). Cached per slide
+      // in spatialTileCache, so it's built once and reused across all spatial plots.
+      imageUrl: registerDrawable(canvas),
       imageWidth: fullW, // always level-0 full dims for Vega scale domains
       imageHeight: fullH,
       imageExtent: {

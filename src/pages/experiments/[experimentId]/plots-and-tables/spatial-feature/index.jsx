@@ -74,16 +74,16 @@ const SpatialFeaturePage = ({ experimentId }) => {
       ],
     },
     {
-      panelTitle: 'Axes and margins',
-      controls: ['axesWithRanges'],
+      panelTitle: 'Axes options',
+      controls: ['axes'],
     },
     {
       panelTitle: 'Colours',
       controls: ['colourScheme', 'colourInversion'],
     },
     {
-      panelTitle: 'Markers',
-      controls: ['markers'],
+      panelTitle: 'Segmentations',
+      controls: [{ name: 'markers', props: { spatial: true } }],
     },
     {
       panelTitle: 'Legend',
@@ -112,7 +112,6 @@ const SpatialFeaturePage = ({ experimentId }) => {
     <SpatialFeatureReduxWrapper
       experimentId={experimentId}
       plotUuid={plotUuidToRender}
-
     />
   );
 

@@ -14,11 +14,13 @@ import LabelsDesign from './LabelsDesign';
 import DimensionsRangeEditor from './DimensionsRangeEditor';
 import AxesDesign from './AxesDesign';
 import AxesWithRangesDesign from './AxesWithRangesDesign';
+import AxesRangesDesign from './AxesRangesDesign';
 import PointDesign from './PointDesign';
 import ColourbarDesign from './ColourbarDesign';
 import ColourInversion from './ColourInversion';
 import ExpressionValuesType from './ExpressionValuesType';
 import ExpressionValuesCapping from './ExpressionValuesCapping';
+import ShowImageToggle from './ShowImageToggle';
 
 import ViolinMarkersEditor from './violin/MarkersEditor';
 
@@ -39,11 +41,13 @@ const PlotStyling = (props) => {
     font: (attr) => <FontDesign key='font' config={config} onUpdate={onUpdate} {...attr} />,
     axes: (attr) => <AxesDesign key='axes' config={config} onUpdate={onUpdate} {...attr} />,
     axesWithRanges: (attr) => <AxesWithRangesDesign key='axesWithRanges' config={config} onUpdate={onUpdate} {...attr} />,
+    axesRanges: (attr) => <AxesRangesDesign key='axesRanges' config={config} onUpdate={onUpdate} {...attr} />,
     colourScheme: (attr) => <ColourbarDesign key='colourScheme' config={config} onUpdate={onUpdate} {...attr} />,
     colourInversion: (attr) => <ColourInversion key='colourInversion' config={config} onUpdate={onUpdate} {...attr} />,
     expressionValuesType: (attr) => <ExpressionValuesType key='expressionValuesType' config={config} onUpdate={onUpdate} {...attr} />,
     expressionValuesCapping: (attr) => <ExpressionValuesCapping key='expressionValuesCapping' config={config} onUpdate={onUpdate} {...attr} />,
     markers: (attr) => <PointDesign key='markers' config={config} onUpdate={onUpdate} {...attr} />,
+    showImage: (attr) => <ShowImageToggle key='showImage' config={config} onUpdate={onUpdate} {...attr} />,
     legend: (attr) => <LegendEditor key='legend' onUpdate={onUpdate} config={config} {...attr} />,
     labels: (attr) => <LabelsDesign key='labels' onUpdate={onUpdate} config={config} {...attr} />,
     violinMarkers: (attr) => <ViolinMarkersEditor key='violinMarkers' config={config} onUpdate={onUpdate} {...attr} />,

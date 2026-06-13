@@ -3,7 +3,6 @@ import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { useSelector, useDispatch } from 'react-redux';
 import MultiViewPlotEditor from 'components/plots/styling/MultiViewPlotEditor';
-import _ from 'lodash';
 import {
   Collapse,
   Select,
@@ -15,13 +14,12 @@ import MultiViewPlotGrid from 'components/plots/MultiViewPlotGrid';
 import SelectData from 'components/plots/styling/embedding-continuous/SelectData';
 import Header from 'components/Header';
 import PlotContainer from 'components/plots/PlotContainer';
-import { loadGeneExpression } from 'redux/actions/genes';
 
 import {
   updatePlotConfig,
 } from 'redux/actions/componentConfig/index';
 import { loadCellSets } from 'redux/actions/cellSets';
-import { getCellSets, getPlotConfigs, getCellSetsHierarchy } from 'redux/selectors';
+import { getCellSets, getCellSetsHierarchy } from 'redux/selectors';
 import { plotNames, plotUuids, plotTypes } from 'utils/constants';
 import SpatialCategoricalReduxWrapper from 'components/plots/SpatialCategoricalReduxWrapper';
 
@@ -38,10 +36,8 @@ const SpatialCategoricalPage = ({ experimentId }) => {
   const hierarchy = useSelector(getCellSetsHierarchy());
   const multiViewConfig = useSelector((state) => state.componentConfig[multiViewUuid]?.config);
   const multiViewPlotUuids = multiViewConfig?.plotUuids;
-  const plotConfigs = useSelector(getPlotConfigs(multiViewPlotUuids));
   const [selectedPlotUuid, setSelectedPlotUuid] = useState(`${plotUuid}-0`);
   const [updateAll, setUpdateAll] = useState(true);
-
 
   useEffect(() => {
     dispatch(loadCellSets(experimentId));
@@ -73,16 +69,16 @@ const SpatialCategoricalPage = ({ experimentId }) => {
       ],
     },
     {
-      panelTitle: 'Axes and margins',
-      controls: ['axesWithRanges'],
+      panelTitle: 'Axes options',
+      controls: ['axes'],
     },
     {
       panelTitle: 'Colour inversion',
       controls: ['colourInversion'],
     },
     {
-      panelTitle: 'Markers',
-      controls: ['markers'],
+      panelTitle: 'Segmentations',
+      controls: [{ name: 'markers', props: { spatial: true } }],
     },
     {
       panelTitle: 'Legend',
@@ -113,7 +109,6 @@ const SpatialCategoricalPage = ({ experimentId }) => {
     <SpatialCategoricalReduxWrapper
       experimentId={experimentId}
       plotUuid={plotUuidToRender}
-
     />
   );
 
