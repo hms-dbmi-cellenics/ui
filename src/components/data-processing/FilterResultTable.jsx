@@ -21,17 +21,23 @@ const FilterResultTable = (props) => {
 
     // Rearrange data to fit table
     const titles = {
-      num_cells: 'Estimated number of cells',
-      total_genes: 'Total number of genes',
+      num_cells: 'Number of cells',
+      total_genes: 'Number of genes detected',
       median_genes: 'Median number of genes per cell',
       median_umis: 'Median UMI counts per cell',
     };
 
-    const percentChanged = (number, total, decimalPoints = 2) => {
-      const ratio = Math.round((number / total) * (10 ** decimalPoints)) / (10 ** decimalPoints);
-      const percent = ratio * 100;
-      const fixedDecimal = percent.toFixed(1);
-      return fixedDecimal > 0 ? `+${fixedDecimal}` : `${fixedDecimal}`;
+    // Shows the absolute change followed by the percentage in brackets,
+    // e.g. "-423 (0.1%)". Percentage is omitted when the "before" value is 0.
+    const formatChange = (beforeValue, afterValue) => {
+      const diff = afterValue - beforeValue;
+      const signedDiff = diff > 0 ? `+${diff}` : `${diff}`;
+
+      if (!beforeValue) return signedDiff;
+
+      const percent = (diff / beforeValue) * 100;
+      const fixedPercent = Math.abs(percent).toFixed(1);
+      return `${signedDiff} (${fixedPercent}%)`;
     };
 
     const dataSource = Object.keys(before).map((key) => ({
@@ -39,7 +45,7 @@ const FilterResultTable = (props) => {
       title: titles[key],
       before: before[key],
       after: after[key],
-      percentChanged: percentChanged(after[key] - before[key], before[key], 5),
+      change: formatChange(before[key], after[key]),
     }));
 
     const columns = [
@@ -63,8 +69,8 @@ const FilterResultTable = (props) => {
       },
       {
         title: 'Change (%)',
-        dataIndex: 'percentChanged',
-        key: 'percentChanged',
+        dataIndex: 'change',
+        key: 'change',
         align: 'right',
       },
     ];

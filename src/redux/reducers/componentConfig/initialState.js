@@ -77,8 +77,8 @@ const spatialCategoricalInitialConfig = {
   marker: {
     ...markerBaseState,
     size: 20,
-    outline: false,
-    opacity: 10,
+    outline: true,
+    opacity: 9,
   },
   labels: {
     ...labelBaseState,
@@ -159,8 +159,8 @@ const spatialFeatureInitialConfig = {
   marker: {
     ...markerBaseState,
     size: 20,
-    outline: false,
-    opacity: 10,
+    outline: true,
+    opacity: 9,
   },
   labels: labelBaseState,
   logEquation: 'datum.expression*1',
@@ -168,7 +168,10 @@ const spatialFeatureInitialConfig = {
   expressionValue: 'raw',
   truncatedValues: true,
   selectedSample: null,
-  keepValuesOnReset: ['shownGene'],
+  // 'title' is auto-set to the gene name by the default-gene effect; keep it on
+  // reset (and skip it in the reset-disabled comparison) so that automatic write
+  // doesn't permanently/repeatedly re-enable the Reset Plot button.
+  keepValuesOnReset: ['shownGene', 'title'],
   showImage: true,
 };
 
@@ -886,6 +889,48 @@ const doubletScoreHistogram = {
   probThreshold: 0.2,
 };
 
+// DATA PROCESSING - Spatial local-outlier filters (Visium HD)
+// Main plot: tissue slide coloured by the metric, outliers outlined in red.
+// `shownGene` is repurposed as the colour-legend title (the metric name).
+const makeSpatialOutlierPlotConfig = (legendTitle) => ({
+  ...spatialFeatureInitialConfig,
+  shownGene: legendTitle,
+  keepValuesOnReset: [],
+  truncatedValues: false,
+});
+
+const spatialUmiOutlierPlot = makeSpatialOutlierPlotConfig('UMIs');
+const spatialNumGenesOutlierPlot = makeSpatialOutlierPlotConfig('Genes detected');
+const spatialMitoOutlierPlot = makeSpatialOutlierPlotConfig('Mitochondrial %');
+
+// Outlier-highlight slide: a SEPARATE, independently-styleable config from the
+// metric slide (so e.g. inverting the background only affects this view). Defaults
+// to hiding the tissue image — outliers are filled red, non-outliers grey, both at
+// the slider opacity (see SpatialOutlierFilterPlot).
+const makeSpatialOutlierHighlightConfig = (legendTitle) => ({
+  ...makeSpatialOutlierPlotConfig(legendTitle),
+  showImage: false,
+});
+
+const spatialUmiOutlierHighlightPlot = makeSpatialOutlierHighlightConfig('UMIs');
+const spatialNumGenesOutlierHighlightPlot = makeSpatialOutlierHighlightConfig('Genes detected');
+const spatialMitoOutlierHighlightPlot = makeSpatialOutlierHighlightConfig('Mitochondrial %');
+
+// Mini plot: histogram of the local-outlier z-scores with a cutoff rule.
+const makeZscoreHistogram = (xAxisText) => ({
+  ...doubletScoreHistogram,
+  axes: {
+    ...axesBaseState,
+    xAxisText,
+    yAxisText: 'Frequency',
+  },
+  cutoff: 3,
+});
+
+const spatialUmiOutlierZscoreHistogram = makeZscoreHistogram('UMI outlier z-score');
+const spatialNumGenesOutlierZscoreHistogram = makeZscoreHistogram('Genes detected outlier z-score');
+const spatialMitoOutlierZscoreHistogram = makeZscoreHistogram('Mitochondrial outlier z-score');
+
 // DATA INTEGRATION - Embedding by Samples
 const dataIntegrationEmbeddingInitialConfig = {
   spec: '1.0.0',
@@ -1022,6 +1067,15 @@ const initialPlotConfigStates = {
   classifierEmptyDropsPlot,
   featuresVsUMIsScatterplot,
   doubletScoreHistogram,
+  spatialUmiOutlierPlot,
+  spatialNumGenesOutlierPlot,
+  spatialMitoOutlierPlot,
+  spatialUmiOutlierHighlightPlot,
+  spatialNumGenesOutlierHighlightPlot,
+  spatialMitoOutlierHighlightPlot,
+  spatialUmiOutlierZscoreHistogram,
+  spatialNumGenesOutlierZscoreHistogram,
+  spatialMitoOutlierZscoreHistogram,
   embeddingCategorical: embeddingCategoricalInitialConfig,
   embeddingContinuous: embeddingContinuousInitialConfig,
   [plotTypes.SPATIAL_FEATURE]: spatialFeatureInitialConfig,

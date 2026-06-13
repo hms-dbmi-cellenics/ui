@@ -46,6 +46,9 @@ import DoubletScores from 'components/data-processing/DoubletScores/DoubletScore
 import GenesVsUMIs from 'components/data-processing/GenesVsUMIs/GenesVsUMIs';
 import Header from 'components/Header';
 import MitochondrialContent from 'components/data-processing/MitochondrialContent/MitochondrialContent';
+import SpatialUmiOutlier from 'components/data-processing/SpatialUmiOutlier/SpatialUmiOutlier';
+import SpatialNumGenesOutlier from 'components/data-processing/SpatialNumGenesOutlier/SpatialNumGenesOutlier';
+import SpatialMitoOutlier from 'components/data-processing/SpatialMitoOutlier/SpatialMitoOutlier';
 import PipelineRedirectToDataProcessing from 'components/PipelineRedirectToDataProcessing';
 import PlatformError from 'components/PlatformError';
 import PropTypes from 'prop-types';
@@ -280,9 +283,10 @@ const DataProcessingPage = ({ experimentId, experimentData }) => {
         <span>
           A single barcode might correspond to more than one cell.
           In such cases, it is not possible to distinguish which reads came from which cell.
-          Such barcodes cause problems in the downstream analysis as they appear as an intermediate type.
+          Such barcodes cause problems in the downstream analysis as they appear
+          as an intermediate type.
           Barcodes with a high probability of being a doublet should be excluded.
-          The probability of being a doublet is calculated using "scDblFinder".
+          The probability of being a doublet is calculated using &quot;scDblFinder&quot;.
           For each sample, the default threshold tries to minimize both the deviation in the
           expected number of doublets and the error of a trained classifier. For more details see
           {' '}
@@ -296,6 +300,78 @@ const DataProcessingPage = ({ experimentId, experimentData }) => {
           inputsList={inputsList}
           baseComponentRenderer={(sample) => (
             <DoubletScores
+              experimentId={experimentId}
+              filtering
+              key={key}
+              sampleId={sample.key}
+              sampleIds={sampleKeys}
+              onConfigChange={() => onConfigChange(key)}
+              stepDisabled={!checkIfSampleIsEnabled(key)}
+              stepHadErrors={getStepHadErrors(key)}
+            />
+          )}
+        />
+      ),
+    },
+    {
+      key: 'spatialUmiOutlier',
+      name: getUserFriendlyQCStepName('spatialUmiOutlier'),
+      description: 'Spatial filter that removes cells whose total UMI count is a local outlier on the log scale, i.e. unusually low compared to their spatial neighborhood. Cells beyond the chosen z-score threshold are outlined in red on the tissue slide.',
+      multiSample: true,
+      render: (key) => (
+        <SingleComponentMultipleDataContainer
+          defaultActiveKey={sampleKeys}
+          inputsList={inputsList}
+          baseComponentRenderer={(sample) => (
+            <SpatialUmiOutlier
+              experimentId={experimentId}
+              filtering
+              key={key}
+              sampleId={sample.key}
+              sampleIds={sampleKeys}
+              onConfigChange={() => onConfigChange(key)}
+              stepDisabled={!checkIfSampleIsEnabled(key)}
+              stepHadErrors={getStepHadErrors(key)}
+            />
+          )}
+        />
+      ),
+    },
+    {
+      key: 'spatialNumGenesOutlier',
+      name: getUserFriendlyQCStepName('spatialNumGenesOutlier'),
+      description: 'Spatial filter that removes cells whose number of detected genes is a local outlier on the log scale, i.e. unusually low compared to their spatial neighborhood. Cells beyond the chosen z-score threshold are outlined in red on the tissue slide.',
+      multiSample: true,
+      render: (key) => (
+        <SingleComponentMultipleDataContainer
+          defaultActiveKey={sampleKeys}
+          inputsList={inputsList}
+          baseComponentRenderer={(sample) => (
+            <SpatialNumGenesOutlier
+              experimentId={experimentId}
+              filtering
+              key={key}
+              sampleId={sample.key}
+              sampleIds={sampleKeys}
+              onConfigChange={() => onConfigChange(key)}
+              stepDisabled={!checkIfSampleIsEnabled(key)}
+              stepHadErrors={getStepHadErrors(key)}
+            />
+          )}
+        />
+      ),
+    },
+    {
+      key: 'spatialMitoOutlier',
+      name: getUserFriendlyQCStepName('spatialMitoOutlier'),
+      description: 'Spatial filter that removes cells whose mitochondrial content is a local outlier, i.e. unusually high compared to their spatial neighborhood. Cells beyond the chosen z-score threshold are outlined in red on the tissue slide.',
+      multiSample: true,
+      render: (key) => (
+        <SingleComponentMultipleDataContainer
+          defaultActiveKey={sampleKeys}
+          inputsList={inputsList}
+          baseComponentRenderer={(sample) => (
+            <SpatialMitoOutlier
               experimentId={experimentId}
               filtering
               key={key}
@@ -334,6 +410,7 @@ const DataProcessingPage = ({ experimentId, experimentData }) => {
           key={key}
           onConfigChange={(settingType) => onConfigChange(settingType)}
           stepHadErrors={getStepHadErrors(key)}
+          isSpatial={isSpatial}
         />
       ),
     },
@@ -343,12 +420,16 @@ const DataProcessingPage = ({ experimentId, experimentData }) => {
   // the canonical representation
   console.assert(_.isEqual(qcSteps, allSteps.map((s) => s.key)));
 
-  // For spatial technologies, classifier and doubletScores are not applicable
-  // (cells are defined by segmentation; no ambient RNA removal or doublet detection needed)
-  const SPATIAL_HIDDEN_STEPS = ['classifier', 'doubletScores'];
-  const steps = isSpatial
-    ? allSteps.filter((s) => !SPATIAL_HIDDEN_STEPS.includes(s.key))
-    : allSteps;
+  // Spatial (Visium HD) datasets run a different set of filters: cells are defined
+  // by segmentation, so the single-cell filters are replaced by spatial local-outlier
+  // filters. Show only the filter set matching the dataset's technology.
+  const SPATIAL_ONLY_STEPS = ['spatialUmiOutlier', 'spatialNumGenesOutlier', 'spatialMitoOutlier'];
+  const SINGLE_CELL_ONLY_STEPS = ['classifier', 'cellSizeDistribution', 'mitochondrialContent', 'numGenesVsNumUmis', 'doubletScores'];
+  const steps = allSteps.filter((s) => {
+    if (SPATIAL_ONLY_STEPS.includes(s.key)) return isSpatial;
+    if (SINGLE_CELL_ONLY_STEPS.includes(s.key)) return !isSpatial;
+    return true; // dataIntegration & configureEmbedding always shown
+  });
 
   const currentStep = steps[stepIdx];
 
@@ -711,12 +792,12 @@ const DataProcessingPage = ({ experimentId, experimentData }) => {
                 </p>
                 {
                   !(changedQCFilters.size === 1 && changedQCFilters.has('embeddingSettings'))
-                && (
-                  <Alert
-                    message='Note that you will lose your previous Louvain or Leiden clusters.'
-                    type='warning'
-                  />
-                )
+                  && (
+                    <Alert
+                      message='Note that you will lose your previous Louvain or Leiden clusters.'
+                      type='warning'
+                    />
+                  )
                 }
               </Modal>
             )

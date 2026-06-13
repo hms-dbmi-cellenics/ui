@@ -1,6 +1,6 @@
 import { EXPERIMENT_SETTINGS_SAMPLE_FILTER_UPDATE, EXPERIMENT_SETTINGS_NON_SAMPLE_FILTER_UPDATE } from '../../../actionTypes/experimentSettings';
 
-const settingsWithSampleId = ['classifier', 'cellSizeDistribution', 'doubletScores', 'mitochondrialContent', 'numGenesVsNumUmis'];
+const settingsWithSampleId = ['classifier', 'cellSizeDistribution', 'doubletScores', 'mitochondrialContent', 'numGenesVsNumUmis', 'spatialUmiOutlier', 'spatialNumGenesOutlier', 'spatialMitoOutlier'];
 const settingsWithoutSampleId = ['dataIntegration', 'configureEmbedding', 'meta', 'defaultFilterSettings'];
 
 /**
