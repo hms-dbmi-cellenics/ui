@@ -39,11 +39,15 @@ const getMiniaturizedConfig = (config) => {
 
 const MiniPlot = (props) => {
   const {
-    plotUuid, plotFn, actions,
+    plotUuid, dataPlotUuid, plotFn, actions,
   } = props;
 
-  const { config, plotData } = useSelector(
+  const { config } = useSelector(
     (state) => state.componentConfig[plotUuid] || {},
+  );
+  // plotData may live under a different uuid than the config (see PlotLayout)
+  const { plotData } = useSelector(
+    (state) => state.componentConfig[dataPlotUuid || plotUuid] || {},
   );
 
   const renderPlot = () => {
@@ -66,8 +70,13 @@ const MiniPlot = (props) => {
 MiniPlot.propTypes = {
   experimentId: PropTypes.string.isRequired,
   plotUuid: PropTypes.string.isRequired,
+  dataPlotUuid: PropTypes.string,
   plotFn: PropTypes.func.isRequired,
   actions: PropTypes.bool.isRequired,
+};
+
+MiniPlot.defaultProps = {
+  dataPlotUuid: null,
 };
 
 export default React.memo(MiniPlot);

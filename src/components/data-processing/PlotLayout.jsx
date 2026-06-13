@@ -51,8 +51,12 @@ const PlotLayout = ({
     (state) => state.experimentSettings.processing[filterName][sampleId].filterSettings,
   );
 
+  // a plot may read its plotData from a different uuid than its config (e.g. the
+  // spatial outlier slide has its own config but reuses the metric slide's data)
   const selectedPlotData = useSelector(
-    (state) => state.componentConfig[plots[selectedPlot].plotUuid]?.plotData,
+    (state) => state.componentConfig[
+      plots[selectedPlot].dataPlotUuid || plots[selectedPlot].plotUuid
+    ]?.plotData,
   );
 
   const selectedConfig = useSelector(
@@ -115,11 +119,19 @@ const PlotLayout = ({
       // some filters have settings stored under filterSettings.methodSettings[method]
       // like the mitochondrial content one
       // so we need to check if the current filter is one of them
-      const expConfigSettings = filterSettings.method ? filterSettings.methodSettings[filterSettings.method] : filterSettings;
+      const expConfigSettings = filterSettings.method
+        ? filterSettings.methodSettings[filterSettings.method]
+        : filterSettings;
       _.merge(newConfig, expConfigSettings);
-      setPlot(plots[selectedPlot].plot(newConfig, selectedPlotData, allowedPlotActions));
+      // 4th arg: persist mouse zoom into this plot's own config (axesRanges)
+      setPlot(plots[selectedPlot].plot(
+        newConfig, selectedPlotData, allowedPlotActions,
+        (axesRanges) => updatePlotWithChanges({ axesRanges }),
+      ));
     }
-  }, [filterSettings, selectedConfig, selectedPlotData]);
+    // selectedPlot is a dep so switching between plots that share a plotUuid
+    // (e.g. the spatial metric vs outlier views) rebuilds with the new renderer
+  }, [filterSettings, selectedConfig, selectedPlotData, selectedPlot]);
 
   useEffect(() => {
     if (!selectedConfig || !plots[selectedPlot]) return;
@@ -155,6 +167,7 @@ const PlotLayout = ({
             <button
               type='button'
               key={key}
+              aria-label={`Select ${key} plot`}
               onClick={() => setSelectedPlot(key)}
               style={{
                 margin: 0,
@@ -165,12 +178,18 @@ const PlotLayout = ({
                 cursor: 'pointer',
               }}
             >
-              <MiniPlot
-                experimentId={experimentId}
-                plotUuid={plotObj.plotUuid}
-                plotFn={plotObj.plot}
-                actions={false}
-              />
+              {/* fixed-size, clipped wrapper so every preview tile is identical and
+                  doesn't grow when its plot renders (slide plots render taller than
+                  the histogram due to title/axis/padding overhead) */}
+              <div style={{ width: 92, height: 92, overflow: 'hidden' }}>
+                <MiniPlot
+                  experimentId={experimentId}
+                  plotUuid={plotObj.plotUuid}
+                  dataPlotUuid={plotObj.dataPlotUuid}
+                  plotFn={plotObj.plot}
+                  actions={false}
+                />
+              </div>
             </button>
           ))}
         </Space>
@@ -186,7 +205,9 @@ const PlotLayout = ({
             <Col flex='auto'>
               {renderPlot()}
             </Col>
-            <Col flex='1 0px'>
+            {/* fixed-width mini-plot column pinned to the right, so the preview tiles
+                don't shift left→right as the (initially empty) main plot/image fills in */}
+            <Col flex='0 0 120px'>
               {renderMiniPlots()}
             </Col>
           </Row>
