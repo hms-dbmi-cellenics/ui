@@ -351,6 +351,7 @@ const ContentWrapper = (props) => {
             pipelineType={currentStatusScreen.type}
             pipelineErrorMessage={currentStatusScreen?.message}
             completedSteps={currentStatusScreen?.completedSteps}
+            technology={selectedTechnology}
           />
         );
       }
@@ -472,7 +473,9 @@ const ContentWrapper = (props) => {
               <Menu
                 data-test-id={integrationTestConstants.ids.NAVIGATION_MENU}
                 theme='dark'
-                selectedKeys={menuLinks.filter(({ module }) => module === currentModule).map(({ module }) => module)}
+                selectedKeys={menuLinks
+                  .filter(({ module }) => module === currentModule)
+                  .map(({ module }) => module)}
                 mode='inline'
                 items={menuItems}
               />

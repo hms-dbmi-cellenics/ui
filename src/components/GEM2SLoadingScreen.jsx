@@ -20,12 +20,26 @@ const pipelineStepsInfoByType = {
     'Uploading completed data',
   ],
 
+  // Spatial (visium_hd) gem2s skips the EmptyDrops + DoubletScores steps, so it
+  // runs fewer steps than the single-cell pipeline — use a matching list so the
+  // progress bar reflects the real step count (otherwise it caps below 100%).
+  gem2sSpatial: [
+    'Downloading sample files',
+    'Preprocessing samples',
+    'Converting samples',
+    'Preparing analysis',
+    'Uploading completed data',
+  ],
+
   obj2s: [
     'Downloading project data',
     'Processing object',
     'Uploading completed data',
   ],
 };
+
+// technologies whose gem2s pipeline uses the spatial (shorter) step list
+const SPATIAL_TECHNOLOGIES = ['visium_hd'];
 
 const GEM2SLoadingScreen = (props) => {
   const {
@@ -35,9 +49,13 @@ const GEM2SLoadingScreen = (props) => {
     experimentName,
     pipelineType,
     pipelineErrorMessage,
+    technology,
   } = props;
 
-  const pipelineStepsInfo = pipelineStepsInfoByType[pipelineType];
+  const isSpatialGem2s = pipelineType === 'gem2s' && SPATIAL_TECHNOLOGIES.includes(technology);
+  const pipelineStepsInfo = isSpatialGem2s
+    ? pipelineStepsInfoByType.gem2sSpatial
+    : pipelineStepsInfoByType[pipelineType];
   const dispatch = useDispatch();
 
   const dataManagementPath = '/data-management';
@@ -117,8 +135,8 @@ const GEM2SLoadingScreen = (props) => {
             <br />
             <div>
               <Space direction='vertical' style={{ width: '100%' }}>
-                <Progress strokeWidth={10} type='line' percent={Math.floor((completedSteps.length / pipelineStepsInfo.length) * 100)} />
-                <Text type='secondary'>{(pipelineStepsInfo[completedSteps.length])}</Text>
+                <Progress strokeWidth={10} type='line' percent={Math.min(100, Math.floor((completedSteps.length / pipelineStepsInfo.length) * 100))} />
+                <Text type='secondary'>{(pipelineStepsInfo[Math.min(completedSteps.length, pipelineStepsInfo.length - 1)])}</Text>
               </Space>
             </div>
             <div>
@@ -134,7 +152,8 @@ const GEM2SLoadingScreen = (props) => {
               {pipelineStatus === 'subsetting' && (
                 <Text type='secondary'>
                   <br />
-                  Your new project containing only the selected cell sets will be available in the Data Management module
+                  Your new project containing only the selected cell sets will be available in
+                  the Data Management module
                 </Text>
               )}
             </div>
@@ -173,6 +192,7 @@ GEM2SLoadingScreen.propTypes = {
   experimentId: PropTypes.string,
   experimentName: PropTypes.string,
   pipelineErrorMessage: PropTypes.string,
+  technology: PropTypes.string,
 };
 
 GEM2SLoadingScreen.defaultProps = {
@@ -180,6 +200,7 @@ GEM2SLoadingScreen.defaultProps = {
   experimentId: null,
   experimentName: null,
   pipelineErrorMessage: null,
+  technology: null,
 };
 
 export default GEM2SLoadingScreen;
