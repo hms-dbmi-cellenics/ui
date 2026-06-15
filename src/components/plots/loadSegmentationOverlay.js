@@ -194,18 +194,66 @@ patchResourceLoader();
  *   reusing the buffer needs no explicit clear.
  * @returns {{ overlayUrl, overlayExtent } | null}
  */
-export const colorSegmentationOverlay = (decoded, cellColorMap, options = {}) => {
-  if (!decoded) return null;
-  const { opacity = 0.7, outline = false, canvas: reuseCanvas = null } = options;
+/**
+ * Pure pixel-painting for a decoded segmentation tile — writes RGBA into `px`
+ * (a Uint8ClampedArray sized innerW*innerH*4). Extracted from colorSegmentation
+ * Overlay so the colour/visibility/outline logic is unit-testable without a canvas.
+ *
+ * Cells absent from `cellColorMap` (background, or filtered out in a previous step)
+ * are left transparent, and outlines are drawn only for cells in the map — matching
+ * the Data Exploration segmentation layer (which discards un-coloured cells) rather
+ * than showing a default grey.
+ */
+/* eslint-disable no-param-reassign */ // writing RGBA into the caller's pixel buffer
+export const paintSegOverlayPixels = (px, decoded, cellColorMap, options = {}) => {
+  const { opacity = 0.7, outline = false } = options;
   const fillAlpha = Math.round(opacity * 255);
-  const {
-    flatData, regionW, regionH, extent,
-  } = decoded;
+  const { flatData, regionW, regionH } = decoded;
   // The decoded data may carry a 1px halo for edge-detection; render only the inner
   // tile area and sample the (possibly haloed) source via these offsets. Defaults
   // make this a no-op for un-haloed full-region decodes.
   const innerX = decoded.innerX ?? 0;
   const innerY = decoded.innerY ?? 0;
+  const innerW = decoded.innerW ?? regionW;
+  const innerH = decoded.innerH ?? regionH;
+
+  // ── Fill pass (over the inner tile, sampling the haloed source) ─────────────
+  for (let r = 0; r < innerH; r += 1) {
+    for (let c = 0; c < innerW; c += 1) {
+      const v = flatData[(r + innerY) * regionW + (c + innerX)];
+      const b = (r * innerW + c) * 4;
+      const color = v === 0 ? null : cellColorMap.get(v - 1); // bitmask is 1-indexed
+      if (color) {
+        [px[b], px[b + 1], px[b + 2]] = color;
+        // a 4th element overrides the global opacity for this cell
+        px[b + 3] = color.length >= 4 ? color[3] : fillAlpha;
+      } else {
+        px[b + 3] = 0; // background or filtered-out cell → hidden
+      }
+    }
+  }
+
+  // ── Outline pass — edge-detect in haloed coords so tile seams aren't drawn ───
+  if (outline) {
+    for (let r = 0; r < innerH; r += 1) {
+      for (let c = 0; c < innerW; c += 1) {
+        const hr = r + innerY;
+        const hc = c + innerX;
+        const v = flatData[hr * regionW + hc];
+        if (v !== 0 && cellColorMap.has(v - 1)
+          && isCellEdge(flatData, hr, hc, regionW, regionH, v)) {
+          px[(r * innerW + c) * 4 + 3] = 255;
+        }
+      }
+    }
+  }
+};
+/* eslint-enable no-param-reassign */
+
+export const colorSegmentationOverlay = (decoded, cellColorMap, options = {}) => {
+  if (!decoded) return null;
+  const { canvas: reuseCanvas = null } = options;
+  const { regionW, regionH, extent } = decoded;
   const innerW = decoded.innerW ?? regionW;
   const innerH = decoded.innerH ?? regionH;
 
@@ -221,44 +269,8 @@ export const colorSegmentationOverlay = (decoded, cellColorMap, options = {}) =>
     imgData = ctx.createImageData(innerW, innerH);
     imageDataCache.set(canvas, imgData);
   }
-  const px = imgData.data;
 
-  // ── Fill pass (over the inner tile, sampling the haloed source) ─────────────
-  for (let r = 0; r < innerH; r += 1) {
-    for (let c = 0; c < innerW; c += 1) {
-      const v = flatData[(r + innerY) * regionW + (c + innerX)];
-      const b = (r * innerW + c) * 4;
-      const color = v === 0 ? null : cellColorMap.get(v - 1); // bitmask is 1-indexed
-      if (color) {
-        [px[b], px[b + 1], px[b + 2]] = color;
-        // a 4th element overrides the global opacity for this cell
-        px[b + 3] = color.length >= 4 ? color[3] : fillAlpha;
-      } else {
-        // background, OR a cell not in the active colour scheme (e.g. filtered out in
-        // a previous QC step) → hidden, matching the Data Exploration segmentation
-        // layer (which discards cells with no colour assignment) rather than showing
-        // a default grey.
-        px[b + 3] = 0;
-      }
-    }
-  }
-
-  // ── Outline pass — edge-detect in haloed coords so tile seams aren't drawn ───
-  // Only outline cells that are in the active colour scheme, so filtered-out cells
-  // stay fully hidden (no stray grey/black outline) like in Data Exploration.
-  if (outline) {
-    for (let r = 0; r < innerH; r += 1) {
-      for (let c = 0; c < innerW; c += 1) {
-        const hr = r + innerY;
-        const hc = c + innerX;
-        const v = flatData[hr * regionW + hc];
-        if (v !== 0 && cellColorMap.has(v - 1)
-          && isCellEdge(flatData, hr, hc, regionW, regionH, v)) {
-          px[(r * innerW + c) * 4 + 3] = 255;
-        }
-      }
-    }
-  }
+  paintSegOverlayPixels(imgData.data, decoded, cellColorMap, options);
 
   ctx.putImageData(imgData, 0, 0);
 
