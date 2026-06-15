@@ -532,7 +532,7 @@ const embeddingPreviewMitochondrialContentInitialConfig = {
   fontStyle: fontStyleBaseState,
   colour: {
     ...colourBaseState,
-    gradient: 'spectral',
+    gradient: 'default',
   },
   marker: markerBaseState,
   labels: labelBaseState,
@@ -567,7 +567,8 @@ const embeddingPreviewDoubletScoreInitialConfig = {
   fontStyle: fontStyleBaseState,
   colour: {
     ...colourBaseState,
-    gradient: 'spectral',
+    // inferno; not reversed so high doublet score = bright.
+    gradient: 'inferno',
   },
   marker: markerBaseState,
   labels: labelBaseState,
@@ -600,7 +601,9 @@ const embeddingPreviewNumOfGenesInitialConfig = {
   fontStyle: fontStyleBaseState,
   colour: {
     ...colourBaseState,
-    gradient: 'spectral',
+    // inferno (matches spatial QC "Genes detected"); reversed so low genes = bright.
+    gradient: 'inferno',
+    reverseCbar: true,
   },
   marker: markerBaseState,
   labels: labelBaseState,
@@ -632,7 +635,9 @@ const embeddingPreviewNumOfUmisInitialConfig = {
   fontStyle: fontStyleBaseState,
   colour: {
     ...colourBaseState,
-    gradient: 'spectral',
+    // inferno (matches spatial QC "UMIs"); reversed so low UMIs = bright.
+    gradient: 'inferno',
+    reverseCbar: true,
   },
   marker: markerBaseState,
   labels: labelBaseState,
@@ -892,7 +897,7 @@ const doubletScoreHistogram = {
 // DATA PROCESSING - Spatial local-outlier filters (Visium HD)
 // Main plot: segmentations coloured by the metric (tissue image hidden by default
 // so the colouring reads clearly). `shownGene` is repurposed as the colour-legend
-// title (the metric name). Default gradient is 'default' (white↔red).
+// title (the metric name). Default gradient is 'inferno'.
 const makeSpatialOutlierPlotConfig = (legendTitle) => ({
   ...spatialFeatureInitialConfig,
   shownGene: legendTitle,

@@ -147,7 +147,7 @@ const ConfigureEmbedding = (props) => {
   const continuousEmbStylingControls = [
     {
       panelTitle: 'Colours',
-      controls: ['colourScheme', 'colourInversion'],
+      controls: ['colourScheme', 'colourInversion', 'colourReverse'],
     },
     {
       panelTitle: 'Markers',

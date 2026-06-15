@@ -84,7 +84,9 @@ const generateSpec = (config, method, plotData) => {
           count: 5,
         },
         domain: { data: 'plotData', field: 'value' },
-        reverse: config.colour.reverseCbar,
+        // spectral defaults to reversed; reverseCbar flips that (XOR). Mirrors the
+        // spatial QC feature spec so the gene/UMI-count embeddings match those plots.
+        reverse: (config.colour.gradient === 'spectral') !== Boolean(config.colour.reverseCbar),
       },
     ],
     axes: [
