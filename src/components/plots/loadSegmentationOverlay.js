@@ -228,31 +228,32 @@ export const colorSegmentationOverlay = (decoded, cellColorMap, options = {}) =>
     for (let c = 0; c < innerW; c += 1) {
       const v = flatData[(r + innerY) * regionW + (c + innerX)];
       const b = (r * innerW + c) * 4;
-      if (v === 0) {
-        px[b + 3] = 0; // background → transparent
+      const color = v === 0 ? null : cellColorMap.get(v - 1); // bitmask is 1-indexed
+      if (color) {
+        [px[b], px[b + 1], px[b + 2]] = color;
+        // a 4th element overrides the global opacity for this cell
+        px[b + 3] = color.length >= 4 ? color[3] : fillAlpha;
       } else {
-        const color = cellColorMap.get(v - 1); // bitmask is 1-indexed
-        if (color) {
-          [px[b], px[b + 1], px[b + 2]] = color;
-          // a 4th element overrides the global opacity for this cell
-          px[b + 3] = color.length >= 4 ? color[3] : fillAlpha;
-        } else {
-          // Cell in bitmask but not in active colour scheme → dimmer grey
-          px[b] = 128; px[b + 1] = 128; px[b + 2] = 128;
-          px[b + 3] = Math.round(fillAlpha * 0.5);
-        }
+        // background, OR a cell not in the active colour scheme (e.g. filtered out in
+        // a previous QC step) → hidden, matching the Data Exploration segmentation
+        // layer (which discards cells with no colour assignment) rather than showing
+        // a default grey.
+        px[b + 3] = 0;
       }
     }
   }
 
   // ── Outline pass — edge-detect in haloed coords so tile seams aren't drawn ───
+  // Only outline cells that are in the active colour scheme, so filtered-out cells
+  // stay fully hidden (no stray grey/black outline) like in Data Exploration.
   if (outline) {
     for (let r = 0; r < innerH; r += 1) {
       for (let c = 0; c < innerW; c += 1) {
         const hr = r + innerY;
         const hc = c + innerX;
         const v = flatData[hr * regionW + hc];
-        if (v !== 0 && isCellEdge(flatData, hr, hc, regionW, regionH, v)) {
+        if (v !== 0 && cellColorMap.has(v - 1)
+          && isCellEdge(flatData, hr, hc, regionW, regionH, v)) {
           px[(r * innerW + c) * 4 + 3] = 255;
         }
       }
