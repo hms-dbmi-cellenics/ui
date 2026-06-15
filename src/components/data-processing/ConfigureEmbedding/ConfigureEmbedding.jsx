@@ -40,6 +40,10 @@ const ConfigureEmbedding = (props) => {
   // which plotUuid the current `plot` element was built for, so we don't briefly
   // show the previous colouring's plot while switching (the build effect lags a render)
   const [renderedPlotUuid, setRenderedPlotUuid] = useState(null);
+  // per-plotUuid flag: the large-dataset marker default has been resolved (applied,
+  // or determined unnecessary). Gates rendering so the embedding never first paints
+  // with the standard point size/outline and then visibly re-adjusts.
+  const [markerSettled, setMarkerSettled] = useState({});
   const filterName = 'configureEmbedding';
   const plotTypes = ['embedding', 'violin'];
   const [plotType, setPlotType] = useState('embedding');
@@ -445,6 +449,34 @@ const ConfigureEmbedding = (props) => {
     }
   }, [activePlotUuid, currentPlot?.plotType, cellSets?.accessible, !!selectedConfig]);
 
+  // Mark a plot's marker defaults "settled" once they no longer need adjusting:
+  // either the dataset isn't large, or the large-dataset marker has already been
+  // applied (config no longer matches the standard defaults). One-time per plot —
+  // once settled it stays settled so the user can freely customise the marker.
+  useEffect(() => {
+    if (plotType !== 'embedding' || !selectedConfig || !cellSets.accessible
+      || !currentPlot.plotType || markerSettled[activePlotUuid]) return;
+
+    const initialConfig = getEmbeddingInitialConfig(currentPlot.plotType, cellSets);
+    if (!initialConfig.defaultValues?.largeDatasetDefaults) {
+      setMarkerSettled((prev) => ({ ...prev, [activePlotUuid]: true }));
+      return;
+    }
+
+    const standardConfig = initialPlotConfigStates[currentPlot.plotType];
+    const stillStandard = selectedConfig.marker.outline === standardConfig.marker.outline
+      && selectedConfig.marker.size === standardConfig.marker.size;
+    // already at the large-dataset target (covers the case where the standard
+    // defaults happen to equal it, so we don't wait forever)
+    const isAdjusted = selectedConfig.marker.outline === false && selectedConfig.marker.size === 1;
+    // still standard (and not yet adjusted) → the adjustment effect above will
+    // dispatch the change; this effect re-runs when the marker updates and settles
+    if (!stillStandard || isAdjusted) {
+      setMarkerSettled((prev) => ({ ...prev, [activePlotUuid]: true }));
+    }
+  }, [activePlotUuid, currentPlot?.plotType, cellSets.accessible,
+    selectedConfig?.marker, plotType, markerSettled]);
+
   useEffect(() => {
     // if we change a plot and the config is not saved yet
     if (outstandingChanges) {
@@ -595,9 +627,11 @@ const ConfigureEmbedding = (props) => {
       );
     }
 
-    // only show the plot once it's been (re)built for the current colouring/uuid —
-    // otherwise show a loader rather than the previous colouring's stale plot
-    if (plot && renderedPlotUuid === activePlotUuid) {
+    // only show the plot once it's been (re)built for the current colouring/uuid AND
+    // its large-dataset marker defaults have settled — otherwise show a loader rather
+    // than the previous colouring's stale plot or a flash of the un-adjusted marker
+    if (plot && renderedPlotUuid === activePlotUuid
+      && (plotType !== 'embedding' || markerSettled[activePlotUuid])) {
       return plot;
     }
 

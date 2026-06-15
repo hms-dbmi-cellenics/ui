@@ -42,6 +42,9 @@ const DataIntegration = (props) => {
 
   const [selectedPlot, setSelectedPlot] = useState(isUnisample ? 'elbow' : 'embedding');
   const [plot, setPlot] = useState(null);
+  // per-plotUuid flag: the large-dataset marker default has settled (applied or not
+  // needed). Gates rendering so the embedding never flashes the standard marker.
+  const [markerSettled, setMarkerSettled] = useState({});
   const [isResetDisabled, setIsResetDisabled] = useState(true);
 
   const filterName = 'dataIntegration';
@@ -328,6 +331,29 @@ const DataIntegration = (props) => {
     }
   }, [activePlotUuid, activePlotType, cellSets?.accessible, !!selectedConfig]);
 
+  // Mark the embedding plot's marker defaults "settled" once they no longer need
+  // adjusting (dataset not large, or the large-dataset marker already applied). Gates
+  // rendering so the standard marker is never shown first. One-time per plot.
+  useEffect(() => {
+    if (activePlotType !== 'dataIntegrationEmbedding' || !selectedConfig
+      || !cellSets.accessible || activePlotBlocked || markerSettled[activePlotUuid]) return;
+
+    const initialConfig = getEmbeddingInitialConfig(activePlotType, cellSets);
+    if (!initialConfig.defaultValues?.largeDatasetDefaults) {
+      setMarkerSettled((prev) => ({ ...prev, [activePlotUuid]: true }));
+      return;
+    }
+
+    const standardConfig = initialPlotConfigStates[activePlotType];
+    const stillStandard = selectedConfig.marker.outline === standardConfig.marker.outline
+      && selectedConfig.marker.size === standardConfig.marker.size;
+    const isAdjusted = selectedConfig.marker.outline === false && selectedConfig.marker.size === 1;
+    if (!stillStandard || isAdjusted) {
+      setMarkerSettled((prev) => ({ ...prev, [activePlotUuid]: true }));
+    }
+  }, [activePlotUuid, activePlotType, cellSets.accessible,
+    selectedConfig?.marker, activePlotBlocked, markerSettled]);
+
   useEffect(() => {
     Object.values(plots).forEach((obj) => {
       if (!plotConfigs[obj.plotUuid]) {
@@ -377,9 +403,17 @@ const DataIntegration = (props) => {
       );
     }
 
-    if (plot) {
+    // hold the loader until the large-dataset marker defaults have settled, so the
+    // embedding doesn't flash the standard point size/outline then re-adjust
+    if (plot && (activePlotType !== 'dataIntegrationEmbedding' || markerSettled[activePlotUuid])) {
       return plot;
     }
+
+    return (
+      <center>
+        <EmptyPlot mini={false} style={{ width: 400, height: 400 }} />
+      </center>
+    );
   };
   const radioStyle = {
     display: 'block',
