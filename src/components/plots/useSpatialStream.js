@@ -1,7 +1,6 @@
 import {
-  useState, useEffect, useMemo, useRef, useCallback,
+  useState, useEffect, useRef, useCallback,
 } from 'react';
-import _ from 'lodash';
 
 import { openOmePyramid, pickLevel, tilesForViewport } from './zarrPyramid';
 import { colorSegmentationOverlay, releaseOverlay } from './loadSegmentationOverlay';
@@ -105,6 +104,14 @@ const useSpatialStream = ({
   const knownSegRef = useRef(new Map());
   const segOverlaysRef = useRef(new Map());
 
+  // keys of the tiles currently wanted (this viewport), read by the scheduler's
+  // isWanted() so it drops requests for tiles we've since zoomed/panned past
+  const wantedTissueKeysRef = useRef(new Set());
+  const wantedSegKeysRef = useRef(new Set());
+  // rAF handles coalescing eager stream/publish to at most once per frame
+  const rafStreamRef = useRef(0);
+  const rafPublishRef = useRef(0);
+
   // ── Colour one decoded seg tile into a per-instance canvas (cached by colorKey) ─
   const colorSegTile = useCallback((key, tile, decoded) => {
     const cmap = colorMapRef.current;
@@ -180,21 +187,33 @@ const useSpatialStream = ({
     }
   }, [segFor]);
 
+  // rAF-coalesced publish: many tiles can arrive in one frame, but the Vega data is
+  // rebuilt + setState at most once per frame.
+  const schedulePublish = useCallback(() => {
+    if (typeof requestAnimationFrame === 'undefined') { publish(); return; }
+    if (rafPublishRef.current) return;
+    rafPublishRef.current = requestAnimationFrame(() => {
+      rafPublishRef.current = 0;
+      publish();
+    });
+  }, [publish]);
+
   // ── Request the tiles needed for the current viewport; recolour on demand ────
-  const streamRef = useRef(null);
-  const stream = useMemo(() => _.throttle(() => {
+  const streamCore = useCallback(() => {
     const vp = viewportRef.current;
     const dims = dimsRef.current;
     if (!vp || !dims) return;
     const { plotWidth: ow, plotHeight: oh } = plotDimsRef.current;
     const reqViewport = { ...vp, outputWidth: ow, outputHeight: oh };
 
-    // collect the tiles we want loaded this pass: target + coarsest, per layer
+    // tiles to load this pass: target level (priority 1) + coarsest fallback (0)
     const tilesToLoad = (p) => {
       const tl = levelFor(p, reqViewport);
       const coarsest = p.levels.length - 1;
-      const tiles = tilesAt(p, tl, vp);
-      return coarsest !== tl ? [...tiles, ...tilesAt(p, coarsest, vp)] : tiles;
+      const target = tilesAt(p, tl, vp).map((tile) => ({ tile, priority: 1 }));
+      if (coarsest === tl) return target;
+      const fallback = tilesAt(p, coarsest, vp).map((tile) => ({ tile, priority: 0 }));
+      return [...target, ...fallback];
     };
 
     const histP = histFor();
@@ -202,41 +221,52 @@ const useSpatialStream = ({
     const segP = segFor();
     const wantSeg = segP ? tilesToLoad(segP) : [];
 
+    // expose the live "wanted" sets so the scheduler can drop requests for tiles we
+    // zoom/pan past before they start decoding
+    wantedTissueKeysRef.current = new Set(wantTissue.map(({ tile }) => keyOf(tile)));
+    wantedSegKeysRef.current = new Set(wantSeg.map(({ tile }) => keyOf(tile)));
+
     const myKey = sampleKeyRef.current;
 
-    // Tissue: load missing canvases (shared cache)
-    wantTissue.forEach((tile) => {
+    // Tissue: load missing canvases (shared cache, scheduler-gated)
+    wantTissue.forEach(({ tile, priority }) => {
       const k = keyOf(tile);
       if (knownTissueRef.current.has(k)) return;
       knownTissueRef.current.set(k, { tile, url: null }); // reserve
-      loadTissueTile(histP, myKey, tile).then((res) => {
+      loadTissueTile(histP, myKey, tile, {
+        priority,
+        isWanted: () => sampleKeyRef.current === myKey && wantedTissueKeysRef.current.has(k),
+      }).then((res) => {
         if (sampleKeyRef.current !== myKey || !res) {
-          if (!res) knownTissueRef.current.delete(k);
+          if (!res) knownTissueRef.current.delete(k); // skipped/failed → re-requestable
           return;
         }
         knownTissueRef.current.set(k, { tile, url: res.url });
-        publish();
+        schedulePublish();
       });
     });
 
-    // Seg: load missing decoded labels, then colour into per-instance canvas
-    wantSeg.forEach((tile) => {
+    // Seg: load missing decoded labels, then colour into a per-instance canvas
+    wantSeg.forEach(({ tile, priority }) => {
       const k = keyOf(tile);
       const cached = knownSegRef.current.get(k);
       if (cached?.decoded) {
-        if (colorSegTile(k, tile, cached.decoded)) publish();
+        if (colorSegTile(k, tile, cached.decoded)) schedulePublish();
         return;
       }
       if (cached) return; // already in flight
       knownSegRef.current.set(k, { tile, decoded: null });
-      loadSegTile(segP, myKey, tile).then((decoded) => {
+      loadSegTile(segP, myKey, tile, {
+        priority,
+        isWanted: () => sampleKeyRef.current === myKey && wantedSegKeysRef.current.has(k),
+      }).then((decoded) => {
         if (sampleKeyRef.current !== myKey || !decoded) {
           if (!decoded) knownSegRef.current.delete(k);
           return;
         }
         knownSegRef.current.set(k, { tile, decoded });
         colorSegTile(k, tile, decoded);
-        publish();
+        schedulePublish();
       });
     });
 
@@ -267,16 +297,26 @@ const useSpatialStream = ({
       }
     });
 
-    publish();
-  }, 80, { leading: true, trailing: true }), [colorSegTile, publish, histFor, segFor]);
-  streamRef.current = stream;
+    schedulePublish();
+  }, [colorSegTile, schedulePublish, histFor, segFor]);
+
+  // eager, frame-coalesced: recompute + request at most once per animation frame
+  // (like viv's per-frame tile selection), with no fixed debounce delay
+  const scheduleStream = useCallback(() => {
+    if (typeof requestAnimationFrame === 'undefined') { streamCore(); return; }
+    if (rafStreamRef.current) return;
+    rafStreamRef.current = requestAnimationFrame(() => {
+      rafStreamRef.current = 0;
+      streamCore();
+    });
+  }, [streamCore]);
 
   const onViewportChange = useCallback((xdom, ydom) => {
     viewportRef.current = {
       xMin: xdom[0], xMax: xdom[1], yMin: ydom[0], yMax: ydom[1],
     };
-    stream();
-  }, [stream]);
+    scheduleStream();
+  }, [scheduleStream]);
 
   // ── Reset all per-instance tiles when the slide changes ─────────────────────
   // Also drop the pyramid refs: they're re-set asynchronously by the open effects
@@ -310,10 +350,10 @@ const useSpatialStream = ({
           xMin: 0, xMax: p.fullW, yMin: 0, yMax: p.fullH,
         };
       }
-      stream();
+      scheduleStream();
     });
     return () => { cancelled = true; };
-  }, [omeZarrUrl, stream]);
+  }, [omeZarrUrl, scheduleStream]);
 
   // ── Open segmentation pyramid ───────────────────────────────────────────────
   useEffect(() => {
@@ -334,15 +374,15 @@ const useSpatialStream = ({
         };
       }
       forceTick((n) => n + 1);
-      stream();
+      scheduleStream();
     });
     return () => { cancelled = true; };
-  }, [segmentationUrl, stream]);
+  }, [segmentationUrl, scheduleStream]);
 
   // ── Re-stream when colour / opacity / outline / plot size changes ────────────
   useEffect(() => {
-    stream();
-  }, [colorKey, opacity, outline, plotWidth, plotHeight, showImage, stream]);
+    scheduleStream();
+  }, [colorKey, opacity, outline, plotWidth, plotHeight, showImage, scheduleStream]);
 
   // ── Seed from the shared cache on mount for a no-flash remount ───────────────
   useEffect(() => {
@@ -367,13 +407,16 @@ const useSpatialStream = ({
         }
       });
     }
-    publish();
+    schedulePublish();
     // run once the pyramids/dims are first available
-  }, [imageDims, sampleKey, showImage, colorSegTile, publish, histFor, segFor]);
+  }, [imageDims, sampleKey, showImage, colorSegTile, schedulePublish, histFor, segFor]);
 
   // ── Cleanup on unmount ──────────────────────────────────────────────────────
   useEffect(() => () => {
-    if (streamRef.current) streamRef.current.cancel();
+    if (typeof cancelAnimationFrame !== 'undefined') {
+      if (rafStreamRef.current) cancelAnimationFrame(rafStreamRef.current);
+      if (rafPublishRef.current) cancelAnimationFrame(rafPublishRef.current);
+    }
     segOverlaysRef.current.forEach((e) => releaseOverlay(e.overlayUrl));
     // tissue tile canvases are owned by the shared cache (LRU) — not released here
   }, []);
