@@ -30,6 +30,9 @@ const SpatialFeatureReduxWrapper = (props) => {
         experimentId, [config?.shownGene], plotUuid,
       ))}
       onZoomChange={(axesRanges) => dispatch(updatePlotConfig(plotUuid, { axesRanges }))}
+      onSampleDefault={(selectedSample) => dispatch(
+        updatePlotConfig(plotUuid, { selectedSample }),
+      )}
     />
   );
 };

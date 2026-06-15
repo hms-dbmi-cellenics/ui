@@ -70,6 +70,59 @@ export const decodeSegmentationRegion = async (pyramid, viewport) => {
   }
 };
 
+/**
+ * Read one segmentation-label tile at an EXPLICIT level/pixel window (from
+ * tilesForViewport) — used by the viewport tile streamer. Coarser levels are
+ * nearest-neighbour label downsamples, so cell IDs are preserved at every level.
+ *
+ * A 1px HALO is read around the tile (clamped at the image edge) so outline
+ * edge-detection has the true neighbours across tile boundaries — otherwise every
+ * tile seam would be drawn as a fake cell outline. Only the inner tile area is
+ * rendered (see colorSegmentationOverlay's inner* offsets).
+ *
+ * @param {object} pyramid  result of openOmePyramid (segmentation zarr)
+ * @param {object} tile     { level, x0, x1, y0, y1, extent } from tilesForViewport
+ * @returns {{ flatData, regionW, regionH, innerX, innerY, innerW, innerH, extent } | null}
+ */
+export const readSegTile = async (pyramid, tile) => {
+  try {
+    const { levels } = pyramid;
+    const {
+      level, x0, x1, y0, y1, extent,
+    } = tile;
+    const { arr, shape } = levels[level];
+    const ndim = shape.length;
+    const lw = shape[ndim - 1];
+    const lh = shape[ndim - 2];
+
+    const hx0 = Math.max(0, x0 - 1);
+    const hx1 = Math.min(lw, x1 + 1);
+    const hy0 = Math.max(0, y0 - 1);
+    const hy1 = Math.min(lh, y1 + 1);
+
+    const selection = shape.map((_, dimIdx) => {
+      if (dimIdx === ndim - 2) return slice(hy0, hy1);
+      if (dimIdx === ndim - 1) return slice(hx0, hx1);
+      return 0;
+    });
+    const ndArray = await get(arr, selection);
+
+    return {
+      flatData: ndArray.data,
+      regionW: hx1 - hx0, // haloed dims
+      regionH: hy1 - hy0,
+      innerX: x0 - hx0, // inner tile offset within the halo (0 or 1)
+      innerY: y0 - hy0,
+      innerW: x1 - x0, // rendered tile dims
+      innerH: y1 - y0,
+      extent,
+    };
+  } catch (e) {
+    console.error('[readSegTile]', e);
+    return null;
+  }
+};
+
 // ── Drawable registry ──────────────────────────────────────────────────────
 // Registry of drawables (canvas / image) addressed by a synthetic `seg-overlay://`
 // URL, so Vega can paint them directly — see patchResourceLoader. Used for BOTH the
@@ -148,49 +201,59 @@ export const colorSegmentationOverlay = (decoded, cellColorMap, options = {}) =>
   const {
     flatData, regionW, regionH, extent,
   } = decoded;
+  // The decoded data may carry a 1px halo for edge-detection; render only the inner
+  // tile area and sample the (possibly haloed) source via these offsets. Defaults
+  // make this a no-op for un-haloed full-region decodes.
+  const innerX = decoded.innerX ?? 0;
+  const innerY = decoded.innerY ?? 0;
+  const innerW = decoded.innerW ?? regionW;
+  const innerH = decoded.innerH ?? regionH;
 
   const canvas = reuseCanvas || document.createElement('canvas');
-  if (canvas.width !== regionW) canvas.width = regionW;
-  if (canvas.height !== regionH) canvas.height = regionH;
+  if (canvas.width !== innerW) canvas.width = innerW;
+  if (canvas.height !== innerH) canvas.height = innerH;
   const ctx = canvas.getContext('2d');
 
   // reuse one ImageData buffer per canvas — re-allocating it each recolour churns
   // the GC during long slider drags
   let imgData = imageDataCache.get(canvas);
-  if (!imgData || imgData.width !== regionW || imgData.height !== regionH) {
-    imgData = ctx.createImageData(regionW, regionH);
+  if (!imgData || imgData.width !== innerW || imgData.height !== innerH) {
+    imgData = ctx.createImageData(innerW, innerH);
     imageDataCache.set(canvas, imgData);
   }
   const px = imgData.data;
 
-  // ── Fill pass ─────────────────────────────────────────────────────────────
-  for (let i = 0; i < flatData.length; i += 1) {
-    const v = flatData[i];
-    const b = i * 4;
-    if (v === 0) {
-      px[b + 3] = 0; // background → transparent
-    } else {
-      const color = cellColorMap.get(v - 1); // bitmask is 1-indexed
-      if (color) {
-        [px[b], px[b + 1], px[b + 2]] = color;
-        // a 4th element overrides the global opacity for this cell
-        px[b + 3] = color.length >= 4 ? color[3] : fillAlpha;
+  // ── Fill pass (over the inner tile, sampling the haloed source) ─────────────
+  for (let r = 0; r < innerH; r += 1) {
+    for (let c = 0; c < innerW; c += 1) {
+      const v = flatData[(r + innerY) * regionW + (c + innerX)];
+      const b = (r * innerW + c) * 4;
+      if (v === 0) {
+        px[b + 3] = 0; // background → transparent
       } else {
-        // Cell in bitmask but not in active colour scheme → dimmer grey
-        px[b] = 128; px[b + 1] = 128; px[b + 2] = 128;
-        px[b + 3] = Math.round(fillAlpha * 0.5);
+        const color = cellColorMap.get(v - 1); // bitmask is 1-indexed
+        if (color) {
+          [px[b], px[b + 1], px[b + 2]] = color;
+          // a 4th element overrides the global opacity for this cell
+          px[b + 3] = color.length >= 4 ? color[3] : fillAlpha;
+        } else {
+          // Cell in bitmask but not in active colour scheme → dimmer grey
+          px[b] = 128; px[b + 1] = 128; px[b + 2] = 128;
+          px[b + 3] = Math.round(fillAlpha * 0.5);
+        }
       }
     }
   }
 
-  // ── Outline pass (4-connected edge detection) ──────────────────────────────
+  // ── Outline pass — edge-detect in haloed coords so tile seams aren't drawn ───
   if (outline) {
-    for (let row = 0; row < regionH; row += 1) {
-      for (let col = 0; col < regionW; col += 1) {
-        const flatIdx = row * regionW + col;
-        const v = flatData[flatIdx];
-        if (v !== 0 && isCellEdge(flatData, row, col, regionW, regionH, v)) {
-          px[flatIdx * 4 + 3] = 255;
+    for (let r = 0; r < innerH; r += 1) {
+      for (let c = 0; c < innerW; c += 1) {
+        const hr = r + innerY;
+        const hc = c + innerX;
+        const v = flatData[hr * regionW + hc];
+        if (v !== 0 && isCellEdge(flatData, hr, hc, regionW, regionH, v)) {
+          px[(r * innerW + c) * 4 + 3] = 255;
         }
       }
     }

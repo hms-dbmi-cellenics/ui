@@ -1,81 +1,93 @@
-import { openOmePyramid, renderImageTile } from './getImageUrls';
-import { decodeSegmentationRegion } from './loadSegmentationOverlay';
+import { readImageTile } from './getImageUrls';
+import { readSegTile, releaseOverlay } from './loadSegmentationOverlay';
 
-// Shared, in-memory caches for the BASE (full-extent overview) spatial layers.
-// Keyed by a stable experiment+sample key (NOT the signed URL, which changes per
-// request) so the overview histology tile and segmentation labels are
-// fetched/decoded once and reused across every spatial plot (Plots & Tables + Data
-// Processing) and across remounts.
+// Cross-instance caches of streamed spatial TILES, keyed by a stable
+// experiment+sample key + pyramid coordinates (level/tx/ty) — NOT the signed URL,
+// which changes per request. So a tile fetched/decoded once is reused across every
+// spatial plot and across remounts (no redraw, no flash). Tissue tiles cache the
+// rendered canvas (shared, read-only); segmentation tiles cache the decoded labels
+// (the per-cell colouring is applied per-plot by useSpatialStream).
 //
-// The base layer is the lowest-resolution full-slide tile/labels — small and fast —
-// always shown so zooming out never blanks. Finer DETAIL tiles for the current
-// viewport are fetched on demand by useSpatialStream (not cached here; they're
-// transient and cheap to refetch from the per-URL pyramid open).
+// Both caches are LRU-capped by tile count; the visible set at any zoom is small
+// (tens of tiles), so the cap mostly bounds history, not the working set.
+const TILE_CACHE_MAX = 256;
 
-// Target pixel size for the base/overview tile (long side). Fixed (not the plot's
-// display size) so one base entry is shared across every plot of a sample
-// regardless of how large each renders it, and stays crisp when zoomed fully out.
-export const BASE_OUTPUT = 1024;
+const tileKey = (sampleKey, tile) => `${sampleKey}:${tile.level}:${tile.tx}:${tile.ty}`;
 
-const imageCache = new Map();
-const bitmaskCache = new Map();
+// in-flight promise dedup + resolved map for synchronous peek
+const tissuePromises = new Map();
+const tissueResolved = new Map();
+const segPromises = new Map();
+const segResolved = new Map();
 
-// Synchronously-readable caches of the RESOLVED base layers, so a remounting plot
-// (e.g. switching Data Processing steps) can initialise immediately from cache
-// instead of waiting on the signed-URL fetch → decode chain and flashing a redraw.
-const imageResolvedCache = new Map();
-const bitmaskResolvedCache = new Map();
-
-export const peekBaseImage = (cacheKey) => imageResolvedCache.get(cacheKey) || null;
-export const peekBaseSegmentation = (cacheKey) => bitmaskResolvedCache.get(cacheKey) || null;
-
-/**
- * Base (overview) histology tile for a sample, cached by key.
- * @returns {Promise<{ imageUrl, imageWidth, imageHeight, imageExtent, level } | null>}
- */
-export const loadBaseImage = (omeZarrUrl, cacheKey) => {
-  if (!imageCache.has(cacheKey)) {
-    const promise = (async () => {
-      const pyramid = await openOmePyramid(omeZarrUrl);
-      // full extent at the base output size → resolvePyramidRegion picks the
-      // coarsest level that still meets BASE_OUTPUT across the whole slide
-      return renderImageTile(pyramid, {
-        xMin: 0,
-        xMax: pyramid.fullW,
-        yMin: 0,
-        yMax: pyramid.fullH,
-        outputWidth: BASE_OUTPUT,
-        outputHeight: BASE_OUTPUT,
-      });
-    })();
-    promise.catch(() => imageCache.delete(cacheKey));
-    promise.then((value) => { if (value) imageResolvedCache.set(cacheKey, value); });
-    imageCache.set(cacheKey, promise);
+const touch = (map, key) => {
+  // refresh LRU position
+  if (map.has(key)) {
+    const v = map.get(key);
+    map.delete(key);
+    map.set(key, v);
   }
-  return imageCache.get(cacheKey);
+};
+
+const evict = (resolved, promises, releaseFn) => {
+  while (resolved.size > TILE_CACHE_MAX) {
+    const oldest = resolved.keys().next().value;
+    const entry = resolved.get(oldest);
+    resolved.delete(oldest);
+    promises.delete(oldest);
+    if (releaseFn && entry) releaseFn(entry);
+  }
+};
+
+export const peekTissueTile = (sampleKey, tile) => {
+  const key = tileKey(sampleKey, tile);
+  if (!tissueResolved.has(key)) return null;
+  touch(tissueResolved, key);
+  return tissueResolved.get(key);
+};
+
+export const peekSegTile = (sampleKey, tile) => {
+  const key = tileKey(sampleKey, tile);
+  if (!segResolved.has(key)) return null;
+  touch(segResolved, key);
+  return segResolved.get(key);
 };
 
 /**
- * Base (overview) segmentation labels for a sample, cached by key. The (cheap)
- * per-view colouring is applied separately via colorSegmentationOverlay.
- * @returns {Promise<{ flatData, regionW, regionH, extent, level } | null>}
+ * Rendered histology tile { url, extent } for one pyramid tile, cached by key.
+ * @returns {Promise<{ url, extent } | null>}
  */
-export const loadBaseSegmentation = (omeZarrUrl, cacheKey) => {
-  if (!bitmaskCache.has(cacheKey)) {
-    const promise = (async () => {
-      const pyramid = await openOmePyramid(omeZarrUrl);
-      return decodeSegmentationRegion(pyramid, {
-        xMin: 0,
-        xMax: pyramid.fullW,
-        yMin: 0,
-        yMax: pyramid.fullH,
-        outputWidth: BASE_OUTPUT,
-        outputHeight: BASE_OUTPUT,
-      });
-    })();
-    promise.catch(() => bitmaskCache.delete(cacheKey));
-    promise.then((value) => { if (value) bitmaskResolvedCache.set(cacheKey, value); });
-    bitmaskCache.set(cacheKey, promise);
+export const loadTissueTile = (pyramid, sampleKey, tile) => {
+  const key = tileKey(sampleKey, tile);
+  if (!tissuePromises.has(key)) {
+    const promise = readImageTile(pyramid, tile);
+    promise.catch(() => tissuePromises.delete(key));
+    promise.then((value) => {
+      if (!value) { tissuePromises.delete(key); return; }
+      tissueResolved.set(key, value);
+      evict(tissueResolved, tissuePromises, (e) => releaseOverlay(e.url));
+    });
+    tissuePromises.set(key, promise);
   }
-  return bitmaskCache.get(cacheKey);
+  return tissuePromises.get(key);
+};
+
+/**
+ * Decoded segmentation-label tile { flatData, regionW, regionH, extent } for one
+ * pyramid tile, cached by key. Colouring is applied per-plot.
+ * @returns {Promise<{ flatData, regionW, regionH, extent } | null>}
+ */
+export const loadSegTile = (pyramid, sampleKey, tile) => {
+  const key = tileKey(sampleKey, tile);
+  if (!segPromises.has(key)) {
+    const promise = readSegTile(pyramid, tile);
+    promise.catch(() => segPromises.delete(key));
+    promise.then((value) => {
+      if (!value) { segPromises.delete(key); return; }
+      segResolved.set(key, value);
+      evict(segResolved, segPromises, null);
+    });
+    segPromises.set(key, promise);
+  }
+  return segPromises.get(key);
 };

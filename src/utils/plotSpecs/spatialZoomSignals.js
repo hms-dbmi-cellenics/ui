@@ -20,7 +20,22 @@ const clampWin = (lo, hi, dom) => {
   return `[${start}, ${start} + ${sp}]`;
 };
 
-const spatialZoomSignals = (initXdom, initYdom, boundsX, boundsY) => {
+const spatialZoomSignals = (initXdom, initYdom, boundsX, boundsY, interactive = true) => {
+  // Non-interactive (mini previews): static domains with no wheel/drag handlers, so
+  // the thumbnail never zooms or pans. A no-op `domUpdates` signal is kept so the
+  // component's signalListener still attaches without "unrecognized signal" errors.
+  if (!interactive) {
+    return [
+      { name: 'boundsX', value: boundsX },
+      { name: 'boundsY', value: boundsY },
+      { name: 'initXdom', value: initXdom },
+      { name: 'initYdom', value: initYdom },
+      { name: 'xdom', value: initXdom },
+      { name: 'ydom', value: initYdom },
+      { name: 'domUpdates' },
+    ];
+  }
+
   const xPanLo = 'xcur[0] + span(xcur) * delta[0] / width';
   const xPanHi = 'xcur[1] + span(xcur) * delta[0] / width';
   const yPanLo = 'ycur[0] + span(ycur) * delta[1] / height';

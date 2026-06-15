@@ -15,6 +15,7 @@ import { getCellSets } from 'redux/selectors';
 import { generateSpec, generateData, filterCells } from 'utils/plotSpecs/generateSpatialFeatureSpec';
 import { getSampleFileUrls } from 'utils/data-management/downloadSampleFile';
 import useSpatialStream from './useSpatialStream';
+import usePreventWheelScroll from './usePreventWheelScroll';
 import PlatformError from '../PlatformError';
 import Loader from '../Loader';
 
@@ -88,9 +89,12 @@ const SpatialFeaturePlot = (props) => {
     error,
     reloadPlotData,
     onZoomChange,
+    onSampleDefault,
   } = props;
 
   const dispatch = useDispatch();
+  const onSampleDefaultRef = useRef(onSampleDefault);
+  onSampleDefaultRef.current = onSampleDefault;
 
   const {
     data: embeddingData,
@@ -162,10 +166,19 @@ const SpatialFeaturePlot = (props) => {
   }, [sampleIdsForFileUrls, experimentId, isObj2s]);
 
   // ── Default selected sample ─────────────────────────────────────────────────
+  // When the config has no sample yet, default to the first one AND persist it back
+  // to the config, so the "Selected sample" dropdown reflects what's actually shown
+  // (its own fallback uses a different ordering and would otherwise mismatch).
   useEffect(() => {
     if (!omeZarrUrls || !config) return;
-    const sampleId = config.selectedSample || omeZarrUrls[0]?.sampleId;
-    setSelectedSample(sampleId);
+    if (config.selectedSample) {
+      setSelectedSample(config.selectedSample);
+    } else {
+      const def = omeZarrUrls[0]?.sampleId;
+      if (!def) return;
+      setSelectedSample(def);
+      onSampleDefaultRef.current(def);
+    }
   }, [config, omeZarrUrls]);
 
   // ── Colour signature ────────────────────────────────────────────────────────
@@ -268,6 +281,7 @@ const SpatialFeaturePlot = (props) => {
   const axesRangesRef = useRef(config?.axesRanges);
   axesRangesRef.current = config?.axesRanges;
   const isMiniPlot = config?.miniPlot;
+  const wheelRef = usePreventWheelScroll(!isMiniPlot);
   const restoreZoom = useCallback((view) => {
     if (isMiniPlot) return;
     const ar = axesRangesRef.current;
@@ -385,13 +399,15 @@ const SpatialFeaturePlot = (props) => {
 
     return (
       <center>
-        <Vega
-          spec={plotSpec}
-          data={vegaData}
-          actions={actions}
-          signalListeners={{ domUpdates: onZoomDomUpdate }}
-          onNewView={restoreZoom}
-        />
+        <div ref={wheelRef}>
+          <Vega
+            spec={plotSpec}
+            data={vegaData}
+            actions={actions}
+            signalListeners={{ domUpdates: onZoomDomUpdate }}
+            onNewView={restoreZoom}
+          />
+        </div>
       </center>
     );
   };
@@ -406,6 +422,7 @@ SpatialFeaturePlot.defaultProps = {
   truncatedPlotData: null,
   actions: true,
   onZoomChange: () => { },
+  onSampleDefault: () => { },
 };
 
 SpatialFeaturePlot.propTypes = {
@@ -418,6 +435,7 @@ SpatialFeaturePlot.propTypes = {
   error: PropTypes.bool.isRequired,
   reloadPlotData: PropTypes.func,
   onZoomChange: PropTypes.func,
+  onSampleDefault: PropTypes.func,
 };
 
 export default SpatialFeaturePlot;

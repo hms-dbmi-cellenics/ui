@@ -69,26 +69,28 @@ const generateSpec = (
 
   const marks = [];
 
-  // 1. Tissue image — data-driven (tiles supplied via the `data` prop). The dataset
-  // holds a coarse full-extent base tile plus, when zoomed in, a finer viewport tile
-  // on top (see useSpatialStream). Each datum positions itself from its own extent,
-  // so streaming sharper tiles in is an in-place data update — never a view rebuild.
+  // Tile image marks (tissue + segmentation) share this encoding. Edges are SNAPPED
+  // to integer device pixels with round() so adjacent tiles share the exact same edge
+  // pixel — no sub-pixel blank seam between tiles, and no overlap either.
+  const tileEncode = {
+    url: { field: 'url' },
+    x: { signal: 'round(scale("x", datum.x1))' },
+    y: { signal: 'round(scale("y", datum.y2))' },
+    width: { signal: 'round(scale("x", datum.x2)) - round(scale("x", datum.x1))' },
+    height: { signal: 'round(scale("y", datum.y1)) - round(scale("y", datum.y2))' },
+    aspect: { value: false },
+    opacity: { value: 1 },
+  };
+
+  // 1. Tissue image — data-driven (tiles supplied via the `data` prop). Each datum
+  // positions itself from its own extent, so streaming sharper tiles in is an
+  // in-place data update — never a view rebuild.
   if (config.showImage) {
     marks.push({
       type: 'image',
       clip: true,
       from: { data: 'tissueImageData' },
-      encode: {
-        update: {
-          url: { field: 'url' },
-          x: { signal: 'scale("x", datum.x1)' },
-          y: { signal: 'scale("y", datum.y2)' },
-          width: { signal: 'scale("x", datum.x2) - scale("x", datum.x1)' },
-          height: { signal: 'scale("y", datum.y1) - scale("y", datum.y2)' },
-          aspect: { value: false },
-          opacity: { value: 1 },
-        },
-      },
+      encode: { update: tileEncode },
     });
   }
 
@@ -99,17 +101,7 @@ const generateSpec = (
       type: 'image',
       clip: true,
       from: { data: 'segOverlayData' },
-      encode: {
-        update: {
-          url: { field: 'url' },
-          x: { signal: "scale('x', datum.x1)" },
-          y: { signal: "scale('y', datum.y2)" },
-          width: { signal: "scale('x', datum.x2) - scale('x', datum.x1)" },
-          height: { signal: "scale('y', datum.y1) - scale('y', datum.y2)" },
-          aspect: { value: false },
-          opacity: { value: 1 },
-        },
-      },
+      encode: { update: tileEncode },
     });
   } else {
     // 2b. Centroid dots — permanent fallback when no segmentation zarr available
@@ -144,6 +136,10 @@ const generateSpec = (
       zindex: 1,
       domain: true,
       orient: 'bottom',
+      // keep edge labels within the axis range so a tick label entering/leaving the
+      // plot edge during pan/zoom doesn't change the padding (and bob the plot)
+      labelBound: true,
+      labelFlush: true,
       title: config.axes.xAxisText,
       titleFont: config.fontStyle.font,
       labelFont: config.fontStyle.font,
@@ -171,6 +167,10 @@ const generateSpec = (
       zindex: 1,
       domain: true,
       orient: 'left',
+      // keep edge labels within the axis range so a tick label entering/leaving the
+      // plot edge during pan/zoom doesn't change the padding (and bob the plot)
+      labelBound: true,
+      labelFlush: true,
       titlePadding: 5,
       gridColor: config.colour.masterColour,
       gridOpacity: (config.axes.gridOpacity / 20),
@@ -188,17 +188,27 @@ const generateSpec = (
     });
   }
 
+  // FIXED padding + autosize:'none' so the data rectangle (= width x height) never
+  // changes. With 'pad'/'fit' Vega re-measures axis labels every render, so a tick
+  // label entering/leaving during zoom resizes the data rect and bobs the image.
+  // Here we reserve constant room for the axes/title/legend instead.
+  const legendPos = config.legend.enabled ? config.legend.position : null;
+  const padding = config.miniPlot ? 0 : {
+    left: (config.axes.yAxisLabels ? 54 : 8) + (legendPos === 'left' ? 150 : 0),
+    right: 8 + (legendPos && !['left', 'top', 'bottom'].includes(legendPos) ? 150 : 0),
+    top: (config.title?.text ? 28 : 8) + (legendPos === 'top' ? 56 : 0),
+    bottom: (config.axes.xAxisLabels ? (config.axes.xAxisRotateLabels ? 58 : 34) : 8)
+      + (legendPos === 'bottom' ? 64 : 0),
+  };
+
   return {
     $schema: 'https://vega.github.io/schema/vega/v5.json',
     description: 'Continuous embedding plot',
     width: plotWidth,
     height: plotHeight,
-    // resize:false — the plot/legend layout stays fixed during zoom/pan
-    // (resize:true re-fits the view each frame, making the legend bounce)
-    autosize: { type: 'pad', resize: false },
+    autosize: { type: 'none' },
     background: config.colour.toggleInvert,
-    // no padding for mini previews so the image fills the 92×92 tile exactly
-    padding: config.miniPlot ? 0 : 5,
+    padding,
     data: [
       {
         name: 'plotData',
@@ -221,7 +231,9 @@ const generateSpec = (
       { name: 'segOverlayData', values: [] },
     ],
     // clamp zoom/pan to the full image extent so you can always zoom back out to it
-    signals: spatialZoomSignals(initXdom, initYdom, [0, imageWidth], [0, imageHeight]),
+    signals: spatialZoomSignals(
+      initXdom, initYdom, [0, imageWidth], [0, imageHeight], !config.miniPlot,
+    ),
     scales: [
       {
         name: 'x',

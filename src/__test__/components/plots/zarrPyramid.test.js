@@ -14,11 +14,91 @@ jest.mock('components/data-exploration/spatial/ZipFileStore', () => ({
 }));
 
 // eslint-disable-next-line import/first
-import { resolvePyramidRegion, openOmePyramid } from 'components/plots/zarrPyramid';
+import {
+  resolvePyramidRegion, openOmePyramid, pickLevel, tilesForViewport,
+} from 'components/plots/zarrPyramid';
 
 // Helper: build a fake `levels` array of { shape } where shape is [h, w] (or
 // [c, h, w]); resolvePyramidRegion only reads the last two dims.
 const makeLevels = (...dims) => dims.map((shape) => ({ shape }));
+
+describe('pickLevel', () => {
+  const fullW = 1000;
+  const fullH = 800;
+  // full, half, quarter
+  const levels = makeLevels([800, 1000], [400, 500], [200, 250]);
+
+  it('picks the coarsest level for the full slide at a small output', () => {
+    expect(pickLevel(levels, fullW, fullH, {
+      xMin: 0, xMax: 1000, yMin: 0, yMax: 800, outputWidth: 200, outputHeight: 200,
+    })).toBe(2);
+  });
+
+  it('picks a finer level as the viewport shrinks (zoom in)', () => {
+    // a small viewport still needs >= output px → finest level
+    const lvl = pickLevel(levels, fullW, fullH, {
+      xMin: 0, xMax: 100, yMin: 0, yMax: 80, outputWidth: 256, outputHeight: 256,
+    });
+    expect(lvl).toBe(0);
+  });
+
+  it('falls back to full resolution when no level satisfies the output size', () => {
+    expect(pickLevel(levels, fullW, fullH, {
+      xMin: 0, xMax: 1000, yMin: 0, yMax: 800, outputWidth: 5000, outputHeight: 5000,
+    })).toBe(0);
+  });
+});
+
+describe('tilesForViewport', () => {
+  const fullW = 1000;
+  const fullH = 800;
+  const levels = makeLevels([800, 1000], [400, 500], [200, 250]);
+
+  it('tiles the full extent at the coarsest level and covers it with 1px overlap', () => {
+    const tiles = tilesForViewport(levels, fullW, fullH, 2, {
+      xMin: 0, xMax: 1000, yMin: 0, yMax: 800,
+    }, 512);
+    // level 2 is 250x200 → a single 512 tile covers it
+    expect(tiles).toHaveLength(1);
+    const [t] = tiles;
+    expect(t.extent.xMin).toBeCloseTo(0);
+    expect(t.extent.xMax).toBeCloseTo(1000);
+    expect(t.extent.yMin).toBeCloseTo(0);
+    expect(t.extent.yMax).toBeCloseTo(800);
+  });
+
+  it('returns multiple tiles that meet exactly (no gap/overlap) at a finer level', () => {
+    // level 0 is 1000x800; with tileSize 256 → ceil(1000/256)=4 cols, ceil(800/256)=4 rows
+    const tiles = tilesForViewport(levels, fullW, fullH, 0, {
+      xMin: 0, xMax: 1000, yMin: 0, yMax: 800,
+    }, 256);
+    expect(tiles.length).toBe(16);
+
+    // adjacent tiles share their edge exactly in data space; the on-screen seam is
+    // removed by rounding the mark edges to integer pixels in the Vega spec
+    const byCoord = (tx, ty) => tiles.find((t) => t.tx === tx && t.ty === ty);
+    const left = byCoord(0, 0);
+    const right = byCoord(1, 0);
+    expect(left.extent.xMax).toBeCloseTo(right.extent.xMin);
+  });
+
+  it('returns no tiles for an empty viewport', () => {
+    expect(tilesForViewport(levels, fullW, fullH, 0, {
+      xMin: 500, xMax: 500, yMin: 0, yMax: 800,
+    }, 256)).toHaveLength(0);
+  });
+
+  it('only returns tiles intersecting a sub-region viewport', () => {
+    const all = tilesForViewport(levels, fullW, fullH, 0, {
+      xMin: 0, xMax: 1000, yMin: 0, yMax: 800,
+    }, 256);
+    const sub = tilesForViewport(levels, fullW, fullH, 0, {
+      xMin: 0, xMax: 200, yMin: 600, yMax: 800,
+    }, 256);
+    expect(sub.length).toBeLessThan(all.length);
+    expect(sub.length).toBeGreaterThan(0);
+  });
+});
 
 describe('resolvePyramidRegion', () => {
   // A 3-level pyramid over a 1000x800 (w x h) slide: full, half, quarter.

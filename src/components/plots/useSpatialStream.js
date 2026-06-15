@@ -3,47 +3,48 @@ import {
 } from 'react';
 import _ from 'lodash';
 
-import { openOmePyramid, renderImageTile } from './getImageUrls';
-import { decodeSegmentationRegion, colorSegmentationOverlay, releaseOverlay } from './loadSegmentationOverlay';
+import { openOmePyramid, pickLevel, tilesForViewport } from './zarrPyramid';
+import { colorSegmentationOverlay, releaseOverlay } from './loadSegmentationOverlay';
 import {
-  loadBaseImage, loadBaseSegmentation, peekBaseImage, peekBaseSegmentation,
+  loadTissueTile, loadSegTile, peekTissueTile, peekSegTile,
 } from './spatialTileCache';
 
-// Shape a tile/overlay { url|Url, extent } into a Vega image-mark datum.
+// Tile edge length in level pixels. Smaller → more, cheaper requests; larger → fewer.
+const TILE_SIZE = 512;
+
+const keyOf = (tile) => `${tile.level}:${tile.tx}:${tile.ty}`;
+const intersects = (e, vp) => (
+  e.xMax > vp.xMin && e.xMin < vp.xMax && e.yMax > vp.yMin && e.yMin < vp.yMax
+);
 const toRow = (url, extent) => ({
-  url,
-  x1: extent.xMin,
-  x2: extent.xMax,
-  y1: extent.yMin,
-  y2: extent.yMax,
+  url, x1: extent.xMin, x2: extent.xMax, y1: extent.yMin, y2: extent.yMax,
 });
 
+// thin wrappers over the pyramid helpers to keep call sites short
+const levelFor = (p, reqViewport) => pickLevel(p.levels, p.fullW, p.fullH, reqViewport);
+const tilesAt = (p, level, vp) => (
+  tilesForViewport(p.levels, p.fullW, p.fullH, level, vp, TILE_SIZE)
+);
+
 /**
- * Viewport-streaming model for the spatial plots, shared by SpatialFeaturePlot,
- * SpatialCategoricalPlot and SpatialOutlierFilterPlot.
+ * Viv-style viewport tile streaming for the spatial plots (SpatialFeaturePlot,
+ * SpatialCategoricalPlot, SpatialOutlierFilterPlot).
  *
- * Two layers per slide, both fed to Vega via the `data` prop (so updates never
- * rebuild the view):
- *   • BASE   — the full-extent, lowest-resolution tile/labels. Loaded once per
- *              sample (cached, shared across plots), ALWAYS present. This is what
- *              guarantees zooming out instantly shows the whole slide — never a
- *              blank area or a stale zoomed-in tile.
- *   • DETAIL — the current viewport at a finer pyramid level. Reloaded (debounced)
- *              once a zoom/pan SETTLES; dropped when the view is zoomed out far
- *              enough that the base is already as sharp. While the view is actively
- *              moving the detail layer is HIDDEN — only the low-res base shows — so
- *              you never see a half-loaded detail tile or its border slide around.
+ * The slide is rendered as a grid of pyramid tiles fed to Vega via the `data` prop
+ * (so updates never rebuild the view). As the view pans/zooms, the tiles covering
+ * the current viewport are streamed at the pyramid level that matches the on-screen
+ * resolution — the appropriate resolution is always visible:
+ *   • TISSUE (opaque): every cached tile intersecting the viewport is drawn,
+ *     coarse→fine, so finer tiles paint over coarser ones as they arrive — never a
+ *     blank or stretched gap.
+ *   • SEGMENTATION (semi-transparent): only the target level is drawn at rest (one
+ *     tile per section → no blurry base bleeding through the per-cell alpha); while
+ *     the target grid is still loading, the coarsest level is drawn underneath as a
+ *     transient fallback.
  *
- * Base and detail are therefore never shown together: at rest you see the sharp
- * detail covering the viewport; while navigating, the coarse base.
- *
- * Coloured segmentation overlays are built from the decoded labels with the
- * caller-supplied `colorMap` (cellId → [r,g,b]); recolouring re-runs only the
- * cheap colour pass on the already-decoded base + detail labels.
- *
- * The caller drives detail loading by calling `onViewportChange(xdom, ydom)` from
- * the plot's `domUpdates` signal listener (and once after restoring a persisted
- * zoom).
+ * The caller drives this by calling `onViewportChange(xdom, ydom)` from the plot's
+ * `domUpdates` signal listener (and once after restoring a persisted zoom). Output
+ * interface matches the previous hook, so the plot components are unchanged.
  */
 const useSpatialStream = ({
   experimentId,
@@ -58,283 +59,335 @@ const useSpatialStream = ({
   opacity, // 0–1
   outline, // boolean
 }) => {
-  const imageCacheKey = sampleId ? `${experimentId}-${sampleId}-image` : null;
-  const segCacheKey = sampleId ? `${experimentId}-${sampleId}-seg` : null;
+  const sampleKey = sampleId ? `${experimentId}-${sampleId}` : null;
 
-  const [imageDims, setImageDims] = useState(() => {
-    const base = imageCacheKey ? peekBaseImage(imageCacheKey) : null;
-    return base ? { imageWidth: base.imageWidth, imageHeight: base.imageHeight } : null;
-  });
-  const [baseTissue, setBaseTissue] = useState(
-    () => (imageCacheKey ? peekBaseImage(imageCacheKey) : null),
-  );
-  const [baseSegDecoded, setBaseSegDecoded] = useState(
-    () => (segCacheKey ? peekBaseSegmentation(segCacheKey) : null),
-  );
-  const [baseOverlay, setBaseOverlay] = useState(null);
-  const [detailTissue, setDetailTissue] = useState(null);
-  const [detailSegDecoded, setDetailSegDecoded] = useState(null);
-  const [detailOverlay, setDetailOverlay] = useState(null);
-  // True while the view is actively zooming/panning. Hides the detail layer so only
-  // the coarse base shows during navigation (no half-loaded tiles, no tile borders
-  // sliding around); flips false once the gesture settles AND the new detail is ready.
-  const [interacting, setInteracting] = useState(false);
+  const [imageDims, setImageDims] = useState(null);
+  const [tissueRows, setTissueRows] = useState([]);
+  const [segRows, setSegRows] = useState([]);
+  // bumps whenever a probe resolves, to recompute the *Available booleans
+  const [, forceTick] = useState(0);
 
-  // ── Refs read inside the debounced loaders/colourers (always latest) ────────
+  // ── Latest-value refs read by the (throttled) streamer ──────────────────────
   const colorMapRef = useRef(colorMap); colorMapRef.current = colorMap;
   const optsRef = useRef({ opacity, outline }); optsRef.current = { opacity, outline };
+  // identifies the rendered seg colouring — includes opacity/outline so changing
+  // those (not just the colour map) re-colours the cached tiles.
+  const colorKeyRef = useRef(); colorKeyRef.current = `${colorKey}:${opacity}:${outline}`;
   const plotDimsRef = useRef({ plotWidth, plotHeight });
   plotDimsRef.current = { plotWidth, plotHeight };
   const showImageRef = useRef(showImage); showImageRef.current = showImage;
+  const sampleKeyRef = useRef(sampleKey); sampleKeyRef.current = sampleKey;
 
+  // pyramid refs hold { key, pyramid } where key is the sampleKey the pyramid was
+  // opened for. They're resolved through histFor()/segFor(), which return the
+  // pyramid ONLY if it still matches the current sample — so a stream() that fires
+  // mid sample-switch (stale pyramid, new sampleKey) can't load the previous slide's
+  // tiles under the new sample's cache keys (which would persist as a wrong base).
   const histPyramidRef = useRef(null);
   const segPyramidRef = useRef(null);
+  const dimsRef = useRef(null);
   const viewportRef = useRef(null);
-  const detailReqRef = useRef(0);
-  const baseSegDecodedRef = useRef(baseSegDecoded);
-  const detailSegDecodedRef = useRef(detailSegDecoded);
-  const baseTissueLevelRef = useRef(Infinity);
-  const baseSegLevelRef = useRef(Infinity);
-  // mirror of `interacting` so the (continuous) viewport handler flips state only on
-  // the leading edge of a gesture instead of re-rendering every frame
-  const interactingRef = useRef(false);
 
-  // canvases reused for colouring (one per layer) so we don't reallocate the pixel
-  // buffer on each recolour
-  const baseSegCanvasRef = useRef(null);
-  const detailSegCanvasRef = useRef(null);
-  if (typeof document !== 'undefined') {
-    if (!baseSegCanvasRef.current) baseSegCanvasRef.current = document.createElement('canvas');
-    if (!detailSegCanvasRef.current) detailSegCanvasRef.current = document.createElement('canvas');
-  }
+  const histFor = useCallback(() => {
+    const h = histPyramidRef.current;
+    return h && h.key === sampleKeyRef.current ? h.pyramid : null;
+  }, []);
+  const segFor = useCallback(() => {
+    const s = segPyramidRef.current;
+    return s && s.key === sampleKeyRef.current ? s.pyramid : null;
+  }, []);
 
-  // tokens we OWN and must release on replace/unmount (base tissue is owned by the
-  // shared tile cache — never released here)
-  const baseOverlayTokenRef = useRef(null);
-  const detailTissueTokenRef = useRef(null);
-  const detailOverlayTokenRef = useRef(null);
+  // per-instance tile bookkeeping (cleared on sample change)
+  // knownTissue: key -> { tile, url }
+  // knownSeg:    key -> { tile, decoded }
+  // segOverlays: key -> { tile, canvas, overlayUrl, extent, coloredKey }
+  const knownTissueRef = useRef(new Map());
+  const knownSegRef = useRef(new Map());
+  const segOverlaysRef = useRef(new Map());
 
-  // ── Reset transient layers when the slide changes ───────────────────────────
-  // Defined before the load/colour effects so a fresh (possibly cached) base set
-  // below isn't clobbered back to null. Detail tokens are released on swap.
-  useEffect(() => {
-    setDetailTissue(null);
-    setDetailSegDecoded(null);
-    setDetailOverlay(null);
-    setBaseOverlay(null);
-    interactingRef.current = false;
-    setInteracting(false);
-    detailReqRef.current += 1; // invalidate any in-flight detail load
-    releaseOverlay(detailTissueTokenRef.current); detailTissueTokenRef.current = null;
-    releaseOverlay(detailOverlayTokenRef.current); detailOverlayTokenRef.current = null;
-    releaseOverlay(baseOverlayTokenRef.current); baseOverlayTokenRef.current = null;
-    const peekedImage = imageCacheKey ? peekBaseImage(imageCacheKey) : null;
-    const peekedSeg = segCacheKey ? peekBaseSegmentation(segCacheKey) : null;
-    // seed level refs from cache so a detail tile at full extent isn't kept over a
-    // sharper base; the load effects below refresh these once they resolve
-    baseTissueLevelRef.current = peekedImage ? peekedImage.level : Infinity;
-    baseSegLevelRef.current = peekedSeg ? peekedSeg.level : Infinity;
-
-    setBaseTissue(peekedImage);
-    setBaseSegDecoded(peekedSeg);
-  }, [sampleId]);
-
-  // ── Open histology pyramid (dims) + load base tissue tile ───────────────────
-  useEffect(() => {
-    if (!omeZarrUrl || !imageCacheKey) return undefined;
-    let cancelled = false;
-
-    openOmePyramid(omeZarrUrl).then((p) => {
-      if (cancelled || !p) return;
-      histPyramidRef.current = p;
-      setImageDims({ imageWidth: p.fullW, imageHeight: p.fullH });
-    });
-
-    loadBaseImage(omeZarrUrl, imageCacheKey).then((tile) => {
-      if (cancelled || !tile) return;
-      baseTissueLevelRef.current = tile.level;
-      setBaseTissue(tile);
-      setImageDims({ imageWidth: tile.imageWidth, imageHeight: tile.imageHeight });
-    });
-
-    return () => { cancelled = true; };
-  }, [omeZarrUrl, imageCacheKey]);
-
-  // ── Open segmentation pyramid + load base labels ────────────────────────────
-  useEffect(() => {
-    if (!segmentationUrl || !segCacheKey) return undefined;
-    let cancelled = false;
-
-    openOmePyramid(segmentationUrl).then((p) => {
-      if (!cancelled && p) segPyramidRef.current = p;
-    });
-
-    loadBaseSegmentation(segmentationUrl, segCacheKey).then((decoded) => {
-      if (cancelled || !decoded) return;
-      baseSegLevelRef.current = decoded.level;
-      setBaseSegDecoded(decoded);
-    });
-
-    return () => { cancelled = true; };
-  }, [segmentationUrl, segCacheKey]);
-
-  // ── Colour the base segmentation overlay (debounced) ────────────────────────
-  const recolorBase = useMemo(() => _.debounce(() => {
-    const decoded = baseSegDecodedRef.current;
+  // ── Colour one decoded seg tile into a per-instance canvas (cached by colorKey) ─
+  const colorSegTile = useCallback((key, tile, decoded) => {
     const cmap = colorMapRef.current;
-    if (!decoded || !cmap) return;
-    const result = colorSegmentationOverlay(decoded, cmap, {
-      ...optsRef.current, canvas: baseSegCanvasRef.current,
-    });
-    if (!result) return;
-    releaseOverlay(baseOverlayTokenRef.current);
-    baseOverlayTokenRef.current = result.overlayUrl;
-    setBaseOverlay(result);
-  }, 100), []);
+    if (!cmap) return null;
+    const existing = segOverlaysRef.current.get(key);
+    if (existing && existing.coloredKey === colorKeyRef.current) return existing;
+    const canvas = existing?.canvas || (typeof document !== 'undefined' ? document.createElement('canvas') : null);
+    if (!canvas) return null;
+    const result = colorSegmentationOverlay(decoded, cmap, { ...optsRef.current, canvas });
+    if (!result) return null;
+    if (existing) releaseOverlay(existing.overlayUrl);
+    const entry = {
+      tile,
+      canvas,
+      overlayUrl: result.overlayUrl,
+      extent: result.overlayExtent,
+      coloredKey: colorKeyRef.current,
+    };
+    segOverlaysRef.current.set(key, entry);
+    return entry;
+  }, []);
 
-  const recolorDetail = useMemo(() => _.debounce(() => {
-    const decoded = detailSegDecodedRef.current;
-    const cmap = colorMapRef.current;
-    if (!decoded || !cmap) return;
-    const result = colorSegmentationOverlay(decoded, cmap, {
-      ...optsRef.current, canvas: detailSegCanvasRef.current,
-    });
-    if (!result) return;
-    releaseOverlay(detailOverlayTokenRef.current);
-    detailOverlayTokenRef.current = result.overlayUrl;
-    setDetailOverlay(result);
-  }, 100), []);
-
-  useEffect(() => {
-    baseSegDecodedRef.current = baseSegDecoded;
-    recolorBase();
-  }, [baseSegDecoded, colorKey, opacity, outline]);
-
-  useEffect(() => {
-    detailSegDecodedRef.current = detailSegDecoded;
-    recolorDetail();
-  }, [detailSegDecoded, colorKey, opacity, outline]);
-
-  // ── Detail (viewport) tile loader, fired once a zoom/pan SETTLES (debounced) ──
-  // Loads + (for segmentation) colours the detail synchronously so that the moment we
-  // drop `interacting` and reveal the detail layer, the fresh tiles are already in
-  // place — no flash of a stale/half-loaded detail tile.
-  const loadDetail = useMemo(() => _.debounce(async () => {
+  // ── Publish the rendered rows from whatever tiles are currently loaded ───────
+  const publish = useCallback(() => {
     const vp = viewportRef.current;
     if (!vp) return;
-    const { plotWidth: ow, plotHeight: oh } = plotDimsRef.current;
-    const viewport = {
-      xMin: vp.xMin, xMax: vp.xMax, yMin: vp.yMin, yMax: vp.yMax, outputWidth: ow, outputHeight: oh,
-    };
-    const reqId = detailReqRef.current + 1;
-    detailReqRef.current = reqId;
 
-    // Histology detail
-    const histP = histPyramidRef.current;
-    if (showImageRef.current && histP) {
-      const tile = await renderImageTile(histP, viewport);
-      if (detailReqRef.current !== reqId) {
-        if (tile) releaseOverlay(tile.imageUrl); // superseded mid-flight
-      } else if (tile && tile.level < baseTissueLevelRef.current) {
-        releaseOverlay(detailTissueTokenRef.current);
-        detailTissueTokenRef.current = tile.imageUrl;
-        setDetailTissue(tile);
-      } else {
-        // zoomed out to (or below) base resolution → base alone suffices
-        if (tile) releaseOverlay(tile.imageUrl);
-        releaseOverlay(detailTissueTokenRef.current);
-        detailTissueTokenRef.current = null;
-        setDetailTissue(null);
-      }
+    // TISSUE: every cached tile that still intersects the viewport, coarse→fine.
+    if (showImageRef.current) {
+      const rows = [...knownTissueRef.current.values()]
+        .filter((t) => intersects(t.tile.extent, vp))
+        .sort((a, b) => b.tile.level - a.tile.level)
+        .map((t) => toRow(t.url, t.tile.extent));
+      setTissueRows(rows);
+    } else {
+      setTissueRows([]);
     }
 
-    // Segmentation detail
-    const segP = segPyramidRef.current;
+    // SEGMENTATION: target level at rest; coarsest fallback only until complete.
+    const segP = segFor();
     if (segP) {
-      const decoded = await decodeSegmentationRegion(segP, viewport);
-      if (detailReqRef.current !== reqId) return; // superseded → newer load will reveal
-      const cmap = colorMapRef.current;
-      if (decoded && decoded.level < baseSegLevelRef.current && cmap) {
-        detailSegDecodedRef.current = decoded;
-        setDetailSegDecoded(decoded); // keep state so colour/threshold changes recolour
-        const result = colorSegmentationOverlay(decoded, cmap, {
-          ...optsRef.current, canvas: detailSegCanvasRef.current,
-        });
-        if (result) {
-          releaseOverlay(detailOverlayTokenRef.current);
-          detailOverlayTokenRef.current = result.overlayUrl;
-          setDetailOverlay(result);
-        }
-      } else {
-        releaseOverlay(detailOverlayTokenRef.current);
-        detailOverlayTokenRef.current = null;
-        setDetailSegDecoded(null);
-        setDetailOverlay(null);
-      }
-    }
+      const { plotWidth: ow, plotHeight: oh } = plotDimsRef.current;
+      const targetLevel = levelFor(segP, { ...vp, outputWidth: ow, outputHeight: oh });
+      const coarsest = segP.levels.length - 1;
+      const targetTiles = tilesAt(segP, targetLevel, vp);
 
-    // Only reveal if this is still the latest viewport. onViewportChange replaces
-    // viewportRef with a new object each move, so an identity change means the user
-    // moved again while we were loading — keep showing the base; the pending newer
-    // load will reveal once it settles.
-    if (viewportRef.current !== vp) return;
-    interactingRef.current = false;
-    setInteracting(false);
-  }, 200), []);
+      const coloured = (t) => {
+        const e = segOverlaysRef.current.get(keyOf(t));
+        return e && e.coloredKey === colorKeyRef.current ? e : null;
+      };
+      const targetEntries = targetTiles.map(coloured).filter(Boolean);
+      const complete = targetEntries.length === targetTiles.length && targetTiles.length > 0;
+
+      let entries = targetEntries;
+      if (!complete && coarsest !== targetLevel) {
+        const coarseEntries = tilesAt(segP, coarsest, vp).map(coloured).filter(Boolean);
+        entries = [...coarseEntries, ...targetEntries];
+      }
+      // dedup + coarse→fine
+      const seen = new Set();
+      const rows = entries
+        .sort((a, b) => b.tile.level - a.tile.level)
+        .filter((e) => {
+          const k = keyOf(e.tile);
+          if (seen.has(k)) return false;
+          seen.add(k);
+          return true;
+        })
+        .map((e) => toRow(e.overlayUrl, e.extent));
+      setSegRows(rows);
+    } else {
+      setSegRows([]);
+    }
+  }, [segFor]);
+
+  // ── Request the tiles needed for the current viewport; recolour on demand ────
+  const streamRef = useRef(null);
+  const stream = useMemo(() => _.throttle(() => {
+    const vp = viewportRef.current;
+    const dims = dimsRef.current;
+    if (!vp || !dims) return;
+    const { plotWidth: ow, plotHeight: oh } = plotDimsRef.current;
+    const reqViewport = { ...vp, outputWidth: ow, outputHeight: oh };
+
+    // collect the tiles we want loaded this pass: target + coarsest, per layer
+    const tilesToLoad = (p) => {
+      const tl = levelFor(p, reqViewport);
+      const coarsest = p.levels.length - 1;
+      const tiles = tilesAt(p, tl, vp);
+      return coarsest !== tl ? [...tiles, ...tilesAt(p, coarsest, vp)] : tiles;
+    };
+
+    const histP = histFor();
+    const wantTissue = (showImageRef.current && histP) ? tilesToLoad(histP) : [];
+    const segP = segFor();
+    const wantSeg = segP ? tilesToLoad(segP) : [];
+
+    const myKey = sampleKeyRef.current;
+
+    // Tissue: load missing canvases (shared cache)
+    wantTissue.forEach((tile) => {
+      const k = keyOf(tile);
+      if (knownTissueRef.current.has(k)) return;
+      knownTissueRef.current.set(k, { tile, url: null }); // reserve
+      loadTissueTile(histP, myKey, tile).then((res) => {
+        if (sampleKeyRef.current !== myKey || !res) {
+          if (!res) knownTissueRef.current.delete(k);
+          return;
+        }
+        knownTissueRef.current.set(k, { tile, url: res.url });
+        publish();
+      });
+    });
+
+    // Seg: load missing decoded labels, then colour into per-instance canvas
+    wantSeg.forEach((tile) => {
+      const k = keyOf(tile);
+      const cached = knownSegRef.current.get(k);
+      if (cached?.decoded) {
+        if (colorSegTile(k, tile, cached.decoded)) publish();
+        return;
+      }
+      if (cached) return; // already in flight
+      knownSegRef.current.set(k, { tile, decoded: null });
+      loadSegTile(segP, myKey, tile).then((decoded) => {
+        if (sampleKeyRef.current !== myKey || !decoded) {
+          if (!decoded) knownSegRef.current.delete(k);
+          return;
+        }
+        knownSegRef.current.set(k, { tile, decoded });
+        colorSegTile(k, tile, decoded);
+        publish();
+      });
+    });
+
+    // recolour any already-loaded seg tiles whose colour is stale (colorKey change)
+    knownSegRef.current.forEach((entry, k) => {
+      if (entry.decoded) colorSegTile(k, entry.tile, entry.decoded);
+    });
+
+    // prune far-from-viewport tiles (keep visible + coarsest), release seg tokens
+    const margin = {
+      xMin: vp.xMin - (vp.xMax - vp.xMin),
+      xMax: vp.xMax + (vp.xMax - vp.xMin),
+      yMin: vp.yMin - (vp.yMax - vp.yMin),
+      yMax: vp.yMax + (vp.yMax - vp.yMin),
+    };
+    const histCoarsest = histP ? histP.levels.length - 1 : -1;
+    knownTissueRef.current.forEach((entry, k) => {
+      if (entry.tile.level !== histCoarsest && !intersects(entry.tile.extent, margin)) {
+        knownTissueRef.current.delete(k);
+      }
+    });
+    const segCoarsest = segP ? segP.levels.length - 1 : -1;
+    segOverlaysRef.current.forEach((entry, k) => {
+      if (entry.tile.level !== segCoarsest && !intersects(entry.tile.extent, margin)) {
+        releaseOverlay(entry.overlayUrl);
+        segOverlaysRef.current.delete(k);
+        knownSegRef.current.delete(k);
+      }
+    });
+
+    publish();
+  }, 80, { leading: true, trailing: true }), [colorSegTile, publish, histFor, segFor]);
+  streamRef.current = stream;
 
   const onViewportChange = useCallback((xdom, ydom) => {
     viewportRef.current = {
       xMin: xdom[0], xMax: xdom[1], yMin: ydom[0], yMax: ydom[1],
     };
-    // leading edge of a gesture → hide detail, show only the low-res base while moving
-    if (!interactingRef.current) {
-      interactingRef.current = true;
-      setInteracting(true);
-    }
-    loadDetail();
-  }, [loadDetail]);
+    stream();
+  }, [stream]);
 
-  // ── Cleanup ─────────────────────────────────────────────────────────────────
+  // ── Reset all per-instance tiles when the slide changes ─────────────────────
+  // Also drop the pyramid refs: they're re-set asynchronously by the open effects
+  // below, and if stream() runs in that gap with a STALE pyramid it would load the
+  // previous slide's tiles under the NEW sample's cache keys — so the correct reload
+  // then hits the cache and shows the old image.
+  useEffect(() => {
+    histPyramidRef.current = null;
+    segPyramidRef.current = null;
+    knownTissueRef.current = new Map();
+    knownSegRef.current = new Map();
+    segOverlaysRef.current.forEach((e) => releaseOverlay(e.overlayUrl));
+    segOverlaysRef.current = new Map();
+    setTissueRows([]);
+    setSegRows([]);
+  }, [sampleId]);
+
+  // ── Open histology pyramid (dims) ───────────────────────────────────────────
+  useEffect(() => {
+    if (!omeZarrUrl) return undefined;
+    let cancelled = false;
+    const myKey = sampleKeyRef.current;
+    openOmePyramid(omeZarrUrl).then((p) => {
+      if (cancelled || !p) return;
+      histPyramidRef.current = { key: myKey, pyramid: p };
+      const dims = { imageWidth: p.fullW, imageHeight: p.fullH };
+      dimsRef.current = dims;
+      setImageDims(dims);
+      if (!viewportRef.current) {
+        viewportRef.current = {
+          xMin: 0, xMax: p.fullW, yMin: 0, yMax: p.fullH,
+        };
+      }
+      stream();
+    });
+    return () => { cancelled = true; };
+  }, [omeZarrUrl, stream]);
+
+  // ── Open segmentation pyramid ───────────────────────────────────────────────
+  useEffect(() => {
+    if (!segmentationUrl) return undefined;
+    let cancelled = false;
+    const myKey = sampleKeyRef.current;
+    openOmePyramid(segmentationUrl).then((p) => {
+      if (cancelled || !p) return;
+      segPyramidRef.current = { key: myKey, pyramid: p };
+      if (!dimsRef.current) {
+        const dims = { imageWidth: p.fullW, imageHeight: p.fullH };
+        dimsRef.current = dims;
+        setImageDims(dims);
+      }
+      if (!viewportRef.current) {
+        viewportRef.current = {
+          xMin: 0, xMax: p.fullW, yMin: 0, yMax: p.fullH,
+        };
+      }
+      forceTick((n) => n + 1);
+      stream();
+    });
+    return () => { cancelled = true; };
+  }, [segmentationUrl, stream]);
+
+  // ── Re-stream when colour / opacity / outline / plot size changes ────────────
+  useEffect(() => {
+    stream();
+  }, [colorKey, opacity, outline, plotWidth, plotHeight, showImage, stream]);
+
+  // ── Seed from the shared cache on mount for a no-flash remount ───────────────
+  useEffect(() => {
+    const segP = segFor();
+    const histP = histFor();
+    const vp = viewportRef.current;
+    if (!vp || !sampleKey) return;
+    const { plotWidth: ow, plotHeight: oh } = plotDimsRef.current;
+    const reqViewport = { ...vp, outputWidth: ow, outputHeight: oh };
+    if (histP && showImage) {
+      tilesAt(histP, levelFor(histP, reqViewport), vp).forEach((tile) => {
+        const hit = peekTissueTile(sampleKey, tile);
+        if (hit) knownTissueRef.current.set(keyOf(tile), { tile, url: hit.url });
+      });
+    }
+    if (segP) {
+      tilesAt(segP, levelFor(segP, reqViewport), vp).forEach((tile) => {
+        const hit = peekSegTile(sampleKey, tile);
+        if (hit) {
+          knownSegRef.current.set(keyOf(tile), { tile, decoded: hit });
+          colorSegTile(keyOf(tile), tile, hit);
+        }
+      });
+    }
+    publish();
+    // run once the pyramids/dims are first available
+  }, [imageDims, sampleKey, showImage, colorSegTile, publish, histFor, segFor]);
+
+  // ── Cleanup on unmount ──────────────────────────────────────────────────────
   useEffect(() => () => {
-    recolorBase.cancel();
-    recolorDetail.cancel();
-    loadDetail.cancel();
-    // base tissue token is owned by the shared cache — do NOT release it
-    releaseOverlay(baseOverlayTokenRef.current);
-    releaseOverlay(detailTissueTokenRef.current);
-    releaseOverlay(detailOverlayTokenRef.current);
+    if (streamRef.current) streamRef.current.cancel();
+    segOverlaysRef.current.forEach((e) => releaseOverlay(e.overlayUrl));
+    // tissue tile canvases are owned by the shared cache (LRU) — not released here
   }, []);
 
-  // ── Outputs ─────────────────────────────────────────────────────────────────
-  // At rest the detail tile (which covers the viewport) is shown ALONE; while
-  // navigating, or when no detail exists (zoomed out), the coarse base is shown
-  // alone. The two are never composited, so there's no bleed and no tile borders
-  // moving around mid-gesture.
-  const tissueImageData = useMemo(() => {
-    if (!showImage) return [];
-    if (!interacting && detailTissue) {
-      return [toRow(detailTissue.imageUrl, detailTissue.imageExtent)];
-    }
-    return baseTissue ? [toRow(baseTissue.imageUrl, baseTissue.imageExtent)] : [];
-  }, [showImage, interacting, baseTissue, detailTissue]);
-
-  const segOverlayData = useMemo(() => {
-    if (!interacting && detailOverlay) {
-      return [toRow(detailOverlay.overlayUrl, detailOverlay.overlayExtent)];
-    }
-    return baseOverlay ? [toRow(baseOverlay.overlayUrl, baseOverlay.overlayExtent)] : [];
-  }, [interacting, baseOverlay, detailOverlay]);
-
-  const segmentationsAvailable = !!segmentationUrl || !!baseSegDecoded;
-  const segProbeDone = segmentationUrl !== undefined || !!baseSegDecoded;
-  const ready = !!imageDims && (!showImage || !!baseTissue);
+  const segmentationsAvailable = !!segmentationUrl || !!segFor();
+  const segProbeDone = segmentationUrl !== undefined || !!segFor();
+  const ready = !!imageDims;
 
   return {
     imageDims,
     segmentationsAvailable,
     segProbeDone,
-    tissueImageData,
-    segOverlayData,
+    tissueImageData: tissueRows,
+    segOverlayData: segRows,
     onViewportChange,
     ready,
   };

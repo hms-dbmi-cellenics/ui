@@ -21,6 +21,9 @@ const SpatialCategoricalReduxWrapper = (props) => {
       config={config}
       actions={actions}
       onZoomChange={(axesRanges) => dispatch(updatePlotConfig(plotUuid, { axesRanges }))}
+      onSampleDefault={(selectedSample) => dispatch(
+        updatePlotConfig(plotUuid, { selectedSample }),
+      )}
     />
   );
 };

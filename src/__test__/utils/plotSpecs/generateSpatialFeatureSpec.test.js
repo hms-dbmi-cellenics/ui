@@ -122,12 +122,14 @@ describe('generateSpatialFeatureSpec', () => {
       expect(spec.padding).toBe(0);
     });
 
-    it('renders a title and padding on the full plot', () => {
+    it('renders a title and fixed object padding on the full plot', () => {
       const config = { ...baseConfig(), miniPlot: false };
       const spec = generateSpec(config, 'mock', imageData, []);
 
       expect(spec.title).toBeDefined();
-      expect(spec.padding).toBe(5);
+      // fixed padding object (autosize:'none') so the data rect never reflows
+      expect(typeof spec.padding).toBe('object');
+      expect(spec.autosize).toEqual({ type: 'none' });
     });
 
     it('omits axes on a mini plot even when axis labels are enabled', () => {

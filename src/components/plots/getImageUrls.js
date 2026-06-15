@@ -82,6 +82,66 @@ export const renderImageTile = async (pyramid, viewport) => {
   }
 };
 
+/**
+ * Read one histology tile at an EXPLICIT level/pixel window (from tilesForViewport)
+ * — used by the viewport tile streamer. Returns a canvas handed to Vega via
+ * registerDrawable plus the tile's data-space extent.
+ *
+ * @param {object} pyramid  result of openOmePyramid
+ * @param {object} tile     { level, x0, x1, y0, y1, extent } from tilesForViewport
+ * @returns {{ url, extent } | null}
+ */
+export const readImageTile = async (pyramid, tile) => {
+  try {
+    const { levels, axesMetadata } = pyramid;
+    const {
+      level, x0, x1, y0, y1, extent,
+    } = tile;
+    const { arr, shape } = levels[level];
+    const ndim = shape.length;
+
+    let channelAxisIdx = ndim - 3;
+    if (axesMetadata) {
+      const cIdx = axesMetadata.findIndex((a) => a.type === 'channel' || a.name === 'c');
+      if (cIdx >= 0) channelAxisIdx = cIdx;
+    }
+
+    const regionW = x1 - x0;
+    const regionH = y1 - y0;
+
+    const channels = await Promise.all([0, 1, 2].map(async (c) => {
+      const selection = shape.map((_, dimIdx) => {
+        if (dimIdx === channelAxisIdx) return c;
+        if (dimIdx === ndim - 2) return slice(y0, y1);
+        if (dimIdx === ndim - 1) return slice(x0, x1);
+        return 0;
+      });
+      const ndArray = await get(arr, selection);
+      return ndArray.data;
+    }));
+
+    const canvas = document.createElement('canvas');
+    canvas.width = regionW;
+    canvas.height = regionH;
+    const ctx = canvas.getContext('2d');
+    const imgData = ctx.createImageData(regionW, regionH);
+    const px = imgData.data;
+    const [rData, gData, bData] = channels;
+    for (let i = 0; i < regionW * regionH; i += 1) {
+      px[i * 4] = rData[i];
+      px[i * 4 + 1] = gData[i];
+      px[i * 4 + 2] = bData[i];
+      px[i * 4 + 3] = 255;
+    }
+    ctx.putImageData(imgData, 0, 0);
+
+    return { url: registerDrawable(canvas), extent };
+  } catch (e) {
+    console.error('[readImageTile]', e);
+    return null;
+  }
+};
+
 // Open + render in one call (one-off full-extent loads). Prefer
 // openOmePyramid + renderImageTile when issuing many viewport tiles for one slide.
 const getImageUrls = async (omeZarrUrl, viewport) => {

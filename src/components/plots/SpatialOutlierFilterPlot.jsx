@@ -12,6 +12,7 @@ import colors from 'utils/styling/colors';
 import { generateSpec } from 'utils/plotSpecs/generateSpatialFeatureSpec';
 import { getSampleFileUrls } from 'utils/data-management/downloadSampleFile';
 import useSpatialStream from './useSpatialStream';
+import usePreventWheelScroll from './usePreventWheelScroll';
 
 const EMBEDDING_TYPE = 'images';
 // 3-element colours (no baked alpha) so colorSegmentationOverlay applies the
@@ -201,6 +202,7 @@ const SpatialOutlierFilterPlot = (props) => {
   const axesRangesRef = useRef(config?.axesRanges);
   axesRangesRef.current = config?.axesRanges;
   const isMiniPlot = config?.miniPlot;
+  const wheelRef = usePreventWheelScroll(!isMiniPlot);
   const restoreZoom = useCallback((view) => {
     if (isMiniPlot) return;
     const ar = axesRangesRef.current;
@@ -297,13 +299,15 @@ const SpatialOutlierFilterPlot = (props) => {
 
   return (
     <center>
-      <Vega
-        spec={plotSpec}
-        data={vegaData}
-        actions={actions}
-        signalListeners={{ domUpdates: onZoomDomUpdate }}
-        onNewView={restoreZoom}
-      />
+      <div ref={wheelRef}>
+        <Vega
+          spec={plotSpec}
+          data={vegaData}
+          actions={actions}
+          signalListeners={{ domUpdates: onZoomDomUpdate }}
+          onNewView={restoreZoom}
+        />
+      </div>
     </center>
   );
 };
