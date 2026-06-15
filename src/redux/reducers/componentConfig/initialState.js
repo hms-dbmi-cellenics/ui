@@ -890,17 +890,34 @@ const doubletScoreHistogram = {
 };
 
 // DATA PROCESSING - Spatial local-outlier filters (Visium HD)
-// Main plot: tissue slide coloured by the metric, outliers outlined in red.
-// `shownGene` is repurposed as the colour-legend title (the metric name).
+// Main plot: segmentations coloured by the metric (tissue image hidden by default
+// so the colouring reads clearly). `shownGene` is repurposed as the colour-legend
+// title (the metric name). Default gradient is 'default' (white↔red).
 const makeSpatialOutlierPlotConfig = (legendTitle) => ({
   ...spatialFeatureInitialConfig,
   shownGene: legendTitle,
   keepValuesOnReset: [],
   truncatedValues: false,
+  showImage: false,
+  dimensions: { ...spatialFeatureInitialConfig.dimensions, width: 450, height: 450 },
+  colour: { ...spatialFeatureInitialConfig.colour, gradient: 'default' },
 });
 
-const spatialUmiOutlierPlot = makeSpatialOutlierPlotConfig('UMIs');
-const spatialNumGenesOutlierPlot = makeSpatialOutlierPlotConfig('Genes detected');
+// UMI and Genes-detected outliers are LOW-value cells; mito outliers are HIGH-value.
+// On the white↔red 'default' scale, reverseCbar=true puts red at the LOW end (so low
+// UMIs / few genes = red), while mito keeps the default (high mito = red) — i.e. the
+// outlier end is red on all three. Users can flip this via the Colours panel.
+const makeReversedOutlierPlotConfig = (legendTitle) => {
+  const base = makeSpatialOutlierPlotConfig(legendTitle);
+  return {
+    ...base,
+    colour: { ...base.colour, reverseCbar: true },
+    dimensions: { ...base.dimensions, width: 450, height: 450 },
+  };
+};
+
+const spatialUmiOutlierPlot = makeReversedOutlierPlotConfig('UMIs');
+const spatialNumGenesOutlierPlot = makeReversedOutlierPlotConfig('Genes detected');
 const spatialMitoOutlierPlot = makeSpatialOutlierPlotConfig('Mitochondrial %');
 
 // Outlier-highlight slide: a SEPARATE, independently-styleable config from the

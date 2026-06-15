@@ -1,48 +1,53 @@
-import getImageUrls, { getImageDimensions } from './getImageUrls';
-import { decodeSegmentationBitmask } from './loadSegmentationOverlay';
+import { openOmePyramid, renderImageTile } from './getImageUrls';
+import { decodeSegmentationRegion } from './loadSegmentationOverlay';
 
-// Shared, in-memory caches for decoded spatial tiles. Keyed by a stable
-// experiment+sample key (NOT the signed URL, which changes per request) so the
-// full-resolution histology image and segmentation bitmask are fetched/decoded
-// once and reused across every spatial plot (Plots & Tables + Data Processing),
-// instead of each component loading them independently.
+// Shared, in-memory caches for the BASE (full-extent overview) spatial layers.
+// Keyed by a stable experiment+sample key (NOT the signed URL, which changes per
+// request) so the overview histology tile and segmentation labels are
+// fetched/decoded once and reused across every spatial plot (Plots & Tables + Data
+// Processing) and across remounts.
 //
-// We cache the in-flight Promise, so concurrent requests from several plots
-// mounting at once share a single decode. The decoded blobs are large binary
-// data, so they live here rather than in the redux store.
+// The base layer is the lowest-resolution full-slide tile/labels — small and fast —
+// always shown so zooming out never blanks. Finer DETAIL tiles for the current
+// viewport are fetched on demand by useSpatialStream (not cached here; they're
+// transient and cheap to refetch from the per-URL pyramid open).
+
+// Target pixel size for the base/overview tile (long side). Fixed (not the plot's
+// display size) so one base entry is shared across every plot of a sample
+// regardless of how large each renders it, and stays crisp when zoomed fully out.
+export const BASE_OUTPUT = 1024;
+
 const imageCache = new Map();
 const bitmaskCache = new Map();
 
-// Synchronously-readable caches of the RESOLVED values, so a remounting plot (e.g.
-// switching between Data Processing steps) can initialise its state immediately
-// instead of waiting on the async chain (signed-URL fetch → decode) and flashing a
-// spinner before redrawing.
+// Synchronously-readable caches of the RESOLVED base layers, so a remounting plot
+// (e.g. switching Data Processing steps) can initialise immediately from cache
+// instead of waiting on the signed-URL fetch → decode chain and flashing a redraw.
 const imageResolvedCache = new Map();
 const bitmaskResolvedCache = new Map();
 
-export const peekFullImage = (cacheKey) => imageResolvedCache.get(cacheKey) || null;
-export const peekBitmask = (cacheKey) => bitmaskResolvedCache.get(cacheKey) || null;
+export const peekBaseImage = (cacheKey) => imageResolvedCache.get(cacheKey) || null;
+export const peekBaseSegmentation = (cacheKey) => bitmaskResolvedCache.get(cacheKey) || null;
 
 /**
- * Full-resolution (level-0) histology image for a sample, cached by key.
- * @returns {Promise<{ imageUrl, imageWidth, imageHeight, imageExtent } | null>}
+ * Base (overview) histology tile for a sample, cached by key.
+ * @returns {Promise<{ imageUrl, imageWidth, imageHeight, imageExtent, level } | null>}
  */
-export const loadFullImage = (omeZarrUrl, cacheKey) => {
+export const loadBaseImage = (omeZarrUrl, cacheKey) => {
   if (!imageCache.has(cacheKey)) {
     const promise = (async () => {
-      const dims = await getImageDimensions(omeZarrUrl);
-      if (!dims) return null;
-      // request the full extent at full output size → forces the level-0 tile
-      return getImageUrls(omeZarrUrl, {
+      const pyramid = await openOmePyramid(omeZarrUrl);
+      // full extent at the base output size → resolvePyramidRegion picks the
+      // coarsest level that still meets BASE_OUTPUT across the whole slide
+      return renderImageTile(pyramid, {
         xMin: 0,
-        xMax: dims.imageWidth,
+        xMax: pyramid.fullW,
         yMin: 0,
-        yMax: dims.imageHeight,
-        outputWidth: dims.imageWidth,
-        outputHeight: dims.imageHeight,
+        yMax: pyramid.fullH,
+        outputWidth: BASE_OUTPUT,
+        outputHeight: BASE_OUTPUT,
       });
     })();
-    // drop failed loads from the cache so they can be retried
     promise.catch(() => imageCache.delete(cacheKey));
     promise.then((value) => { if (value) imageResolvedCache.set(cacheKey, value); });
     imageCache.set(cacheKey, promise);
@@ -51,14 +56,23 @@ export const loadFullImage = (omeZarrUrl, cacheKey) => {
 };
 
 /**
- * Full-resolution (level-0) segmentation label bitmask for a sample, cached by
- * key. The (cheap) per-view colouring is applied separately via
- * colorSegmentationOverlay.
- * @returns {Promise<{ flatData, regionW, regionH, extent } | null>}
+ * Base (overview) segmentation labels for a sample, cached by key. The (cheap)
+ * per-view colouring is applied separately via colorSegmentationOverlay.
+ * @returns {Promise<{ flatData, regionW, regionH, extent, level } | null>}
  */
-export const loadSegmentationBitmask = (omeZarrUrl, cacheKey) => {
+export const loadBaseSegmentation = (omeZarrUrl, cacheKey) => {
   if (!bitmaskCache.has(cacheKey)) {
-    const promise = decodeSegmentationBitmask(omeZarrUrl);
+    const promise = (async () => {
+      const pyramid = await openOmePyramid(omeZarrUrl);
+      return decodeSegmentationRegion(pyramid, {
+        xMin: 0,
+        xMax: pyramid.fullW,
+        yMin: 0,
+        yMax: pyramid.fullH,
+        outputWidth: BASE_OUTPUT,
+        outputHeight: BASE_OUTPUT,
+      });
+    })();
     promise.catch(() => bitmaskCache.delete(cacheKey));
     promise.then((value) => { if (value) bitmaskResolvedCache.set(cacheKey, value); });
     bitmaskCache.set(cacheKey, promise);

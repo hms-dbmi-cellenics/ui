@@ -104,7 +104,7 @@ const SpatialOutlierFilter = (props) => {
     },
     {
       panelTitle: 'Colours',
-      controls: ['colourScheme', 'colourInversion'],
+      controls: ['colourScheme', 'colourInversion', 'colourReverse'],
     },
     {
       panelTitle: 'Segmentations',

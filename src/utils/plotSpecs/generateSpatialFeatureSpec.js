@@ -6,21 +6,20 @@ import spatialZoomSignals from 'utils/plotSpecs/spatialZoomSignals';
 /**
  * @param {object}      config
  * @param {string}      method
- * @param {object}      imageData   { imageUrl, imageWidth, imageHeight, imageExtent }
+ * @param {object}      imageData   { imageWidth, imageHeight } — level-0 full dims
+ *   for the Vega scale domains. The tissue tiles themselves stream in via the
+ *   `data` prop (dataset 'tissueImageData'); see useSpatialStream.
  * @param {Array}       plotData
- * @param {object|null} segmentationOverlay  { overlayUrl, overlayExtent } | null
  */
 // hasSegmentation controls whether the (data-driven) segmentation overlay mark or
-// the centroid-dot fallback is rendered. The overlay image itself is supplied at
-// runtime through the Vega `data` prop (dataset 'segOverlayData'), so recolouring
-// updates the view in place without rebuilding it (and without re-decoding the
-// full-resolution tissue image).
+// the centroid-dot fallback is rendered. Both the tissue tiles and the overlay are
+// supplied at runtime through the Vega `data` prop ('tissueImageData' /
+// 'segOverlayData'), so streaming sharper tiles + recolouring update the view in
+// place without rebuilding it.
 const generateSpec = (
   config, method, imageData, plotData, hasSegmentation = false,
 ) => {
-  const {
-    imageUrl, imageWidth, imageHeight, imageExtent,
-  } = imageData;
+  const { imageWidth, imageHeight } = imageData;
 
   // Initial zoom/pan domains are ALWAYS the full image extent — the spec is
   // intentionally invariant to config.axesRanges so that persisting a zoom (which
@@ -31,8 +30,23 @@ const generateSpec = (
   const initXdom = [0, imageWidth];
   const initYdom = [0, imageHeight];
 
-  const plotWidth = config.dimensions.width;
-  const plotHeight = config.dimensions.height;
+  let plotWidth = config.dimensions.width;
+  let plotHeight = config.dimensions.height;
+
+  // Mini previews live in a fixed square tile. Fit the plot to the slide's aspect
+  // within that square (≤ box in both dimensions) so the whole image is visible —
+  // never taller than the tile and clipped at the bottom.
+  if (config.miniPlot && imageWidth && imageHeight) {
+    const box = Math.min(plotWidth, plotHeight);
+    const aspect = imageWidth / imageHeight;
+    if (aspect >= 1) {
+      plotWidth = box;
+      plotHeight = Math.round(box / aspect);
+    } else {
+      plotHeight = box;
+      plotWidth = Math.round(box * aspect);
+    }
+  }
 
   let legend = [];
 
@@ -55,21 +69,22 @@ const generateSpec = (
 
   const marks = [];
 
-  // 1. Tissue image
+  // 1. Tissue image — data-driven (tiles supplied via the `data` prop). The dataset
+  // holds a coarse full-extent base tile plus, when zoomed in, a finer viewport tile
+  // on top (see useSpatialStream). Each datum positions itself from its own extent,
+  // so streaming sharper tiles in is an in-place data update — never a view rebuild.
   if (config.showImage) {
-    const {
-      xMin: ix1, xMax: ix2, yMin: iy1, yMax: iy2,
-    } = imageExtent;
     marks.push({
       type: 'image',
       clip: true,
+      from: { data: 'tissueImageData' },
       encode: {
         update: {
-          url: { value: imageUrl },
-          x: { signal: `scale("x", ${ix1})` },
-          y: { signal: `scale("y", ${iy2})` },
-          width: { signal: `scale("x", ${ix2}) - scale("x", ${ix1})` },
-          height: { signal: `scale("y", ${iy1}) - scale("y", ${iy2})` },
+          url: { field: 'url' },
+          x: { signal: 'scale("x", datum.x1)' },
+          y: { signal: 'scale("y", datum.y2)' },
+          width: { signal: 'scale("x", datum.x2) - scale("x", datum.x1)' },
+          height: { signal: 'scale("y", datum.y1) - scale("y", datum.y2)' },
           aspect: { value: false },
           opacity: { value: 1 },
         },
@@ -200,8 +215,9 @@ const generateSpec = (
           },
         ],
       },
-      // segmentation overlay image ({ url, x1, x2, y1, y2 }), supplied/updated
+      // tissue + segmentation tiles ([{ url, x1, x2, y1, y2 }, …]), supplied/updated
       // in place via the react-vega `data` prop
+      { name: 'tissueImageData', values: [] },
       { name: 'segOverlayData', values: [] },
     ],
     // clamp zoom/pan to the full image extent so you can always zoom back out to it
@@ -233,13 +249,18 @@ const generateSpec = (
           count: 5,
         },
         domain: { data: 'plotData', field: 'value' },
-        reverse: config.colour.gradient === 'spectral' || config.colour.reverseCbar,
+        // spectral defaults to reversed; reverseCbar flips that (XOR), so an explicit
+        // reverseCbar actually reverses instead of being a no-op on spectral.
+        reverse: (config.colour.gradient === 'spectral') !== Boolean(config.colour.reverseCbar),
       },
     ],
     axes,
     marks,
     legends: legend,
-    title: {
+    // Omit the title on mini previews — an (even empty) title reserves a line of
+    // vertical space, pushing the canvas taller than the fixed square tile and
+    // clipping the slide at the bottom.
+    title: config.miniPlot ? undefined : {
       text: config.title.text,
       color: config.colour.masterColour,
       anchor: config.title.anchor,

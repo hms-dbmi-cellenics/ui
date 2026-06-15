@@ -1,8 +1,6 @@
-import {
-  root as zarrRoot, open, get, slice,
-} from 'zarrita';
+import { get, slice } from 'zarrita';
 import { ResourceLoader } from 'vega';
-import ZipFileStore from 'components/data-exploration/spatial/ZipFileStore';
+import { resolvePyramidRegion } from './zarrPyramid';
 
 export const parseHexColor = (hex) => {
   const clean = (hex ?? '').replace('#', '');
@@ -25,48 +23,49 @@ const isCellEdge = (flatData, row, col, regionW, regionH, v) => {
 };
 
 /**
- * Decode the full-resolution (level-0) segmentation label bitmask from an
- * ome-zarr. Returns the raw label array + dimensions; the colouring is done
- * separately by colorSegmentationOverlay so the expensive zarr decode can be
- * cached and shared across plots (see spatialTileCache).
+ * Decode one segmentation-label tile from an already-opened pyramid for the given
+ * data-space viewport. Mirrors renderImageTile's level/region selection (shared
+ * resolvePyramidRegion) so the segmentation tile aligns pixel-for-pixel with the
+ * histology tile at the same viewport. Coarser pyramid levels are
+ * nearest-neighbour downsamples (per the OME-Zarr label convention), so label
+ * values — hence cell IDs — are preserved at every level.
  *
- * @param {string} segmentationUrl
- * @returns {Promise<{ flatData, regionW, regionH, extent } | null>}
+ * @param {object} pyramid   result of openOmePyramid (segmentation zarr)
+ * @param {object} viewport  { xMin, xMax, yMin, yMax, outputWidth, outputHeight }
+ * @returns {{ flatData, regionW, regionH, extent, level } | null}
+ *   extent is the data-space rectangle this tile covers.
  */
-export const decodeSegmentationBitmask = async (segmentationUrl) => {
+export const decodeSegmentationRegion = async (pyramid, viewport) => {
   try {
-    const store = ZipFileStore.fromUrl(segmentationUrl);
-    const rootNode = zarrRoot(store);
+    const {
+      levels, fullW, fullH,
+    } = pyramid;
+    const region = resolvePyramidRegion(levels, fullW, fullH, viewport);
+    if (!region) return null;
 
-    let datasets = [{ path: '0' }];
-    try {
-      const rootGroup = await open(rootNode, { kind: 'group' });
-      const rootAttrs = await Promise.resolve(rootGroup.attrs);
-      datasets = rootAttrs?.multiscales?.[0]?.datasets || datasets;
-    } catch (_e) {
-      // multiscale metadata is optional — fall back to the default dataset path
-    }
+    const {
+      level, shape, ndim, x0, x1, y0, y1, regionW, regionH, extent,
+    } = region;
+    const { arr } = levels[level];
 
-    // level 0 is the full-resolution image, so the displayed segmentation is sharp
-    const arr = await open(rootNode.resolve(datasets[0].path), { kind: 'array' });
-    const { shape } = arr;
-    const regionH = shape[shape.length - 2];
-    const regionW = shape[shape.length - 1];
-
-    const leadingDims = shape.slice(0, -2).map(() => 0);
-    const selection = [...leadingDims, slice(0, regionH), slice(0, regionW)];
+    // Label arrays have no channel axis: pin every leading dim to 0, window the
+    // last two (y, x).
+    const selection = shape.map((_, dimIdx) => {
+      if (dimIdx === ndim - 2) return slice(y0, y1);
+      if (dimIdx === ndim - 1) return slice(x0, x1);
+      return 0;
+    });
     const ndArray = await get(arr, selection);
 
     return {
       flatData: ndArray.data,
       regionW,
       regionH,
-      extent: {
-        xMin: 0, xMax: regionW, yMin: 0, yMax: regionH,
-      },
+      extent,
+      level,
     };
   } catch (e) {
-    console.error('[decodeSegmentationBitmask]', e);
+    console.error('[decodeSegmentationRegion]', e);
     return null;
   }
 };
@@ -74,7 +73,7 @@ export const decodeSegmentationBitmask = async (segmentationUrl) => {
 // ── Drawable registry ──────────────────────────────────────────────────────
 // Registry of drawables (canvas / image) addressed by a synthetic `seg-overlay://`
 // URL, so Vega can paint them directly — see patchResourceLoader. Used for BOTH the
-// coloured segmentation overlay and the full-resolution histology tile.
+// coloured segmentation overlay tiles and the histology tiles.
 const drawableRegistry = new Map();
 let drawableCounter = 0;
 
@@ -85,8 +84,7 @@ const imageDataCache = new WeakMap();
  * Register a drawable (canvas/image) and return a synthetic URL token. Handing the
  * drawable to Vega this way skips the heavy PNG round-trip (toDataURL on our side +
  * Vega re-decoding the PNG into an <img> on every view rebuild) — the only cost
- * left is a GPU drawImage(). The histology tile is registered once per slide and
- * reused across every spatial plot in the app (cached in spatialTileCache).
+ * left is a GPU drawImage().
  */
 export const registerDrawable = (drawable) => {
   drawableCounter += 1;
@@ -97,64 +95,19 @@ export const registerDrawable = (drawable) => {
 
 const getDrawable = (token) => drawableRegistry.get(token);
 
-// Release a registered drawable once Vega has moved on (e.g. a superseded overlay),
-// so the registry doesn't accumulate stale full-resolution canvases across recolours.
+// Release a registered drawable once Vega has moved on (e.g. a superseded tile),
+// so the registry doesn't accumulate stale canvases across recolours/zoom.
 export const releaseOverlay = (token) => {
   if (token) drawableRegistry.delete(token);
-};
-
-// ── Coloured-overlay snapshot cache ─────────────────────────────────────────
-// Content-addressed cache of IMMUTABLE overlay snapshots. Re-colouring the
-// full-resolution bitmask is the expensive per-pixel pass that "redraws" the
-// segmentation every time a spatial plot remounts (e.g. navigating back to the
-// page). Caching a snapshot keyed by all the colour-affecting inputs lets a
-// revisit reuse the exact overlay instantly (a GPU blit) instead of recolouring.
-// LRU-capped because each snapshot is a full-resolution canvas.
-const overlaySnapshotCache = new Map(); // key -> { overlayUrl, overlayExtent }
-const OVERLAY_SNAPSHOT_CACHE_MAX = 4;
-
-export const getOverlaySnapshot = (key) => {
-  if (!key) return null;
-  const hit = overlaySnapshotCache.get(key);
-  if (!hit) return null;
-  // refresh LRU position
-  overlaySnapshotCache.delete(key);
-  overlaySnapshotCache.set(key, hit);
-  return hit;
-};
-
-// Clone the just-painted canvas into an immutable snapshot and cache it under `key`.
-// Cloning (rather than caching the live, reused canvas) is essential: the per-plot
-// canvas gets repainted on the next recolour, which would otherwise corrupt the
-// cached entry.
-export const cacheOverlaySnapshot = (key, sourceCanvas, overlayExtent) => {
-  if (!key || !sourceCanvas || overlaySnapshotCache.has(key)) return;
-
-  const snapshot = document.createElement('canvas');
-  snapshot.width = sourceCanvas.width;
-  snapshot.height = sourceCanvas.height;
-  snapshot.getContext('2d').drawImage(sourceCanvas, 0, 0);
-
-  overlaySnapshotCache.set(key, {
-    overlayUrl: registerDrawable(snapshot),
-    overlayExtent,
-  });
-
-  while (overlaySnapshotCache.size > OVERLAY_SNAPSHOT_CACHE_MAX) {
-    const oldestKey = overlaySnapshotCache.keys().next().value;
-    const old = overlaySnapshotCache.get(oldestKey);
-    overlaySnapshotCache.delete(oldestKey);
-    if (old) releaseOverlay(old.overlayUrl);
-  }
 };
 
 /* eslint-disable no-underscore-dangle */ // reaching into Vega ResourceLoader internals
 // Patch Vega's ResourceLoader ONCE at module load so our `seg-overlay://` tokens
 // resolve to the live canvas/image for ALL views — crucially including the very
 // first render (a per-view onNewView patch would miss URLs already baked into the
-// spec, such as the histology tile). Routed through the loader's pending counter so
-// Vega's "redraw once the image is ready" machinery still fires. Any non-token URL
-// falls through to the original loader untouched.
+// spec). Routed through the loader's pending counter so Vega's "redraw once the
+// image is ready" machinery still fires. Any non-token URL falls through to the
+// original loader untouched.
 let resourceLoaderPatched = false;
 const patchResourceLoader = () => {
   if (resourceLoaderPatched) return;
@@ -175,18 +128,17 @@ patchResourceLoader();
 /* eslint-enable no-underscore-dangle */
 
 /**
- * Paint a coloured overlay from a decoded bitmask onto a canvas and hand that
- * canvas to Vega (via the registry above). Cheap (no network/zarr, no PNG
- * encode), so it can run on every colour/threshold change.
+ * Paint a coloured overlay from a decoded segmentation tile onto a canvas and hand
+ * that canvas to Vega (via the registry above). Cheap (no network/zarr, no PNG
+ * encode), so it can run on every colour/threshold change and per viewport tile.
  *
- * @param {object} decoded  result of decodeSegmentationBitmask
+ * @param {object} decoded  result of decodeSegmentationRegion
  * @param {Map<number, [r,g,b] | [r,g,b,a]>} cellColorMap  0-indexed cell ID → colour.
  *   A 4th element overrides the global opacity for that cell (0–255 alpha).
  * @param {object} options  { opacity: 0–1, outline: boolean, canvas?: HTMLCanvasElement }
- *   Pass a persistent `canvas` (one per plot) to avoid re-allocating the canvas and
- *   its ~regionW·regionH·4-byte pixel buffer on every recolour (the dominant GC cost
- *   at full resolution). The fill pass writes every pixel's alpha, so reusing the
- *   buffer needs no explicit clear.
+ *   Pass a persistent `canvas` (one per layer) to avoid re-allocating the canvas and
+ *   its pixel buffer on every recolour. The fill pass writes every pixel's alpha, so
+ *   reusing the buffer needs no explicit clear.
  * @returns {{ overlayUrl, overlayExtent } | null}
  */
 export const colorSegmentationOverlay = (decoded, cellColorMap, options = {}) => {
@@ -202,8 +154,8 @@ export const colorSegmentationOverlay = (decoded, cellColorMap, options = {}) =>
   if (canvas.height !== regionH) canvas.height = regionH;
   const ctx = canvas.getContext('2d');
 
-  // reuse one ImageData buffer per canvas — re-allocating it each recolour
-  // (~144 MB at 6000²) is what makes long slider drags churn the GC
+  // reuse one ImageData buffer per canvas — re-allocating it each recolour churns
+  // the GC during long slider drags
   let imgData = imageDataCache.get(canvas);
   if (!imgData || imgData.width !== regionW || imgData.height !== regionH) {
     imgData = ctx.createImageData(regionW, regionH);

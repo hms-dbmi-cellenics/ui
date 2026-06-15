@@ -11,12 +11,7 @@ import { Spin } from 'antd';
 import colors from 'utils/styling/colors';
 import { generateSpec } from 'utils/plotSpecs/generateSpatialFeatureSpec';
 import { getSampleFileUrls } from 'utils/data-management/downloadSampleFile';
-import {
-  colorSegmentationOverlay, releaseOverlay, getOverlaySnapshot, cacheOverlaySnapshot,
-} from './loadSegmentationOverlay';
-import {
-  loadFullImage, loadSegmentationBitmask, peekFullImage, peekBitmask,
-} from './spatialTileCache';
+import useSpatialStream from './useSpatialStream';
 
 const EMBEDDING_TYPE = 'images';
 // 3-element colours (no baked alpha) so colorSegmentationOverlay applies the
@@ -73,7 +68,8 @@ const buildMetricCellColorMap = (plotData, config) => {
   const schemeName = config.colour.gradient === 'default'
     ? (config.colour.toggleInvert === '#FFFFFF' ? 'purplered' : 'darkgreen')
     : config.colour.gradient;
-  const shouldReverse = config.colour.gradient === 'spectral' || config.colour.reverseCbar;
+  // spectral defaults to reversed; reverseCbar flips that (XOR) — see generateSpatialFeatureSpec
+  const shouldReverse = (config.colour.gradient === 'spectral') !== Boolean(config.colour.reverseCbar);
   const interpolator = vega.scheme(schemeName);
   if (typeof interpolator !== 'function') return map;
 
@@ -91,7 +87,7 @@ const buildMetricCellColorMap = (plotData, config) => {
  * Data-processing spatial filter plot. Two modes:
  *  - 'metric': tissue slide with segmentations coloured by the metric value.
  *  - 'outlier': segmentations beyond the z-score threshold filled red, the rest
- *    mostly-transparent grey (recomputed live as the threshold changes).
+ *    grey (recomputed live as the threshold changes).
  * Per-sample — all the data it needs is in `plotData` ([{ cellId, value, zscore, x, y }]).
  */
 const SpatialOutlierFilterPlot = (props) => {
@@ -101,59 +97,14 @@ const SpatialOutlierFilterPlot = (props) => {
   } = props;
 
   const [plotSpec, setPlotSpec] = useState({});
-  // initialise from the (synchronous) resolved caches so a remount — e.g. switching
-  // between Data Processing steps — renders immediately from cache instead of
-  // waiting on the signed-URL fetch + decode and flashing a redraw.
-  const [currentImageData, setCurrentImageData] = useState(
-    () => peekFullImage(`${experimentId}-${sampleId}-image`),
-  );
-  const [bitmask, setBitmask] = useState(
-    () => peekBitmask(`${experimentId}-${sampleId}-seg`),
-  );
   const [omeZarrUrl, setOmeZarrUrl] = useState(null);
-  const [segmentationZarrUrl, setSegmentationZarrUrl] = useState(undefined);
-  const [segmentationOverlay, setSegmentationOverlay] = useState(null);
-
-  // one canvas reused for every recolour (avoids re-allocating the full-res pixel buffer)
-  const overlayCanvasRef = useRef(null);
-  if (!overlayCanvasRef.current && typeof document !== 'undefined') {
-    overlayCanvasRef.current = document.createElement('canvas');
-  }
+  // undefined while probing, null = unavailable, string = available
+  const [segmentationUrl, setSegmentationUrl] = useState(undefined);
 
   // keep the latest onZoomChange in a ref so the debounced persister always calls
   // the current callback without re-creating the debounce
   const onZoomChangeRef = useRef(onZoomChange);
   onZoomChangeRef.current = onZoomChange;
-
-  // mouse zoom/pan → persist the resulting axes range into this plot's config
-  // (debounced). axesRanges is excluded from the spec signature below, so writing
-  // it doesn't rebuild the view; the spec re-bakes the saved range on remount.
-  const persistZoom = useMemo(() => _.debounce((axesRanges) => {
-    onZoomChangeRef.current(axesRanges);
-  }, 250), []);
-  const onZoomDomUpdate = (name, value) => {
-    const [xdom, ydom] = value;
-    persistZoom({
-      xAxisAuto: false,
-      xMin: xdom[0],
-      xMax: xdom[1],
-      yAxisAuto: false,
-      yMin: ydom[0],
-      yMax: ydom[1],
-    });
-  };
-
-  // Re-apply the persisted zoom onto a freshly (re)built view (the spec always
-  // inits at the full extent, so persisting a zoom never rebuilds the view). Stable
-  // ref — react-vega rebuilds if onNewView changes by reference.
-  const axesRangesRef = useRef(config?.axesRanges);
-  axesRangesRef.current = config?.axesRanges;
-  const restoreZoom = useCallback((view) => {
-    const ar = axesRangesRef.current;
-    if (ar && ar.xAxisAuto === false) {
-      view.signal('initXdom', [ar.xMin, ar.xMax]).signal('initYdom', [ar.yMin, ar.yMax]).runAsync();
-    }
-  }, []);
 
   // ── Fetch histology image URL ──────────────────────────────────────────────
   useEffect(() => {
@@ -174,10 +125,10 @@ const SpatialOutlierFilterPlot = (props) => {
     (async () => {
       try {
         const results = await getSampleFileUrls(experimentId, sampleId, 'segmentations_ome_zarr_zip');
-        setSegmentationZarrUrl(results?.[0]?.url ?? null);
+        setSegmentationUrl(results?.[0]?.url ?? null);
       } catch (_e) {
         console.info('[SpatialOutlierFilterPlot] segmentations_ome_zarr_zip not available — centroid fallback');
-        setSegmentationZarrUrl(null);
+        setSegmentationUrl(null);
       }
     })();
   }, [experimentId, sampleId]);
@@ -189,86 +140,79 @@ const SpatialOutlierFilterPlot = (props) => {
     plotData?.length,
   ].join(':'), [config?.colour, plotData]);
 
-  // ── Load the full-resolution image once per sample (shared, cached) ─────────
-  useEffect(() => {
-    if (!omeZarrUrl) return;
-    loadFullImage(omeZarrUrl, `${experimentId}-${sampleId}-image`).then(setCurrentImageData);
-  }, [omeZarrUrl, experimentId, sampleId]);
-
-  // ── Decode the segmentation bitmask once per sample (shared, cached) ────────
-  useEffect(() => {
-    if (!segmentationZarrUrl) return;
-    loadSegmentationBitmask(segmentationZarrUrl, `${experimentId}-${sampleId}-seg`).then(setBitmask);
-  }, [segmentationZarrUrl, experimentId, sampleId]);
-
-  // debounced so dragging the threshold/opacity slider coalesces into one recolour.
-  // Caches an immutable snapshot so a later remount can reuse it instantly.
-  const recolorOverlay = useMemo(() => _.debounce((bm, colorMap, options, key) => {
-    const result = colorSegmentationOverlay(bm, colorMap, options);
-    if (result) {
-      cacheOverlaySnapshot(key, options.canvas, result.overlayExtent);
-      setSegmentationOverlay({ ...result, cached: false });
-    }
-  }, 120), []);
-
-  // overlay snapshot key: cacheId (filter) + mode distinguish filters that may share
-  // the same length/colours/threshold; threshold only affects the outlier view.
-  const overlayCacheKey = [
-    experimentId, sampleId, cacheId, mode, direction,
-    mode === 'outlier' ? threshold : 'metric', colorSignature,
-    config?.marker?.opacity, config?.marker?.outline,
+  // colour map + key — threshold only affects the outlier view; cacheId/mode keep
+  // filters that may share the same length/colours distinct.
+  const colorKey = [
+    cacheId, mode, direction, mode === 'outlier' ? threshold : 'metric', colorSignature,
   ].join(':');
-
-  // Drop any stale overlay the instant we switch plot/filter (different plotData,
-  // same length) or slide, so the previous filter's colouring isn't shown until this
-  // plot's recolour completes. NOT keyed on threshold/opacity, so a slider drag just
-  // recolours in place without blanking. MUST be defined BEFORE the recolour effect:
-  // effects run in definition order, so this clears first and the recolour effect's
-  // (possibly synchronous, cache-hit) set then wins — otherwise it would clobber the
-  // freshly-set overlay back to null when switching metric/outlier or steps.
-  useEffect(() => { setSegmentationOverlay(null); }, [plotData, mode, sampleId]);
-
-  // ── Re-colour the overlay when the bitmask, metric/outlier mode, threshold or
-  // colours change. On a cache hit (e.g. revisiting the page) reuse it instantly. ──
-  useEffect(() => {
-    if (!bitmask || !config || !plotData?.length) return;
-
-    const snapshot = getOverlaySnapshot(overlayCacheKey);
-    if (snapshot) {
-      setSegmentationOverlay({ ...snapshot, cached: true });
-      return;
-    }
-
-    const cellColorMap = mode === 'outlier'
+  const cellColorMap = useMemo(() => {
+    if (!plotData?.length || !config) return null;
+    return mode === 'outlier'
       ? buildOutlierCellColorMap(plotData, threshold, direction)
       : buildMetricCellColorMap(plotData, config);
+    // colorKey captures mode/threshold/direction/colours/length
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [colorKey, plotData]);
 
-    const options = {
-      opacity: (config.marker.opacity ?? 10) / 10,
-      outline: config.marker.outline ?? false,
-      canvas: overlayCanvasRef.current,
-    };
+  // ── Viewport streaming (base + detail tiles for tissue & segmentation) ──────
+  const {
+    imageDims,
+    segmentationsAvailable,
+    segProbeDone,
+    tissueImageData,
+    segOverlayData,
+    onViewportChange,
+    ready,
+  } = useSpatialStream({
+    experimentId,
+    sampleId,
+    omeZarrUrl,
+    segmentationUrl,
+    plotWidth: config?.dimensions?.width,
+    plotHeight: config?.dimensions?.height,
+    showImage: config?.showImage ?? false,
+    colorMap: cellColorMap,
+    colorKey,
+    opacity: (config?.marker?.opacity ?? 10) / 10,
+    outline: config?.marker?.outline ?? false,
+  });
 
-    recolorOverlay(bitmask, cellColorMap, options, overlayCacheKey);
-  }, [
-    bitmask, plotData, colorSignature, mode, direction, threshold,
-    config?.marker?.opacity, config?.marker?.outline,
-  ]);
+  // mouse zoom/pan → persist axes range (debounced) AND stream a sharper tile.
+  const persistZoom = useMemo(() => _.debounce((axesRanges) => {
+    onZoomChangeRef.current(axesRanges);
+  }, 250), []);
+  const onZoomDomUpdate = (name, value) => {
+    if (config?.miniPlot) return; // mini previews never zoom/stream — always full extent
+    const [xdom, ydom] = value;
+    onViewportChange(xdom, ydom);
+    persistZoom({
+      xAxisAuto: false,
+      xMin: xdom[0],
+      xMax: xdom[1],
+      yAxisAuto: false,
+      yMin: ydom[0],
+      yMax: ydom[1],
+    });
+  };
+
+  // Re-apply persisted zoom onto a freshly (re)built view + stream its detail tile.
+  // Mini previews skip this entirely so they always show the zoomed-out slide, even
+  // when the main plot (which shares this config's axesRanges) is zoomed in.
+  const axesRangesRef = useRef(config?.axesRanges);
+  axesRangesRef.current = config?.axesRanges;
+  const isMiniPlot = config?.miniPlot;
+  const restoreZoom = useCallback((view) => {
+    if (isMiniPlot) return;
+    const ar = axesRangesRef.current;
+    if (ar && ar.xAxisAuto === false) {
+      view.signal('initXdom', [ar.xMin, ar.xMax]).signal('initYdom', [ar.yMin, ar.yMax]).runAsync();
+      onViewportChange([ar.xMin, ar.xMax], [ar.yMin, ar.yMax]);
+    }
+  }, [onViewportChange, isMiniPlot]);
 
   // ── Spec generation ─────────────────────────────────────────────────────────
-  // The overlay is NOT part of the spec — it streams in via the `data` prop — so
-  // recolouring (e.g. dragging the threshold) updates the view in place without
-  // rebuilding it or re-decoding the full-resolution tissue image.
-  // a cached bitmask means segmentation is available — derive from it too so the
-  // spec doesn't have to wait on the (network) segmentation-URL probe on a remount.
-  const segmentationsAvailable = !!segmentationZarrUrl || !!bitmask;
-  // undefined until the segmentation-availability probe resolves; render only once
-  // we know, so the plot doesn't first paint centroids then swap to the overlay.
-  const segProbeDone = segmentationZarrUrl !== undefined || !!bitmask;
-
-  // Spec signature EXCLUDING axesRanges and (when segmentation is shown) the
-  // overlay-only opacity/outline — so persisting mouse zoom and tweaking
-  // opacity/outline never regenerate the spec and thus never rebuild the view.
+  // Tiles + overlay stream in via the `data` prop — recolour (e.g. dragging the
+  // threshold) and zoom update the view in place without rebuilding it.
   const specSignature = useMemo(() => {
     if (!config) return '';
     const c = { ...config, axesRanges: undefined };
@@ -278,12 +222,7 @@ const SpatialOutlierFilterPlot = (props) => {
     return JSON.stringify(c);
   }, [config, segmentationsAvailable]);
   useEffect(() => {
-    if (!currentImageData || !segProbeDone) {
-      setPlotSpec({});
-      return;
-    }
-
-    if (!config || !plotData?.length) {
+    if (!ready || !imageDims || !segProbeDone || !config || !plotData?.length) {
       setPlotSpec({});
       return;
     }
@@ -292,7 +231,7 @@ const SpatialOutlierFilterPlot = (props) => {
     const specData = plotData.map(({ x, y, value }) => ({ x, y, value }));
 
     const spec = generateSpec(
-      config, EMBEDDING_TYPE, currentImageData, specData, segmentationsAvailable,
+      config, EMBEDDING_TYPE, imageDims, specData, segmentationsAvailable,
     );
 
     // The outlier view's continuous metric legend is meaningless (cells are coloured
@@ -326,27 +265,14 @@ const SpatialOutlierFilterPlot = (props) => {
 
     setPlotSpec(spec);
   }, [
-    specSignature, plotData, mode, segmentationsAvailable, segProbeDone, currentImageData,
+    specSignature, plotData, mode, segmentationsAvailable, segProbeDone, imageDims, ready,
   ]);
 
-  // overlay image streamed to Vega in place (no view rebuild) via the `data` prop
+  // tissue + overlay tiles streamed to Vega in place (no view rebuild) via `data`
   const vegaData = useMemo(() => ({
-    segOverlayData: segmentationOverlay ? [{
-      url: segmentationOverlay.overlayUrl,
-      x1: segmentationOverlay.overlayExtent.xMin,
-      x2: segmentationOverlay.overlayExtent.xMax,
-      y1: segmentationOverlay.overlayExtent.yMin,
-      y2: segmentationOverlay.overlayExtent.yMax,
-    }] : [],
-  }), [segmentationOverlay]);
-
-  // release the previous overlay canvas once Vega has switched to the new one.
-  // Cached snapshots are owned by the snapshot cache (LRU) — never release those.
-  useEffect(() => () => {
-    if (segmentationOverlay && !segmentationOverlay.cached) {
-      releaseOverlay(segmentationOverlay.overlayUrl);
-    }
-  }, [segmentationOverlay]);
+    tissueImageData,
+    segOverlayData,
+  }), [tissueImageData, segOverlayData]);
 
   if (Object.keys(plotSpec).length === 0 || !plotData?.length) {
     // Mini preview (in the plot selector): render a fixed-size empty box — no spinner
@@ -357,10 +283,8 @@ const SpatialOutlierFilterPlot = (props) => {
         <div style={{ width: config.dimensions.width, height: config.dimensions.height }} />
       );
     }
-    // plain spinner: this step is API/UI processing (image + overlay), not a
-    // backend worker task, so a backend-status message would be misleading.
-    // Red to match the app's other loaders.
-    // same antd spinner as before, just recoloured red (like the app's Loader)
+    // plain spinner: this step is API/UI processing (image + overlay), not a backend
+    // worker task. Red to match the app's other loaders.
     return (
       <center style={{ padding: '2em' }}>
         <style>

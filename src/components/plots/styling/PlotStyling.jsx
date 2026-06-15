@@ -18,6 +18,7 @@ import AxesRangesDesign from './AxesRangesDesign';
 import PointDesign from './PointDesign';
 import ColourbarDesign from './ColourbarDesign';
 import ColourInversion from './ColourInversion';
+import ColourReverse from './ColourReverse';
 import ExpressionValuesType from './ExpressionValuesType';
 import ExpressionValuesCapping from './ExpressionValuesCapping';
 import ShowImageToggle from './ShowImageToggle';
@@ -44,6 +45,7 @@ const PlotStyling = (props) => {
     axesRanges: (attr) => <AxesRangesDesign key='axesRanges' config={config} onUpdate={onUpdate} {...attr} />,
     colourScheme: (attr) => <ColourbarDesign key='colourScheme' config={config} onUpdate={onUpdate} {...attr} />,
     colourInversion: (attr) => <ColourInversion key='colourInversion' config={config} onUpdate={onUpdate} {...attr} />,
+    colourReverse: (attr) => <ColourReverse key='colourReverse' config={config} onUpdate={onUpdate} {...attr} />,
     expressionValuesType: (attr) => <ExpressionValuesType key='expressionValuesType' config={config} onUpdate={onUpdate} {...attr} />,
     expressionValuesCapping: (attr) => <ExpressionValuesCapping key='expressionValuesCapping' config={config} onUpdate={onUpdate} {...attr} />,
     markers: (attr) => <PointDesign key='markers' config={config} onUpdate={onUpdate} {...attr} />,

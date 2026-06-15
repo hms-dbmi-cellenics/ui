@@ -14,10 +14,7 @@ import { loadProcessingSettings } from 'redux/actions/experimentSettings';
 import { getCellSets } from 'redux/selectors';
 import { generateSpec, generateData, filterCells } from 'utils/plotSpecs/generateSpatialFeatureSpec';
 import { getSampleFileUrls } from 'utils/data-management/downloadSampleFile';
-import {
-  colorSegmentationOverlay, releaseOverlay, getOverlaySnapshot, cacheOverlaySnapshot,
-} from './loadSegmentationOverlay';
-import { loadFullImage, loadSegmentationBitmask } from './spatialTileCache';
+import useSpatialStream from './useSpatialStream';
 import PlatformError from '../PlatformError';
 import Loader from '../Loader';
 
@@ -64,7 +61,8 @@ const buildFeatureCellColorMap = (filteredCellIds, plotDataArr, embeddingData, c
     ? (config.colour.toggleInvert === '#FFFFFF' ? 'purplered' : 'darkgreen')
     : config.colour.gradient;
 
-  const shouldReverse = config.colour.gradient === 'spectral' || config.colour.reverseCbar;
+  // spectral defaults to reversed; reverseCbar flips that (XOR) — see generateSpatialFeatureSpec
+  const shouldReverse = (config.colour.gradient === 'spectral') !== Boolean(config.colour.reverseCbar);
   const interpolator = vega.scheme(schemeName);
 
   if (typeof interpolator !== 'function') return new Map();
@@ -113,26 +111,14 @@ const SpatialFeaturePlot = (props) => {
   const isObj2s = !_.isNil(obj2sStatusRaw) && obj2sStatusRaw !== 'NOT_CREATED';
 
   const [plotSpec, setPlotSpec] = useState({});
-  // full-resolution (level-0) image for the sample, fetched + decoded once and
-  // shared across all spatial plots via spatialTileCache
-  const [currentImageData, setCurrentImageData] = useState(null);
-  // decoded segmentation label bitmask (cached); coloured on demand into an overlay
-  const [bitmask, setBitmask] = useState(null);
   const [omeZarrUrls, setOmeZarrUrls] = useState(null);
   const [segmentationZarrUrls, setSegmentationZarrUrls] = useState(null);
   const [selectedSample, setSelectedSample] = useState();
-  const [segmentationOverlay, setSegmentationOverlay] = useState(null);
 
   // keep the latest onZoomChange in a ref so the debounced persister always calls
   // the current callback without re-creating the debounce
   const onZoomChangeRef = useRef(onZoomChange);
   onZoomChangeRef.current = onZoomChange;
-
-  // one canvas reused for every recolour (avoids re-allocating the full-res pixel buffer)
-  const overlayCanvasRef = useRef(null);
-  if (!overlayCanvasRef.current && typeof document !== 'undefined') {
-    overlayCanvasRef.current = document.createElement('canvas');
-  }
 
   // ── Fetch image URLs ────────────────────────────────────────────────────────
   useEffect(() => {
@@ -182,16 +168,90 @@ const SpatialFeaturePlot = (props) => {
     setSelectedSample(sampleId);
   }, [config, omeZarrUrls]);
 
+  // ── Colour signature ────────────────────────────────────────────────────────
+  // Changes when the gene, truncation, colour scheme, or sample changes.
+  const colorSignature = useMemo(() => {
+    if (!config || !plotData) return '';
+    return [
+      selectedSample,
+      config.shownGene,
+      config.truncatedValues,
+      config.colour.gradient,
+      config.colour.reverseCbar,
+      config.colour.toggleInvert,
+      plotData.length,
+    ].join(':');
+  }, [
+    selectedSample,
+    config?.shownGene,
+    config?.truncatedValues,
+    config?.colour?.gradient,
+    config?.colour?.reverseCbar,
+    config?.colour?.toggleInvert,
+    plotData,
+  ]);
+
+  // ── Segmentation overlay colour map (per-cell), recomputed on colour change ──
+  const segmentationsAvailableGuess = segmentationZarrUrls?.length > 0;
+  const cellColorMap = useMemo(() => {
+    if (!segmentationsAvailableGuess || !config || !plotData?.length
+      || !cellSets.accessible || !embeddingData?.length || !selectedSample) {
+      return null;
+    }
+    const filteredCellIds = filterCells(cellSets, selectedSample);
+    const activeData = config.truncatedValues ? truncatedPlotData : plotData;
+    return buildFeatureCellColorMap(filteredCellIds, activeData, embeddingData, config);
+    // colorSignature already captures gene/truncation/colour/sample/length
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [colorSignature, segmentationsAvailableGuess, cellSets.accessible, embeddingData]);
+
+  // ── Viewport streaming (base + detail tiles for tissue & segmentation) ──────
+  const segEntry = useMemo(
+    () => segmentationZarrUrls?.find(({ sampleId }) => sampleId === selectedSample),
+    [segmentationZarrUrls, selectedSample],
+  );
+  const imageEntry = useMemo(
+    () => omeZarrUrls?.find(({ sampleId }) => sampleId === selectedSample),
+    [omeZarrUrls, selectedSample],
+  );
+  // undefined while probing, null when confirmed unavailable
+  const segmentationUrl = segmentationZarrUrls === null
+    ? undefined
+    : (segEntry?.url ?? null);
+
+  const {
+    imageDims,
+    segmentationsAvailable,
+    segProbeDone,
+    tissueImageData,
+    segOverlayData,
+    onViewportChange,
+    ready,
+  } = useSpatialStream({
+    experimentId,
+    sampleId: selectedSample,
+    omeZarrUrl: imageEntry?.url ?? null,
+    segmentationUrl,
+    plotWidth: config?.dimensions?.width,
+    plotHeight: config?.dimensions?.height,
+    showImage: config?.showImage ?? true,
+    colorMap: cellColorMap,
+    colorKey: colorSignature,
+    opacity: (config?.marker?.opacity ?? 10) / 10,
+    outline: config?.marker?.outline ?? false,
+  });
+
   // mouse zoom/pan → persist the resulting axes range into the plot config
-  // (debounced) so zoom survives navigation and sessions. axesRanges is excluded
-  // from the spec signature below, so writing it does NOT rebuild the view — only
-  // the live Vega signals move; the spec re-bakes the saved range on the next
-  // genuine respec / remount.
+  // (debounced) so zoom survives navigation/sessions, AND stream a sharper viewport
+  // tile. axesRanges is excluded from the spec signature below, so writing it does
+  // NOT rebuild the view.
   const persistZoom = useMemo(() => _.debounce((axesRanges) => {
     onZoomChangeRef.current(axesRanges);
   }, 250), []);
   const onZoomDomUpdate = (name, value) => {
+    if (config?.miniPlot) return; // mini previews never zoom/stream — always full extent
     const [xdom, ydom] = value;
+    onViewportChange(xdom, ydom);
     persistZoom({
       xAxisAuto: false,
       xMin: xdom[0],
@@ -202,108 +262,20 @@ const SpatialFeaturePlot = (props) => {
     });
   };
 
-  // Re-apply the persisted zoom onto a freshly (re)built view. The spec always
-  // inits at the full extent (so persisting a zoom never rebuilds the view), so
-  // this restores the saved zoom only on a genuine rebuild / initial mount. Stable
-  // ref — react-vega rebuilds the view if onNewView changes — reads the latest
-  // range via a ref.
+  // Re-apply the persisted zoom onto a freshly (re)built view, and stream the
+  // detail tile for that restored viewport. Mini previews skip this so they always
+  // show the zoomed-out slide, even though they share the main plot's axesRanges.
   const axesRangesRef = useRef(config?.axesRanges);
   axesRangesRef.current = config?.axesRanges;
+  const isMiniPlot = config?.miniPlot;
   const restoreZoom = useCallback((view) => {
+    if (isMiniPlot) return;
     const ar = axesRangesRef.current;
     if (ar && ar.xAxisAuto === false) {
       view.signal('initXdom', [ar.xMin, ar.xMax]).signal('initYdom', [ar.yMin, ar.yMax]).runAsync();
+      onViewportChange([ar.xMin, ar.xMax], [ar.yMin, ar.yMax]);
     }
-  }, []);
-
-  // ── Colour signature ────────────────────────────────────────────────────────
-  // Changes when the gene, truncation, or colour scheme changes.
-  // plotData.length acts as a proxy for "data has loaded / changed".
-  const colorSignature = useMemo(() => {
-    if (!config || !plotData) return '';
-    return [
-      config.shownGene,
-      config.truncatedValues,
-      config.colour.gradient,
-      config.colour.reverseCbar,
-      config.colour.toggleInvert,
-      plotData.length,
-    ].join(':');
-  }, [
-    config?.shownGene,
-    config?.truncatedValues,
-    config?.colour?.gradient,
-    config?.colour?.reverseCbar,
-    config?.colour?.toggleInvert,
-    plotData,
-  ]);
-
-  // Changes when opacity or outline toggle changes.
-  const renderSignature = `${config?.marker?.opacity ?? 10}:${config?.marker?.outline ?? false}`;
-
-  // ── Load the full-resolution image once per sample (shared, cached) ─────────
-  // Zoom/pan then operates purely on the Vega scales (no refetch).
-  useEffect(() => {
-    if (!omeZarrUrls || !selectedSample) return;
-    const entry = omeZarrUrls.find(({ sampleId }) => sampleId === selectedSample);
-    if (!entry) return;
-    loadFullImage(entry.url, `${experimentId}-${selectedSample}-image`).then(setCurrentImageData);
-  }, [omeZarrUrls, selectedSample, experimentId]);
-
-  // ── Decode the segmentation bitmask once per sample (shared, cached) ────────
-  useEffect(() => {
-    if (!segmentationZarrUrls?.length || !selectedSample) return;
-    const segEntry = segmentationZarrUrls.find(({ sampleId }) => sampleId === selectedSample);
-    if (!segEntry) return;
-    loadSegmentationBitmask(segEntry.url, `${experimentId}-${selectedSample}-seg`).then(setBitmask);
-  }, [segmentationZarrUrls, selectedSample, experimentId]);
-
-  // debounced so dragging the opacity slider coalesces into one recolour. Caches an
-  // immutable snapshot keyed by the colour-affecting inputs so a later remount can
-  // reuse it instantly instead of recolouring.
-  const recolorOverlay = useMemo(() => _.debounce((bm, colorMap, options, key) => {
-    const result = colorSegmentationOverlay(bm, colorMap, options);
-    if (result) {
-      cacheOverlaySnapshot(key, options.canvas, result.overlayExtent);
-      setSegmentationOverlay({ ...result, cached: false });
-    }
-  }, 120), []);
-
-  // overlay snapshot key: everything that affects the painted pixels
-  const overlayCacheKey = `${experimentId}:${selectedSample}:feature:${colorSignature}:${renderSignature}`;
-
-  // drop any stale overlay when switching slide. MUST precede the recolour effect so
-  // a cache-hit set in the recolour effect isn't clobbered back to null.
-  useEffect(() => { setSegmentationOverlay(null); }, [selectedSample]);
-
-  // ── Re-colour the overlay when the bitmask, colours, or render options change ──
-  // On a cache hit (e.g. revisiting the page) reuse the snapshot instantly.
-  useEffect(() => {
-    if (!bitmask || !cellSets.accessible || !config || !embeddingData || !plotData) return;
-
-    const snapshot = getOverlaySnapshot(overlayCacheKey);
-    if (snapshot) {
-      setSegmentationOverlay({ ...snapshot, cached: true });
-      return;
-    }
-
-    const filteredCellIds = filterCells(cellSets, selectedSample);
-    const activeData = config.truncatedValues ? truncatedPlotData : plotData;
-    const cellColorMap = buildFeatureCellColorMap(
-      filteredCellIds, activeData, embeddingData, config,
-    );
-
-    const options = {
-      opacity: (config.marker.opacity ?? 10) / 10,
-      outline: config.marker.outline ?? false,
-      canvas: overlayCanvasRef.current,
-    };
-
-    recolorOverlay(bitmask, cellColorMap, options, overlayCacheKey);
-  }, [
-    bitmask, selectedSample, colorSignature, renderSignature,
-    embeddingData, cellSets.accessible,
-  ]);
+  }, [onViewportChange, isMiniPlot]);
 
   // ── Data loading dispatch ───────────────────────────────────────────────────
   useEffect(() => {
@@ -318,18 +290,13 @@ const SpatialFeaturePlot = (props) => {
   }, [embeddingSettings?.method]);
 
   // ── Spec generation ─────────────────────────────────────────────────────────
-  // The overlay is NOT part of the spec — it streams in via the `data` prop — so
-  // recolouring doesn't regenerate (and thus doesn't rebuild/re-decode) the plot.
-  const segmentationsAvailable = segmentationZarrUrls?.length > 0;
-  // null until the segmentation-availability probe resolves; render only once we
-  // know, so the plot doesn't first paint centroids then swap to the overlay.
-  const segProbeDone = segmentationZarrUrls !== null;
+  // Tiles + overlay are NOT part of the spec — they stream in via the `data` prop —
+  // so zoom/recolour update the view in place without rebuilding it.
 
   // Spec signature EXCLUDING axesRanges and (when segmentation is shown) the
   // overlay-only opacity/outline — so persisting mouse zoom into axesRanges and
   // tweaking opacity/outline never regenerate the spec and thus never rebuild the
-  // view. Genuine changes (gene, gradient, dimensions, sample, …) still respec, and
-  // the spec re-bakes the current axesRanges (zoom) at that point.
+  // view. Genuine changes (gene, gradient, dimensions, sample, …) still respec.
   const specSignature = useMemo(() => {
     if (!config) return '';
     const c = { ...config, axesRanges: undefined };
@@ -339,8 +306,8 @@ const SpatialFeaturePlot = (props) => {
     return JSON.stringify(c);
   }, [config, segmentationsAvailable]);
   useEffect(() => {
-    // Image not ready / segmentation availability not yet known → show loader
-    if (!currentImageData || !segProbeDone) {
+    // Image dims not ready / segmentation availability not yet known → loader
+    if (!ready || !imageDims || !segProbeDone) {
       setPlotSpec({});
       return;
     }
@@ -357,35 +324,20 @@ const SpatialFeaturePlot = (props) => {
       const activeData = config.truncatedValues ? truncatedPlotData : plotData;
       const specData = generateData(cellSets, selectedSample, activeData, embeddingData);
 
-      // full-resolution image (imageUrl + level-0 dims + full extent)
       setPlotSpec(generateSpec(
-        config, EMBEDDING_TYPE, currentImageData, specData, segmentationsAvailable,
+        config, EMBEDDING_TYPE, imageDims, specData, segmentationsAvailable,
       ));
     }
   }, [
     specSignature, plotData, embeddingData, cellSets, embeddingLoading,
-    selectedSample, segmentationsAvailable, segProbeDone, currentImageData,
+    selectedSample, segmentationsAvailable, segProbeDone, imageDims, ready,
   ]);
 
-  // overlay image streamed to Vega in place (no view rebuild) via the `data` prop
+  // tissue + overlay tiles streamed to Vega in place (no view rebuild) via `data`
   const vegaData = useMemo(() => ({
-    segOverlayData: segmentationOverlay ? [{
-      url: segmentationOverlay.overlayUrl,
-      x1: segmentationOverlay.overlayExtent.xMin,
-      x2: segmentationOverlay.overlayExtent.xMax,
-      y1: segmentationOverlay.overlayExtent.yMin,
-      y2: segmentationOverlay.overlayExtent.yMax,
-    }] : [],
-  }), [segmentationOverlay]);
-
-  // release the previous overlay canvas once Vega has switched to the new one
-  // (cleanup fires with the prior value when segmentationOverlay changes / unmounts).
-  // Cached snapshots are owned by the snapshot cache (LRU) — never release those here.
-  useEffect(() => () => {
-    if (segmentationOverlay && !segmentationOverlay.cached) {
-      releaseOverlay(segmentationOverlay.overlayUrl);
-    }
-  }, [segmentationOverlay]);
+    tissueImageData,
+    segOverlayData,
+  }), [tissueImageData, segOverlayData]);
 
   // ── Render ──────────────────────────────────────────────────────────────────
   const render = () => {
