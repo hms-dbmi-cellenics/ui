@@ -19,7 +19,7 @@ import {
   updatePlotConfig,
 } from 'redux/actions/componentConfig/index';
 import { loadCellSets } from 'redux/actions/cellSets';
-import { getCellSets, getCellSetsHierarchy } from 'redux/selectors';
+import { getCellSets, getCellSetsHierarchy, getPlotConfigs } from 'redux/selectors';
 import { plotNames, plotUuids, plotTypes } from 'utils/constants';
 import SpatialCategoricalReduxWrapper from 'components/plots/SpatialCategoricalReduxWrapper';
 
@@ -36,6 +36,7 @@ const SpatialCategoricalPage = ({ experimentId }) => {
   const hierarchy = useSelector(getCellSetsHierarchy());
   const multiViewConfig = useSelector((state) => state.componentConfig[multiViewUuid]?.config);
   const multiViewPlotUuids = multiViewConfig?.plotUuids;
+  const plotConfigs = useSelector(getPlotConfigs(multiViewPlotUuids));
   const [selectedPlotUuid, setSelectedPlotUuid] = useState(`${plotUuid}-0`);
   const [updateAll, setUpdateAll] = useState(true);
 
@@ -127,8 +128,10 @@ const SpatialCategoricalPage = ({ experimentId }) => {
       </Panel>
       <Panel header='Select data' key='select-data'>
         <SelectData
-          config={config}
-          onUpdate={updatePlotWithChanges}
+          // read/write the selected plot's own config so the sample can be set
+          // per-plot in the multi-view (falls back to the container config pre-load)
+          config={plotConfigs[selectedPlotUuid] || config}
+          onUpdate={updateAll ? updateAllWithChanges : updatePlotWithChanges}
           cellSets={cellSets}
           plotType={plotType}
         />

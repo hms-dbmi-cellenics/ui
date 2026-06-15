@@ -146,7 +146,9 @@ const SpatialFeaturePage = ({ experimentId }) => {
       </Panel>
       <Panel header='Select data' key='select-data'>
         <SelectData
-          config={config}
+          // read/write the selected plot's own config so the sample can be set
+          // per-plot in the multi-view (falls back to the container config pre-load)
+          config={plotConfigs[selectedPlotUuid] || config}
           plotType={plotType}
           onUpdate={updateAll ? updateAllWithChanges : updatePlotWithChanges}
           cellSets={sampleCellSets}
