@@ -61,7 +61,7 @@ const FrequencyPlot = (props) => {
     return <Loader experimentId={experimentId} />;
   }
 
-  return <Vega spec={plotSpec} renderer='webgl' actions={actions} />;
+  return <Vega spec={plotSpec} renderer='webgl' actions={actions} scaleFactor={3} />;
 };
 
 FrequencyPlot.propTypes = {

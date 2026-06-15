@@ -68,7 +68,7 @@ const ViolinFilterPlot = (props) => {
 
   return (
     <center>
-      <Vega spec={plotSpec} renderer='webgl' actions={actions} />
+      <Vega spec={plotSpec} renderer='webgl' actions={actions} scaleFactor={3} />
     </center>
   );
 };

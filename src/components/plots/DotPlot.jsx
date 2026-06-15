@@ -40,7 +40,7 @@ const DotPlot = (props) => {
 
     // PlotData has to be cloned for this plot because
     //  Immer freezes plotData meanwhile the plot needs to modify it to work
-    return <Vega spec={generateSpec(config, plotData, numClusters)} renderer='canvas' actions={actions} />;
+    return <Vega spec={generateSpec(config, plotData, numClusters)} renderer='canvas' actions={actions} scaleFactor={3} />;
   };
 
   return render();

@@ -305,6 +305,7 @@ const SpatialCategoricalPlot = (props) => {
             spec={plotSpec}
             data={vegaData}
             actions={actions}
+            scaleFactor={3}
             signalListeners={{ domUpdates: onZoomDomUpdate }}
             onNewView={restoreZoom}
           />

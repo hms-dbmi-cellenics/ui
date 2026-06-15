@@ -25,7 +25,7 @@ const ElbowPlot = (props) => {
 
   return (
     <center>
-      <Vega data={{ plotData }} spec={plotSpec} renderer='canvas' actions={actions} />
+      <Vega data={{ plotData }} spec={plotSpec} renderer='canvas' actions={actions} scaleFactor={3} />
     </center>
   );
 };

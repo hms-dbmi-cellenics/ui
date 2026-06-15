@@ -110,6 +110,7 @@ const CategoricalEmbeddingPlot = (props) => {
           spec={plotSpec}
           renderer='webgl'
           actions={actions}
+          scaleFactor={3}
         />
       </center>
     );
