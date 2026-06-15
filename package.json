@@ -14,7 +14,7 @@
     ]
   },
   "scripts": {
-    "start": "NODE_ENV=development node server.js",
+    "start": "NODE_ENV=development node --max-old-space-size=8192 server.js",
     "build": "next build",
     "prod": "NODE_ENV=production node server.js",
     "pretest": "eslint ./src",
