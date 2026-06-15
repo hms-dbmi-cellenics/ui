@@ -98,7 +98,7 @@ describe('GenesVsUMIs', () => {
     expect(screen.queryByText('Filtering Settings')).toBeInTheDocument();
     expect(screen.queryByText(/Results will appear here/i)).toBeInTheDocument();
     expect(screen.queryByTestId('vega-container')).not.toBeInTheDocument();
-    expect(screen.queryByText('Estimated number of cells')).not.toBeInTheDocument();
+    expect(screen.queryByText('Number of cells')).not.toBeInTheDocument();
   });
 
   it('Shows plot with data', () => {
@@ -114,7 +114,7 @@ describe('GenesVsUMIs', () => {
     // Quering by test id because canvases are note created with tests
     expect(screen.queryByText('Filtering Settings')).toBeInTheDocument();
     expect(screen.queryAllByTestId('vega-container').length).toEqual(PLOTS_PER_SAMPLE);
-    expect(screen.queryAllByText('Estimated number of cells').length).toEqual(PLOTS_PER_SAMPLE);
+    expect(screen.queryAllByText('Number of cells').length).toEqual(PLOTS_PER_SAMPLE);
     expect(screen.queryByText(/Results will appear here/i)).not.toBeInTheDocument();
   });
 });

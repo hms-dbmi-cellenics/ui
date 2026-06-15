@@ -145,15 +145,16 @@ describe('SpatialViewer', () => {
   });
 
   it('fetches sample file URLs and processes them', () => {
-    // gets sample file urls from single obj2s sample id
-    expect(getSampleFileUrls).toHaveBeenCalledTimes(1);
+    // fetches both the image (ome_zarr_zip) and segmentation (segmentations_ome_zarr_zip)
+    // file URLs for the obj2s sample
+    expect(getSampleFileUrls).toHaveBeenCalledTimes(2);
 
-    // creates zip file store and zarrRoot from each of the two returned urls
-    expect(ZipFileStore.fromUrl).toHaveBeenCalledTimes(2);
-    expect(zarrRoot).toHaveBeenCalledTimes(2);
+    // a zip store + zarr root per returned url, for both the image and segmentation grids
+    expect(ZipFileStore.fromUrl).toHaveBeenCalledTimes(4);
+    expect(zarrRoot).toHaveBeenCalledTimes(4);
 
-    // loads a single grid from the two roots
-    expect(loadOmeZarrGrid).toHaveBeenCalledTimes(1);
+    // loads a grid for the image and a grid for the segmentations
+    expect(loadOmeZarrGrid).toHaveBeenCalledTimes(2);
   });
 
   it('renders correctly with initial data', () => {
