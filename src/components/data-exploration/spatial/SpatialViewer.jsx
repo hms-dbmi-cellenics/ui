@@ -749,8 +749,8 @@ const SpatialViewer = (props) => {
   const layers = useMemo(
     () => [
       imageLayer,
-      bitmaskFillLayer,    // solid fill (null when showFilled is off)
       bitmaskOutlineLayer, // outlines on top of fill (null when showOutlines is off)
+      bitmaskFillLayer,    // solid fill (null when showFilled is off)
       bitmaskHoverFillLayer, // hover fill for outlines-only mode (null otherwise)
       ...cellAndSelectionLayers,
     ].filter(Boolean),

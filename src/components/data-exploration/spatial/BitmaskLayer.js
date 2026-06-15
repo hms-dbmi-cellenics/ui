@@ -155,6 +155,7 @@ const defaultProps = {
 };
 
 export default class BitmaskLayer extends XRLayer {
+  // eslint-disable-next-line class-methods-use-this
   getShaders() {
     return { vs, fs, modules: [project32, picking] };
   }

@@ -42,7 +42,7 @@ const SpatialVisibleLayersSettings = (props) => {
       },
       {
         key: 'showSegmentationOutlines',
-        name: 'Segmentation Outlines',
+        name: 'Outlines',
         visible: showSegmentationOutlines === true,
       },
     ]);
