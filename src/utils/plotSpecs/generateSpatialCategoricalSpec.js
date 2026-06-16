@@ -30,10 +30,10 @@ const generateSpec = (
   const { imageWidth, imageHeight } = imageData;
 
   // Initial zoom/pan domains are ALWAYS the full image extent — the spec is
-  // intentionally invariant to config.axesRanges so persisting a zoom never
-  // produces a different spec and thus never rebuilds the view (which would
-  // flicker the slide). The persisted zoom (config.axesRanges) is re-applied
-  // imperatively after (re)build via the plot's onNewView.
+  // intentionally invariant to config.axesRanges so persisting a zoom never changes
+  // the spec CONTENT (react-vega's VegaEmbed rebuilds on an expensive spec change),
+  // which would flicker the slide. The persisted zoom (config.axesRanges) is
+  // re-applied imperatively after (re)build via the plot's onNewView (restoreZoom).
   const initXdom = [0, imageWidth];
   const initYdom = [0, imageHeight];
 
