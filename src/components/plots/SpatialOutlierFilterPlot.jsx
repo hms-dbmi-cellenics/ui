@@ -209,6 +209,12 @@ const SpatialOutlierFilterPlot = (props) => {
     if (ar && ar.xAxisAuto === false) {
       view.signal('initXdom', [ar.xMin, ar.xMax]).signal('initYdom', [ar.yMin, ar.yMax]).runAsync();
       onViewportChange([ar.xMin, ar.xMax], [ar.yMin, ar.yMax]);
+    } else {
+      // No persisted zoom (e.g. after Reset Plot): the rebuilt view is at full extent
+      // (its initXdom/initYdom signals). Tell the streamer so it re-streams the whole
+      // slide — otherwise it keeps the pre-reset zoomed-in tiles and only that region
+      // shows.
+      onViewportChange(view.signal('initXdom'), view.signal('initYdom'));
     }
   }, [onViewportChange, isMiniPlot]);
 
