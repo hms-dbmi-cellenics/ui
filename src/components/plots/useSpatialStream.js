@@ -150,7 +150,8 @@ const useSpatialStream = ({
       setTissueRows([]);
     }
 
-    // SEGMENTATION: target level at rest; coarsest fallback only until complete.
+    // SEGMENTATION: target level at rest; a single coarser fallback layer underneath
+    // only until the target grid is complete.
     const segP = segFor();
     if (segP) {
       const { plotWidth: ow, plotHeight: oh } = plotDimsRef.current;
@@ -162,13 +163,31 @@ const useSpatialStream = ({
         const e = segOverlaysRef.current.get(keyOf(t));
         return e && e.coloredKey === colorKeyRef.current ? e : null;
       };
+      // fully-coloured entries for a level's viewport tiles, or null if any are missing
+      const completeEntriesAt = (level) => {
+        const tiles = tilesAt(segP, level, vp);
+        if (tiles.length === 0) return null;
+        const entries = tiles.map(coloured).filter(Boolean);
+        return entries.length === tiles.length ? entries : null;
+      };
+
       const targetEntries = targetTiles.map(coloured).filter(Boolean);
       const complete = targetEntries.length === targetTiles.length && targetTiles.length > 0;
 
       let entries = targetEntries;
-      if (!complete && coarsest !== targetLevel) {
-        const coarseEntries = tilesAt(segP, coarsest, vp).map(coloured).filter(Boolean);
-        entries = [...coarseEntries, ...targetEntries];
+      if (!complete) {
+        // Use the FINEST already-loaded coarser level as the fallback underlay rather
+        // than always the coarsest. While slow-zoom crosses a level threshold the new
+        // target isn't loaded yet; dropping straight to the coarsest (e.g. 16×) makes
+        // labels snap to a coarse grid and the overlay visibly jumps before the target
+        // corrects it. Reusing the previous (decent) level keeps it a single underlay
+        // (no extra alpha stacking) with only a small resolution drop — blur, not jump.
+        let fallbackEntries = null;
+        for (let lvl = targetLevel + 1; lvl <= coarsest; lvl += 1) {
+          fallbackEntries = completeEntriesAt(lvl);
+          if (fallbackEntries) break;
+        }
+        if (fallbackEntries) entries = [...fallbackEntries, ...targetEntries];
       }
       // dedup + coarse→fine
       const seen = new Set();
