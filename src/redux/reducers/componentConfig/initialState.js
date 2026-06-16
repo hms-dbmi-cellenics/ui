@@ -532,7 +532,7 @@ const embeddingPreviewMitochondrialContentInitialConfig = {
   fontStyle: fontStyleBaseState,
   colour: {
     ...colourBaseState,
-    gradient: 'default',
+    gradient: 'inferno',
   },
   marker: markerBaseState,
   labels: labelBaseState,

@@ -25,10 +25,10 @@ describe('spatial outlier plot configs', () => {
   });
 
   describe('metric slide configs', () => {
-    it('use the inferno gradient and hide the tissue image', () => {
+    it('use the default gradient and hide the tissue image', () => {
       metricPlots.forEach((key) => {
         const config = initialPlotConfigStates[key];
-        expect(config.colour.gradient).toBe('inferno');
+        expect(config.colour.gradient).toBe('default');
         expect(config.showImage).toBe(false);
       });
     });
