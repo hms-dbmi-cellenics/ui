@@ -202,6 +202,64 @@ describe('resolvePyramidRegion', () => {
   });
 });
 
+describe('per-level coordinate frame (cross-level registration)', () => {
+  // When a level's dimensions are a ROUNDED (not exact) divisor of the full size,
+  // the shape ratio (lw/fullW) disagrees with the true downsample factor, so coarse
+  // and fine tiles land at slightly different data coords. The OME-Zarr scale
+  // transforms give the exact factor, keeping every level on one coordinate frame.
+  const fullW = 999;
+  const fullH = 801;
+  // level 0: 999x801 (scale 1); level 1: ceil-rounded 500x401 but TRUE factor is 2.
+  const withTransforms = [
+    {
+      shape: [801, 999], pxPerFullX: 1, pxPerFullY: 1, offsetFullX: 0, offsetFullY: 0,
+    },
+    {
+      shape: [401, 500], pxPerFullX: 0.5, pxPerFullY: 0.5, offsetFullX: 0, offsetFullY: 0,
+    },
+  ];
+
+  it('uses the exact downsample factor, not the rounded shape ratio', () => {
+    // A level-1 tile spanning [0, 500) level-px should cover [0, 1000) full-px (factor
+    // 2), NOT [0, 500/500*999] = [0, 999] that the shape ratio would give.
+    const tiles = tilesForViewport(withTransforms, fullW, fullH, 1, {
+      xMin: 0, xMax: fullW, yMin: 0, yMax: fullH,
+    }, 512);
+    expect(tiles).toHaveLength(1);
+    // x1 = 500 level-px / 0.5 = 1000 full-px (exact factor), clamped only by the viewport
+    expect(tiles[0].extent.xMin).toBeCloseTo(0);
+    expect(tiles[0].extent.xMax).toBeCloseTo(1000);
+  });
+
+  it('keeps a level-1 window aligned to the exact factor in resolvePyramidRegion', () => {
+    const region = resolvePyramidRegion(withTransforms, fullW, fullH, {
+      xMin: 400, xMax: 600, yMin: 0, yMax: fullH, outputWidth: 1, outputHeight: 1,
+    });
+    expect(region.level).toBe(1);
+    // x0 = floor((400 - 0) * 0.5) = 200, x1 = ceil(600 * 0.5) = 300 — exact halves,
+    // independent of the rounded 500-px width.
+    expect(region.x0).toBe(200);
+    expect(region.x1).toBe(300);
+  });
+
+  it('honours a per-level translation offset', () => {
+    // A level shifted by +4 full-px: level-px p maps to full-px p/0.5 + 4.
+    const shifted = [
+      {
+        shape: [801, 999], pxPerFullX: 1, pxPerFullY: 1, offsetFullX: 0, offsetFullY: 0,
+      },
+      {
+        shape: [401, 500], pxPerFullX: 0.5, pxPerFullY: 0.5, offsetFullX: 4, offsetFullY: 0,
+      },
+    ];
+    const tiles = tilesForViewport(shifted, fullW, fullH, 1, {
+      xMin: 0, xMax: fullW, yMin: 0, yMax: fullH,
+    }, 512);
+    // x0 = floor((0 - 4) * 0.5) clamped to 0 → 0; extent.xMin = 0/0.5 + 4 = 4
+    expect(tiles[0].extent.xMin).toBeCloseTo(4);
+  });
+});
+
 describe('openOmePyramid', () => {
   beforeEach(() => {
     jest.clearAllMocks();
@@ -227,6 +285,78 @@ describe('openOmePyramid', () => {
     expect(result.levels).toHaveLength(2);
     expect(result.axesMetadata).toEqual([{ name: 'y' }, { name: 'x' }]);
     expect(mockFromUrl).toHaveBeenCalledWith('https://example.com/unique-1.zarr.zip');
+  });
+
+  it('derives per-level affine maps from coordinateTransformations', async () => {
+    mockOpen.mockImplementation((node, { kind }) => {
+      if (kind === 'group') {
+        return Promise.resolve({
+          attrs: {
+            multiscales: [{
+              axes: [{ name: 'y' }, { name: 'x' }],
+              datasets: [
+                { path: '0', coordinateTransformations: [{ type: 'scale', scale: [1, 1] }] },
+                {
+                  path: '1',
+                  coordinateTransformations: [
+                    { type: 'scale', scale: [2, 2] },
+                    { type: 'translation', translation: [0.5, 0.5] },
+                  ],
+                },
+              ],
+            }],
+          },
+        });
+      }
+      // level 0 = 600x900, level 1 = 300x450
+      return Promise.resolve({ shape: node.path === '1' ? [300, 450] : [600, 900] });
+    });
+
+    const result = await openOmePyramid('https://example.com/transforms.zarr.zip');
+    const [lvl0, lvl1] = result.levels;
+    // level 0: identity
+    expect(lvl0.pxPerFullX).toBeCloseTo(1);
+    expect(lvl0.offsetFullX).toBeCloseTo(0);
+    // level 1: scale 2 (s0/sL = 1/2) and translation 0.5 / s0 = 0.5 full-px
+    expect(lvl1.pxPerFullX).toBeCloseTo(0.5);
+    expect(lvl1.pxPerFullY).toBeCloseTo(0.5);
+    expect(lvl1.offsetFullX).toBeCloseTo(0.5);
+    expect(lvl1.offsetFullY).toBeCloseTo(0.5);
+  });
+
+  it('infers exact integer factors from shapes for v0.3 pyramids (no transforms)', async () => {
+    // v0.3: datasets carry NO coordinateTransformations. Our writer uses
+    // scale_factors [2,4,8,16]; with a non-divisible full width the level dims are
+    // floor-rounded, so the raw fullW/levelW ratio drifts off the true 2^L. The
+    // inference must recover EXACTLY 1, 1/2, 1/4, 1/8, 1/16.
+    const dims = {
+      0: [801, 999], 1: [401, 500], 2: [200, 250], 3: [100, 125], 4: [50, 62],
+    };
+    mockOpen.mockImplementation((node, { kind }) => {
+      if (kind === 'group') {
+        return Promise.resolve({
+          attrs: {
+            multiscales: [{
+              axes: [{ name: 'y' }, { name: 'x' }],
+              datasets: [0, 1, 2, 3, 4].map((p) => ({ path: String(p) })),
+            }],
+          },
+        });
+      }
+      return Promise.resolve({ shape: dims[node.path] });
+    });
+
+    const result = await openOmePyramid('https://example.com/v03.zarr.zip');
+    const pxX = result.levels.map((l) => l.pxPerFullX);
+    const pxY = result.levels.map((l) => l.pxPerFullY);
+    expect(pxX).toEqual([1, 1 / 2, 1 / 4, 1 / 8, 1 / 16]);
+    expect(pxY).toEqual([1, 1 / 2, 1 / 4, 1 / 8, 1 / 16]);
+    // offsets are 0 — skimage centre-aligned resize needs no half-pixel term
+    expect(result.levels.every((l) => l.offsetFullX === 0 && l.offsetFullY === 0)).toBe(true);
+
+    // ...and the raw shape ratio would have been WRONG at the coarsest level:
+    // 999/62 = 16.11 ≠ 16, the few-pixel drift that displaced the coarse overlay.
+    expect(999 / 62).not.toBeCloseTo(16, 1);
   });
 
   it('caches by URL: a second call for the same URL does not re-open the store', async () => {
