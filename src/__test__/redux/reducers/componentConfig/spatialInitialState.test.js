@@ -90,3 +90,16 @@ describe('spatial outlier plot configs', () => {
     });
   });
 });
+
+// Plots & Tables spatial plots default selectedSample to null and auto-populate the
+// first sample on mount. selectedSample must be in keepValuesOnReset so that write
+// doesn't keep the Reset Plot button enabled after a reset.
+describe('spatial Plots & Tables configs — reset behaviour', () => {
+  ['SpatialFeature', 'SpatialCategorical'].forEach((key) => {
+    it(`${key} keeps selectedSample on reset`, () => {
+      const config = initialPlotConfigStates[key];
+      expect(config.selectedSample).toBeNull();
+      expect(config.keepValuesOnReset).toEqual(expect.arrayContaining(['selectedSample']));
+    });
+  });
+});

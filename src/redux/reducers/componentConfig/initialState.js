@@ -88,6 +88,10 @@ const spatialCategoricalInitialConfig = {
   selectedCellSet: 'louvain',
   selectedSample: null,
   showImage: true,
+  // selectedSample is null by default and auto-populated with the first sample on
+  // mount, so excluding it from the reset comparison lets the button disable after a
+  // reset (and keeps the current sample rather than resetting which sample is shown).
+  keepValuesOnReset: ['selectedSample'],
 };
 
 // PLOTS & TABLES - Continuous Embedding
@@ -168,10 +172,11 @@ const spatialFeatureInitialConfig = {
   expressionValue: 'raw',
   truncatedValues: true,
   selectedSample: null,
-  // 'title' is auto-set to the gene name by the default-gene effect; keep it on
-  // reset (and skip it in the reset-disabled comparison) so that automatic write
-  // doesn't permanently/repeatedly re-enable the Reset Plot button.
-  keepValuesOnReset: ['shownGene', 'title'],
+  // 'title' is auto-set to the gene name by the default-gene effect, and
+  // 'selectedSample' is auto-populated with the first sample on mount; keep both on
+  // reset (and skip them in the reset-disabled comparison) so those automatic writes
+  // don't permanently/repeatedly re-enable the Reset Plot button.
+  keepValuesOnReset: ['shownGene', 'title', 'selectedSample'],
   showImage: true,
 };
 
