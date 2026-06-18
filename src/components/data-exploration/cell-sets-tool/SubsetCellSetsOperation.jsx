@@ -7,7 +7,7 @@ import { Tooltip, Button } from 'antd';
 import { PieChartOutlined } from '@ant-design/icons';
 
 import SubsetCellSetsModal from 'components/data-exploration/cell-sets-tool/SubsetCellSetsModal';
-import { obj2sTechs } from 'utils/constants';
+import { obj2sTechs, spatialTechs } from 'utils/constants';
 
 const SubsetCellSetsOperation = (props) => {
   const { onCreate } = props;
@@ -18,12 +18,23 @@ const SubsetCellSetsOperation = (props) => {
 
   const [showSubsetCellSets, setShowSubsetCellSets] = useState(false);
 
+  // Subsetting is unavailable for spatial technologies (e.g. visium_hd, xenium)
+  // until the spatial subsetting semantics (segmentations/coords/image) are
+  // defined. Obj2s techs remain disabled as before.
+  const isSpatial = spatialTechs.includes(experimentType);
+  const subsetDisabled = obj2sTechs.includes(experimentType) || isSpatial;
+
   return (
     <>
-      <Tooltip placement='top' title='Subset selected cell sets to a new project.'>
+      <Tooltip
+        placement='top'
+        title={isSpatial
+          ? 'Subsetting is not available for spatial technologies.'
+          : 'Subset selected cell sets to a new project.'}
+      >
         <Button
           type='dashed'
-          disabled={obj2sTechs.includes(experimentType)}
+          disabled={subsetDisabled}
           aria-label='Create new experiment from selected cellsets'
           size='small'
           icon={<PieChartOutlined />}
