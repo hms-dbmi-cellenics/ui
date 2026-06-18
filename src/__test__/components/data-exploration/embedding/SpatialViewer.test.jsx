@@ -45,80 +45,80 @@ const obj2sSampleId = 'obj2s-sample';
 const sample1FileId = 'sample1';
 const sample2FileId = 'sample2';
 
-describe('SpatialViewer', () => {
-  const initialState = {
-    componentConfig: {
-      ...initialComponentConfigStates,
-    },
-    backendStatus: {
-      [experimentId]: {
-        status: {
-          obj2s: {
-            shouldRerun: false,
-            status: PipelineStatus.SUCCEEDED,
+const initialState = {
+  componentConfig: {
+    ...initialComponentConfigStates,
+  },
+  backendStatus: {
+    [experimentId]: {
+      status: {
+        obj2s: {
+          shouldRerun: false,
+          status: PipelineStatus.SUCCEEDED,
 
-          },
         },
       },
     },
-    embeddings: {
-      images: {
-        ...initialEmbeddingState,
-        loading: false,
-        data: [[-13, 32], [6, 7], [43, 9], [57, 3]],
+  },
+  embeddings: {
+    images: {
+      ...initialEmbeddingState,
+      loading: false,
+      data: [[-13, 32], [6, 7], [43, 9], [57, 3]],
+    },
+  },
+  cellSets: {
+    properties: {
+      louvain: {
+        name: 'Louvain clusters',
+        color: undefined,
+      },
+      cluster1: {
+        color: '#0000ff',
+        cellIds: new Set([0, 3]),
+      },
+      cluster2: {
+        color: '#ff0000',
+        cellIds: new Set([1, 2]),
+      },
+      [sample1FileId]: {
+        cellIds: new Set([0, 1]),
+      },
+      [sample2FileId]: {
+        cellIds: new Set([2, 3]),
       },
     },
-    cellSets: {
-      properties: {
-        louvain: {
-          name: 'Louvain clusters',
-          color: undefined,
-        },
-        cluster1: {
-          color: '#0000ff',
-          cellIds: new Set([0, 3]),
-        },
-        cluster2: {
-          color: '#ff0000',
-          cellIds: new Set([1, 2]),
-        },
-        [sample1FileId]: {
-          cellIds: new Set([0, 1]),
-        },
-        [sample2FileId]: {
-          cellIds: new Set([2, 3]),
-        },
-      },
-      hierarchy: [
-        {
-          key: 'louvain',
-          children: [{ key: 'cluster1' }, { key: 'cluster2' }],
-        },
-      ],
-      hidden: new Set(),
-    },
-    genes: {
-      expression: {
-        full: {
-          loading: false,
-          matrix: new ExpressionMatrix(),
-        },
-      },
-    },
-    cellInfo: {
-      cellId: 2,
-      focus: {
-        store: 'cellSets',
+    hierarchy: [
+      {
         key: 'louvain',
+        children: [{ key: 'cluster1' }, { key: 'cluster2' }],
+      },
+    ],
+    hidden: new Set(),
+  },
+  genes: {
+    expression: {
+      full: {
+        loading: false,
+        matrix: new ExpressionMatrix(),
       },
     },
-    experimentSettings: {
-      info: {
-        sampleIds: [obj2sSampleId],
-      },
+  },
+  cellInfo: {
+    cellId: 2,
+    focus: {
+      store: 'cellSets',
+      key: 'louvain',
     },
-  };
+  },
+  experimentSettings: {
+    info: {
+      sampleIds: [obj2sSampleId],
+    },
+  },
+};
 
+describe('SpatialViewer', () => {
   beforeAll(async () => {
     await preloadAll();
   });
@@ -163,5 +163,65 @@ describe('SpatialViewer', () => {
 
     expect(component.find(CrossHair).length).toEqual(0);
     expect(component.find(CellInfo).length).toEqual(0);
+  });
+});
+
+describe('SpatialViewer — imageless technology (e.g. Xenium)', () => {
+  const xeniumSampleId = 'xenium-sample';
+
+  const imagelessState = {
+    ...initialState,
+    samples: {
+      [xeniumSampleId]: { id: xeniumSampleId, type: 'xenium' },
+    },
+    cellSets: {
+      ...initialState.cellSets,
+      properties: {
+        ...initialState.cellSets.properties,
+        [xeniumSampleId]: { cellIds: new Set([0, 1, 2, 3]) },
+      },
+    },
+    experimentSettings: {
+      info: { sampleIds: [xeniumSampleId] },
+    },
+  };
+
+  beforeAll(async () => {
+    await preloadAll();
+  });
+
+  beforeEach(async () => {
+    jest.clearAllMocks();
+    getSampleFileUrls.mockResolvedValue([
+      { url: 'http://example.com/segmentations.ome.zarr.zip', fileId: xeniumSampleId },
+    ]);
+
+    store = mockStore(imagelessState);
+
+    await act(() => {
+      component = mount(
+        <Provider store={store}>
+          <SpatialViewer experimentId={experimentId} width={width} height={height} />
+        </Provider>,
+      );
+    });
+  });
+
+  afterEach(() => {
+    component.unmount();
+  });
+
+  it('skips the tissue-image (ome_zarr_zip) fetch entirely', () => {
+    const requestedFileTypes = getSampleFileUrls.mock.calls.map(([, , fileType]) => fileType);
+    expect(requestedFileTypes).not.toContain('ome_zarr_zip');
+  });
+
+  it('still fetches the segmentation OME-Zarr', () => {
+    const requestedFileTypes = getSampleFileUrls.mock.calls.map(([, , fileType]) => fileType);
+    expect(requestedFileTypes).toContain('segmentations_ome_zarr_zip');
+  });
+
+  it('renders without an image loader (does not crash on the absent image)', () => {
+    expect(component.find('SpatialViewer').length).toEqual(1);
   });
 });
