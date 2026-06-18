@@ -157,25 +157,27 @@ const offsetCentroids = (results, properties, sampleIds, perImageShape, gridShap
     };
   });
 
-  // Map the results with pre-calculated offsets
-  const offsetResults = results.map(([x, y], key) => {
-    // Determine which sample this cell belongs to
+  // Build a sparse array indexed by cell id. Cells with no coordinates
+  // (filtered/QC-failed cells are null in the worker result, matching the
+  // standard embedding) are left as holes, so every consumer's forEach skips
+  // them automatically — same as filterPolygons/convertCellsData.
+  // Build a sparse array indexed by cell id. Filtered cells (absent from every
+  // cluster) are excluded by the consumers via cellsInAnyCluster, so we keep the
+  // behaviour identical to the image-driven path: every cell that maps to a
+  // sample gets an entry (filtered cells may be [NaN, NaN] and are skipped
+  // downstream).
+  const offsetResults = [];
+  results.forEach((coords, key) => {
+    if (!coords) return;
+
     const sampleId = sampleIds.find((id) => properties[id]?.cellIds?.has(key));
-    if (!sampleId) {
-      throw new Error(`Sample ID not found for cell ID: ${key}`);
-    }
+    if (sampleId === undefined) return;
 
-    // Determine the index of the sample in the sampleIds array
     const sampleIndex = sampleIds.indexOf(sampleId);
-    if (sampleIndex === -1) {
-      throw new Error(`Sample ID ${sampleId} not found in sampleIds`);
-    }
-
-    // Retrieve pre-calculated offsets
     const { xOffset, yOffset } = sampleOffsets[sampleIndex];
 
-    // Apply offsets
-    return [x + xOffset, y + yOffset];
+    const [x, y] = coords;
+    offsetResults[key] = [x + xOffset, y + yOffset];
   });
 
   return offsetResults;

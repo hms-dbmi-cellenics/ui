@@ -30,6 +30,7 @@ import { createCellSet } from 'redux/actions/cellSets';
 import { loadGeneExpression } from 'redux/actions/genes';
 import { updateCellInfo } from 'redux/actions/cellInfo';
 import { union } from 'utils/cellSetOperations';
+import { imagelessTechs } from 'utils/constants';
 import _ from 'lodash';
 
 import { root as zarrRoot } from 'zarrita';
@@ -139,6 +140,28 @@ const SpatialViewer = (props) => {
     hidden: cellSetHidden,
   } = cellSets;
 
+  const hiddenCellIds = useMemo(() => {
+    if (!cellSetHidden || !cellSetProperties) return new Set();
+    return union([...cellSetHidden], cellSetProperties);
+  }, [cellSetHidden, cellSetProperties]);
+
+  // Cells absent from every 'cellSets'-type cluster (louvain, leiden, …) were
+  // filtered out during the analysis pipeline. They must never be rendered or
+  // contribute to the layout, regardless of the active colouring scheme or
+  // which cell sets are hidden.
+  const cellsInAnyCluster = useMemo(() => {
+    const validIds = new Set();
+    cellSetsHierarchyNodes.forEach(({ children }) => {
+      children?.forEach(({ key }) => {
+        const props = cellSetProperties[key];
+        if (props?.cellIds) {
+          props.cellIds.forEach((id) => validIds.add(id));
+        }
+      });
+    });
+    return validIds;
+  }, [cellSetsHierarchyNodes, cellSetProperties]);
+
   const selectedCell = useSelector((state) => state.cellInfo.cellId);
   const expressionLoading = useSelector((state) => state.genes.expression.full.loading);
   const expressionMatrix = useSelector((state) => state.genes.expression.full.matrix);
@@ -146,6 +169,13 @@ const SpatialViewer = (props) => {
   const sampleIdsForFileUrls = useSelector((state) => state.experimentSettings.info.sampleIds);
   const obj2sStatusRaw = useSelector((state) => state.backendStatus[experimentId]?.status?.obj2s?.status);
   const isObj2s = obj2sStatusRaw != null && obj2sStatusRaw !== 'NOT_CREATED';
+
+  // Some spatial technologies (e.g. Xenium) have no tissue image — only
+  // centroids + segmentation polygons in micron coordinates. For those the
+  // multi-sample tiling cannot be image-driven, so we derive the grid layout
+  // and the per-sample offset extent from the micron coordinates instead.
+  const technology = useSelector((state) => state.samples?.[sampleIdsForFileUrls?.[0]]?.type);
+  const isImageless = imagelessTechs.includes(technology);
 
   const cellCoordinatesRef = useRef({ x: 200, y: 300 });
 
@@ -192,15 +222,23 @@ const SpatialViewer = (props) => {
     (async () => {
       try {
         const [imageResult, segResult] = await Promise.allSettled([
-          Promise.all(
-            sampleIdsForFileUrls.map((sampleId) => getSampleFileUrls(experimentId, sampleId, 'ome_zarr_zip')),
-          ).then((r) => r.flat()),
+          // imageless techs (e.g. Xenium) produce no tissue image: skip the
+          // ome_zarr_zip request entirely (it would 404)
+          isImageless
+            ? Promise.resolve([])
+            : Promise.all(
+              sampleIdsForFileUrls.map((sampleId) => getSampleFileUrls(experimentId, sampleId, 'ome_zarr_zip')),
+            ).then((r) => r.flat()),
           Promise.all(
             sampleIdsForFileUrls.map((sampleId) => getSampleFileUrls(experimentId, sampleId, 'segmentations_ome_zarr_zip')),
           ).then((r) => r.flat()),
         ]);
 
-        if (imageResult.status === 'fulfilled') {
+        if (isImageless) {
+          // No tissue image for this tech (e.g. Xenium); the layout is driven by
+          // the micron coordinates, so we only need the sample ids here.
+          setOmeZarrSampleIds(sampleIdsForFileUrls);
+        } else if (imageResult.status === 'fulfilled') {
           const signedUrls = imageResult.value.map(({ url }) => url);
           setOmeZarrUrls(signedUrls);
           setOmeZarrSampleIds(
@@ -219,15 +257,20 @@ const SpatialViewer = (props) => {
         console.error('[SpatialViewer] URL fetch error:', e);
       }
     })();
-  }, [sampleIdsForFileUrls, experimentId, isObj2s]);
+  }, [sampleIdsForFileUrls, experimentId, isObj2s, isImageless]);
 
   // ── Grid shape ────────────────────────────────────────────────────────────
+  // Image-driven techs key the grid off the number of image OME-Zarrs; imageless
+  // techs (e.g. Xenium) have no images, so key it off the number of samples.
   useEffect(() => {
-    if (!omeZarrUrls.length) return;
-    const numColumns = Math.min(omeZarrUrls.length, 4);
-    const numRows = Math.ceil(omeZarrUrls.length / numColumns);
-    setGridShape([numRows, numColumns]);
-  }, [omeZarrUrls]);
+    const numItems = isImageless ? omeZarrSampleIds.length : omeZarrUrls.length;
+    if (!numItems) return;
+    const numColumns = Math.min(numItems, 4);
+    const numRows = Math.ceil(numItems / numColumns);
+    setGridShape((prev) => (
+      prev && prev[0] === numRows && prev[1] === numColumns ? prev : [numRows, numColumns]
+    ));
+  }, [omeZarrUrls, omeZarrSampleIds, isImageless]);
 
   // ── Image loader ──────────────────────────────────────────────────────────
   useEffect(() => {
@@ -237,6 +280,11 @@ const SpatialViewer = (props) => {
   }, [omeZarrUrls, gridShape]);
 
   // ── Segmentations bitmask loader ──────────────────────────────────────────
+  // The segmentation OME-Zarr holds the real cell-boundary polygons rasterised
+  // onto a micron-sized canvas (gem2s sizes it to the polygon coordinate
+  // extent), so for imageless techs (e.g. Xenium) the bitmask shares the same
+  // micron frame as the centroids — load and render it just like Visium HD
+  // rather than falling back to approximate diamonds.
   useEffect(() => {
     if (!segmentationsOmeZarrUrls.length || !gridShape) return;
     const roots = segmentationsOmeZarrUrls.map((url) => zarrRoot(ZipFileStore.fromUrl(url)));
@@ -246,17 +294,92 @@ const SpatialViewer = (props) => {
   }, [segmentationsOmeZarrUrls, gridShape]);
 
   // ── Per-image shape ───────────────────────────────────────────────────────
+  // Image-driven techs derive the per-sample tile extent from the OME-Zarr image
+  // shape. offsetCentroids reads perImageShape as [height, width] and shifts each
+  // sample by [column * width, row * height].
   useEffect(() => {
-    if (!loader) return;
+    if (isImageless || !loader) return;
     const [, w, h] = loader.shape;
     setPerImageShape([w, h]);
-  }, [loader]);
+  }, [loader, isImageless]);
+
+  // ── Per-sample shape (imageless / micron-driven) ──────────────────────────
+  // Xenium has no image, so derive the common tile extent from the micron
+  // centroid coordinates: take each sample's x/y bbox extent and use the max
+  // extent across all samples (the micron analogue of perImageShape + the
+  // pipeline's common max height). A small margin keeps adjacent tiles apart.
+  useEffect(() => {
+    if (!isImageless || !data || !cellSetProperties || !omeZarrSampleIds.length) return;
+    if (omeZarrSampleIds.some((id) => !cellSetProperties[id])) return;
+
+    let maxWidth = 0;
+    let maxHeight = 0;
+    omeZarrSampleIds.forEach((sampleId) => {
+      const { cellIds } = cellSetProperties[sampleId];
+      let minX = Infinity; let maxX = -Infinity;
+      let minY = Infinity; let maxY = -Infinity;
+      cellIds.forEach((cellId) => {
+        // Skip filtered cells (absent from every cluster) and hidden cells, like
+        // the centroid/colour-LUT layers do. Filtered cells have no coords and
+        // arrive as [NaN, NaN], which would otherwise poison the bbox min/max.
+        if (hiddenCellIds.has(cellId) || !cellsInAnyCluster.has(cellId)) return;
+        const coords = data[cellId];
+        if (!coords) return;
+        const [x, y] = coords;
+        minX = Math.min(minX, x); maxX = Math.max(maxX, x);
+        minY = Math.min(minY, y); maxY = Math.max(maxY, y);
+      });
+      if (maxX >= minX) maxWidth = Math.max(maxWidth, maxX - minX);
+      if (maxY >= minY) maxHeight = Math.max(maxHeight, maxY - minY);
+    });
+
+    if (maxWidth <= 0 || maxHeight <= 0) return;
+
+    // 5% margin so neighbouring sample tiles don't touch.
+    const margin = 1.05;
+    setPerImageShape([maxHeight * margin, maxWidth * margin]);
+  }, [isImageless, data, cellSetProperties, omeZarrSampleIds, hiddenCellIds, cellsInAnyCluster]);
 
   // ── Initial view state ────────────────────────────────────────────────────
   useEffect(() => {
     if (!loader || !width || !height || viewState) return;
     setViewState(getDefaultInitialViewState(loader.data, { width, height }, 0.5));
   }, [loader, width, height]);
+
+  // ── Initial view state (imageless / micron-driven) ────────────────────────
+  // No image loader to centre on, so fit the orthographic view to the offset
+  // centroid bbox (the full multi-sample grid extent, in microns).
+  const fitViewToOffsetData = useCallback(() => {
+    if (!offsetData || !width || !height) return null;
+    let minX = Infinity; let maxX = -Infinity;
+    let minY = Infinity; let maxY = -Infinity;
+    offsetData.forEach(([x, y], key) => {
+      // only fit to displayed cells; filtered cells ([NaN, NaN]) / hidden cells
+      // must not drive the view extent (matches the centroid/colour-LUT layers)
+      if (hiddenCellIds.has(key) || !cellsInAnyCluster.has(key)) return;
+      minX = Math.min(minX, x); maxX = Math.max(maxX, x);
+      minY = Math.min(minY, y); maxY = Math.max(maxY, y);
+    });
+    if (!(maxX >= minX) || !(maxY >= minY)) return null;
+    const target = [(minX + maxX) / 2, (minY + maxY) / 2, 0];
+    const extentX = Math.max(maxX - minX, 1);
+    const extentY = Math.max(maxY - minY, 1);
+    // zoom such that the data extent fits the viewport (with a little padding)
+    const zoom = Math.log2(Math.min(width / extentX, height / extentY)) - 0.2;
+    return { target, zoom };
+  }, [offsetData, width, height, hiddenCellIds, cellsInAnyCluster]);
+
+  useEffect(() => {
+    if (!isImageless || viewState) return;
+    const fitted = fitViewToOffsetData();
+    if (fitted) {
+      setViewState(fitted);
+    } else if (segmentationsLoader && width && height) {
+      // offset centroids not ready yet: centre on the segmentation bitmask so
+      // the polygons are visible even before the centroid overlay is built
+      setViewState(getDefaultInitialViewState(segmentationsLoader.data, { width, height }, 0.5));
+    }
+  }, [isImageless, fitViewToOffsetData, viewState, segmentationsLoader, width, height]);
 
   // ── Loading guard ─────────────────────────────────────────────────────────
   const showLoader = useMemo(() => {
@@ -300,28 +423,6 @@ const SpatialViewer = (props) => {
     const { truncatedMin, truncatedMax } = expressionMatrix.getStats(focusData.key);
     setCellColors(colorByGeneExpression(truncated, colorInterpolator, truncatedMin, truncatedMax));
   }, [focusData.key, expressionLoading]);
-
-  // ── Hidden cell IDs ───────────────────────────────────────────────────────
-  const hiddenCellIds = useMemo(() => {
-    if (!cellSetHidden || !cellSetProperties) return new Set();
-    return union([...cellSetHidden], cellSetProperties);
-  }, [cellSetHidden, cellSetProperties]);
-
-  // Cells absent from every 'cellSets'-type cluster (louvain, leiden, …) were
-  // filtered out during the analysis pipeline. They must never be rendered,
-  // regardless of the active colouring scheme or which cell sets are hidden.
-  const cellsInAnyCluster = useMemo(() => {
-    const validIds = new Set();
-    cellSetsHierarchyNodes.forEach(({ children }) => {
-      children?.forEach(({ key }) => {
-        const props = cellSetProperties[key];
-        if (props?.cellIds) {
-          props.cellIds.forEach((id) => validIds.add(id));
-        }
-      });
-    });
-    return validIds;
-  }, [cellSetsHierarchyNodes, cellSetProperties]);
 
   // ── Centroid positions ────────────────────────────────────────────────────
   // Only excludes explicitly hidden cell sets. Cells without a colour
@@ -545,9 +646,14 @@ const SpatialViewer = (props) => {
   }, [cellsQuadTree, centroidPositionData, setCellSelection]);
 
   const onRecenterClick = useCallback(() => {
+    if (isImageless) {
+      const fitted = fitViewToOffsetData();
+      if (fitted) setViewState(fitted);
+      return;
+    }
     if (!loader || !width || !height) return;
     setViewState(getDefaultInitialViewState(loader.data, { width, height }, 0.5));
-  }, [loader, width, height]);
+  }, [loader, width, height, isImageless, fitViewToOffsetData]);
 
   // ── Layer visibility ──────────────────────────────────────────────────────
   const showFilled = spatialSettings.showSegmentations !== false;
@@ -779,7 +885,7 @@ const SpatialViewer = (props) => {
       onClick={() => { if (activeTool !== 'polygon') clearCellHighlight(); }}
       onKeyPress={() => { if (activeTool !== 'polygon') clearCellHighlight(); }}
     >
-      {loader && (
+      {(loader || isImageless) && (
         <>
           <ToolMenu
             activeTool={activeTool}

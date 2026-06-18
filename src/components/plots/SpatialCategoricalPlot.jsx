@@ -13,6 +13,7 @@ import { loadProcessingSettings } from 'redux/actions/experimentSettings';
 import { getCellSets } from 'redux/selectors';
 import { generateSpec, generateData, filterCells } from 'utils/plotSpecs/generateSpatialCategoricalSpec';
 import { getSampleFileUrls } from 'utils/data-management/downloadSampleFile';
+import { imagelessTechs } from 'utils/constants';
 import { parseHexColor } from './loadSegmentationOverlay';
 import useSpatialStream from './useSpatialStream';
 import usePreventWheelScroll from './usePreventWheelScroll';
@@ -47,6 +48,8 @@ const SpatialCategoricalPlot = (props) => {
     (state) => state.backendStatus[experimentId]?.status?.obj2s?.status,
   );
   const isObj2s = !_.isNil(obj2sStatusRaw) && obj2sStatusRaw !== 'NOT_CREATED';
+  const technology = useSelector((state) => state.samples?.[sampleIdsForFileUrls?.[0]]?.type);
+  const isImageless = imagelessTechs.includes(technology);
 
   const [plotSpec, setPlotSpec] = useState({});
   const [omeZarrUrls, setOmeZarrUrls] = useState(null);
@@ -60,6 +63,13 @@ const SpatialCategoricalPlot = (props) => {
 
   // ── Fetch image URLs ────────────────────────────────────────────────────────
   useEffect(() => {
+    // imageless techs (e.g. Xenium) have no tissue image; still register the
+    // sample ids (with null urls) so the selected-sample default and the stream
+    // initialise — image dimensions come from the segmentation pyramid instead.
+    if (isImageless) {
+      setOmeZarrUrls(sampleIdsForFileUrls.map((sampleId) => ({ url: null, sampleId })));
+      return;
+    }
     (async () => {
       try {
         const results = (await Promise.all(
@@ -76,7 +86,7 @@ const SpatialCategoricalPlot = (props) => {
         console.error('Error fetching image URLs:', error);
       }
     })();
-  }, [sampleIdsForFileUrls, experimentId, isObj2s]);
+  }, [sampleIdsForFileUrls, experimentId, isObj2s, isImageless]);
 
   // ── Fetch segmentation URLs (optional) ─────────────────────────────────────
   useEffect(() => {

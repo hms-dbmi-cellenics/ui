@@ -14,6 +14,7 @@ import { loadProcessingSettings } from 'redux/actions/experimentSettings';
 import { getCellSets } from 'redux/selectors';
 import { generateSpec, generateData, filterCells } from 'utils/plotSpecs/generateSpatialFeatureSpec';
 import { getSampleFileUrls } from 'utils/data-management/downloadSampleFile';
+import { imagelessTechs } from 'utils/constants';
 import useSpatialStream from './useSpatialStream';
 import usePreventWheelScroll from './usePreventWheelScroll';
 import PlatformError from '../PlatformError';
@@ -113,6 +114,8 @@ const SpatialFeaturePlot = (props) => {
     (state) => state.backendStatus[experimentId]?.status?.obj2s?.status,
   );
   const isObj2s = !_.isNil(obj2sStatusRaw) && obj2sStatusRaw !== 'NOT_CREATED';
+  const technology = useSelector((state) => state.samples?.[sampleIdsForFileUrls?.[0]]?.type);
+  const isImageless = imagelessTechs.includes(technology);
 
   const [plotSpec, setPlotSpec] = useState({});
   const [omeZarrUrls, setOmeZarrUrls] = useState(null);
@@ -126,6 +129,13 @@ const SpatialFeaturePlot = (props) => {
 
   // ── Fetch image URLs ────────────────────────────────────────────────────────
   useEffect(() => {
+    // imageless techs (e.g. Xenium) have no tissue image; still register the
+    // sample ids (with null urls) so the selected-sample default and the stream
+    // initialise — image dimensions come from the segmentation pyramid instead.
+    if (isImageless) {
+      setOmeZarrUrls(sampleIdsForFileUrls.map((sampleId) => ({ url: null, sampleId })));
+      return;
+    }
     (async () => {
       try {
         const results = (await Promise.all(
@@ -142,7 +152,7 @@ const SpatialFeaturePlot = (props) => {
         console.error('Error fetching image URLs:', e);
       }
     })();
-  }, [sampleIdsForFileUrls, experimentId, isObj2s]);
+  }, [sampleIdsForFileUrls, experimentId, isObj2s, isImageless]);
 
   // ── Fetch segmentation URLs (optional) ─────────────────────────────────────
   useEffect(() => {

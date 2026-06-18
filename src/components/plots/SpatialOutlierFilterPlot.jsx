@@ -8,9 +8,11 @@ import 'vega-webgl-renderer';
 import _ from 'lodash';
 
 import { Spin } from 'antd';
+import { useSelector } from 'react-redux';
 import colors from 'utils/styling/colors';
 import { generateSpec } from 'utils/plotSpecs/generateSpatialFeatureSpec';
 import { getSampleFileUrls } from 'utils/data-management/downloadSampleFile';
+import { imagelessTechs } from 'utils/constants';
 import useSpatialStream from './useSpatialStream';
 import usePreventWheelScroll from './usePreventWheelScroll';
 
@@ -107,9 +109,18 @@ const SpatialOutlierFilterPlot = (props) => {
   const onZoomChangeRef = useRef(onZoomChange);
   onZoomChangeRef.current = onZoomChange;
 
+  const technology = useSelector((state) => state.samples?.[sampleId]?.type);
+  const isImageless = imagelessTechs.includes(technology);
+
   // ── Fetch histology image URL ──────────────────────────────────────────────
   useEffect(() => {
     if (!sampleId) return;
+    // imageless techs (e.g. Xenium) have no tissue image: skip the ome_zarr_zip
+    // request (it would 404); image dims come from the segmentation pyramid.
+    if (isImageless) {
+      setOmeZarrUrl(null);
+      return;
+    }
     (async () => {
       try {
         const results = await getSampleFileUrls(experimentId, sampleId, 'ome_zarr_zip');
@@ -118,7 +129,7 @@ const SpatialOutlierFilterPlot = (props) => {
         console.error('[SpatialOutlierFilterPlot] error fetching image URL:', e);
       }
     })();
-  }, [experimentId, sampleId]);
+  }, [experimentId, sampleId, isImageless]);
 
   // ── Fetch segmentation URL (optional) ──────────────────────────────────────
   useEffect(() => {
