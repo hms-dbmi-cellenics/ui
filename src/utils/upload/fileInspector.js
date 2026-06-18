@@ -44,6 +44,9 @@ const inspectFile = async (file, technology) => {
   } if (technology === sampleTech.VISIUM_HD) {
     // Treat as already compressed so the uploader skips gzipping
     return Verdict.VALID_ZIPPED;
+  } if (technology === sampleTech.XENIUM) {
+    // .parquet / .h5 are already binary/compressed, so skip gzipping
+    return Verdict.VALID_ZIPPED;
   }
 
   return Verdict.INVALID_FORMAT;

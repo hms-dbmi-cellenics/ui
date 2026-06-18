@@ -15,6 +15,7 @@ const techNamesToDisplay = {
   [sampleTech.H5]: '10X Chromium - H5',
   [sampleTech.PARSE]: 'Parse Evercode WT',
   [sampleTech.VISIUM_HD]: 'Visium HD',
+  [sampleTech.XENIUM]: 'Xenium',
   [sampleTech.SEURAT_SPATIAL_OBJECT]: 'Seurat - Spatial',
 };
 
@@ -179,6 +180,44 @@ const fileUploadUtils = {
     filterFiles: filterFilesDefaultConstructor(sampleTech.VISIUM_HD),
     getFileSampleAndName: getFileSampleAndNameDefault,
     getFilePathToDisplay: getFilePathToDisplayDefaultConstructor(sampleTech.VISIUM_HD),
+  },
+  [sampleTech.XENIUM]: {
+    category: techCategoryNames.SPATIAL_COUNT_MATRIX,
+    acceptedFiles: new Set([
+      'cell_feature_matrix.h5',
+      'cells.parquet',
+      'cell_boundaries.parquet',
+    ]),
+    inputInfo: [
+      ['<code>cell_feature_matrix.h5</code> - <span style="color: #acaaaa;">typically found in the Xenium output bundle</span>'],
+      ['<code>cells.parquet</code> - <span style="color: #acaaaa;">typically found in the Xenium output bundle</span>'],
+      ['<code>cell_boundaries.parquet</code> - <span style="color: #acaaaa;">typically found in the Xenium output bundle</span>'],
+    ],
+    requiredFiles: [
+      sampleFileType.XENIUM_CELL_FEATURE_MATRIX,
+      sampleFileType.XENIUM_CELLS,
+      sampleFileType.XENIUM_CELL_BOUNDARIES,
+    ],
+    fileUploadParagraphs: [
+      'For each sample, upload a folder containing the 3 required files. The folder\'s name will be used to name the sample in it. You can change this name later in Data Management.',
+      'The required files for each sample are:',
+    ],
+    dropzoneText: 'Drag and drop folders here or click to browse.',
+    webkitdirectory: '',
+    isNameValid(fileName) { return matchFileName(fileName, this.acceptedFiles); },
+    getCorrespondingType(fileName) {
+      const fileNameToType = {
+        'cell_feature_matrix.h5': sampleFileType.XENIUM_CELL_FEATURE_MATRIX,
+        'cells.parquet': sampleFileType.XENIUM_CELLS,
+        'cell_boundaries.parquet': sampleFileType.XENIUM_CELL_BOUNDARIES,
+      };
+      const allowedNames = Array.from(this.acceptedFiles);
+      const name = allowedNames.find((allowedName) => fileName.endsWith(allowedName));
+      return fileNameToType[name];
+    },
+    filterFiles: filterFilesDefaultConstructor(sampleTech.XENIUM),
+    getFileSampleAndName: getFileSampleAndNameDefault,
+    getFilePathToDisplay: getFilePathToDisplayDefaultConstructor(sampleTech.XENIUM),
   },
   [sampleTech.RHAPSODY]: {
     category: techCategoryNames.SINGLE_CELL_COUNT_MATRIX,

@@ -61,6 +61,7 @@ const extraHelpText = {
   ),
   [sampleTech.PARSE]: () => <></>,
   [sampleTech.VISIUM_HD]: () => <></>,
+  [sampleTech.XENIUM]: () => <></>,
 };
 
 const emptyFiles = { valid: [], invalid: [] };

@@ -39,7 +39,7 @@ const pipelineStepsInfoByType = {
 };
 
 // technologies whose gem2s pipeline uses the spatial (shorter) step list
-const SPATIAL_TECHNOLOGIES = ['visium_hd'];
+const SPATIAL_TECHNOLOGIES = ['visium_hd', 'xenium'];
 
 const GEM2SLoadingScreen = (props) => {
   const {

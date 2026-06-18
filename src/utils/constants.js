@@ -20,6 +20,7 @@ const sampleTech = {
   '10X': '10x',
   H5: '10x_h5',
   VISIUM_HD: 'visium_hd',
+  XENIUM: 'xenium',
   SEURAT_OBJECT: 'seurat_object',
   SEURAT_SPATIAL_OBJECT: 'seurat_spatial_object',
   SCE_OBJECT: 'sce_object',
@@ -35,7 +36,11 @@ const obj2sTechs = [
   sampleTech.SEURAT_SPATIAL_OBJECT,
 ];
 
-const spatialTechs = [sampleTech.SEURAT_SPATIAL_OBJECT, sampleTech.VISIUM_HD];
+const spatialTechs = [sampleTech.SEURAT_SPATIAL_OBJECT, sampleTech.VISIUM_HD, sampleTech.XENIUM];
+
+// spatial technologies with no tissue image: cells render on a blank background
+// and no ome_zarr_zip tissue image is produced, so the image URL is not fetched
+const imagelessTechs = [sampleTech.XENIUM];
 
 const plotTypes = {
   CONTINUOUS_EMBEDDING: 'embeddingContinuous',
@@ -108,6 +113,7 @@ export {
   sampleTech,
   obj2sTechs,
   spatialTechs,
+  imagelessTechs,
   plotTypes,
   spatialPlotTypes,
   spatialPlotNames,

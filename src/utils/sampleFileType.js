@@ -15,6 +15,9 @@ const sampleFileType = {
   VISIUM_HD_CELL_SEGMENTATIONS: 'visium_hd_cell_segmentations',
   VISIUM_HD_TISSUE_HIRES_IMAGE: 'visium_hd_tissue_hires_image',
   VISIUM_HD_SCALEFACTORS_JSON: 'visium_hd_scalefactors_json',
+  XENIUM_CELL_FEATURE_MATRIX: 'xenium_cell_feature_matrix',
+  XENIUM_CELLS: 'xenium_cells',
+  XENIUM_CELL_BOUNDARIES: 'xenium_cell_boundaries',
 };
 
 const fileTypeToDisplay = {
@@ -33,6 +36,9 @@ const fileTypeToDisplay = {
   [sampleFileType.VISIUM_HD_CELL_SEGMENTATIONS]: 'cell_segmentations.geojson',
   [sampleFileType.VISIUM_HD_TISSUE_HIRES_IMAGE]: 'tissue_hires_image.png',
   [sampleFileType.VISIUM_HD_SCALEFACTORS_JSON]: 'scalefactors_json.json',
+  [sampleFileType.XENIUM_CELL_FEATURE_MATRIX]: 'cell_feature_matrix.h5',
+  [sampleFileType.XENIUM_CELLS]: 'cells.parquet',
+  [sampleFileType.XENIUM_CELL_BOUNDARIES]: 'cell_boundaries.parquet',
 };
 
 const fileTypeColumnWidth = {
@@ -40,6 +46,9 @@ const fileTypeColumnWidth = {
   [sampleFileType.VISIUM_HD_CELL_SEGMENTATIONS]: 220,
   [sampleFileType.VISIUM_HD_TISSUE_HIRES_IMAGE]: 195,
   [sampleFileType.VISIUM_HD_SCALEFACTORS_JSON]: 185,
+  [sampleFileType.XENIUM_CELL_FEATURE_MATRIX]: 215,
+  [sampleFileType.XENIUM_CELLS]: 150,
+  [sampleFileType.XENIUM_CELL_BOUNDARIES]: 195,
 };
 
 export default sampleFileType;
