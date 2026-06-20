@@ -20,20 +20,17 @@ import Loader from 'components/Loader';
 import ToolMenu from 'components/data-exploration/embedding/ToolMenu';
 import calculateInitialViewState from 'components/data-exploration/embedding/calculateInitialViewState';
 import { buildCellsQuadTree, selectCellsInPolygon } from 'components/data-exploration/embedding/lassoUtils';
+import parseColor from 'components/data-exploration/parseColor';
+import useFocusCellColors from 'components/data-exploration/useFocusCellColors';
 
 import { loadEmbedding } from 'redux/actions/embedding';
 import { getCellSetsHierarchyByType, getCellSets } from 'redux/selectors';
 import { createCellSet } from 'redux/actions/cellSets';
-import { loadGeneExpression } from 'redux/actions/genes';
 import { updateCellInfo } from 'redux/actions/cellInfo';
 import { loadProcessingSettings } from 'redux/actions/experimentSettings';
 
 
-import {
-  convertCellsData,
-  renderCellSetColors,
-  colorByGeneExpression,
-} from 'utils/plotUtils';
+import { convertCellsData } from 'utils/plotUtils';
 import getContainingCellSetsProperties from 'utils/cellSets/getContainingCellSetsProperties';
 
 const COLOR_SCHEME = 'purplered';
@@ -53,31 +50,6 @@ const EMPTY_DATA = {
 
 const LASSO_MODE_CONFIG = {
   dragToDraw: true,
-};
-
-/**
- * Convert color value (hex string or array) to RGB array
- */
-const parseColor = (colorValue) => {
-  if (!colorValue) {
-    return [128, 128, 128, 255]; // default gray
-  }
-
-  // If already an array, return as-is (ensure alpha channel)
-  if (Array.isArray(colorValue)) {
-    return colorValue.length === 4 ? colorValue : [...colorValue, 255];
-  }
-
-  // Parse hex string
-  if (typeof colorValue === 'string') {
-    const hex = colorValue.startsWith('#') ? colorValue : `#${colorValue}`;
-    const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-    if (result) {
-      return [parseInt(result[1], 16), parseInt(result[2], 16), parseInt(result[3], 16), 255];
-    }
-  }
-
-  return [128, 128, 128, 255];
 };
 
 /**
@@ -136,8 +108,19 @@ const Embedding = (props) => {
   const [cellInfoTooltip, setCellInfoTooltip] = useState();
   const [createClusterPopover, setCreateClusterPopover] = useState(false);
   const [selectedIds, setSelectedIds] = useState(new Set());
-  const [cellColors, setCellColors] = useState({});
   const [cellInfoVisible, setCellInfoVisible] = useState(true);
+
+  // colour cells by focused cell set / gene expression (shared with SpatialViewer)
+  const [cellColors] = useFocusCellColors({
+    experimentId,
+    focusData,
+    cellSetHierarchy,
+    cellSetProperties,
+    expressionMatrix,
+    expressionLoading,
+    colorInterpolator,
+    onFocusChange: () => setCellInfoVisible(false),
+  });
   const cellCoordinatesRef = useRef({ x: 0, y: 0, width, height });
   const [viewState, setViewState] = useState(null);
 
@@ -174,47 +157,6 @@ const Embedding = (props) => {
   }, [embeddingSettings]);
 
 
-  // Handle focus change (e.g. a cell set or gene or metadata got selected).
-  // Also handle here when the cell set properties or hierarchy change.
-  useEffect(() => {
-    const { store, key } = focusData;
-
-    switch (store) {
-      // For genes/continous data, we cannot do this in one go,
-      // we need to wait for the thing to load in first.
-      case 'genes': {
-        dispatch(loadGeneExpression(experimentId, [key], 'embedding'));
-        setCellInfoVisible(false);
-        return;
-      }
-
-      // Cell sets are easy, just return the appropriate color and set them up.
-      case 'cellSets': {
-        setCellColors(renderCellSetColors(key, cellSetHierarchy, cellSetProperties));
-        setCellInfoVisible(false);
-        return;
-      }
-
-      // If there is no focus, we can just delete all the colors.
-      default: {
-        setCellColors({});
-        setCellInfoVisible(false);
-        break;
-      }
-    }
-  }, [focusData, cellSetHierarchy, cellSetProperties]);
-
-  // Handle loading of expression for focused gene.
-  useEffect(() => {
-    if (!expressionMatrix.geneIsLoaded(focusData.key)) {
-      return;
-    }
-
-    const truncatedExpression = expressionMatrix.getTruncatedExpression(focusData.key);
-    const { truncatedMin, truncatedMax } = expressionMatrix.getStats(focusData.key);
-
-    setCellColors(colorByGeneExpression(truncatedExpression, colorInterpolator, truncatedMin, truncatedMax));
-  }, [focusData.key, expressionLoading]);
 
   useEffect(() => {
     if (!data || !cellSetHidden || !cellSetProperties) return;

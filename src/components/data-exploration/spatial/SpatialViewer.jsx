@@ -11,8 +11,6 @@ import { EditableGeoJsonLayer } from '@nebula.gl/layers';
 import { DrawPolygonByDraggingMode } from '@nebula.gl/edit-modes';
 import { MultiscaleImageLayer, getDefaultInitialViewState } from '@hms-dbmi/viv';
 
-import BitmaskLayer from './BitmaskLayer';
-
 import ClusterPopover from 'components/data-exploration/embedding/ClusterPopover';
 import CrossHair from 'components/data-exploration/embedding/CrossHair';
 import CellInfo from 'components/data-exploration/CellInfo';
@@ -27,7 +25,6 @@ import { loadEmbedding } from 'redux/actions/embedding';
 import { loadProcessingSettings } from 'redux/actions/experimentSettings';
 import { getCellSetsHierarchyByType, getCellSets } from 'redux/selectors';
 import { createCellSet } from 'redux/actions/cellSets';
-import { loadGeneExpression } from 'redux/actions/genes';
 import { updateCellInfo } from 'redux/actions/cellInfo';
 import { union } from 'utils/cellSetOperations';
 import { imagelessTechs } from 'utils/constants';
@@ -35,13 +32,17 @@ import _ from 'lodash';
 
 import { root as zarrRoot } from 'zarrita';
 
-import {
-  offsetCentroids,
-  renderCellSetColors,
-  colorByGeneExpression,
-} from 'utils/plotUtils';
+import { offsetCentroids } from 'utils/plotUtils';
 import getContainingCellSetsProperties from 'utils/cellSets/getContainingCellSetsProperties';
 import ZipFileStore from 'components/data-exploration/spatial/ZipFileStore';
+import parseColor from 'components/data-exploration/parseColor';
+import useFocusCellColors from 'components/data-exploration/useFocusCellColors';
+import {
+  EMPTY_COLOR_LUT,
+  buildCellColorLUT,
+  buildHoverFillLUT,
+  makeBitmaskLayer,
+} from 'components/data-exploration/spatial/bitmaskLayers';
 
 import { loadOmeZarrGrid } from './loadOmeZarr';
 
@@ -51,68 +52,13 @@ const colorInterpolator = vega.scheme(COLOR_SCHEME);
 const COMPONENT_TYPE = 'interactiveSpatial';
 const EMBEDDING_TYPE = 'images';
 
-const BITMASK_LUT_SIZE = 2048;
-const DEFAULT_CELL_GREY = 128;
-
-const DUMMY_EXPRESSION_DATA = new Uint8Array(BITMASK_LUT_SIZE * BITMASK_LUT_SIZE);
-
-// Stable all-zero RGBA LUT. Alpha=0 throughout → shader discards all pixels.
-// Returned by hoverFillColorLUT when nothing is hovered to avoid allocating a
-// new buffer (and re-uploading the GPU texture) on every hover-clear event.
-const EMPTY_COLOR_LUT = new Uint8Array(BITMASK_LUT_SIZE * BITMASK_LUT_SIZE * 4);
-
 const LASSO_MODE_CONFIG = { dragToDraw: true };
 const EMPTY_DATA = { type: 'FeatureCollection', features: [] };
 const DIAMOND_RADIUS = 5;
 const POLYGON_HIGHLIGHT_COLOR = [51, 51, 51, 150];
 const DEFAULT_COLOR = [128, 128, 128, 255];
 
-// ── renderSubBitmaskLayers (module-level) ─────────────────────────────────────
-function renderSubBitmaskLayers(props) {
-  const {
-    bbox: {
-      left, top, right, bottom,
-    },
-    index: { x, y, z },
-  } = props.tile;
-  const { data, id, loader } = props;
-
-  if ([left, bottom, right, top].some((v) => v < 0) || !data) return null;
-
-  const base = loader[0];
-  const [imgHeight, imgWidth] = base.shape.slice(-2);
-
-  const bounds = [
-    left,
-    data.height < base.tileSize ? imgHeight : bottom,
-    data.width < base.tileSize ? imgWidth : right,
-    top,
-  ];
-
-  return new BitmaskLayer(props, {
-    channelData: data,
-    bounds,
-    id: `sub-layer-${bounds}-${id}`,
-    tileId: { x, y, z },
-    tileWidth: data.width,
-    tileHeight: data.height,
-  });
-}
-
 const DeckGL = dynamic(() => import('@deck.gl/react').then((mod) => mod.DeckGL), { ssr: false });
-
-const parseColor = (colorValue) => {
-  if (!colorValue) return [128, 128, 128, 255];
-  if (Array.isArray(colorValue)) return colorValue.length === 4 ? colorValue : [...colorValue, 255];
-  if (typeof colorValue === 'string') {
-    const hex = colorValue.startsWith('#') ? colorValue : `#${colorValue}`;
-    const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-    if (result) {
-      return [parseInt(result[1], 16), parseInt(result[2], 16), parseInt(result[3], 16), 255];
-    }
-  }
-  return [128, 128, 128, 255];
-};
 
 const SpatialViewer = (props) => {
   const { experimentId, height, width } = props;
@@ -182,8 +128,19 @@ const SpatialViewer = (props) => {
   const [cellInfoTooltip, setCellInfoTooltip] = useState();
   const [createClusterPopover, setCreateClusterPopover] = useState(false);
   const [selectedIds, setSelectedIds] = useState(new Set());
-  const [cellColors, setCellColors] = useState({});
   const [cellInfoVisible, setCellInfoVisible] = useState(true);
+
+  // colour cells by focused cell set / gene expression (shared with Embedding)
+  const [cellColors] = useFocusCellColors({
+    experimentId,
+    focusData,
+    cellSetHierarchy,
+    cellSetProperties,
+    expressionMatrix,
+    expressionLoading,
+    colorInterpolator,
+    onFocusChange: () => setCellInfoVisible(false),
+  });
 
   const [omeZarrSampleIds, setOmeZarrSampleIds] = useState([]);
   const [omeZarrUrls, setOmeZarrUrls] = useState([]);
@@ -399,31 +356,6 @@ const SpatialViewer = (props) => {
     if (embeddingSettings && !data) dispatch(loadEmbedding(experimentId, EMBEDDING_TYPE));
   }, [embeddingSettings]);
 
-  // ── Focus / colour changes ────────────────────────────────────────────────
-  useEffect(() => {
-    const { store, key } = focusData;
-    switch (store) {
-      case 'genes':
-        dispatch(loadGeneExpression(experimentId, [key], 'embedding'));
-        setCellInfoVisible(false);
-        return;
-      case 'cellSets':
-        setCellColors(renderCellSetColors(key, cellSetHierarchy, cellSetProperties));
-        setCellInfoVisible(false);
-        return;
-      default:
-        setCellColors({});
-        setCellInfoVisible(false);
-    }
-  }, [focusData, cellSetHierarchy, cellSetProperties]);
-
-  useEffect(() => {
-    if (!expressionMatrix.geneIsLoaded(focusData.key)) return;
-    const truncated = expressionMatrix.getTruncatedExpression(focusData.key);
-    const { truncatedMin, truncatedMax } = expressionMatrix.getStats(focusData.key);
-    setCellColors(colorByGeneExpression(truncated, colorInterpolator, truncatedMin, truncatedMax));
-  }, [focusData.key, expressionLoading]);
-
   // ── Centroid positions ────────────────────────────────────────────────────
   // Only excludes explicitly hidden cell sets. Cells without a colour
   // assignment in the active scheme are kept (they render grey in the LUT).
@@ -441,44 +373,10 @@ const SpatialViewer = (props) => {
   }, [offsetData, hiddenCellIds, cellsInAnyCluster]);
 
   // ── Colour LUT (RGBA) ─────────────────────────────────────────────────────
-  // Cells absent from offsetData (filtered/QC-failed) are never iterated so
-  // their LUT entries stay [0,0,0,0] → transparent.
-  // Cells present in offsetData but with no colour assignment in the active
-  // scheme (e.g. not in the focused custom cluster) get grey, matching the
-  // embedding behaviour.
-  const colorLUT = useMemo(() => {
-    const lut = new Uint8Array(BITMASK_LUT_SIZE * BITMASK_LUT_SIZE * 4);
-    if (!offsetData) return lut;
-
-    const hasCellColors = Object.keys(cellColors).length > 0;
-
-    offsetData.forEach((_, cellIdKey) => {
-      if (hiddenCellIds.has(cellIdKey)) return;
-      if (!cellsInAnyCluster.has(cellIdKey)) return;
-
-      const pixelValue = Number(cellIdKey) + 1;
-      if (pixelValue <= 0 || pixelValue >= BITMASK_LUT_SIZE * BITMASK_LUT_SIZE) return;
-
-      let r; let g; let b;
-      if (hasCellColors) {
-        const colorValue = cellColors[String(cellIdKey)];
-        if (colorValue) {
-          [r, g, b] = parseColor(colorValue);
-        } else {
-          r = DEFAULT_CELL_GREY; g = DEFAULT_CELL_GREY; b = DEFAULT_CELL_GREY;
-        }
-      } else {
-        r = DEFAULT_CELL_GREY; g = DEFAULT_CELL_GREY; b = DEFAULT_CELL_GREY;
-      }
-
-      lut[pixelValue * 4] = r;
-      lut[pixelValue * 4 + 1] = g;
-      lut[pixelValue * 4 + 2] = b;
-      lut[pixelValue * 4 + 3] = 255;
-    });
-
-    return lut;
-  }, [cellColors, offsetData, hiddenCellIds, cellsInAnyCluster]);
+  const colorLUT = useMemo(
+    () => buildCellColorLUT(offsetData, cellColors, hiddenCellIds, cellsInAnyCluster),
+    [cellColors, offsetData, hiddenCellIds, cellsInAnyCluster],
+  );
 
   // ── Diamond fallback ──────────────────────────────────────────────────────
   const polygonShapeData = useMemo(() => {
@@ -682,61 +580,26 @@ const SpatialViewer = (props) => {
   // ── Bitmask fill layer ────────────────────────────────────────────────────
   const bitmaskFillLayer = useMemo(() => {
     if (!segmentationsLoader?.data || !showFilled) return null;
-    return new MultiscaleImageLayer({
+    return makeBitmaskLayer({
       id: 'segmentations-bitmask-fill',
       loader: segmentationsLoader.data,
-      selections: [{ c: 0 }],
-      channelsVisible: [true],
-      contrastLimits: [[0, 65535]],
-      colors: [[255, 255, 255]],
-      opacity: 0.75,
-      visible: true,
-      pickable: false,
-      renderSubLayers: renderSubBitmaskLayers,
       cellColorData: colorLUT,
-      cellTexHeight: BITMASK_LUT_SIZE,
-      cellTexWidth: BITMASK_LUT_SIZE,
       hoveredCell: selectedCell ? Number(selectedCell) + 1 : 0,
       showOutlineOnly: false,
-      excludeBackground: true,
-      expressionData: DUMMY_EXPRESSION_DATA,
-      isExpressionMode: false,
-      colorScaleLo: 0,
-      colorScaleHi: 1,
-      maxRequests: 15,
-      maxCacheSize: 512,
     });
   }, [segmentationsLoader, colorLUT, showFilled, selectedCell]);
-
 
   // ── Bitmask outline layer ─────────────────────────────────────────────────
   // Hover tint suppressed — when fill is also on the fill layer owns the
   // highlight; when fill is off the hover-fill layer provides it instead.
   const bitmaskOutlineLayer = useMemo(() => {
     if (!segmentationsLoader?.data || !showOutlines) return null;
-    return new MultiscaleImageLayer({
+    return makeBitmaskLayer({
       id: 'segmentations-bitmask-outline',
       loader: segmentationsLoader.data,
-      selections: [{ c: 0 }],
-      channelsVisible: [true],
-      contrastLimits: [[0, 65535]],
-      colors: [[255, 255, 255]],
-      opacity: 0.75,
-      visible: true,
-      pickable: false,
-      renderSubLayers: renderSubBitmaskLayers,
       cellColorData: colorLUT,
-      cellTexHeight: BITMASK_LUT_SIZE,
-      cellTexWidth: BITMASK_LUT_SIZE,
       hoveredCell: 0,
       showOutlineOnly: true,
-      excludeBackground: true,
-      expressionData: DUMMY_EXPRESSION_DATA,
-      isExpressionMode: false,
-      colorScaleLo: 0,
-      colorScaleHi: 1,
-      maxRequests: 15,
-      maxCacheSize: 512,
     });
   }, [segmentationsLoader, colorLUT, showOutlines]);
 
@@ -748,17 +611,7 @@ const SpatialViewer = (props) => {
   const hoverFillColorLUT = useMemo(() => {
     if (!outlineOnlyHover || !segmentationsLoader) return null;
     if (!selectedCell) return EMPTY_COLOR_LUT;
-
-    const lut = new Uint8Array(BITMASK_LUT_SIZE * BITMASK_LUT_SIZE * 4);
-    const pixelValue = Number(selectedCell) + 1;
-    if (pixelValue > 0 && pixelValue < BITMASK_LUT_SIZE * BITMASK_LUT_SIZE) {
-      const [r, g, b] = parseColor(cellColors[String(selectedCell)]);
-      lut[pixelValue * 4] = r;
-      lut[pixelValue * 4 + 1] = g;
-      lut[pixelValue * 4 + 2] = b;
-      lut[pixelValue * 4 + 3] = 255;
-    }
-    return lut;
+    return buildHoverFillLUT(selectedCell, cellColors);
   }, [outlineOnlyHover, selectedCell, cellColors, segmentationsLoader]);
 
   // ── Hover-fill layer (outline mode only) ─────────────────────────────────
@@ -768,29 +621,12 @@ const SpatialViewer = (props) => {
   // transparent (alpha=0 LUT entries discarded by the shader).
   const bitmaskHoverFillLayer = useMemo(() => {
     if (!segmentationsLoader?.data || !hoverFillColorLUT) return null;
-    return new MultiscaleImageLayer({
+    return makeBitmaskLayer({
       id: 'segmentations-hover-fill',
       loader: segmentationsLoader.data,
-      selections: [{ c: 0 }],
-      channelsVisible: [true],
-      contrastLimits: [[0, 65535]],
-      colors: [[255, 255, 255]],
-      opacity: 0.75,
-      visible: true,
-      pickable: false,
-      renderSubLayers: renderSubBitmaskLayers,
       cellColorData: hoverFillColorLUT,
-      cellTexHeight: BITMASK_LUT_SIZE,
-      cellTexWidth: BITMASK_LUT_SIZE,
       hoveredCell: 0,
       showOutlineOnly: false,
-      excludeBackground: true,
-      expressionData: DUMMY_EXPRESSION_DATA,
-      isExpressionMode: false,
-      colorScaleLo: 0,
-      colorScaleHi: 1,
-      maxRequests: 15,
-      maxCacheSize: 512,
     });
   }, [segmentationsLoader, hoverFillColorLUT]);
 
