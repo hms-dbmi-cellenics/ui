@@ -30,23 +30,11 @@ const generateSpec = (
   const initXdom = [0, imageWidth];
   const initYdom = [0, imageHeight];
 
-  let plotWidth = config.dimensions.width;
-  let plotHeight = config.dimensions.height;
-
-  // Mini previews live in a fixed square tile. Fit the plot to the slide's aspect
-  // within that square (≤ box in both dimensions) so the whole image is visible —
-  // never taller than the tile and clipped at the bottom.
-  if (config.miniPlot && imageWidth && imageHeight) {
-    const box = Math.min(plotWidth, plotHeight);
-    const aspect = imageWidth / imageHeight;
-    if (aspect >= 1) {
-      plotWidth = box;
-      plotHeight = Math.round(box / aspect);
-    } else {
-      plotHeight = box;
-      plotWidth = Math.round(box * aspect);
-    }
-  }
+  // Plot size always matches the containing box (config.dimensions) — the styling
+  // panel for the full plot, the fixed mini-preview tile (MiniPlot) for previews.
+  // The full image extent is mapped into that box via the x/y scale domains.
+  const plotWidth = config.dimensions.width;
+  const plotHeight = config.dimensions.height;
 
   let legend = [];
 

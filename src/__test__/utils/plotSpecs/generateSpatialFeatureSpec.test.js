@@ -82,25 +82,15 @@ describe('generateSpatialFeatureSpec', () => {
     });
   });
 
-  describe('mini-plot aspect-fit dimensions', () => {
-    it('fits a wide (landscape) slide within the square box, keeping aspect', () => {
+  describe('dimensions match the containing box', () => {
+    it('renders a mini plot at its (square) containing-box dimensions, regardless of slide aspect', () => {
       const config = { ...baseConfig(), miniPlot: true };
       config.dimensions = { ...config.dimensions, width: 92, height: 92 };
-      // 1000x500 → aspect 2 (>= 1): width = box(92), height = box/aspect = 46
+      // a wide slide still fills the 92×92 mini-preview tile
       const spec = generateSpec(config, 'mock', { imageWidth: 1000, imageHeight: 500 }, []);
 
       expect(spec.width).toBe(92);
-      expect(spec.height).toBe(46);
-    });
-
-    it('fits a tall (portrait) slide within the square box, keeping aspect', () => {
-      const config = { ...baseConfig(), miniPlot: true };
-      config.dimensions = { ...config.dimensions, width: 92, height: 92 };
-      // 500x1000 → aspect 0.5 (< 1): height = box(92), width = box*aspect = 46
-      const spec = generateSpec(config, 'mock', { imageWidth: 500, imageHeight: 1000 }, []);
-
       expect(spec.height).toBe(92);
-      expect(spec.width).toBe(46);
     });
 
     it('keeps the configured dimensions for the full (non-mini) plot', () => {

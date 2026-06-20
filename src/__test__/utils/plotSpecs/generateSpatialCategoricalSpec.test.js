@@ -49,23 +49,23 @@ describe('generateSpatialCategoricalSpec', () => {
     });
   });
 
-  describe('mini-plot aspect-fit dimensions', () => {
-    it('fits a wide slide within the square box', () => {
+  describe('dimensions match the containing box', () => {
+    it('renders a mini plot at its (square) containing-box dimensions, regardless of slide aspect', () => {
       const config = { ...baseConfig(), miniPlot: true };
       config.dimensions = { ...config.dimensions, width: 92, height: 92 };
       const spec = generateSpec(config, 'mock', { imageWidth: 1000, imageHeight: 500 }, [], legendsData);
 
       expect(spec.width).toBe(92);
-      expect(spec.height).toBe(46);
+      expect(spec.height).toBe(92);
     });
 
-    it('fits a tall slide within the square box', () => {
-      const config = { ...baseConfig(), miniPlot: true };
-      config.dimensions = { ...config.dimensions, width: 92, height: 92 };
-      const spec = generateSpec(config, 'mock', { imageWidth: 500, imageHeight: 1000 }, [], legendsData);
+    it('uses the configured dimensions verbatim for the full (non-mini) plot', () => {
+      const config = { ...baseConfig(), miniPlot: false };
+      config.dimensions = { ...config.dimensions, width: 700, height: 550 };
+      const spec = generateSpec(config, 'mock', { imageWidth: 1000, imageHeight: 500 }, [], legendsData);
 
-      expect(spec.height).toBe(92);
-      expect(spec.width).toBe(46);
+      expect(spec.width).toBe(700);
+      expect(spec.height).toBe(550);
     });
   });
 
