@@ -287,43 +287,6 @@ describe('openOmePyramid', () => {
     expect(mockFromUrl).toHaveBeenCalledWith('https://example.com/unique-1.zarr.zip');
   });
 
-  it('derives per-level affine maps from coordinateTransformations', async () => {
-    mockOpen.mockImplementation((node, { kind }) => {
-      if (kind === 'group') {
-        return Promise.resolve({
-          attrs: {
-            multiscales: [{
-              axes: [{ name: 'y' }, { name: 'x' }],
-              datasets: [
-                { path: '0', coordinateTransformations: [{ type: 'scale', scale: [1, 1] }] },
-                {
-                  path: '1',
-                  coordinateTransformations: [
-                    { type: 'scale', scale: [2, 2] },
-                    { type: 'translation', translation: [0.5, 0.5] },
-                  ],
-                },
-              ],
-            }],
-          },
-        });
-      }
-      // level 0 = 600x900, level 1 = 300x450
-      return Promise.resolve({ shape: node.path === '1' ? [300, 450] : [600, 900] });
-    });
-
-    const result = await openOmePyramid('https://example.com/transforms.zarr.zip');
-    const [lvl0, lvl1] = result.levels;
-    // level 0: identity
-    expect(lvl0.pxPerFullX).toBeCloseTo(1);
-    expect(lvl0.offsetFullX).toBeCloseTo(0);
-    // level 1: scale 2 (s0/sL = 1/2) and translation 0.5 / s0 = 0.5 full-px
-    expect(lvl1.pxPerFullX).toBeCloseTo(0.5);
-    expect(lvl1.pxPerFullY).toBeCloseTo(0.5);
-    expect(lvl1.offsetFullX).toBeCloseTo(0.5);
-    expect(lvl1.offsetFullY).toBeCloseTo(0.5);
-  });
-
   it('infers exact integer factors from shapes for v0.3 pyramids (no transforms)', async () => {
     // v0.3: datasets carry NO coordinateTransformations. Our writer uses
     // scale_factors [2,4,8,16]; with a non-divisible full width the level dims are

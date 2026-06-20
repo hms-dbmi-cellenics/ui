@@ -35,58 +35,21 @@ const PYRAMID_CACHE_MAX = 8;
 // positional shift you see when a sharp tile replaces a coarse one. We instead pin
 // each level to the EXACT downsample factor.
 //
-// Two sources for that exact factor, in priority order:
-//  1. OME-Zarr v0.4+ `coordinateTransformations` (scale [+ translation] per dataset):
-//     pxPerFull = s0/sL, offsetFull = (tL - t0)/s0.
-//  2. v0.3 and earlier carry NO transforms. Our pyramids are written by
-//     ome_zarr.writer.write_image with integer scale_factors [2,4,8,16] (skimage
-//     resize, which aligns pixel CENTRES — so an exact integer factor with
-//     offset 0 is correct; there is no half-pixel term). We recover those integer
-//     factors by rounding the ratio between CONSECUTIVE level dims (robust at coarse
-//     levels, where the level-0 ratio has drifted) and accumulating.
-const scaleOf = (cts) => (cts || []).find((t) => t.type === 'scale')?.scale;
-const translationOf = (cts) => (cts || []).find((t) => t.type === 'translation')?.translation;
-
+// Our pyramids are OME-Zarr v0.3 (no `coordinateTransformations`), written by
+// ome_zarr.writer.write_image with integer scale_factors [2,4,8,16] (skimage
+// resize, which aligns pixel CENTRES — so an exact integer factor with offset 0 is
+// correct; there is no half-pixel term). We recover those integer factors by
+// rounding the ratio between CONSECUTIVE level dims (robust at coarse levels, where
+// the level-0 ratio has drifted) and accumulating. (We don't read v0.4+
+// coordinateTransformations — the pipeline only writes v0.3.)
 const widthOf = (lvl) => lvl.shape[lvl.shape.length - 1];
 const heightOf = (lvl) => lvl.shape[lvl.shape.length - 2];
 
-function attachLevelTransforms(levels, axesMetadata) {
-  const { shape } = levels[0];
-  const ndim = shape.length;
-  let xAxis = ndim - 1;
-  let yAxis = ndim - 2;
-  if (axesMetadata) {
-    const xi = axesMetadata.findIndex((a) => a.name === 'x');
-    const yi = axesMetadata.findIndex((a) => a.name === 'y');
-    if (xi >= 0) xAxis = xi;
-    if (yi >= 0) yAxis = yi;
-  }
-
-  const s0 = scaleOf(levels[0].coordinateTransformations);
-
-  /* eslint-disable no-param-reassign */
-  if (s0 && s0[xAxis] && s0[yAxis]) {
-    // (1) v0.4+: exact scale/translation transforms.
-    const t0 = translationOf(levels[0].coordinateTransformations) || [];
-    const s0x = s0[xAxis];
-    const s0y = s0[yAxis];
-    const t0x = t0[xAxis] || 0;
-    const t0y = t0[yAxis] || 0;
-    levels.forEach((lvl) => {
-      const sL = scaleOf(lvl.coordinateTransformations);
-      if (!sL || !sL[xAxis] || !sL[yAxis]) return; // → shape-ratio fallback in axisMap*
-      const tL = translationOf(lvl.coordinateTransformations) || [];
-      lvl.pxPerFullX = s0x / sL[xAxis];
-      lvl.pxPerFullY = s0y / sL[yAxis];
-      lvl.offsetFullX = ((tL[xAxis] || 0) - t0x) / s0x;
-      lvl.offsetFullY = ((tL[yAxis] || 0) - t0y) / s0y;
-    });
-    return;
-  }
-
-  // (2) v0.3 / no transforms: infer exact integer factors from consecutive dims.
+function attachLevelTransforms(levels) {
+  // v0.3 / no transforms: infer exact integer factors from consecutive dims.
   let cumX = 1;
   let cumY = 1;
+  /* eslint-disable no-param-reassign */
   levels.forEach((lvl, i) => {
     if (i > 0) {
       cumX *= Math.max(1, Math.round(widthOf(levels[i - 1]) / widthOf(lvl)));
@@ -139,9 +102,9 @@ export const openOmePyramid = (omeZarrUrl) => {
     }
 
     const levels = await Promise.all(
-      datasets.map(async ({ path, coordinateTransformations }) => {
+      datasets.map(async ({ path }) => {
         const arr = await open(rootNode.resolve(path), { kind: 'array' });
-        return { arr, shape: arr.shape, coordinateTransformations };
+        return { arr, shape: arr.shape };
       }),
     );
 
@@ -149,7 +112,7 @@ export const openOmePyramid = (omeZarrUrl) => {
     const fullW = shape[shape.length - 1];
     const fullH = shape[shape.length - 2];
 
-    attachLevelTransforms(levels, axesMetadata);
+    attachLevelTransforms(levels);
 
     return {
       levels,
