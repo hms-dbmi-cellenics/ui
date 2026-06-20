@@ -661,6 +661,7 @@ const interactiveHeatmapInitialConfig = {
 const interactiveSpatialInitialConfig = {
   showImages: true,
   showSegmentations: true,
+  showSegmentationOutlines: true,
   groupSlidesBy: ['sample'],
 };
 
