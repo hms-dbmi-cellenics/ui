@@ -1,6 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { useSelector } from 'react-redux';
 
+import { imagelessTechs } from 'utils/constants';
 import { generateDataProcessingPlotUuid } from 'utils/generateCustomPlotUuid';
 
 import PlotLayout from 'components/data-processing/PlotLayout';
@@ -20,6 +22,11 @@ const SpatialOutlierFilter = (props) => {
     filterName, direction, mainPlotType, outlierPlotType, histogramPlotType,
     mainPlotTitle, histogramTitle,
   } = props;
+
+  // imageless techs (e.g. Xenium) render no tissue image, so the showImage
+  // toggle would control nothing — drop the panel for those technologies
+  const technology = useSelector((state) => state.samples?.[sampleId]?.type);
+  const isImageless = imagelessTechs.includes(technology);
 
   const filterTableUuid = generateDataProcessingPlotUuid(sampleId, filterName, 2);
 
@@ -86,10 +93,10 @@ const SpatialOutlierFilter = (props) => {
   };
 
   const plotStylingControlsConfig = [
-    {
+    ...(isImageless ? [] : [{
       panelTitle: 'Tissue image',
       controls: ['showImage'],
-    },
+    }]),
     {
       panelTitle: 'Main schema',
       controls: ['dimensions'],

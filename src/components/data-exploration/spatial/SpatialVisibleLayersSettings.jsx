@@ -11,6 +11,7 @@ import {
 } from 'antd';
 
 import { updatePlotConfig } from 'redux/actions/componentConfig';
+import { imagelessTechs } from 'utils/constants';
 
 const SpatialVisibleLayersSettings = (props) => {
   const dispatch = useDispatch();
@@ -22,6 +23,12 @@ const SpatialVisibleLayersSettings = (props) => {
     showSegmentationOutlines,
   } = useSelector((state) => state.componentConfig[componentType].config);
 
+  // imageless techs (e.g. Xenium) have no tissue image, so the Images toggle
+  // would control a layer that never renders — hide it for those technologies
+  const sampleIds = useSelector((state) => state.experimentSettings.info.sampleIds);
+  const technology = useSelector((state) => state.samples?.[sampleIds?.[0]]?.type);
+  const isImageless = imagelessTechs.includes(technology);
+
   const [listData, setListData] = useState([]);
 
   const setLayerVisible = (visible, key) => {
@@ -30,11 +37,11 @@ const SpatialVisibleLayersSettings = (props) => {
 
   useEffect(() => {
     setListData([
-      {
+      ...(isImageless ? [] : [{
         key: 'showImages',
         name: 'Images',
         visible: showImages !== false,
-      },
+      }]),
       {
         key: 'showSegmentations',
         name: 'Segmentations',
@@ -46,7 +53,7 @@ const SpatialVisibleLayersSettings = (props) => {
         visible: showSegmentationOutlines === true,
       },
     ]);
-  }, [showImages, showSegmentations, showSegmentationOutlines]);
+  }, [showImages, showSegmentations, showSegmentationOutlines, isImageless]);
 
   const leftItem = (layerItem) => (
     <Switch
