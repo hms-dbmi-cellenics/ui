@@ -5,7 +5,7 @@ import validateRhapsody from 'utils/upload/validateRhapsody';
 import validateObj2s from 'utils/upload/validateObj2s';
 import validateH5 from 'utils/upload/validateH5';
 import validateParse from 'utils/upload/validateParse';
-import validateSpatialCountMatrix from 'utils/upload/validateSpatialCountMatrix';
+import validateXenium from 'utils/upload/validateXenium';
 
 const sampleValidators = {
   [sampleTech['10X']]: validate10x,
@@ -17,9 +17,9 @@ const sampleValidators = {
   [sampleTech.H5]: validateH5,
   [sampleTech.PARSE]: validateParse,
   [sampleTech.VISIUM_HD]: validateObj2s,
-  // Xenium is an end-to-end count-matrix tech (not an obj2s pre-processed object);
-  // no content validation in v1.
-  [sampleTech.XENIUM]: validateSpatialCountMatrix,
+  // Xenium is an end-to-end count-matrix tech: verify the three input files are
+  // present and have valid HDF5/Parquet magic bytes.
+  [sampleTech.XENIUM]: validateXenium,
 };
 
 export default sampleValidators;

@@ -4,7 +4,7 @@ import {
 import sampleFileType, { fileTypeToDisplay, fileTypeColumnWidth } from 'utils/sampleFileType';
 import fileUploadUtils, { techNamesToDisplay } from 'utils/upload/fileUploadUtils';
 import { inspectFile, Verdict } from 'utils/upload/fileInspector';
-import validateSpatialCountMatrix from 'utils/upload/validateSpatialCountMatrix';
+import validateXenium from 'utils/upload/validateXenium';
 import sampleValidators from 'utils/upload/sampleValidators';
 
 // Locks in the Xenium upload registration added in Phase 1. These guard the
@@ -105,11 +105,7 @@ describe('Xenium registration — fileInspector', () => {
 });
 
 describe('Xenium registration — validator', () => {
-  it('uses the no-op spatial count-matrix validator (no content validation in v1)', () => {
-    expect(sampleValidators[sampleTech.XENIUM]).toBe(validateSpatialCountMatrix);
-  });
-
-  it('resolves without throwing', async () => {
-    await expect(validateSpatialCountMatrix()).resolves.toBeUndefined();
+  it('uses the Xenium content validator', () => {
+    expect(sampleValidators[sampleTech.XENIUM]).toBe(validateXenium);
   });
 });
