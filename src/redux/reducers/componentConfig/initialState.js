@@ -180,6 +180,56 @@ const spatialFeatureInitialConfig = {
   showImage: true,
 };
 
+// PLOTS & TABLES - Spatial Molecules Plot
+// Renders individual transcript molecules (one symbol per molecule) coloured by
+// gene, read from the molecules_pyramid artifact. One sample at a fixed extent;
+// the bounded molecule result is inlined as Vega `values` (no streaming).
+const spatialMoleculeInitialConfig = {
+  spec: '1.0.0',
+  legend: legendBaseState,
+  dimensions: {
+    ...dimensionsBaseState,
+    width: 500,
+    height: 500,
+  },
+  axes: {
+    ...axesBaseState,
+    defaultValues: ['x', 'y'],
+    offset: 0,
+  },
+  axesRanges: axesRangesBaseState,
+  title: {
+    ...titleBaseState,
+    dx: 0,
+    fontSize: 20,
+  },
+  fontStyle: fontStyleBaseState,
+  colour: colourBaseState,
+  marker: {
+    ...markerBaseState,
+    size: 0.4,
+    opacity: 8,
+  },
+  labels: labelBaseState,
+  // genes to render (gene symbols). Empty on init; the plot seeds a few default
+  // genes once the pyramid loads (rendering every gene hangs Vega).
+  selectedGenes: [],
+  // per-gene render colours (gene symbol -> hex). Defaulted from the baked
+  // meta.genes palette when a gene is seeded/added; the user can override each
+  // with the colour picker in the gene-selection panel.
+  geneColors: {},
+  selectedSample: null,
+  // segmentation outlines drawn behind the molecules (colour + opacity adjustable).
+  showSegmentationOutlines: true,
+  segmentationOutlineColour: '#CECBCB',
+  segmentationOutlineOpacity: 0.05,
+  // 'selectedSample'/'selectedGenes'/'geneColors' are auto-populated on mount (first
+  // sample + default genes + their palette colours). Reset Plot resets the styling
+  // but keeps the chosen sample + genes + their colours (skipped in the reset-disabled
+  // comparison so the automatic writes don't permanently re-enable the button).
+  keepValuesOnReset: ['selectedSample', 'selectedGenes', 'geneColors'],
+};
+
 // PLOTS & TABLES - Heatmap
 const heatmapInitialConfig = {
   spec: '1.0.0',
@@ -663,6 +713,10 @@ const interactiveSpatialInitialConfig = {
   showSegmentations: true,
   showSegmentationOutlines: true,
   groupSlidesBy: ['sample'],
+  // Xenium transcript/molecule overlay (only available when a molecules_pyramid
+  // was built). Off by default. When on AND a gene is being plotted, the focused
+  // gene's transcripts render as points in place of the per-cell expression fill.
+  showMolecules: false,
 };
 
 // CELL SIZE DISTRIBUTION - Cell Size Distribution Histogram
@@ -1108,6 +1162,7 @@ const initialPlotConfigStates = {
   embeddingContinuous: embeddingContinuousInitialConfig,
   [plotTypes.SPATIAL_FEATURE]: spatialFeatureInitialConfig,
   [plotTypes.SPATIAL_CATEGORICAL]: spatialCategoricalInitialConfig,
+  [plotTypes.SPATIAL_MOLECULES]: spatialMoleculeInitialConfig,
   heatmap: heatmapInitialConfig,
   volcano: volcanoInitialConfig,
   markerHeatmap: markerHeatmapInitialConfig,

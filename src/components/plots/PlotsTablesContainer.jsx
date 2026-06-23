@@ -7,6 +7,10 @@ import Link from 'next/link';
 
 import { plotNames, layout, spatialPlotNames } from 'utils/constants';
 
+// Plot types only meaningful for molecule-capable spatial techs (e.g. Xenium):
+// they are hidden for every other technology even when the experiment is spatial.
+const MOLECULE_PLOT_NAMES = [plotNames.SPATIAL_MOLECULES];
+
 const CARD_STYLE = { marginBottom: '1em' };
 const CardItem = (({
   item, experimentId,
@@ -85,6 +89,12 @@ const plots = [
         link: 'spatial-feature',
       },
       {
+        name: plotNames.SPATIAL_MOLECULES,
+        image: '/static/media/spatialFeature.png',
+        key: 'spatial-molecules-key',
+        link: 'spatial-molecules',
+      },
+      {
         name: plotNames.MARKER_HEATMAP,
         image: '/static/media/marker_heatmap.png',
         key: 'marker-heatmap-key',
@@ -131,8 +141,17 @@ const plots = [
 
 const PlotsTablesContainer = (props) => {
   const {
-    width, height, experimentId, isSpatial,
+    width, height, experimentId, isSpatial, hasMolecules,
   } = props;
+
+  // A plot card is shown unless it is gated to a capability the experiment lacks:
+  // spatial plots need a spatial tech; molecule plots additionally need a
+  // molecule-capable tech (e.g. Xenium).
+  const isPlotVisible = (name) => {
+    if (MOLECULE_PLOT_NAMES.includes(name)) return hasMolecules;
+    if (spatialPlotNames.includes(name)) return isSpatial;
+    return true;
+  };
 
   return (
     <div
@@ -154,7 +173,7 @@ const PlotsTablesContainer = (props) => {
               </Divider>
             </Col>
             {section.plots.map((item) => (
-              !spatialPlotNames.includes(item.name) || isSpatial
+              isPlotVisible(item.name)
                 ? (
                   <Col className='plot-card' key={item.key}>
                     <Card
@@ -179,11 +198,13 @@ const PlotsTablesContainer = (props) => {
 PlotsTablesContainer.propTypes = {
   experimentId: PropTypes.string.isRequired,
   isSpatial: PropTypes.bool.isRequired,
+  hasMolecules: PropTypes.bool,
   width: PropTypes.number,
   height: PropTypes.number,
 };
 
 PlotsTablesContainer.defaultProps = {
+  hasMolecules: false,
   width: null,
   height: null,
 };

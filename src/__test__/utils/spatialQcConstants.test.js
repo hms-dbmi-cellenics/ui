@@ -28,10 +28,11 @@ describe('qcSteps', () => {
 });
 
 describe('spatialPlotTypes constant', () => {
-  it('contains exactly the two spatial plot types', () => {
+  it('contains exactly the spatial plot types', () => {
     expect(spatialPlotTypes).toEqual([
       plotTypes.SPATIAL_CATEGORICAL,
       plotTypes.SPATIAL_FEATURE,
+      plotTypes.SPATIAL_MOLECULES,
     ]);
   });
 });
