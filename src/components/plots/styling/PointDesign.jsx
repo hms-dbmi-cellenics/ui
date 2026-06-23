@@ -9,6 +9,7 @@ import DebouncedSlider from './DebouncedSlider';
 const PointDesign = (props) => {
   const {
     onUpdate, config, showShapeType, spatial,
+    pointSizeMin, pointSizeMax, pointSizeStep,
   } = props;
 
   // For spatial plots the marks are segmentation polygons, not points: hide the
@@ -31,11 +32,12 @@ const PointDesign = (props) => {
             >
               <DebouncedSlider
                 value={config.marker.size}
-                min={1}
-                max={100}
+                min={pointSizeMin}
+                max={pointSizeMax}
+                step={pointSizeStep}
                 path='marker.size'
                 onUpdate={onUpdate}
-                marks={{ 1: 1, 100: 100 }}
+                marks={{ [pointSizeMin]: pointSizeMin, [pointSizeMax]: pointSizeMax }}
               />
             </Form.Item>
           )
@@ -45,7 +47,7 @@ const PointDesign = (props) => {
           config.marker.showOpacity
           && (
             <Form.Item
-              label={'Opacity'}
+              label='Opacity'
             >
               <DebouncedSlider
                 value={config.marker.opacity}
@@ -102,11 +104,17 @@ PointDesign.propTypes = {
   onUpdate: PropTypes.func.isRequired,
   showShapeType: PropTypes.bool,
   spatial: PropTypes.bool,
+  pointSizeMin: PropTypes.number,
+  pointSizeMax: PropTypes.number,
+  pointSizeStep: PropTypes.number,
 };
 
 PointDesign.defaultProps = {
   showShapeType: true,
   spatial: false,
+  pointSizeMin: 1,
+  pointSizeMax: 100,
+  pointSizeStep: 1,
 };
 
 export default PointDesign;

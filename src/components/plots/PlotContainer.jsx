@@ -161,6 +161,21 @@ const PlotContainer = (props) => {
       }
     }
 
+    // Any plot may mark fields to keep across a reset (e.g. the selected sample /
+    // genes); restore the defaults but carry those fields over from the live config.
+    const defaultConfig = initialPlotConfigStates[plotType];
+    const keysToPreserve = defaultConfig?.keepValuesOnReset || [];
+    if (keysToPreserve.length > 0) {
+      const resetConfig = keysToPreserve.reduce((acc, key) => {
+        if (config?.[key] !== undefined) acc[key] = config[key];
+        return acc;
+      }, _.cloneDeep(defaultConfig));
+      dispatch(updatePlotConfig(plotUuid, resetConfig));
+      debounceSave();
+      onPlotReset();
+      return;
+    }
+
     dispatch(resetPlotConfig(experimentId, plotUuid, plotType));
     onPlotReset();
   };

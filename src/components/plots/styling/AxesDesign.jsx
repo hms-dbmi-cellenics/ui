@@ -8,7 +8,10 @@ import DebouncedSlider from './DebouncedSlider';
 import DebouncedInput from './DebouncedInput';
 
 const AxesDesign = (props) => {
-  const { onUpdate, config, showAxisLabelsToggle = true, embeddingMethod, defaultXAxisText: propDefaultX = '', defaultYAxisText: propDefaultY = '' } = props;
+  const {
+    onUpdate, config, showAxisLabelsToggle = true, showOffset = true,
+    embeddingMethod, defaultXAxisText: propDefaultX = '', defaultYAxisText: propDefaultY = '',
+  } = props;
 
   // Calculate default values based on embedding method (uppercase, no space)
   // Or use provided props if embeddingMethod is not available
@@ -124,17 +127,19 @@ const AxesDesign = (props) => {
         />
       </Form.Item>
 
-      <Form.Item label='Offset Margins'>
-        <DebouncedSlider
-          value={config.axes.offset}
-          min={0}
-          max={20}
-          path='axes.offset'
-          onUpdate={onUpdate}
-          debounceMs={300}
-          marks={{ 0: 0, 20: 20 }}
-        />
-      </Form.Item>
+      {showOffset && (
+        <Form.Item label='Offset Margins'>
+          <DebouncedSlider
+            value={config.axes.offset}
+            min={0}
+            max={20}
+            path='axes.offset'
+            onUpdate={onUpdate}
+            debounceMs={300}
+            marks={{ 0: 0, 20: 20 }}
+          />
+        </Form.Item>
+      )}
 
       <Form.Item label='Grid Line Weight'>
         <DebouncedSlider
@@ -155,6 +160,7 @@ AxesDesign.propTypes = {
   onUpdate: PropTypes.func.isRequired,
   config: PropTypes.object.isRequired,
   showAxisLabelsToggle: PropTypes.bool,
+  showOffset: PropTypes.bool,
   embeddingMethod: PropTypes.string,
   defaultXAxisText: PropTypes.string,
   defaultYAxisText: PropTypes.string,

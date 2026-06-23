@@ -17,7 +17,7 @@ import InlineError from 'components/InlineError';
 const { Option, OptGroup } = Select;
 const SelectData = (props) => {
   const {
-    onUpdate, config, cellSets, disabled, plotType,
+    onUpdate, config, cellSets, disabled, plotType, showImageToggle,
   } = props;
 
   const {
@@ -84,7 +84,7 @@ const SelectData = (props) => {
           ))}
         </Select>
       </Form.Item>
-      {isSpatial && (
+      {isSpatial && showImageToggle && (
         <>
           <p><strong>Toggle Image:</strong></p>
           <Form.Item>
@@ -110,11 +110,13 @@ SelectData.propTypes = {
   cellSets: PropTypes.object.isRequired,
   disabled: PropTypes.bool,
   plotType: PropTypes.string,
+  showImageToggle: PropTypes.bool,
 };
 
 SelectData.defaultProps = {
   config: null,
   disabled: false,
   plotType: null,
+  showImageToggle: true,
 };
 export default SelectData;
