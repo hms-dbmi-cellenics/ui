@@ -6,7 +6,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import * as vega from 'vega';
 import PropTypes from 'prop-types';
 import { OrthographicView, OrthographicViewport, COORDINATE_SYSTEM } from '@deck.gl/core';
-import { PolygonLayer } from '@deck.gl/layers';
+import { PolygonLayer, ScatterplotLayer } from '@deck.gl/layers';
 import { EditableGeoJsonLayer } from '@nebula.gl/layers';
 import { DrawPolygonByDraggingMode } from '@nebula.gl/edit-modes';
 import { MultiscaleImageLayer, getDefaultInitialViewState } from '@hms-dbmi/viv';
@@ -36,17 +36,22 @@ import { offsetCentroids } from 'utils/plotUtils';
 import getContainingCellSetsProperties from 'utils/cellSets/getContainingCellSetsProperties';
 import ZipFileStore from 'components/data-exploration/spatial/ZipFileStore';
 import parseColor from 'components/data-exploration/parseColor';
+import loadMoleculeNodes, {
+  loadMoleculeMeta,
+  buildMoleculeColorLookup,
+} from 'utils/spatial/loadMoleculeNodes';
 import useFocusCellColors from 'components/data-exploration/useFocusCellColors';
 import {
   EMPTY_COLOR_LUT,
   buildCellColorLUT,
+  buildUniformColorLUT,
   buildHoverFillLUT,
   makeBitmaskLayer,
 } from 'components/data-exploration/spatial/bitmaskLayers';
 
 import { loadOmeZarrGrid } from './loadOmeZarr';
 
-const COLOR_SCHEME = 'plasma';
+const COLOR_SCHEME = 'purplered';
 const colorInterpolator = vega.scheme(COLOR_SCHEME);
 
 const COMPONENT_TYPE = 'interactiveSpatial';
@@ -57,6 +62,9 @@ const EMPTY_DATA = { type: 'FeatureCollection', features: [] };
 const DIAMOND_RADIUS = 5;
 const POLYGON_HIGHLIGHT_COLOR = [51, 51, 51, 150];
 const DEFAULT_COLOR = [128, 128, 128, 255];
+// cell outlines while the molecule overlay is active (the gene
+// colour is carried by the molecule points drawn on top).
+const OUTLINE_COLOR_MOLECULES = [216, 202, 222];
 
 const DeckGL = dynamic(() => import('@deck.gl/react').then((mod) => mod.DeckGL), { ssr: false });
 
@@ -145,6 +153,9 @@ const SpatialViewer = (props) => {
   const [omeZarrSampleIds, setOmeZarrSampleIds] = useState([]);
   const [omeZarrUrls, setOmeZarrUrls] = useState([]);
   const [segmentationsOmeZarrUrls, setSegmentationsOmeZarrUrls] = useState([]);
+  const [moleculesPyramidUrls, setMoleculesPyramidUrls] = useState([]);
+  const [moleculeStores, setMoleculeStores] = useState([]);
+  const [moleculeMeta, setMoleculeMeta] = useState(null);
   const [loader, setLoader] = useState(null);
   const [segmentationsLoader, setSegmentationsLoader] = useState(null);
   const [offsetData, setOffsetData] = useState();
@@ -178,7 +189,7 @@ const SpatialViewer = (props) => {
   useEffect(() => {
     (async () => {
       try {
-        const [imageResult, segResult] = await Promise.allSettled([
+        const [imageResult, segResult, moleculesResult] = await Promise.allSettled([
           // imageless techs (e.g. Xenium) produce no tissue image: skip the
           // ome_zarr_zip request entirely (it would 404)
           isImageless
@@ -189,6 +200,12 @@ const SpatialViewer = (props) => {
           Promise.all(
             sampleIdsForFileUrls.map((sampleId) => getSampleFileUrls(experimentId, sampleId, 'segmentations_ome_zarr_zip')),
           ).then((r) => r.flat()),
+          // molecules_pyramid is optional (only built when transcripts.parquet was
+          // uploaded). Per-sample: an empty result for a sample => no overlay there.
+          Promise.all(
+            sampleIdsForFileUrls.map((sampleId) => getSampleFileUrls(experimentId, sampleId, 'molecules_pyramid')
+              .then((r) => r, () => [])),
+          ).then((r) => r.map((sampleUrls) => sampleUrls?.[0]?.url ?? null)),
         ]);
 
         if (isImageless) {
@@ -209,6 +226,12 @@ const SpatialViewer = (props) => {
           setSegmentationsOmeZarrUrls(segResult.value.map(({ url }) => url));
         } else {
           console.info('[SpatialViewer] segmentations_ome_zarr_zip unavailable — diamond fallback active.');
+        }
+
+        // Per-sample molecule pyramid URLs (null where the sample has no pyramid).
+        // Absent for every sample => the Molecules layer is simply unavailable.
+        if (moleculesResult.status === 'fulfilled') {
+          setMoleculesPyramidUrls(moleculesResult.value);
         }
       } catch (e) {
         console.error('[SpatialViewer] URL fetch error:', e);
@@ -249,6 +272,29 @@ const SpatialViewer = (props) => {
       .then(setSegmentationsLoader)
       .catch((e) => console.error('[SpatialViewer] Segmentations loader error:', e));
   }, [segmentationsOmeZarrUrls, gridShape]);
+
+  // ── Molecule pyramid stores + meta ────────────────────────────────────────
+  // One ZipFileStore per sample (null where the sample has no pyramid). The
+  // dictionary/colour meta is the same across samples in an experiment, so we
+  // read meta.json once from the first available pyramid.
+  useEffect(() => {
+    if (!moleculesPyramidUrls.length) {
+      setMoleculeStores([]);
+      setMoleculeMeta(null);
+      return;
+    }
+    const stores = moleculesPyramidUrls.map((url) => (url ? ZipFileStore.fromUrl(url) : null));
+    setMoleculeStores(stores);
+
+    const firstStore = stores.find(Boolean);
+    if (firstStore) {
+      loadMoleculeMeta(firstStore)
+        .then(setMoleculeMeta)
+        .catch((e) => console.error('[SpatialViewer] molecule meta load error:', e));
+    } else {
+      setMoleculeMeta(null);
+    }
+  }, [moleculesPyramidUrls]);
 
   // ── Per-image shape ───────────────────────────────────────────────────────
   // Image-driven techs derive the per-sample tile extent from the OME-Zarr image
@@ -553,8 +599,123 @@ const SpatialViewer = (props) => {
     setViewState(getDefaultInitialViewState(loader.data, { width, height }, 0.5));
   }, [loader, width, height, isImageless, fitViewToOffsetData]);
 
+  // ── Molecule overlay: per-sample grid offsets + colour lookup ─────────────
+  // Molecules live in the SAME micron frame as the centroids/polygons, so they
+  // consume the SAME multi-sample grid translation offsetCentroids applies
+  // (xOffset = column * width, yOffset = row * height). One pyramid per sample,
+  // so we offset that sample's tile coordinates by its grid cell.
+  const moleculeSampleOffsets = useMemo(() => {
+    if (!perImageShape || !gridShape) return null;
+    const [imageHeight, imageWidth] = perImageShape;
+    const numColumns = gridShape[1];
+    return omeZarrSampleIds.map((_id, sampleIndex) => {
+      const row = Math.floor(sampleIndex / numColumns);
+      const column = sampleIndex % numColumns;
+      return [column * imageWidth, row * imageHeight];
+    });
+  }, [omeZarrSampleIds, perImageShape, gridShape]);
+
+  const moleculeColorLookup = useMemo(
+    () => (moleculeMeta ? buildMoleculeColorLookup(moleculeMeta) : null),
+    [moleculeMeta],
+  );
+
+  const showMolecules = spatialSettings.showMolecules === true;
+
+  // Molecules overlay the SINGLE gene currently being plotted by expression
+  // (focusData.store === 'genes'). For a categorical focus (e.g. louvain) or no
+  // focus there is no gene, so no molecules render regardless of the toggle.
+  const focusedGene = focusData?.store === 'genes' ? focusData.key : null;
+  const focusedGeneCode = useMemo(() => {
+    if (!focusedGene || !moleculeMeta?.genes) return undefined;
+    return moleculeMeta.genes.find(({ gene }) => gene === focusedGene)?.code;
+  }, [focusedGene, moleculeMeta]);
+
+  // The molecule overlay is active (and replaces the per-cell expression fill)
+  // only when the toggle is on AND a gene present in the pyramid is being plotted.
+  const moleculesActive = showMolecules
+    && focusedGeneCode !== undefined
+    && moleculeStores.some(Boolean);
+
+  // ── Load the focused gene's molecules (all samples), offset to the grid ────
+  // Gene-filtered queries can't be localised to tiles, so we read the gene's
+  // points across the whole pyramid (full depth) and render a single colour.
+  const [moleculePoints, setMoleculePoints] = useState(null);
+  useEffect(() => {
+    if (!moleculesActive || !moleculeSampleOffsets || !moleculeMeta) {
+      setMoleculePoints(null);
+      return undefined;
+    }
+    let cancelled = false;
+    (async () => {
+      const { x: [rx0, rx1], y: [ry0, ry1] } = moleculeMeta.rootExtent
+        ?? { x: [0, 0], y: [0, 0] };
+      const perSample = await Promise.all(moleculeStores.map(async (store, i) => {
+        if (!store) return null;
+        const [dx, dy] = moleculeSampleOffsets[i] ?? [0, 0];
+        const res = await loadMoleculeNodes(store, {
+          bbox: [rx0, ry0, rx1, ry1],
+          genes: [focusedGeneCode],
+        });
+        return { res, dx, dy };
+      }));
+      if (cancelled) return;
+
+      const total = perSample.reduce((sum, p) => sum + (p?.res.count ?? 0), 0);
+      const positions = new Float32Array(total * 2);
+      let w = 0;
+      perSample.forEach((p) => {
+        if (!p) return;
+        const { res, dx, dy } = p;
+        for (let i = 0; i < res.count; i += 1) {
+          positions[w * 2] = res.x[i] + dx;
+          positions[w * 2 + 1] = res.y[i] + dy;
+          w += 1;
+        }
+      });
+      setMoleculePoints({
+        positions,
+        count: total,
+        color: moleculeColorLookup(focusedGeneCode),
+      });
+    })().catch((e) => {
+      if (cancelled) return;
+      console.error('[SpatialViewer] molecule load error:', e);
+      setMoleculePoints(null);
+    });
+    return () => { cancelled = true; };
+  }, [
+    moleculesActive, focusedGeneCode, moleculeStores,
+    moleculeSampleOffsets, moleculeMeta, moleculeColorLookup,
+  ]);
+
+  // ── Molecule overlay layer (single gene, single colour) ───────────────────
+  const moleculeScatterLayer = useMemo(() => {
+    if (!moleculePoints || !moleculePoints.count) return null;
+    const { positions, count, color } = moleculePoints;
+    return new ScatterplotLayer({
+      id: 'molecules',
+      data: { length: count, attributes: { getPosition: { value: positions, size: 2 } } },
+      coordinateSystem: COORDINATE_SYSTEM.CARTESIAN,
+      radiusUnits: 'common',
+      radiusScale: Math.pow(2, viewState.zoom),
+      radiusMinPixels: 0,
+      radiusMaxPixels: 1.5,
+      getFillColor: [138, 9, 61],
+      stroked: false,
+      filled: true,
+      pickable: false,
+      updateTriggers: {
+          radiusScale: [viewState.zoom],
+        },
+    });
+  }, [moleculePoints, viewState]);
+
   // ── Layer visibility ──────────────────────────────────────────────────────
-  const showFilled = spatialSettings.showSegmentations !== false;
+  // When the molecule overlay is active it REPLACES the per-cell expression fill
+  // (the fill normally shows the focused gene's logcount); molecule points convey
+  // the same gene instead. Outlines are unaffected.
+  const showFilled = spatialSettings.showSegmentations !== false && !moleculesActive;
   const showOutlines = spatialSettings.showSegmentationOutlines === true;
   const cellLayerVisible = showFilled || showOutlines;
   // Hover-fill layer only needed when outlines are on but fill is off.
@@ -592,16 +753,24 @@ const SpatialViewer = (props) => {
   // ── Bitmask outline layer ─────────────────────────────────────────────────
   // Hover tint suppressed — when fill is also on the fill layer owns the
   // highlight; when fill is off the hover-fill layer provides it instead.
+  // When molecules are active the gene colour lives on the molecule points (drawn on
+  // top), so the cell outlines drop to a neutral flat WHITE instead of the per-cell
+  // expression colour.
+  const whiteOutlineLUT = useMemo(
+    () => buildUniformColorLUT(offsetData, OUTLINE_COLOR_MOLECULES, hiddenCellIds, cellsInAnyCluster),
+    [offsetData, hiddenCellIds, cellsInAnyCluster],
+  );
+  const outlineColorLUT = moleculesActive ? whiteOutlineLUT : colorLUT;
   const bitmaskOutlineLayer = useMemo(() => {
     if (!segmentationsLoader?.data || !showOutlines) return null;
     return makeBitmaskLayer({
       id: 'segmentations-bitmask-outline',
       loader: segmentationsLoader.data,
-      cellColorData: colorLUT,
+      cellColorData: outlineColorLUT,
       hoveredCell: 0,
       showOutlineOnly: true,
     });
-  }, [segmentationsLoader, colorLUT, showOutlines]);
+  }, [segmentationsLoader, outlineColorLUT, showOutlines]);
 
   // ── Hover-fill colour LUT (outline mode only, RGBA) ───────────────────────
   // Contains exactly one non-zero entry: the hovered cell with alpha = 255.
@@ -695,8 +864,12 @@ const SpatialViewer = (props) => {
       bitmaskFillLayer,    // solid fill (null when showFilled is off)
       bitmaskHoverFillLayer, // hover fill for outlines-only mode (null otherwise)
       ...cellAndSelectionLayers,
+      moleculeScatterLayer, // single-gene transcript overlay (null unless active)
     ].filter(Boolean),
-    [imageLayer, bitmaskFillLayer, bitmaskOutlineLayer, bitmaskHoverFillLayer, cellAndSelectionLayers],
+    [
+      imageLayer, bitmaskFillLayer, bitmaskOutlineLayer, bitmaskHoverFillLayer,
+      cellAndSelectionLayers, moleculeScatterLayer,
+    ],
   );
 
   const onCreateCluster = (clusterName, clusterColor) => {

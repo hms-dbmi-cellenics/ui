@@ -21,10 +21,12 @@ const SpatialVisibleLayersSettings = (props) => {
     showImages,
     showSegmentations,
     showSegmentationOutlines,
+    showMolecules,
   } = useSelector((state) => state.componentConfig[componentType].config);
 
   // imageless techs (e.g. Xenium) have no tissue image, so the Images toggle
-  // would control a layer that never renders — hide it for those technologies
+  // would control a layer that never renders — hide it for those technologies.
+  // The molecule overlay is likewise a Xenium-only feature.
   const sampleIds = useSelector((state) => state.experimentSettings.info.sampleIds);
   const technology = useSelector((state) => state.samples?.[sampleIds?.[0]]?.type);
   const isImageless = imagelessTechs.includes(technology);
@@ -52,8 +54,16 @@ const SpatialVisibleLayersSettings = (props) => {
         name: 'Outlines',
         visible: showSegmentationOutlines === true,
       },
+      // Molecules overlay (Xenium only): when on AND a gene is being plotted, the
+      // focused gene's transcripts render as points in place of the per-cell fill.
+      // With a categorical focus or no pyramid it simply does nothing.
+      ...(isImageless ? [{
+        key: 'showMolecules',
+        name: 'Molecules',
+        visible: showMolecules === true,
+      }] : []),
     ]);
-  }, [showImages, showSegmentations, showSegmentationOutlines, isImageless]);
+  }, [showImages, showSegmentations, showSegmentationOutlines, showMolecules, isImageless]);
 
   const leftItem = (layerItem) => (
     <Switch

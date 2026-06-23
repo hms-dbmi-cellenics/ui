@@ -87,6 +87,30 @@ export const buildCellColorLUT = (offsetData, cellColors, hiddenCellIds, cellsIn
   return lut;
 };
 
+// Build an RGBA LUT colouring every visible cell a single uniform colour — used for
+// a flat segmentation backdrop (e.g. white outlines while the molecule overlay
+// carries the gene colour).
+export const buildUniformColorLUT = (offsetData, color, hiddenCellIds, cellsInAnyCluster) => {
+  const lut = new Uint8Array(BITMASK_LUT_SIZE * BITMASK_LUT_SIZE * 4);
+  if (!offsetData) return lut;
+  const [r, g, b] = color;
+
+  offsetData.forEach((_, cellIdKey) => {
+    if (hiddenCellIds.has(cellIdKey)) return;
+    if (!cellsInAnyCluster.has(cellIdKey)) return;
+
+    const pixelValue = Number(cellIdKey) + 1;
+    if (pixelValue <= 0 || pixelValue >= BITMASK_LUT_SIZE * BITMASK_LUT_SIZE) return;
+
+    lut[pixelValue * 4] = r;
+    lut[pixelValue * 4 + 1] = g;
+    lut[pixelValue * 4 + 2] = b;
+    lut[pixelValue * 4 + 3] = 255;
+  });
+
+  return lut;
+};
+
 // Single-cell hover LUT: exactly one non-zero entry (the hovered cell, alpha=255);
 // every other entry stays transparent. Caller decides when to use EMPTY_COLOR_LUT.
 export const buildHoverFillLUT = (selectedCell, cellColors) => {
@@ -106,7 +130,7 @@ export const buildHoverFillLUT = (selectedCell, cellColors) => {
 // outline, hover-fill). They differ only in id, the colour LUT, the hovered cell
 // and whether only outlines are drawn; everything else is shared here.
 export const makeBitmaskLayer = ({
-  id, loader, cellColorData, hoveredCell, showOutlineOnly,
+  id, loader, cellColorData, hoveredCell, showOutlineOnly, opacity = 0.75,
 }) => new MultiscaleImageLayer({
   id,
   loader,
@@ -114,7 +138,7 @@ export const makeBitmaskLayer = ({
   channelsVisible: [true],
   contrastLimits: [[0, 65535]],
   colors: [[255, 255, 255]],
-  opacity: 0.75,
+  opacity,
   visible: true,
   pickable: false,
   renderSubLayers: renderSubBitmaskLayers,
