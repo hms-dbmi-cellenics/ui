@@ -32,6 +32,7 @@ describe('Xenium registration — sampleFileType', () => {
     [sampleFileType.XENIUM_CELL_FEATURE_MATRIX, 'xenium_cell_feature_matrix', 'cell_feature_matrix.h5'],
     [sampleFileType.XENIUM_CELLS, 'xenium_cells', 'cells.parquet'],
     [sampleFileType.XENIUM_CELL_BOUNDARIES, 'xenium_cell_boundaries', 'cell_boundaries.parquet'],
+    [sampleFileType.XENIUM_TRANSCRIPTS, 'xenium_transcripts', 'transcripts.parquet'],
   ];
 
   it.each(xeniumTypes)('defines the file type constant %s', (constant, expectedValue) => {
@@ -59,25 +60,28 @@ describe('Xenium registration — fileUploadUtils', () => {
     expect(xeniumOptions.webkitdirectory).toEqual('');
   });
 
-  it('accepts exactly the three Xenium files', () => {
+  it('accepts the three required Xenium files plus optional transcripts', () => {
     expect(Array.from(xeniumOptions.acceptedFiles).sort()).toEqual(
-      ['cell_boundaries.parquet', 'cell_feature_matrix.h5', 'cells.parquet'],
+      ['cell_boundaries.parquet', 'cell_feature_matrix.h5', 'cells.parquet', 'transcripts.parquet'],
     );
   });
 
-  it('requires the three Xenium file types', () => {
+  it('requires the three Xenium file types (transcripts is optional)', () => {
     expect(xeniumOptions.requiredFiles).toEqual([
       sampleFileType.XENIUM_CELL_FEATURE_MATRIX,
       sampleFileType.XENIUM_CELLS,
       sampleFileType.XENIUM_CELL_BOUNDARIES,
     ]);
+    expect(xeniumOptions.requiredFiles).not.toContain(sampleFileType.XENIUM_TRANSCRIPTS);
   });
 
   it.each([
     ['cell_feature_matrix.h5', sampleFileType.XENIUM_CELL_FEATURE_MATRIX],
     ['cells.parquet', sampleFileType.XENIUM_CELLS],
     ['cell_boundaries.parquet', sampleFileType.XENIUM_CELL_BOUNDARIES],
+    ['transcripts.parquet', sampleFileType.XENIUM_TRANSCRIPTS],
     ['some/nested/path/cells.parquet', sampleFileType.XENIUM_CELLS],
+    ['some/nested/path/transcripts.parquet', sampleFileType.XENIUM_TRANSCRIPTS],
   ])('maps filename %s to file type %s', (fileName, expectedType) => {
     expect(xeniumOptions.getCorrespondingType(fileName)).toEqual(expectedType);
   });
@@ -85,7 +89,8 @@ describe('Xenium registration — fileUploadUtils', () => {
   it('validates accepted file names and rejects others', () => {
     expect(xeniumOptions.isNameValid('cells.parquet')).toBe(true);
     expect(xeniumOptions.isNameValid('cell_feature_matrix.h5')).toBe(true);
-    expect(xeniumOptions.isNameValid('transcripts.parquet')).toBe(false);
+    expect(xeniumOptions.isNameValid('transcripts.parquet')).toBe(true);
+    expect(xeniumOptions.isNameValid('analysis.csv')).toBe(false);
   });
 });
 
@@ -94,12 +99,13 @@ describe('Xenium registration — fileInspector', () => {
     'cell_feature_matrix.h5',
     'cells.parquet',
     'cell_boundaries.parquet',
+    'transcripts.parquet',
   ])('treats %s as already-compressed (VALID_ZIPPED, skip gzip)', async (name) => {
     expect(await inspectFile({ name }, sampleTech.XENIUM)).toEqual(Verdict.VALID_ZIPPED);
   });
 
   it('rejects an unrecognised file name for xenium', async () => {
-    expect(await inspectFile({ name: 'transcripts.parquet' }, sampleTech.XENIUM))
+    expect(await inspectFile({ name: 'analysis.csv' }, sampleTech.XENIUM))
       .toEqual(Verdict.INVALID_NAME);
   });
 });

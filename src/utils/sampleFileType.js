@@ -18,6 +18,8 @@ const sampleFileType = {
   XENIUM_CELL_FEATURE_MATRIX: 'xenium_cell_feature_matrix',
   XENIUM_CELLS: 'xenium_cells',
   XENIUM_CELL_BOUNDARIES: 'xenium_cell_boundaries',
+  XENIUM_TRANSCRIPTS: 'xenium_transcripts',
+  MOLECULES_PYRAMID: 'molecules_pyramid',
 };
 
 const fileTypeToDisplay = {
@@ -39,6 +41,8 @@ const fileTypeToDisplay = {
   [sampleFileType.XENIUM_CELL_FEATURE_MATRIX]: 'cell_feature_matrix.h5',
   [sampleFileType.XENIUM_CELLS]: 'cells.parquet',
   [sampleFileType.XENIUM_CELL_BOUNDARIES]: 'cell_boundaries.parquet',
+  [sampleFileType.XENIUM_TRANSCRIPTS]: 'transcripts.parquet',
+  [sampleFileType.MOLECULES_PYRAMID]: 'molecules.pyramid.zip',
 };
 
 const fileTypeColumnWidth = {
@@ -49,6 +53,7 @@ const fileTypeColumnWidth = {
   [sampleFileType.XENIUM_CELL_FEATURE_MATRIX]: 215,
   [sampleFileType.XENIUM_CELLS]: 150,
   [sampleFileType.XENIUM_CELL_BOUNDARIES]: 195,
+  [sampleFileType.XENIUM_TRANSCRIPTS]: 175,
 };
 
 export default sampleFileType;

@@ -187,11 +187,14 @@ const fileUploadUtils = {
       'cell_feature_matrix.h5',
       'cells.parquet',
       'cell_boundaries.parquet',
+      // optional: enables the transcript/molecule pyramid (not a required file)
+      'transcripts.parquet',
     ]),
     inputInfo: [
       ['<code>cell_feature_matrix.h5</code> - <span style="color: #acaaaa;">typically found in the Xenium output bundle</span>'],
       ['<code>cells.parquet</code> - <span style="color: #acaaaa;">typically found in the Xenium output bundle</span>'],
       ['<code>cell_boundaries.parquet</code> - <span style="color: #acaaaa;">typically found in the Xenium output bundle</span>'],
+      ['<code>transcripts.parquet</code> (optional) - <span style="color: #acaaaa;">enables the transcript/molecule overlay; typically found in the Xenium output bundle</span>'],
     ],
     requiredFiles: [
       sampleFileType.XENIUM_CELL_FEATURE_MATRIX,
@@ -210,8 +213,11 @@ const fileUploadUtils = {
         'cell_feature_matrix.h5': sampleFileType.XENIUM_CELL_FEATURE_MATRIX,
         'cells.parquet': sampleFileType.XENIUM_CELLS,
         'cell_boundaries.parquet': sampleFileType.XENIUM_CELL_BOUNDARIES,
+        'transcripts.parquet': sampleFileType.XENIUM_TRANSCRIPTS,
       };
-      const allowedNames = Array.from(this.acceptedFiles);
+      // Match the longest accepted suffix first so e.g. 'cell_boundaries.parquet'
+      // isn't shadowed by the shorter 'cells.parquet'/'transcripts.parquet'.
+      const allowedNames = Array.from(this.acceptedFiles).sort((a, b) => b.length - a.length);
       const name = allowedNames.find((allowedName) => fileName.endsWith(allowedName));
       return fileNameToType[name];
     },

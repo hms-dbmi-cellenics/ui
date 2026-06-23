@@ -59,4 +59,24 @@ describe('validateXenium', () => {
     await validateXenium(sample);
     expect(Object.keys(sample.files)).toEqual(Object.keys(clone.files));
   });
+
+  it('resolves when the optional transcripts.parquet is absent', async () => {
+    const sample = makeSample();
+    expect(sample.files[sampleFileType.XENIUM_TRANSCRIPTS]).toBeUndefined();
+    await expect(validateXenium(sample)).resolves.toBeUndefined();
+  });
+
+  it('validates the optional transcripts.parquet when present', async () => {
+    const sample = makeSample();
+    sample.files[sampleFileType.XENIUM_TRANSCRIPTS] = { fileObject: makeParquet() };
+    await expect(validateXenium(sample)).resolves.toBeUndefined();
+  });
+
+  it('throws when a present transcripts.parquet is not valid Parquet', async () => {
+    const sample = makeSample();
+    sample.files[sampleFileType.XENIUM_TRANSCRIPTS] = {
+      fileObject: makeBlob(new Uint8Array([0, 1, 2, 3, 4, 5, 6, 7])),
+    };
+    await expect(validateXenium(sample)).rejects.toThrow(/valid Parquet/);
+  });
 });
