@@ -73,6 +73,7 @@
     "@vitessce/icons": "^3.9.8",
     "@vitessce/styles": "^3.9.8",
     "antd": "^4.24.8",
+    "apache-arrow": "^17.0.0",
     "aws-amplify": "^5.3.11",
     "axios": "^1.6.2",
     "babel-plugin-add-module-exports": "^1.0.4",
