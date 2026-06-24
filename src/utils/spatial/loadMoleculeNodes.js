@@ -107,7 +107,9 @@ const loadMoleculeNodes = async (store, { genes } = {}) => {
   // Range-read + parse each gene's entry (cached), in parallel.
   const chunks = await Promise.all(codes.map(async (code) => {
     const { xs, ys, n } = await readGeneEntry(store, entryByCode.get(code));
-    return { code, xs, ys, n };
+    return {
+      code, xs, ys, n,
+    };
   }));
 
   // A row survives if both coordinates are finite (Phase-1 guard). The gene is the
@@ -124,7 +126,9 @@ const loadMoleculeNodes = async (store, { genes } = {}) => {
   const featureCode = new Int32Array(total);
 
   let w = 0;
-  chunks.forEach(({ code, xs, ys, n }) => {
+  chunks.forEach(({
+    code, xs, ys, n,
+  }) => {
     for (let i = 0; i < n; i += 1) {
       if (Number.isFinite(xs[i]) && Number.isFinite(ys[i])) {
         x[w] = xs[i];

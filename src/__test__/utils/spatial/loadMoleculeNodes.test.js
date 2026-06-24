@@ -18,9 +18,15 @@ const META = {
   qvThreshold: 20,
   rootExtent: { x: [0, 10], y: [0, 10] },
   genes: [
-    { code: 0, gene: 'Gad1', entry: '0.feather', nPoints: 2 },
-    { code: 1, gene: 'Sst', entry: '1.feather', nPoints: 2 },
-    { code: 2, gene: 'Pvalb', entry: '2.feather', nPoints: 1 },
+    {
+      code: 0, gene: 'Gad1', entry: '0.feather', nPoints: 2,
+    },
+    {
+      code: 1, gene: 'Sst', entry: '1.feather', nPoints: 2,
+    },
+    {
+      code: 2, gene: 'Pvalb', entry: '2.feather', nPoints: 1,
+    },
   ],
 };
 

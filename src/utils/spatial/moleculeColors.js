@@ -6,12 +6,12 @@
 // recolours the others. Cycles when a panel has more than 36 genes; a user can
 // always override an individual gene via the colour picker.
 export const MOLECULE_PALETTE = [
-  "#0000FF", "#FF0000", "#00FF00", "#000033", "#FF00B6", "#005300",
-  "#FFD300", "#009FFF", "#9A4D42", "#00FFBE", "#783FC1", "#1F9698",
-  "#FFACFD", "#B1CC71", "#F1085C", "#FE8F42", "#DD00FF", "#201A01",
-  "#720055", "#766C95", "#02AD24", "#C8FF00", "#886C00", "#FFB79F",
-  "#858567", "#A10300", "#14F9FF", "#00479E", "#DC5E93", "#93D4FF",
-  "#004CFF", "#F2F318"
+  '#0000FF', '#FF0000', '#00FF00', '#000033', '#FF00B6', '#005300',
+  '#FFD300', '#009FFF', '#9A4D42', '#00FFBE', '#783FC1', '#1F9698',
+  '#FFACFD', '#B1CC71', '#F1085C', '#FE8F42', '#DD00FF', '#201A01',
+  '#720055', '#766C95', '#02AD24', '#C8FF00', '#886C00', '#FFB79F',
+  '#858567', '#A10300', '#14F9FF', '#00479E', '#DC5E93', '#93D4FF',
+  '#004CFF', '#F2F318',
 ];
 
 // Stable colour for a gene's feature_code, or undefined for a non-integer code
