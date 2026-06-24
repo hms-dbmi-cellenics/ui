@@ -524,8 +524,14 @@ const SpatialMoleculePlot = (props) => {
     () => (rootBbox ? fitBboxToView(rootBbox, layout.innerW, layout.innerH) : null),
     [rootBbox, layout.innerW, layout.innerH],
   );
-  // remount deck.gl (→ re-fit) when the sample, data extent or plot box changes
-  const fitKey = `${selectedSample}:${layout.innerW}x${layout.innerH}:${rootBbox?.join(',')}`;
+  // remount deck.gl (→ re-fit) when the sample, data extent or plot box changes.
+  // Also key on whether the segmentation loader is ready: the bitmask is a viv
+  // MultiscaleImageLayer (view-dependent tile rendering) that, when added to an
+  // already-mounted uncontrolled deck, doesn't draw until the first viewport change
+  // ("only shows on zoom"). Remounting once it's ready puts the layer in the initial
+  // render so it draws immediately; the camera is preserved (initialViewState below).
+  const segReady = Boolean(segLoader?.data);
+  const fitKey = `${selectedSample}:${layout.innerW}x${layout.innerH}:${rootBbox?.join(',')}:${segReady}`;
 
   // Mirror the fit into the chrome's view state when it (re)fits; zoom/pan updates
   // come through onViewStateChange. fitView changes only on refit, so a gesture is
@@ -978,7 +984,9 @@ const SpatialMoleculePlot = (props) => {
             // the deck.gl controller owns pan/zoom (controlled viewState bounced).
               key={fitKey}
               views={deckglView}
-              initialViewState={fitView}
+              // preserve the live camera across the seg-ready remount (falls back to
+              // the full-extent fit on the very first mount, when they're equal)
+              initialViewState={viewState ?? fitView}
               onViewStateChange={onViewStateChange}
               controller={!isMiniPlot}
               layers={layers}
