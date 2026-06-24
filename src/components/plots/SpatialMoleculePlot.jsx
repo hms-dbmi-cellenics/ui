@@ -99,6 +99,11 @@ const SpatialMoleculePlot = (props) => {
   onZoomChangeRef.current = onZoomChange;
   // Only auto-pick default genes ONCE per artifact — respect a user who clears them.
   const defaultGenesAppliedRef = useRef(false);
+  // Restore the persisted zoom (config.axesRanges) ONCE, for the first sample shown
+  // after mount — so navigating away and back keeps the camera. A later sample
+  // switch starts from the full extent. savedBboxRef mirrors the persisted region.
+  const initialZoomAppliedRef = useRef(false);
+  const savedBboxRef = useRef(null);
 
   const cellSets = useSelector(getCellSets());
 
@@ -339,13 +344,30 @@ const SpatialMoleculePlot = (props) => {
   const hasSelectedGenes = (selectedGenes ?? []).length > 0;
   const selectedGenesKey = useMemo(() => (selectedGenes ?? []).join('|'), [selectedGenes]);
 
+  // Persisted zoom region (microns) from config.axesRanges; null when on auto
+  // (no saved zoom). Written by persistZoom as {xAxisAuto:false, xMin,yMin,xMax,yMax}.
+  const savedBbox = useMemo(() => {
+    const r = config?.axesRanges;
+    if (!r || r.xAxisAuto !== false) return null;
+    const bbox = [r.xMin, r.yMin, r.xMax, r.yMax];
+    return bbox.every(Number.isFinite) ? bbox : null;
+  }, [config?.axesRanges]);
+  savedBboxRef.current = savedBbox;
+
   // ── Reset meta + points + latches when the selected sample changes ──────────
   useEffect(() => {
     setMoleculeMeta(null);
     setMoleculePoints(null);
     setSegLoader(null);
     setViewState(null);
-    viewBboxRef.current = null;
+    // Seed the view region from the persisted zoom for the first sample shown
+    // (navigation/reload restore); subsequent sample switches start full-extent.
+    if (selectedSample && !initialZoomAppliedRef.current) {
+      viewBboxRef.current = savedBboxRef.current;
+      initialZoomAppliedRef.current = true;
+    } else {
+      viewBboxRef.current = null;
+    }
     defaultGenesAppliedRef.current = false;
   }, [selectedSample]);
 

@@ -125,8 +125,12 @@ const renderPlot = async (configOverrides = {}, extraProps = {}) => {
 const META = {
   version: 2,
   genes: [
-    { code: 0, gene: 'Gad1', entry: '0.feather', nPoints: 1 },
-    { code: 1, gene: 'Sst', entry: '1.feather', nPoints: 1 },
+    {
+      code: 0, gene: 'Gad1', entry: '0.feather', nPoints: 1,
+    },
+    {
+      code: 1, gene: 'Sst', entry: '1.feather', nPoints: 1,
+    },
   ],
   rootExtent: { x: [0, 100], y: [0, 200] },
 };
@@ -186,6 +190,29 @@ describe('SpatialMoleculePlot', () => {
     // camera persisted, but molecules are NOT re-read (still a single load)
     await waitFor(() => expect(onZoomChange).toHaveBeenCalled());
     expect(loadMoleculeNodes).toHaveBeenCalledTimes(1);
+  });
+
+  it('restores the persisted zoom region on mount (navigation/reload)', async () => {
+    // a saved sub-region of the [0,100]x[0,200] full extent
+    await renderPlot({
+      selectedGenes: ['Gad1'],
+      axesRanges: {
+        xAxisAuto: false, xMin: 10, yMin: 20, xMax: 60, yMax: 120,
+      },
+    });
+
+    await waitFor(() => expect(screen.getByTestId('deckgl')).toBeInTheDocument());
+    // deck.gl mounts centred on the saved region (35, 70) — NOT the full-extent
+    // centre (50, 100) it would fit to with no persisted zoom.
+    await waitFor(() => expect(deckProps.initialViewState?.target).toEqual([35, 70, 0]));
+  });
+
+  it('fits the full extent when no zoom is persisted (xAxisAuto)', async () => {
+    await renderPlot({ selectedGenes: ['Gad1'] });
+
+    await waitFor(() => expect(screen.getByTestId('deckgl')).toBeInTheDocument());
+    // full-extent centre of [0,100]x[0,200]
+    await waitFor(() => expect(deckProps.initialViewState?.target).toEqual([50, 100, 0]));
   });
 
   it('renders a molecule ScatterplotLayer plus the grey segmentation outline layer', async () => {
