@@ -90,7 +90,7 @@ const plots = [
       },
       {
         name: plotNames.SPATIAL_MOLECULES,
-        image: '/static/media/spatialFeature.png',
+        image: '/static/media/spatialMolecules.png',
         key: 'spatial-molecules-key',
         link: 'spatial-molecules',
       },
