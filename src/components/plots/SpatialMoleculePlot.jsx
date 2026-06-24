@@ -131,6 +131,11 @@ const SpatialMoleculePlot = (props) => {
 
   // one ZipFileStore per artifact url, lazily reused across loads
   const storesRef = useRef(new Map());
+  // the current visible data region in MICRONS (dimension-independent). Updated on
+  // every gesture; on a dimension change we re-fit THIS region to the new plot box
+  // instead of resetting to the full extent (so the zoom survives a resize). Null =
+  // no region yet (fresh sample) → fall back to the full-extent fit.
+  const viewBboxRef = useRef(null);
   // container of the whole plot (deck canvas + chrome) — read for the export snapshot
   const containerRef = useRef(null);
 
@@ -341,6 +346,7 @@ const SpatialMoleculePlot = (props) => {
     setMoleculePoints(null);
     setSegLoader(null);
     setViewState(null);
+    viewBboxRef.current = null;
     defaultGenesAppliedRef.current = false;
   }, [selectedSample]);
 
@@ -533,12 +539,24 @@ const SpatialMoleculePlot = (props) => {
   const segReady = Boolean(segLoader?.data);
   const fitKey = `${selectedSample}:${layout.innerW}x${layout.innerH}:${rootBbox?.join(',')}:${segReady}`;
 
-  // Mirror the fit into the chrome's view state when it (re)fits; zoom/pan updates
-  // come through onViewStateChange. fitView changes only on refit, so a gesture is
-  // never reset.
+  // The view to (re)mount deck.gl with. On a remount (dimension/sample/seg-ready
+  // change) re-fit the LAST VISIBLE region to the current plot box, so a resize
+  // keeps the same zoom instead of snapping back to the full extent. With no region
+  // yet (fresh sample) we fall back to the full-extent fit. fitKey is the dep so this
+  // recomputes on exactly the remount moments, when viewBboxRef holds the latest region.
+  const mountViewState = useMemo(() => {
+    const bbox = viewBboxRef.current;
+    const refit = bbox ? fitBboxToView(bbox, layout.innerW, layout.innerH) : null;
+    return refit ?? fitView;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [fitKey, fitView]);
+
+  // Mirror the mount view into the chrome's view state when it (re)fits; zoom/pan
+  // updates come through onViewStateChange. mountViewState changes only on a remount,
+  // so an in-progress gesture is never reset.
   useEffect(() => {
-    if (fitView) setViewState(fitView);
-  }, [fitView]);
+    if (mountViewState) setViewState(mountViewState);
+  }, [mountViewState]);
 
   // ── Persist zoom on settle (the camera only; the point set is fixed) ────────
   const persistZoom = useMemo(() => _.debounce((bbox) => {
@@ -573,9 +591,11 @@ const SpatialMoleculePlot = (props) => {
       if (vzx < fzx - 1e-3 || vzy < fzy - 1e-3) next = fitView; // zoomed out past original
     }
     setViewState(next);
-    if (!isMiniPlot) {
-      const bbox = bboxForViewState(next);
-      if (bbox) persistZoom(bbox);
+    const bbox = bboxForViewState(next);
+    if (bbox) {
+      // remember the visible region (microns) so a later resize re-fits to it
+      viewBboxRef.current = bbox;
+      if (!isMiniPlot) persistZoom(bbox);
     }
     return next;
   }, [fitView, bboxForViewState, persistZoom, isMiniPlot]);
@@ -999,9 +1019,10 @@ const SpatialMoleculePlot = (props) => {
             // the deck.gl controller owns pan/zoom (controlled viewState bounced).
               key={fitKey}
               views={deckglView}
-              // preserve the live camera across the seg-ready remount (falls back to
-              // the full-extent fit on the very first mount, when they're equal)
-              initialViewState={viewState ?? fitView}
+              // re-fit the last visible region to the current box on every remount, so
+              // a resize/seg-ready remount keeps the zoom (full-extent fit on the very
+              // first mount, when there's no region yet)
+              initialViewState={mountViewState}
               onViewStateChange={onViewStateChange}
               controller={!isMiniPlot}
               layers={layers}
