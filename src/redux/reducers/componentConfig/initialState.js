@@ -214,9 +214,9 @@ const spatialMoleculeInitialConfig = {
   // genes to render (gene symbols). Empty on init; the plot seeds a few default
   // genes once the artifact loads (rendering every gene hangs Vega).
   selectedGenes: [],
-  // per-gene render colours (gene symbol -> hex). Defaulted from the baked
-  // meta.genes palette when a gene is seeded/added; the user can override each
-  // with the colour picker in the gene-selection panel.
+  // per-gene render colours (gene symbol -> hex). Defaulted from the Polychrome
+  // palette (first available colour) when a gene is seeded/added; the user can
+  // override each with the colour picker in the gene-selection panel.
   geneColors: {},
   selectedSample: null,
   // segmentation outlines drawn behind the molecules (colour + opacity adjustable).
@@ -225,8 +225,8 @@ const spatialMoleculeInitialConfig = {
   segmentationOutlineOpacity: 0.05,
   // 'selectedSample'/'selectedGenes'/'geneColors' are auto-populated on mount (first
   // sample + default genes + their palette colours). Reset Plot resets the styling
-  // but keeps the chosen sample + genes + their colours (skipped in the reset-disabled
-  // comparison so the automatic writes don't permanently re-enable the button).
+  // but keeps those (skipped in the reset-disabled comparison so the automatic writes
+  // don't permanently re-enable the button).
   keepValuesOnReset: ['selectedSample', 'selectedGenes', 'geneColors'],
 };
 

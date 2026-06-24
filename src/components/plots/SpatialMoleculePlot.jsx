@@ -18,6 +18,7 @@ import { getCellSets } from 'redux/selectors';
 import { filterCells } from 'utils/plotSpecs/generateSpatialFeatureSpec';
 import { getSampleFileUrls } from 'utils/data-management/downloadSampleFile';
 import loadMoleculeNodes, { loadMoleculeMeta } from 'utils/spatial/loadMoleculeNodes';
+import { resolveGeneColors } from 'utils/spatial/moleculeColors';
 import ZipFileStore from 'components/data-exploration/spatial/ZipFileStore';
 import parseColor from 'components/data-exploration/parseColor';
 import {
@@ -114,7 +115,6 @@ const SpatialMoleculePlot = (props) => {
   const [segmentationZarrUrls, setSegmentationZarrUrls] = useState(null);
   const [selectedSample, setSelectedSample] = useState();
   const [moleculeMeta, setMoleculeMeta] = useState(null);
-  const [moleculeGenes, setMoleculeGenes] = useState([]);
   // { positions: Float32Array(n*2), colors: Uint8Array(n*3), count } for the
   // ScatterplotLayer — typed-array binary attributes, no per-point objects.
   const [moleculePoints, setMoleculePoints] = useState(null);
@@ -185,14 +185,14 @@ const SpatialMoleculePlot = (props) => {
   const deckglView = useMemo(() => new OrthographicView({ id: 'molecules', controller: true }), []);
 
   // ── Legend entries (gene → resolved colour) ─────────────────────────────────
+  // Colours are allocated in order without reuse (resolveGeneColors); a per-gene
+  // config override wins. Same resolution the scatter fill + seeding use, so the
+  // legend matches the points even before defaults are persisted.
   const legendItems = useMemo(() => {
-    const palette = new Map((moleculeGenes ?? []).map(({ gene, color }) => [gene, color]));
-    const geneColors = config?.geneColors ?? {};
-    return (config?.selectedGenes ?? []).map((gene) => ({
-      gene,
-      color: geneColors[gene] ?? palette.get(gene) ?? '#cccccc',
-    }));
-  }, [config?.selectedGenes, moleculeGenes, config?.geneColors]);
+    const selected = config?.selectedGenes ?? [];
+    const colors = resolveGeneColors(selected, config?.geneColors ?? {});
+    return selected.map((gene) => ({ gene, color: colors[gene] }));
+  }, [config?.selectedGenes, config?.geneColors]);
 
   // ── Layout ──────────────────────────────────────────────────────────────────
   // `dimensions` (width/height) sizes the PLOTTING AREA only — the deck canvas — to
@@ -360,10 +360,7 @@ const SpatialMoleculePlot = (props) => {
     (async () => {
       try {
         const meta = await loadMoleculeMeta(getStore(moleculesUrl));
-        if (!cancelled) {
-          setMoleculeMeta(meta);
-          setMoleculeGenes(meta?.genes ?? []);
-        }
+        if (!cancelled) setMoleculeMeta(meta);
       } catch (e) {
         if (!cancelled) console.error('[SpatialMoleculePlot] meta load error:', e);
       }
@@ -403,7 +400,7 @@ const SpatialMoleculePlot = (props) => {
   // When the artifact loads with no genes selected, seed the top-DISPERSION panel
   // genes (like the dot-plot / marker-heatmap), NOT alphabetical. Applied once; a
   // user clearing all genes is respected. Also default each selected gene's colour
-  // from the baked palette where it isn't already set.
+  // from the Polychrome palette (keyed on its stable feature_code) where unset.
   useEffect(() => {
     if (!moleculeMeta?.genes?.length) return;
     if (!defaultGenesAppliedRef.current) {
@@ -424,13 +421,15 @@ const SpatialMoleculePlot = (props) => {
       }
     }
 
-    const paletteByName = new Map(moleculeMeta.genes.map(({ gene, color }) => [gene, color]));
+    // Persist a default colour for any selected gene that doesn't have one yet,
+    // taking the first available palette colour (resolveGeneColors). Persisting keeps
+    // the colour-picker swatches in sync and survives reloads.
     const existing = config?.geneColors ?? {};
+    const colors = resolveGeneColors(selectedGenes ?? [], existing);
     const missing = {};
     (selectedGenes ?? []).forEach((gene) => {
-      if (existing[gene] === undefined && paletteByName.has(gene)) {
-        missing[gene] = paletteByName.get(gene);
-      }
+      // null (a removed gene re-added) or unset → needs a freshly allocated colour
+      if (!existing[gene]) missing[gene] = colors[gene];
     });
     if (Object.keys(missing).length > 0) {
       onDefaultColorsRef.current({ ...existing, ...missing });
@@ -444,7 +443,10 @@ const SpatialMoleculePlot = (props) => {
   // Latest values via refs so the loader callback is created once.
   const streamCtxRef = useRef({});
   streamCtxRef.current = {
-    moleculesUrl, moleculeMeta, selectedGenes, geneColors: config?.geneColors,
+    moleculesUrl,
+    moleculeMeta,
+    selectedGenes,
+    geneColors: config?.geneColors,
   };
 
   const streamMolecules = useCallback(async () => {
@@ -456,15 +458,17 @@ const SpatialMoleculePlot = (props) => {
 
     const palette = meta.genes ?? [];
     const byName = new Map(palette.map(({ gene, code }) => [gene, code]));
-    // code -> [r,g,b] from the per-gene colour (config override or baked palette)
+    // resolve colours for the selected set (existing/overrides win, rest take the
+    // first available palette colour — matches the seeded/legend colours)
+    const resolved = resolveGeneColors(genes, geneColors ?? {});
+    // code -> [r,g,b]
     const colorByCode = new Map();
     const geneCodes = [];
     genes.forEach((gene) => {
       const code = byName.get(gene);
       if (code === undefined) return;
       geneCodes.push(code);
-      const baked = palette.find((p) => p.code === code)?.color;
-      const [r, g, b] = parseColor(geneColors?.[gene] ?? baked);
+      const [r, g, b] = parseColor(resolved[gene]);
       colorByCode.set(code, [r, g, b]);
     });
     if (!geneCodes.length) { setMoleculePoints(null); return; }

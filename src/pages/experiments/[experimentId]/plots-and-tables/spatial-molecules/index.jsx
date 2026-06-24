@@ -24,6 +24,8 @@ import { loadCellSets } from 'redux/actions/cellSets';
 import loadGeneList from 'redux/actions/genes/loadGeneList';
 import { getCellSets, getPlotConfigs } from 'redux/selectors';
 import { plotNames, plotUuids, plotTypes } from 'utils/constants';
+import { MAX_MOLECULE_GENES, resolveGeneColors } from 'utils/spatial/moleculeColors';
+import pushNotificationMessage from 'utils/pushNotificationMessage';
 
 const { Panel } = Collapse;
 
@@ -117,17 +119,28 @@ const SpatialMoleculesPage = ({ experimentId }) => {
 
   const selectedGenes = selectedConfig?.selectedGenes ?? [];
   const geneColors = selectedConfig?.geneColors ?? {};
+  // Resolved (displayed) colour per gene — the same allocation the plot renders, so
+  // the picker swatches match the points even before defaults are persisted.
+  const resolvedColors = resolveGeneColors(selectedGenes, geneColors);
 
   const addGenes = (genes) => {
-    onUpdate({ selectedGenes: Array.from(new Set([...selectedGenes, ...genes])) });
+    const merged = Array.from(new Set([...selectedGenes, ...genes]));
+    if (merged.length > MAX_MOLECULE_GENES) {
+      pushNotificationMessage(
+        'error',
+        `You can plot at most ${MAX_MOLECULE_GENES} genes at once. Remove some to add more.`,
+      );
+    }
+    onUpdate({ selectedGenes: merged.slice(0, MAX_MOLECULE_GENES) });
   };
 
   const removeGene = (gene) => {
-    const nextColors = { ...geneColors };
-    delete nextColors[gene];
+    // The config reducer deep-merges objects, so deleting a geneColors key never
+    // propagates — null it out instead (merge overwrites with null). The resolver
+    // treats null as "no override", so re-adding the gene allocates a fresh colour.
     onUpdate({
       selectedGenes: selectedGenes.filter((g) => g !== gene),
-      geneColors: nextColors,
+      geneColors: { ...geneColors, [gene]: null },
     });
   };
 
@@ -141,6 +154,15 @@ const SpatialMoleculesPage = ({ experimentId }) => {
         <p>
           Choose which transcript molecules to show. A few genes are selected by
           default; add or remove genes to compare their spatial distributions.
+          {' '}
+          Up to
+          {' '}
+          {MAX_MOLECULE_GENES}
+          {' '}
+          genes (
+          {selectedGenes.length}
+          {' '}
+          selected).
         </p>
         <GeneSearchBar
           allowMultiple
@@ -154,8 +176,8 @@ const SpatialMoleculesPage = ({ experimentId }) => {
               <ColorPicker
                 // key on the colour so the swatch re-mounts (ColorPicker captures its
                 // colour in state at mount) when the per-gene colour is seeded/changed.
-                key={geneColors[gene] ?? 'unset'}
-                color={geneColors[gene] ?? '#cccccc'}
+                key={resolvedColors[gene] ?? 'unset'}
+                color={resolvedColors[gene] ?? '#cccccc'}
                 onColorChange={(color) => setGeneColor(gene, color)}
               />
               <span>{gene}</span>

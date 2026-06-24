@@ -5,6 +5,8 @@ import loadMoleculeNodes, {
   loadMoleculeMeta,
   buildMoleculeColorLookup,
 } from 'utils/spatial/loadMoleculeNodes';
+import { MOLECULE_PALETTE } from 'utils/spatial/moleculeColors';
+import parseColor from 'components/data-exploration/parseColor';
 
 // Build a Feather (Arrow IPC file) buffer for a per-gene table.
 const feather = (cols) => tableToIPC(tableFromArrays(cols), 'file');
@@ -16,15 +18,9 @@ const META = {
   qvThreshold: 20,
   rootExtent: { x: [0, 10], y: [0, 10] },
   genes: [
-    {
-      code: 0, gene: 'Gad1', color: '#1f77b4', entry: '0.feather', nPoints: 2,
-    },
-    {
-      code: 1, gene: 'Sst', color: '#ff7f0e', entry: '1.feather', nPoints: 2,
-    },
-    {
-      code: 2, gene: 'Pvalb', color: '#2ca02c', entry: '2.feather', nPoints: 1,
-    },
+    { code: 0, gene: 'Gad1', entry: '0.feather', nPoints: 2 },
+    { code: 1, gene: 'Sst', entry: '1.feather', nPoints: 2 },
+    { code: 2, gene: 'Pvalb', entry: '2.feather', nPoints: 1 },
   ],
 };
 
@@ -138,19 +134,20 @@ describe('loadMoleculeMeta', () => {
 });
 
 describe('buildMoleculeColorLookup', () => {
-  it('maps a feature_code to its baked RGBA colour', () => {
-    const lookup = buildMoleculeColorLookup(META);
-    expect(lookup(0)).toEqual([31, 119, 180, 255]); // #1f77b4
-    expect(lookup(1)).toEqual([255, 127, 14, 255]); // #ff7f0e
+  it('maps a feature_code to its Polychrome RGBA colour', () => {
+    const lookup = buildMoleculeColorLookup();
+    expect(lookup(0)).toEqual(parseColor(MOLECULE_PALETTE[0]));
+    expect(lookup(1)).toEqual(parseColor(MOLECULE_PALETTE[1]));
   });
 
-  it('falls back to grey for an unknown code', () => {
-    const lookup = buildMoleculeColorLookup(META);
-    expect(lookup(99)).toEqual([128, 128, 128, 255]);
+  it('cycles the palette for codes beyond its length', () => {
+    const lookup = buildMoleculeColorLookup();
+    // code == palette length wraps back to palette[0]
+    expect(lookup(MOLECULE_PALETTE.length)).toEqual(lookup(0));
   });
 
-  it('accepts a bare genes array as well as a full meta object', () => {
-    const lookup = buildMoleculeColorLookup(META.genes);
-    expect(lookup(2)).toEqual([44, 160, 44, 255]); // #2ca02c
+  it('falls back to grey for a non-integer code', () => {
+    const lookup = buildMoleculeColorLookup();
+    expect(lookup(undefined)).toEqual([128, 128, 128, 255]);
   });
 });

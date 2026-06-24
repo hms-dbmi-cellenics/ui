@@ -1,5 +1,6 @@
 import { tableFromIPC } from 'apache-arrow';
 import parseColor from 'components/data-exploration/parseColor';
+import { colorForCode } from 'utils/spatial/moleculeColors';
 // Registers the ZSTD decoder so the per-gene tiles (ZSTD-compressed Arrow bodies)
 // can be parsed; side-effect import, must load before any tile is read.
 import './registerArrowZstd';
@@ -147,18 +148,17 @@ const loadMoleculeNodes = async (store, { genes } = {}) => {
 const loadMoleculeMeta = async (store) => loadMeta(store);
 
 /**
- * Build a feature_code -> RGBA lookup from a meta.json. Colors are baked into the
- * artifact by the pipeline so deck.gl and Vega render identical gene colors; we
- * just convert the stored hex to RGBA via the shared parseColor helper.
+ * Build a feature_code -> RGBA lookup. Gene colour is a stable function of the
+ * feature_code (the Polychrome palette, assigned in the UI — see moleculeColors),
+ * so the same code renders the same colour everywhere; we just convert to RGBA via
+ * the shared parseColor helper. The `meta` arg is accepted for call-site
+ * compatibility but no longer needed (colour is derived from the code alone).
  *
- * @param {object} meta the parsed meta.json (or its `genes` array)
  * @returns {(code: number) => number[]} code -> [r, g, b, a]
  */
-const buildMoleculeColorLookup = (meta) => {
-  const genes = Array.isArray(meta) ? meta : (meta?.genes ?? []);
-  const colors = genes.map(({ color }) => parseColor(color));
+const buildMoleculeColorLookup = () => {
   const fallback = parseColor(null);
-  return (code) => colors[code] ?? fallback;
+  return (code) => parseColor(colorForCode(code)) ?? fallback;
 };
 
 export default loadMoleculeNodes;

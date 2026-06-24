@@ -8,6 +8,7 @@ import thunk from 'redux-thunk';
 import SpatialMoleculePlot from 'components/plots/SpatialMoleculePlot';
 import { getSampleFileUrls } from 'utils/data-management/downloadSampleFile';
 import loadMoleculeNodes, { loadMoleculeMeta } from 'utils/spatial/loadMoleculeNodes';
+import { MOLECULE_PALETTE } from 'utils/spatial/moleculeColors';
 import { loadOmeZarrGrid } from 'components/data-exploration/spatial/loadOmeZarr';
 
 // capture the props deck.gl is rendered with (layers, viewState, handlers)
@@ -124,12 +125,8 @@ const renderPlot = async (configOverrides = {}, extraProps = {}) => {
 const META = {
   version: 2,
   genes: [
-    {
-      code: 0, gene: 'Gad1', color: '#1f77b4', entry: '0.feather', nPoints: 1,
-    },
-    {
-      code: 1, gene: 'Sst', color: '#ff7f0e', entry: '1.feather', nPoints: 1,
-    },
+    { code: 0, gene: 'Gad1', entry: '0.feather', nPoints: 1 },
+    { code: 1, gene: 'Sst', entry: '1.feather', nPoints: 1 },
   ],
   rootExtent: { x: [0, 100], y: [0, 200] },
 };
@@ -228,13 +225,25 @@ describe('SpatialMoleculePlot', () => {
     expect(screen.getByText(/Select one or more genes/i)).toBeInTheDocument();
   });
 
-  it('defaults per-gene colours from the baked palette for selected genes without one', async () => {
+  it('defaults per-gene colours from the Polychrome palette (first available)', async () => {
     const onDefaultColors = jest.fn();
     await renderPlot({ selectedGenes: ['Gad1', 'Sst'], geneColors: {} }, { onDefaultColors });
 
+    // first available palette colours, in selection order
     await waitFor(() => expect(onDefaultColors).toHaveBeenCalledWith({
-      Gad1: '#1f77b4',
-      Sst: '#ff7f0e',
+      Gad1: MOLECULE_PALETTE[0],
+      Sst: MOLECULE_PALETTE[1],
+    }));
+  });
+
+  it('re-seeds a fresh colour for a gene whose colour was nulled (removed then re-added)', async () => {
+    const onDefaultColors = jest.fn();
+    // Gad1 carries a null colour (the removed-gene sentinel) — it must be reseeded
+    // from the palette, not left null or given a stale value.
+    await renderPlot({ selectedGenes: ['Gad1'], geneColors: { Gad1: null } }, { onDefaultColors });
+
+    await waitFor(() => expect(onDefaultColors).toHaveBeenCalledWith({
+      Gad1: MOLECULE_PALETTE[0],
     }));
   });
 
