@@ -659,6 +659,19 @@ const SpatialMoleculePlot = (props) => {
     // grid line weight 0–10 → alpha 0 (transparent) … 1 (fully visible)
     const gridAlpha = Math.min(1, Math.max(0, a.gridOpacity / 10));
 
+    // Axis LABELS only (not the rendering): anchor the data extent's bottom-left
+    // corner at (0,0). The deck view stays y-down so the image + molecules keep their
+    // native orientation; we just relabel — x measured rightward from the extent's
+    // left edge, y measured UPWARD from its bottom edge (so the origin reads
+    // bottom-left, like the Vega spatial plots). Tick POSITIONS are unchanged, so
+    // nothing moves and the image is not expanded — only the printed numbers change.
+    // world<->label maps. Ticks are generated in LABEL space (so 0 is a tick and the
+    // bottom-left reads 0,0) and mapped back to world coords for positioning.
+    const labelX = (t) => (rootBbox ? t - rootBbox[0] : t);
+    const labelY = (t) => (rootBbox ? rootBbox[3] - t : t);
+    const worldX = (l) => (rootBbox ? l + rootBbox[0] : l);
+    const worldY = (l) => (rootBbox ? rootBbox[3] - l : l);
+
     if (a.domainWidth > 0) {
       model.lines.push({
         x1: left, y1: bottom, x2: right, y2: bottom, stroke: s.fontColour, width: a.domainWidth,
@@ -672,8 +685,8 @@ const SpatialMoleculePlot = (props) => {
     const xTickCount = Math.max(2, Math.round(innerW / 40));
     const yTickCount = Math.max(2, Math.round(innerH / 40));
 
-    niceTicks(xMin, xMax, xTickCount).forEach((t) => {
-      const x = projX(t);
+    niceTicks(labelX(xMin), labelX(xMax), xTickCount).forEach((l) => {
+      const x = projX(worldX(l));
       if (x < left - 0.5 || x > right + 0.5) return;
       if (gridAlpha > 0) {
         model.lines.push({
@@ -688,7 +701,7 @@ const SpatialMoleculePlot = (props) => {
         model.texts.push({
           x,
           y: bottom + 6,
-          text: formatTick(t),
+          text: formatTick(l),
           anchor: a.rotateX ? 'end' : 'middle',
           baseline: 'hanging',
           size: a.labelFontSize,
@@ -699,8 +712,10 @@ const SpatialMoleculePlot = (props) => {
       }
     });
 
-    niceTicks(yMin, yMax, yTickCount).forEach((t) => {
-      const y = projY(t);
+    // y label range runs from the bottom edge (labelY(yMax), the small value) up to
+    // the top edge (labelY(yMin)); ticks in label space → 0 lands on the bottom edge.
+    niceTicks(labelY(yMax), labelY(yMin), yTickCount).forEach((l) => {
+      const y = projY(worldY(l));
       if (y < top - 0.5 || y > bottom + 0.5) return;
       if (gridAlpha > 0) {
         model.lines.push({
@@ -715,7 +730,7 @@ const SpatialMoleculePlot = (props) => {
         model.texts.push({
           x: left - 6,
           y,
-          text: formatTick(t),
+          text: formatTick(l),
           anchor: 'end',
           baseline: 'middle',
           size: a.labelFontSize,
@@ -816,7 +831,7 @@ const SpatialMoleculePlot = (props) => {
     }
 
     return model;
-  }, [isMiniPlot, layout, styling, legendItems, bboxForViewState, width, height]);
+  }, [isMiniPlot, layout, styling, legendItems, bboxForViewState, rootBbox, width, height]);
 
   const chromeModel = useMemo(() => buildChromeModel(viewState), [buildChromeModel, viewState]);
 
@@ -826,7 +841,7 @@ const SpatialMoleculePlot = (props) => {
   const downloadPng = useCallback(() => {
     const canvas = getDeckCanvas();
     if (!canvas || !viewState) return;
-    const scale = 3;
+    const scale = 1;
     const out = document.createElement('canvas');
     out.width = layout.containerW * scale;
     out.height = layout.containerH * scale;
