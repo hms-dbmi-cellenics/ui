@@ -153,7 +153,7 @@ const SpatialViewer = (props) => {
   const [omeZarrSampleIds, setOmeZarrSampleIds] = useState([]);
   const [omeZarrUrls, setOmeZarrUrls] = useState([]);
   const [segmentationsOmeZarrUrls, setSegmentationsOmeZarrUrls] = useState([]);
-  const [moleculesPyramidUrls, setMoleculesPyramidUrls] = useState([]);
+  const [moleculesUrls, setMoleculesUrls] = useState([]);
   const [moleculeStores, setMoleculeStores] = useState([]);
   const [moleculeMeta, setMoleculeMeta] = useState(null);
   const [loader, setLoader] = useState(null);
@@ -200,10 +200,10 @@ const SpatialViewer = (props) => {
           Promise.all(
             sampleIdsForFileUrls.map((sampleId) => getSampleFileUrls(experimentId, sampleId, 'segmentations_ome_zarr_zip')),
           ).then((r) => r.flat()),
-          // molecules_pyramid is optional (only built when transcripts.parquet was
+          // molecules_by_gene is optional (only built when transcripts.parquet was
           // uploaded). Per-sample: an empty result for a sample => no overlay there.
           Promise.all(
-            sampleIdsForFileUrls.map((sampleId) => getSampleFileUrls(experimentId, sampleId, 'molecules_pyramid')
+            sampleIdsForFileUrls.map((sampleId) => getSampleFileUrls(experimentId, sampleId, 'molecules_by_gene')
               .then((r) => r, () => [])),
           ).then((r) => r.map((sampleUrls) => sampleUrls?.[0]?.url ?? null)),
         ]);
@@ -228,10 +228,10 @@ const SpatialViewer = (props) => {
           console.info('[SpatialViewer] segmentations_ome_zarr_zip unavailable — diamond fallback active.');
         }
 
-        // Per-sample molecule pyramid URLs (null where the sample has no pyramid).
+        // Per-sample molecule artifact URLs (null where the sample has no artifact).
         // Absent for every sample => the Molecules layer is simply unavailable.
         if (moleculesResult.status === 'fulfilled') {
-          setMoleculesPyramidUrls(moleculesResult.value);
+          setMoleculesUrls(moleculesResult.value);
         }
       } catch (e) {
         console.error('[SpatialViewer] URL fetch error:', e);
@@ -273,17 +273,17 @@ const SpatialViewer = (props) => {
       .catch((e) => console.error('[SpatialViewer] Segmentations loader error:', e));
   }, [segmentationsOmeZarrUrls, gridShape]);
 
-  // ── Molecule pyramid stores + meta ────────────────────────────────────────
-  // One ZipFileStore per sample (null where the sample has no pyramid). The
+  // ── Molecule artifact stores + meta ────────────────────────────────────────
+  // One ZipFileStore per sample (null where the sample has no artifact). The
   // dictionary/colour meta is the same across samples in an experiment, so we
-  // read meta.json once from the first available pyramid.
+  // read meta.json once from the first available artifact.
   useEffect(() => {
-    if (!moleculesPyramidUrls.length) {
+    if (!moleculesUrls.length) {
       setMoleculeStores([]);
       setMoleculeMeta(null);
       return;
     }
-    const stores = moleculesPyramidUrls.map((url) => (url ? ZipFileStore.fromUrl(url) : null));
+    const stores = moleculesUrls.map((url) => (url ? ZipFileStore.fromUrl(url) : null));
     setMoleculeStores(stores);
 
     const firstStore = stores.find(Boolean);
@@ -294,7 +294,7 @@ const SpatialViewer = (props) => {
     } else {
       setMoleculeMeta(null);
     }
-  }, [moleculesPyramidUrls]);
+  }, [moleculesUrls]);
 
   // ── Per-image shape ───────────────────────────────────────────────────────
   // Image-driven techs derive the per-sample tile extent from the OME-Zarr image
@@ -602,7 +602,7 @@ const SpatialViewer = (props) => {
   // ── Molecule overlay: per-sample grid offsets + colour lookup ─────────────
   // Molecules live in the SAME micron frame as the centroids/polygons, so they
   // consume the SAME multi-sample grid translation offsetCentroids applies
-  // (xOffset = column * width, yOffset = row * height). One pyramid per sample,
+  // (xOffset = column * width, yOffset = row * height). One artifact per sample,
   // so we offset that sample's tile coordinates by its grid cell.
   const moleculeSampleOffsets = useMemo(() => {
     if (!perImageShape || !gridShape) return null;
@@ -632,14 +632,14 @@ const SpatialViewer = (props) => {
   }, [focusedGene, moleculeMeta]);
 
   // The molecule overlay is active (and replaces the per-cell expression fill)
-  // only when the toggle is on AND a gene present in the pyramid is being plotted.
+  // only when the toggle is on AND a gene present in the artifact is being plotted.
   const moleculesActive = showMolecules
     && focusedGeneCode !== undefined
     && moleculeStores.some(Boolean);
 
   // ── Load the focused gene's molecules (all samples), offset to the grid ────
-  // Gene-filtered queries can't be localised to tiles, so we read the gene's
-  // points across the whole pyramid (full depth) and render a single colour.
+  // The artifact is gene-partitioned, so this range-reads only the focused gene's
+  // entry per sample (every point) and renders it in a single colour.
   const [moleculePoints, setMoleculePoints] = useState(null);
   useEffect(() => {
     if (!moleculesActive || !moleculeSampleOffsets || !moleculeMeta) {
@@ -648,13 +648,10 @@ const SpatialViewer = (props) => {
     }
     let cancelled = false;
     (async () => {
-      const { x: [rx0, rx1], y: [ry0, ry1] } = moleculeMeta.rootExtent
-        ?? { x: [0, 0], y: [0, 0] };
       const perSample = await Promise.all(moleculeStores.map(async (store, i) => {
         if (!store) return null;
         const [dx, dy] = moleculeSampleOffsets[i] ?? [0, 0];
         const res = await loadMoleculeNodes(store, {
-          bbox: [rx0, ry0, rx1, ry1],
           genes: [focusedGeneCode],
         });
         return { res, dx, dy };

@@ -26,13 +26,13 @@ describe('Spatial Molecules plot type registration', () => {
     expect(typeof config.marker.opacity).toBe('number');
   });
 
-  it('defaults the segmentation overlay on and an empty per-gene colour map', () => {
+  it('defaults the segmentation outlines on and an empty per-gene colour map', () => {
     const config = initialPlotConfigStates[plotTypes.SPATIAL_MOLECULES];
-    expect(config.showSegmentations).toBe(true);
+    expect(config.showSegmentationOutlines).toBe(true);
     expect(config.geneColors).toEqual({});
-    // these auto-populated fields survive a reset
+    // the auto-populated sample/gene/colour fields survive a reset
     expect(config.keepValuesOnReset).toEqual(
-      expect.arrayContaining(['geneColors', 'showSegmentations']),
+      expect.arrayContaining(['selectedSample', 'selectedGenes', 'geneColors']),
     );
   });
 

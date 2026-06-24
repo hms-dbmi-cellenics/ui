@@ -43,7 +43,7 @@ const spatialTechs = [sampleTech.SEURAT_SPATIAL_OBJECT, sampleTech.VISIUM_HD, sa
 const imagelessTechs = [sampleTech.XENIUM];
 
 // spatial technologies that can carry individual transcript molecules (a
-// molecules_pyramid artifact, built from the optional transcripts.parquet input).
+// molecules_by_gene artifact, built from the optional transcripts.parquet input).
 // The Spatial Molecules plot type is only offered for these techs.
 const moleculeTechs = [sampleTech.XENIUM];
 

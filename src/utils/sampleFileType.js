@@ -19,7 +19,7 @@ const sampleFileType = {
   XENIUM_CELLS: 'xenium_cells',
   XENIUM_CELL_BOUNDARIES: 'xenium_cell_boundaries',
   XENIUM_TRANSCRIPTS: 'xenium_transcripts',
-  MOLECULES_PYRAMID: 'molecules_pyramid',
+  MOLECULES_BY_GENE: 'molecules_by_gene',
 };
 
 const fileTypeToDisplay = {
@@ -42,7 +42,7 @@ const fileTypeToDisplay = {
   [sampleFileType.XENIUM_CELLS]: 'cells.parquet',
   [sampleFileType.XENIUM_CELL_BOUNDARIES]: 'cell_boundaries.parquet',
   [sampleFileType.XENIUM_TRANSCRIPTS]: 'transcripts.parquet',
-  [sampleFileType.MOLECULES_PYRAMID]: 'molecules.pyramid.zip',
+  [sampleFileType.MOLECULES_BY_GENE]: 'molecules.bygene.zip',
 };
 
 const fileTypeColumnWidth = {

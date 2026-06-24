@@ -56,7 +56,7 @@ const SpatialVisibleLayersSettings = (props) => {
       },
       // Molecules overlay (Xenium only): when on AND a gene is being plotted, the
       // focused gene's transcripts render as points in place of the per-cell fill.
-      // With a categorical focus or no pyramid it simply does nothing.
+      // With a categorical focus or no molecule artifact it simply does nothing.
       ...(isImageless ? [{
         key: 'showMolecules',
         name: 'Molecules',

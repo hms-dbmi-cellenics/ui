@@ -187,7 +187,7 @@ const fileUploadUtils = {
       'cell_feature_matrix.h5',
       'cells.parquet',
       'cell_boundaries.parquet',
-      // optional: enables the transcript/molecule pyramid (not a required file)
+      // optional: enables the transcript/molecule artifact (not a required file)
       'transcripts.parquet',
     ]),
     inputInfo: [

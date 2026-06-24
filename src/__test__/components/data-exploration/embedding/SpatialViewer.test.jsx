@@ -159,10 +159,10 @@ describe('SpatialViewer', () => {
 
   it('fetches sample file URLs and processes them', () => {
     // fetches the image (ome_zarr_zip), segmentation (segmentations_ome_zarr_zip)
-    // and optional molecules (molecules_pyramid) file URLs for the obj2s sample
+    // and optional molecules (molecules_by_gene) file URLs for the obj2s sample
     const requestedFileTypes = getSampleFileUrls.mock.calls.map(([, , fileType]) => fileType);
     expect(requestedFileTypes).toEqual(
-      expect.arrayContaining(['ome_zarr_zip', 'segmentations_ome_zarr_zip', 'molecules_pyramid']),
+      expect.arrayContaining(['ome_zarr_zip', 'segmentations_ome_zarr_zip', 'molecules_by_gene']),
     );
 
     // a zip store + zarr root per returned url, for both the image and segmentation grids
@@ -261,13 +261,13 @@ describe('SpatialViewer — molecule (transcript) overlay', () => {
     },
   };
 
-  // Resolve a distinct payload per requested file type so the molecules_pyramid
+  // Resolve a distinct payload per requested file type so the molecules_by_gene
   // URL is real (not shared with the segmentation URL).
-  const mockUrlsByType = (hasPyramid) => {
+  const mockUrlsByType = (hasMolecules) => {
     getSampleFileUrls.mockImplementation((_e, _s, fileType) => {
-      if (fileType === 'molecules_pyramid') {
-        return hasPyramid
-          ? Promise.resolve([{ url: 'http://example.com/molecules.pyramid.zip', fileId: xeniumSampleId }])
+      if (fileType === 'molecules_by_gene') {
+        return hasMolecules
+          ? Promise.resolve([{ url: 'http://example.com/molecules.bygene.zip', fileId: xeniumSampleId }])
           : Promise.reject(new Error('404'));
       }
       return Promise.resolve([
@@ -290,7 +290,7 @@ describe('SpatialViewer — molecule (transcript) overlay', () => {
     });
   };
 
-  it('does not build a molecule store when the sample has no pyramid', async () => {
+  it('does not build a molecule store when the sample has no molecule artifact', async () => {
     jest.clearAllMocks();
     mockUrlsByType(false);
     ZipFileStore.fromUrl.mockReturnValue({ get: jest.fn() });
@@ -307,11 +307,11 @@ describe('SpatialViewer — molecule (transcript) overlay', () => {
         },
       },
     });
-    // pyramid fetch rejected => no pyramid store/meta loaded
+    // molecule fetch rejected => no molecule artifact store/meta loaded
     expect(loadMoleculeMeta).not.toHaveBeenCalled();
   });
 
-  it('builds a molecule store + loads meta when a pyramid is present', async () => {
+  it('builds a molecule store + loads meta when a molecule artifact is present', async () => {
     jest.clearAllMocks();
     mockUrlsByType(true);
     ZipFileStore.fromUrl.mockReturnValue({ get: jest.fn() });
@@ -329,10 +329,10 @@ describe('SpatialViewer — molecule (transcript) overlay', () => {
       },
     });
 
-    const pyramidStoreUrls = ZipFileStore.fromUrl.mock.calls
+    const moleculeStoreUrls = ZipFileStore.fromUrl.mock.calls
       .map(([url]) => url)
-      .filter((url) => url.includes('molecules.pyramid.zip'));
-    expect(pyramidStoreUrls).toHaveLength(1);
+      .filter((url) => url.includes('molecules.bygene.zip'));
+    expect(moleculeStoreUrls).toHaveLength(1);
     expect(loadMoleculeMeta).toHaveBeenCalled();
   });
 });

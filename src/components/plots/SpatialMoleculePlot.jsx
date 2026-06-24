@@ -96,7 +96,7 @@ const SpatialMoleculePlot = (props) => {
   onDefaultColorsRef.current = onDefaultColors;
   const onZoomChangeRef = useRef(onZoomChange);
   onZoomChangeRef.current = onZoomChange;
-  // Only auto-pick default genes ONCE per pyramid — respect a user who clears them.
+  // Only auto-pick default genes ONCE per artifact — respect a user who clears them.
   const defaultGenesAppliedRef = useRef(false);
 
   const cellSets = useSelector(getCellSets());
@@ -110,7 +110,7 @@ const SpatialMoleculePlot = (props) => {
   // { geneName: { dispersions } } — used to pick the default genes by dispersion.
   const geneData = useSelector((state) => state.genes?.properties?.data) || {};
 
-  const [moleculePyramidUrls, setMoleculePyramidUrls] = useState(null);
+  const [moleculeUrls, setMoleculeUrls] = useState(null);
   const [segmentationZarrUrls, setSegmentationZarrUrls] = useState(null);
   const [selectedSample, setSelectedSample] = useState();
   const [moleculeMeta, setMoleculeMeta] = useState(null);
@@ -129,7 +129,7 @@ const SpatialMoleculePlot = (props) => {
   const height = config?.dimensions?.height ?? 500;
   const isMiniPlot = Boolean(config?.miniPlot);
 
-  // one ZipFileStore per pyramid url, lazily reused across loads
+  // one ZipFileStore per artifact url, lazily reused across loads
   const storesRef = useRef(new Map());
   // container of the whole plot (deck canvas + chrome) — read for the export snapshot
   const containerRef = useRef(null);
@@ -260,18 +260,18 @@ const SpatialMoleculePlot = (props) => {
     dispatch(loadGeneList(experimentId));
   }, [experimentId]);
 
-  // ── Fetch molecule pyramid URLs (optional) ──────────────────────────────────
+  // ── Fetch molecule artifact URLs (optional) ──────────────────────────────────
   useEffect(() => {
     if (!sampleIdsForFileUrls?.length) return;
     (async () => {
       try {
         const results = await Promise.all(
-          // molecules_pyramid is optional (only built when transcripts.parquet was
-          // uploaded); a per-sample failure => no pyramid for that sample.
-          sampleIdsForFileUrls.map((sampleId) => getSampleFileUrls(experimentId, sampleId, 'molecules_pyramid')
+          // molecules_by_gene is optional (only built when transcripts.parquet was
+          // uploaded); a per-sample failure => no artifact for that sample.
+          sampleIdsForFileUrls.map((sampleId) => getSampleFileUrls(experimentId, sampleId, 'molecules_by_gene')
             .then((r) => r, () => [])),
         );
-        setMoleculePyramidUrls(results.map((sampleUrls, i) => ({
+        setMoleculeUrls(results.map((sampleUrls, i) => ({
           url: sampleUrls?.[0]?.url ?? null,
           sampleId: isObj2s
             ? (sampleUrls?.[0]?.fileId ?? sampleIdsForFileUrls[i])
@@ -279,7 +279,7 @@ const SpatialMoleculePlot = (props) => {
         })));
       } catch (e) {
         console.error('[SpatialMoleculePlot] molecule URL fetch error:', e);
-        setMoleculePyramidUrls([]);
+        setMoleculeUrls([]);
       }
     })();
   }, [sampleIdsForFileUrls, experimentId, isObj2s]);
@@ -306,22 +306,22 @@ const SpatialMoleculePlot = (props) => {
 
   // ── Default selected sample ─────────────────────────────────────────────────
   useEffect(() => {
-    if (!moleculePyramidUrls || !config) return;
+    if (!moleculeUrls || !config) return;
     if (config.selectedSample) {
       setSelectedSample(config.selectedSample);
     } else {
-      const def = moleculePyramidUrls[0]?.sampleId;
+      const def = moleculeUrls[0]?.sampleId;
       if (!def) return;
       setSelectedSample(def);
       onSampleDefaultRef.current(def);
     }
-  }, [config, moleculePyramidUrls]);
+  }, [config, moleculeUrls]);
 
-  const pyramidUrl = useMemo(
-    () => moleculePyramidUrls?.find(({ sampleId }) => sampleId === selectedSample)?.url ?? null,
-    [moleculePyramidUrls, selectedSample],
+  const moleculesUrl = useMemo(
+    () => moleculeUrls?.find(({ sampleId }) => sampleId === selectedSample)?.url ?? null,
+    [moleculeUrls, selectedSample],
   );
-  const hasPyramid = Boolean(pyramidUrl);
+  const hasMolecules = Boolean(moleculesUrl);
 
   const segmentationUrl = useMemo(
     () => segmentationZarrUrls?.find(({ sampleId }) => sampleId === selectedSample)?.url ?? null,
@@ -353,13 +353,13 @@ const SpatialMoleculePlot = (props) => {
     return store;
   }, []);
 
-  // ── Bootstrap meta (genes palette + rootExtent) once the pyramid is available ─
+  // ── Bootstrap meta (genes palette + rootExtent) once the artifact is available ─
   useEffect(() => {
-    if (!hasPyramid) return undefined;
+    if (!hasMolecules) return undefined;
     let cancelled = false;
     (async () => {
       try {
-        const meta = await loadMoleculeMeta(getStore(pyramidUrl));
+        const meta = await loadMoleculeMeta(getStore(moleculesUrl));
         if (!cancelled) {
           setMoleculeMeta(meta);
           setMoleculeGenes(meta?.genes ?? []);
@@ -369,7 +369,7 @@ const SpatialMoleculePlot = (props) => {
       }
     })();
     return () => { cancelled = true; };
-  }, [pyramidUrl, hasPyramid, getStore]);
+  }, [moleculesUrl, hasMolecules, getStore]);
 
   // ── Segmentation bitmask loader (grey backdrop) ─────────────────────────────
   // Loaded just like SpatialViewer (loadOmeZarrGrid, single-sample grid) so the
@@ -400,7 +400,7 @@ const SpatialMoleculePlot = (props) => {
   );
 
   // ── Default gene selection + per-gene colour seeding ────────────────────────
-  // When the pyramid loads with no genes selected, seed the top-DISPERSION panel
+  // When the artifact loads with no genes selected, seed the top-DISPERSION panel
   // genes (like the dot-plot / marker-heatmap), NOT alphabetical. Applied once; a
   // user clearing all genes is respected. Also default each selected gene's colour
   // from the baked palette where it isn't already set.
@@ -439,17 +439,17 @@ const SpatialMoleculePlot = (props) => {
 
   // ── Load all selected-gene molecules once (full extent, full depth) ──────────
   // Like SpatialViewer: read every point for the selected genes across the whole
-  // pyramid up front and let the GPU render them. Zoom/pan only moves the camera —
+  // artifact up front and let the GPU render them. Zoom/pan only moves the camera —
   // the point set never changes, so points don't "appear" as you zoom in.
   // Latest values via refs so the loader callback is created once.
   const streamCtxRef = useRef({});
   streamCtxRef.current = {
-    pyramidUrl, moleculeMeta, selectedGenes, geneColors: config?.geneColors,
+    moleculesUrl, moleculeMeta, selectedGenes, geneColors: config?.geneColors,
   };
 
-  const streamMolecules = useCallback(async (bbox) => {
+  const streamMolecules = useCallback(async () => {
     const {
-      pyramidUrl: url, moleculeMeta: meta, selectedGenes: genes, geneColors,
+      moleculesUrl: url, moleculeMeta: meta, selectedGenes: genes, geneColors,
     } = streamCtxRef.current;
     if (!url || !meta) return;
     if (!genes || genes.length === 0) { setMoleculePoints(null); return; }
@@ -470,10 +470,9 @@ const SpatialMoleculePlot = (props) => {
     if (!geneCodes.length) { setMoleculePoints(null); return; }
 
     try {
-      // No budget/depth → full depth across the whole extent (every selected-gene
-      // point), exactly like SpatialViewer's single-gene overlay.
+      // Gene-partitioned artifact: range-read just the selected genes' entries
+      // (every point for each), exactly like SpatialViewer's single-gene overlay.
       const result = await loadMoleculeNodes(getStore(url), {
-        bbox,
         genes: geneCodes,
       });
       const {
@@ -497,7 +496,7 @@ const SpatialMoleculePlot = (props) => {
     }
   }, [getStore]);
 
-  // full micron extent of the pyramid (the zoomed-out overview bbox)
+  // full micron extent of the artifact (the zoomed-out overview bbox)
   const rootBbox = useMemo(() => {
     const ext = moleculeMeta?.rootExtent;
     if (!ext) return null;
@@ -506,12 +505,12 @@ const SpatialMoleculePlot = (props) => {
 
   // ── Initial molecule load + view fit (full extent) once meta + genes ready ──
   useEffect(() => {
-    if (!hasPyramid || !rootBbox) return;
+    if (!hasMolecules || !rootBbox) return;
     if (!hasSelectedGenes) { setMoleculePoints(null); return; }
-    streamMolecules(rootBbox);
+    streamMolecules();
     // streamMolecules reads the latest selection/colours via the ctx ref
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [pyramidUrl, hasPyramid, hasSelectedGenes, selectedGenesKey, rootBbox,
+  }, [moleculesUrl, hasMolecules, hasSelectedGenes, selectedGenesKey, rootBbox,
     config?.geneColors]);
 
   // The full-extent fit for the current plot box (target + non-uniform zoom). This
@@ -914,13 +913,13 @@ const SpatialMoleculePlot = (props) => {
       return (
         <PlatformError
           error='Could not load transcript molecules for this sample.'
-          onClick={() => streamMolecules(rootBbox)}
+          onClick={() => streamMolecules()}
         />
       );
     }
 
-    // No molecules_pyramid for this sample: transcripts.parquet was never uploaded.
-    if (moleculePyramidUrls !== null && selectedSample && !hasPyramid) {
+    // No molecules_by_gene for this sample: transcripts.parquet was never uploaded.
+    if (moleculeUrls !== null && selectedSample && !hasMolecules) {
       return (
         <center>
           <Empty
@@ -931,8 +930,8 @@ const SpatialMoleculePlot = (props) => {
       );
     }
 
-    // Pyramid present but the user cleared the gene selection.
-    if (hasPyramid && !hasSelectedGenes && moleculeMeta) {
+    // Artifact present but the user cleared the gene selection.
+    if (hasMolecules && !hasSelectedGenes && moleculeMeta) {
       return (
         <center>
           <Empty

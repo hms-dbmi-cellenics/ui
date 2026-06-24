@@ -182,7 +182,7 @@ const spatialFeatureInitialConfig = {
 
 // PLOTS & TABLES - Spatial Molecules Plot
 // Renders individual transcript molecules (one symbol per molecule) coloured by
-// gene, read from the molecules_pyramid artifact. One sample at a fixed extent;
+// gene, read from the molecules_by_gene artifact. One sample at a fixed extent;
 // the bounded molecule result is inlined as Vega `values` (no streaming).
 const spatialMoleculeInitialConfig = {
   spec: '1.0.0',
@@ -212,7 +212,7 @@ const spatialMoleculeInitialConfig = {
   },
   labels: labelBaseState,
   // genes to render (gene symbols). Empty on init; the plot seeds a few default
-  // genes once the pyramid loads (rendering every gene hangs Vega).
+  // genes once the artifact loads (rendering every gene hangs Vega).
   selectedGenes: [],
   // per-gene render colours (gene symbol -> hex). Defaulted from the baked
   // meta.genes palette when a gene is seeded/added; the user can override each
@@ -713,7 +713,7 @@ const interactiveSpatialInitialConfig = {
   showSegmentations: true,
   showSegmentationOutlines: true,
   groupSlidesBy: ['sample'],
-  // Xenium transcript/molecule overlay (only available when a molecules_pyramid
+  // Xenium transcript/molecule overlay (only available when a molecules_by_gene
   // was built). Off by default. When on AND a gene is being plotted, the focused
   // gene's transcripts render as points in place of the per-cell expression fill.
   showMolecules: false,

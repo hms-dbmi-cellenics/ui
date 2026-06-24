@@ -122,12 +122,16 @@ const renderPlot = async (configOverrides = {}, extraProps = {}) => {
 };
 
 const META = {
+  version: 2,
   genes: [
-    { code: 0, gene: 'Gad1', color: '#1f77b4' },
-    { code: 1, gene: 'Sst', color: '#ff7f0e' },
+    {
+      code: 0, gene: 'Gad1', color: '#1f77b4', entry: '0.feather', nPoints: 1,
+    },
+    {
+      code: 1, gene: 'Sst', color: '#ff7f0e', entry: '1.feather', nPoints: 1,
+    },
   ],
   rootExtent: { x: [0, 100], y: [0, 200] },
-  maxDepth: 1,
 };
 
 const layerById = (id) => (deckProps.layers ?? []).find((l) => l?.id === id);
@@ -147,21 +151,18 @@ describe('SpatialMoleculePlot', () => {
     });
   });
 
-  it('loads every selected-gene point at the full root extent + full depth (no budget)', async () => {
+  it('range-reads only the selected genes (no spatial/budget query args)', async () => {
     await renderPlot({ selectedGenes: ['Gad1'] });
 
     await waitFor(() => expect(loadMoleculeNodes).toHaveBeenCalled());
     const callArgs = loadMoleculeNodes.mock.calls[0][1];
-    // queried at the full pyramid extent (rootExtent = [0,0,100,200]) in microns
-    expect(callArgs.bbox).toEqual([0, 0, 100, 200]);
-    // full depth across the whole extent — NO budget/depth cap (matches SpatialViewer),
-    // so the point set is fixed and zooming in never reveals new points
+    // only the requested gene's feature_code — the gene-partitioned reader needs
+    // no bbox/depth/budget (those are gone with the quadtree)
+    expect(callArgs.genes).toEqual([0]);
+    expect(callArgs.bbox).toBeUndefined();
     expect(callArgs.depth).toBeUndefined();
     expect(callArgs.maxPoints).toBeUndefined();
     expect(callArgs.maxRenderedPoints).toBeUndefined();
-    expect(callArgs.maxRawPoints).toBeUndefined();
-    // only the requested gene's feature_code
-    expect(callArgs.genes).toEqual([0]);
   });
 
   it('does not re-read molecules on zoom/pan — only persists the camera', async () => {
@@ -262,10 +263,10 @@ describe('SpatialMoleculePlot', () => {
     expect(screen.getByTitle('Export plot')).toBeInTheDocument();
   });
 
-  it('shows an empty state when the sample has no molecules_pyramid', async () => {
-    // no pyramid for the sample (per-sample fetch rejects → [] handled in component)
+  it('shows an empty state when the sample has no molecules_by_gene', async () => {
+    // no molecule artifact for the sample (per-sample fetch rejects → [] handled in component)
     getSampleFileUrls.mockImplementation((_e, _s, type) => (
-      type === 'molecules_pyramid' ? Promise.reject(new Error('404')) : Promise.resolve([])
+      type === 'molecules_by_gene' ? Promise.reject(new Error('404')) : Promise.resolve([])
     ));
 
     await renderPlot({ selectedGenes: ['Gad1'] });
