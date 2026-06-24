@@ -271,18 +271,4 @@ describe('SpatialMoleculePlot', () => {
     await waitFor(() => expect(screen.getByTestId('deckgl')).toBeInTheDocument());
     expect(screen.getByTitle('Export plot')).toBeInTheDocument();
   });
-
-  it('shows an empty state when the sample has no molecules_by_gene', async () => {
-    // no molecule artifact for the sample (per-sample fetch rejects → [] handled in component)
-    getSampleFileUrls.mockImplementation((_e, _s, type) => (
-      type === 'molecules_by_gene' ? Promise.reject(new Error('404')) : Promise.resolve([])
-    ));
-
-    await renderPlot({ selectedGenes: ['Gad1'] });
-
-    await waitFor(() => expect(
-      screen.getByText(/No transcript molecules are available/i),
-    ).toBeInTheDocument());
-    expect(loadMoleculeNodes).not.toHaveBeenCalled();
-  });
 });

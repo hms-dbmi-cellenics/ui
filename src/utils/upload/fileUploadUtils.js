@@ -187,22 +187,22 @@ const fileUploadUtils = {
       'cell_feature_matrix.h5',
       'cells.parquet',
       'cell_boundaries.parquet',
-      // optional: enables the transcript/molecule artifact (not a required file)
       'transcripts.parquet',
     ]),
     inputInfo: [
-      ['<code>cell_feature_matrix.h5</code> - <span style="color: #acaaaa;">typically found in the Xenium output bundle</span>'],
-      ['<code>cells.parquet</code> - <span style="color: #acaaaa;">typically found in the Xenium output bundle</span>'],
-      ['<code>cell_boundaries.parquet</code> - <span style="color: #acaaaa;">typically found in the Xenium output bundle</span>'],
-      ['<code>transcripts.parquet</code> (optional) - <span style="color: #acaaaa;">enables the transcript/molecule overlay; typically found in the Xenium output bundle</span>'],
+      ['<code>cell_feature_matrix.h5</code> - <span style="color: #acaaaa;">found in the Xenium output directory</span>'],
+      ['<code>cells.parquet</code> - <span style="color: #acaaaa;">found in the Xenium output directory</span>'],
+      ['<code>cell_boundaries.parquet</code> - <span style="color: #acaaaa;">found in the Xenium output directory</span>'],
+      ['<code>transcripts.parquet</code> - <span style="color: #acaaaa;">found in the Xenium output directory</span>'],
     ],
     requiredFiles: [
       sampleFileType.XENIUM_CELL_FEATURE_MATRIX,
       sampleFileType.XENIUM_CELLS,
       sampleFileType.XENIUM_CELL_BOUNDARIES,
+      sampleFileType.XENIUM_TRANSCRIPTS,
     ],
     fileUploadParagraphs: [
-      'For each sample, upload a folder containing the 3 required files. The folder\'s name will be used to name the sample in it. You can change this name later in Data Management.',
+      'For each sample, upload a folder containing the 4 required files. The folder\'s name will be used to name the sample in it. You can change this name later in Data Management.',
       'The required files for each sample are:',
     ],
     dropzoneText: 'Drag and drop folders here or click to browse.',

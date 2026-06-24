@@ -60,19 +60,19 @@ describe('Xenium registration — fileUploadUtils', () => {
     expect(xeniumOptions.webkitdirectory).toEqual('');
   });
 
-  it('accepts the three required Xenium files plus optional transcripts', () => {
+  it('accepts the four required Xenium files', () => {
     expect(Array.from(xeniumOptions.acceptedFiles).sort()).toEqual(
       ['cell_boundaries.parquet', 'cell_feature_matrix.h5', 'cells.parquet', 'transcripts.parquet'],
     );
   });
 
-  it('requires the three Xenium file types (transcripts is optional)', () => {
+  it('requires the four Xenium file types', () => {
     expect(xeniumOptions.requiredFiles).toEqual([
       sampleFileType.XENIUM_CELL_FEATURE_MATRIX,
       sampleFileType.XENIUM_CELLS,
       sampleFileType.XENIUM_CELL_BOUNDARIES,
+      sampleFileType.XENIUM_TRANSCRIPTS,
     ]);
-    expect(xeniumOptions.requiredFiles).not.toContain(sampleFileType.XENIUM_TRANSCRIPTS);
   });
 
   it.each([

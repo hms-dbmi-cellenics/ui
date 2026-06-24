@@ -265,16 +265,15 @@ const SpatialMoleculePlot = (props) => {
     dispatch(loadGeneList(experimentId));
   }, [experimentId]);
 
-  // ── Fetch molecule artifact URLs (optional) ──────────────────────────────────
+  // ── Fetch molecule artifact URLs ─────────────────────────────────────────────
   useEffect(() => {
     if (!sampleIdsForFileUrls?.length) return;
     (async () => {
       try {
         const results = await Promise.all(
-          // molecules_by_gene is optional (only built when transcripts.parquet was
-          // uploaded); a per-sample failure => no artifact for that sample.
-          sampleIdsForFileUrls.map((sampleId) => getSampleFileUrls(experimentId, sampleId, 'molecules_by_gene')
-            .then((r) => r, () => [])),
+          // molecules_by_gene is built for every Xenium sample (transcripts.parquet
+          // is a required input).
+          sampleIdsForFileUrls.map((sampleId) => getSampleFileUrls(experimentId, sampleId, 'molecules_by_gene')),
         );
         setMoleculeUrls(results.map((sampleUrls, i) => ({
           url: sampleUrls?.[0]?.url ?? null,
@@ -960,18 +959,6 @@ const SpatialMoleculePlot = (props) => {
           error='Could not load transcript molecules for this sample.'
           onClick={() => streamMolecules()}
         />
-      );
-    }
-
-    // No molecules_by_gene for this sample: transcripts.parquet was never uploaded.
-    if (moleculeUrls !== null && selectedSample && !hasMolecules) {
-      return (
-        <center>
-          <Empty
-            image={Empty.PRESENTED_IMAGE_SIMPLE}
-            description='No transcript molecules are available for this sample. Upload a transcripts file to enable the Spatial Molecules plot.'
-          />
-        </center>
       );
     }
 

@@ -33,6 +33,7 @@ const validateSampleCompleteness = (sampleFiles) => {
   if (!sampleFiles[sampleFileType.XENIUM_CELL_FEATURE_MATRIX]) missingFiles.push('cell_feature_matrix.h5');
   if (!sampleFiles[sampleFileType.XENIUM_CELLS]) missingFiles.push('cells.parquet');
   if (!sampleFiles[sampleFileType.XENIUM_CELL_BOUNDARIES]) missingFiles.push('cell_boundaries.parquet');
+  if (!sampleFiles[sampleFileType.XENIUM_TRANSCRIPTS]) missingFiles.push('transcripts.parquet');
 
   if (missingFiles.length) {
     throw new SampleValidationError(errorMessages.missingFiles(missingFiles));
@@ -65,12 +66,7 @@ const validateXenium = async (sample) => {
   await validateH5(sample.files);
   await validateParquet(sample.files[sampleFileType.XENIUM_CELLS], 'cells.parquet');
   await validateParquet(sample.files[sampleFileType.XENIUM_CELL_BOUNDARIES], 'cell_boundaries.parquet');
-
-  // transcripts.parquet is an optional input (enables the molecule overlay). Only
-  // validate it when present; absence is fine.
-  if (sample.files[sampleFileType.XENIUM_TRANSCRIPTS]) {
-    await validateParquet(sample.files[sampleFileType.XENIUM_TRANSCRIPTS], 'transcripts.parquet');
-  }
+  await validateParquet(sample.files[sampleFileType.XENIUM_TRANSCRIPTS], 'transcripts.parquet');
 };
 
 export default validateXenium;
