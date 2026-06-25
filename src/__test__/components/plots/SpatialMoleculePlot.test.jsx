@@ -252,7 +252,7 @@ describe('SpatialMoleculePlot', () => {
     expect(screen.getByText(/Select one or more genes/i)).toBeInTheDocument();
   });
 
-  it('defaults per-gene colours from the Polychrome palette (first available)', async () => {
+  it('defaults per-gene colours from the palette (first available)', async () => {
     const onDefaultColors = jest.fn();
     await renderPlot({ selectedGenes: ['Gad1', 'Sst'], geneColors: {} }, { onDefaultColors });
 

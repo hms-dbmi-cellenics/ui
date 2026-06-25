@@ -1,16 +1,14 @@
-// Categorical palette for spatial-molecule genes (Glasbey, 31 colours).
+// Categorical palette for spatial-molecule genes.
 //
 // Colour is assigned in the UI (not baked by the pipeline). resolveGeneColors
 // allocates the first available palette colour per selected gene, so a user can
 // always override an individual gene via the colour picker. The Spatial Molecules
 // plot caps selection at MAX_MOLECULE_GENES (15), well under the palette length.
 export const MOLECULE_PALETTE = [
-  '#0000FF', '#FF0000', '#00FF00', '#FF00B6', '#005300',
-  '#FFD300', '#009FFF', '#9A4D42', '#00FFBE', '#783FC1', '#1F9698',
-  '#FFACFD', '#B1CC71', '#F1085C', '#FE8F42', '#DD00FF', '#201A01',
-  '#720055', '#766C95', '#02AD24', '#C8FF00', '#886C00', '#FFB79F',
-  '#858567', '#A10300', '#14F9FF', '#00479E', '#DC5E93', '#93D4FF',
-  '#004CFF', '#F2F318',
+  '#e6194B', '#3cb44b', '#ffe119', '#4363d8', '#f58231',
+  '#911eb4', '#42d4f4', '#f032e6', '#bfef45', '#fabed4',
+  '#469990', '#dcbeff', '#9A6324', '#fffac8', '#800000',
+  '#aaffc3', '#808000', '#ffd8b1',
 ];
 
 // Fallback when more genes are plotted than the palette has colours (shouldn't

@@ -427,7 +427,7 @@ const SpatialMoleculePlot = (props) => {
   // When the artifact loads with no genes selected, seed the top-DISPERSION panel
   // genes (like the dot-plot / marker-heatmap), NOT alphabetical. Applied once; a
   // user clearing all genes is respected. Also default each selected gene's colour
-  // from the Polychrome palette (keyed on its stable feature_code) where unset.
+  // from the palette (keyed on its stable feature_code) where unset.
   useEffect(() => {
     if (!moleculeMeta?.genes?.length) return;
     if (!defaultGenesAppliedRef.current) {

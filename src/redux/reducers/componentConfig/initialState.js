@@ -214,7 +214,7 @@ const spatialMoleculeInitialConfig = {
   // genes to render (gene symbols). Empty on init; the plot seeds a few default
   // genes once the artifact loads (rendering every gene hangs Vega).
   selectedGenes: [],
-  // per-gene render colours (gene symbol -> hex). Defaulted from the Polychrome
+  // per-gene render colours (gene symbol -> hex). Defaulted from the
   // palette (first available colour) when a gene is seeded/added; the user can
   // override each with the colour picker in the gene-selection panel.
   geneColors: {},
