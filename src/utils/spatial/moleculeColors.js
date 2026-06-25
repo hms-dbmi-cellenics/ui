@@ -5,10 +5,9 @@
 // always override an individual gene via the colour picker. The Spatial Molecules
 // plot caps selection at MAX_MOLECULE_GENES (15), well under the palette length.
 export const MOLECULE_PALETTE = [
-  '#e6194B', '#3cb44b', '#ffe119', '#4363d8', '#f58231',
-  '#911eb4', '#42d4f4', '#f032e6', '#bfef45', '#fabed4',
-  '#469990', '#dcbeff', '#9A6324', '#fffac8', '#800000',
-  '#aaffc3', '#808000', '#ffd8b1',
+  '#e6194B', '#4363d8', '#000000', '#f032e6', '#3cb44b',
+  '#ffe119', '#f58231', '#42d4f4', '#fabed4', '#469990',
+  '#dcbeff', '#9A6324', '#fffac8', '#800000', '#aaffc3',
 ];
 
 // Fallback when more genes are plotted than the palette has colours (shouldn't
