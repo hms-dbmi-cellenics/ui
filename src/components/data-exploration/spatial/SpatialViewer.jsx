@@ -38,7 +38,6 @@ import ZipFileStore from 'components/data-exploration/spatial/ZipFileStore';
 import parseColor from 'components/data-exploration/parseColor';
 import loadMoleculeNodes, {
   loadMoleculeMeta,
-  buildMoleculeColorLookup,
 } from 'utils/spatial/loadMoleculeNodes';
 import useFocusCellColors from 'components/data-exploration/useFocusCellColors';
 import {
@@ -62,9 +61,11 @@ const EMPTY_DATA = { type: 'FeatureCollection', features: [] };
 const DIAMOND_RADIUS = 5;
 const POLYGON_HIGHLIGHT_COLOR = [51, 51, 51, 150];
 const DEFAULT_COLOR = [128, 128, 128, 255];
-// cell outlines while the molecule overlay is active (the gene
-// colour is carried by the molecule points drawn on top).
+// cell outlines while the molecule overlay is active.
 const OUTLINE_COLOR_MOLECULES = [216, 202, 222];
+// The interactive molecule overlay renders the single focused gene in one fixed
+// colour (it is not per-gene coloured — the Plots & Tables molecule plot is).
+const MOLECULE_OVERLAY_COLOR = [138, 9, 61];
 
 const DeckGL = dynamic(() => import('@deck.gl/react').then((mod) => mod.DeckGL), { ssr: false });
 
@@ -615,11 +616,6 @@ const SpatialViewer = (props) => {
     });
   }, [omeZarrSampleIds, perImageShape, gridShape]);
 
-  const moleculeColorLookup = useMemo(
-    () => (moleculeMeta ? buildMoleculeColorLookup(moleculeMeta) : null),
-    [moleculeMeta],
-  );
-
   const showMolecules = spatialSettings.showMolecules === true;
 
   // Molecules overlay the SINGLE gene currently being plotted by expression
@@ -673,7 +669,6 @@ const SpatialViewer = (props) => {
       setMoleculePoints({
         positions,
         count: total,
-        color: moleculeColorLookup(focusedGeneCode),
       });
     })().catch((e) => {
       if (cancelled) return;
@@ -683,13 +678,13 @@ const SpatialViewer = (props) => {
     return () => { cancelled = true; };
   }, [
     moleculesActive, focusedGeneCode, moleculeStores,
-    moleculeSampleOffsets, moleculeMeta, moleculeColorLookup,
+    moleculeSampleOffsets, moleculeMeta,
   ]);
 
   // ── Molecule overlay layer (single gene, single colour) ───────────────────
   const moleculeScatterLayer = useMemo(() => {
     if (!moleculePoints || !moleculePoints.count) return null;
-    const { positions, count, color } = moleculePoints;
+    const { positions, count } = moleculePoints;
     return new ScatterplotLayer({
       id: 'molecules',
       data: { length: count, attributes: { getPosition: { value: positions, size: 2 } } },
@@ -698,7 +693,7 @@ const SpatialViewer = (props) => {
       radiusScale: Math.pow(2, viewState.zoom),
       radiusMinPixels: 0,
       radiusMaxPixels: 1.5,
-      getFillColor: [138, 9, 61],
+      getFillColor: MOLECULE_OVERLAY_COLOR,
       stroked: false,
       filled: true,
       pickable: false,

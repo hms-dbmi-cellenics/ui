@@ -3,10 +3,7 @@ import {
 } from 'apache-arrow';
 import loadMoleculeNodes, {
   loadMoleculeMeta,
-  buildMoleculeColorLookup,
 } from 'utils/spatial/loadMoleculeNodes';
-import { MOLECULE_PALETTE } from 'utils/spatial/moleculeColors';
-import parseColor from 'components/data-exploration/parseColor';
 
 // Build a Feather (Arrow IPC file) buffer for a per-gene table.
 const feather = (cols) => tableToIPC(tableFromArrays(cols), 'file');
@@ -136,24 +133,5 @@ describe('loadMoleculeMeta', () => {
     const meta = await loadMoleculeMeta(store);
     expect(meta.genes).toHaveLength(3);
     expect(meta.genes[1].gene).toBe('Sst');
-  });
-});
-
-describe('buildMoleculeColorLookup', () => {
-  it('maps a feature_code to its Polychrome RGBA colour', () => {
-    const lookup = buildMoleculeColorLookup();
-    expect(lookup(0)).toEqual(parseColor(MOLECULE_PALETTE[0]));
-    expect(lookup(1)).toEqual(parseColor(MOLECULE_PALETTE[1]));
-  });
-
-  it('cycles the palette for codes beyond its length', () => {
-    const lookup = buildMoleculeColorLookup();
-    // code == palette length wraps back to palette[0]
-    expect(lookup(MOLECULE_PALETTE.length)).toEqual(lookup(0));
-  });
-
-  it('falls back to grey for a non-integer code', () => {
-    const lookup = buildMoleculeColorLookup();
-    expect(lookup(undefined)).toEqual([128, 128, 128, 255]);
   });
 });

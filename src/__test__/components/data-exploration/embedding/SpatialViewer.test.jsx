@@ -44,7 +44,6 @@ jest.mock('utils/spatial/loadMoleculeNodes', () => ({
     maxDepth: 0,
     genes: [{ code: 0, gene: 'Gad1', color: '#1f77b4' }],
   })),
-  buildMoleculeColorLookup: jest.fn(() => () => [0, 0, 0, 255]),
 }));
 
 const mockStore = configureMockStore([thunk]);

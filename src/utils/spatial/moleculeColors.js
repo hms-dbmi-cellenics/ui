@@ -1,25 +1,17 @@
-// Categorical palette for spatial-molecule genes (Polychrome 36).
+// Categorical palette for spatial-molecule genes (Glasbey, 31 colours).
 //
-// Colour is assigned in the UI (not baked by the pipeline) as a STABLE function of
-// a gene's feature_code — its panel-wide index in the pyramid's meta.json. Because
-// the code is fixed per experiment, selecting/adding/removing genes in a plot never
-// recolours the others. Cycles when a panel has more than 36 genes; a user can
-// always override an individual gene via the colour picker.
+// Colour is assigned in the UI (not baked by the pipeline). resolveGeneColors
+// allocates the first available palette colour per selected gene, so a user can
+// always override an individual gene via the colour picker. The Spatial Molecules
+// plot caps selection at MAX_MOLECULE_GENES (15), well under the palette length.
 export const MOLECULE_PALETTE = [
-  '#0000FF', '#FF0000', '#00FF00', '#000033', '#FF00B6', '#005300',
+  '#0000FF', '#FF0000', '#00FF00', '#FF00B6', '#005300',
   '#FFD300', '#009FFF', '#9A4D42', '#00FFBE', '#783FC1', '#1F9698',
   '#FFACFD', '#B1CC71', '#F1085C', '#FE8F42', '#DD00FF', '#201A01',
   '#720055', '#766C95', '#02AD24', '#C8FF00', '#886C00', '#FFB79F',
   '#858567', '#A10300', '#14F9FF', '#00479E', '#DC5E93', '#93D4FF',
   '#004CFF', '#F2F318',
 ];
-
-// Stable colour for a gene's feature_code, or undefined for a non-integer code
-// (so callers can fall back). Cycles the palette by code. Used for the
-// Data-Exploration overlay lookup; the Plots & Tables plot uses resolveGeneColors.
-export const colorForCode = (code) => (
-  Number.isInteger(code) ? MOLECULE_PALETTE[code % MOLECULE_PALETTE.length] : undefined
-);
 
 // Fallback when more genes are plotted than the palette has colours (shouldn't
 // happen given MAX_MOLECULE_GENES < palette length, but keep it defined).

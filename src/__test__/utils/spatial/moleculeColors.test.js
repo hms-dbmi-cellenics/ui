@@ -1,18 +1,6 @@
 import {
-  MOLECULE_PALETTE, colorForCode, resolveGeneColors, MAX_MOLECULE_GENES,
+  MOLECULE_PALETTE, resolveGeneColors, MAX_MOLECULE_GENES,
 } from 'utils/spatial/moleculeColors';
-
-describe('colorForCode', () => {
-  it('maps a code to its palette entry and cycles past the end', () => {
-    expect(colorForCode(0)).toBe(MOLECULE_PALETTE[0]);
-    expect(colorForCode(1)).toBe(MOLECULE_PALETTE[1]);
-    expect(colorForCode(MOLECULE_PALETTE.length)).toBe(MOLECULE_PALETTE[0]);
-  });
-
-  it('returns undefined for a non-integer code', () => {
-    expect(colorForCode(undefined)).toBeUndefined();
-  });
-});
 
 describe('resolveGeneColors', () => {
   it('allocates the first available palette colours in order', () => {
