@@ -1,7 +1,7 @@
 import SampleValidationError from 'utils/errors/upload/SampleValidationError';
 import sampleFileType from 'utils/sampleFileType';
 
-// Xenium uploads are three binary files with well-known magic numbers. These
+// Xenium uploads are four binary files with well-known magic numbers. These
 // files are treated as already-compressed (uploaded as-is, not gzipped), so we
 // read their raw bytes directly. We don't parse the full files in the browser —
 // the pipeline does that — but a magic-byte check catches the common mistake of
