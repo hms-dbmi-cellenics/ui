@@ -38,7 +38,7 @@ import integrationTestConstants from 'utils/integrationTestConstants';
 import useConditionalEffect from 'utils/customHooks/useConditionalEffect';
 import fileUploadUtils from 'utils/upload/fileUploadUtils';
 import { obj2sTechs } from 'utils/constants';
-import { fileTypeToDisplay } from 'utils/sampleFileType';
+import { fileTypeToDisplay, fileTypeColumnWidth } from 'utils/sampleFileType';
 
 const { Text } = Typography;
 
@@ -80,7 +80,7 @@ const SamplesTable = forwardRef((props, ref) => {
           title: <center>{fileTypeToDisplay[requiredFile]}</center>,
           key: requiredFile,
           dataIndex: requiredFile,
-          width: 210,
+          width: fileTypeColumnWidth[requiredFile] || 210,
           onCell: () => ({ style: { margin: '0px', padding: '0px' } }),
           render: (tableCellData) => tableCellData && (
             <UploadCell

@@ -63,10 +63,10 @@ const spatialCategoricalInitialConfig = {
   },
   axesRanges: {
     ...axesRangesBaseState,
-    xMin: 50,
-    xMax: 450,
-    yMin: 70,
-    yMax: 450,
+    xMin: 2000,
+    xMax: 2500,
+    yMin: 2000,
+    yMax: 2500,
   },
   title: {
     ...titleBaseState,
@@ -77,8 +77,8 @@ const spatialCategoricalInitialConfig = {
   marker: {
     ...markerBaseState,
     size: 20,
-    outline: false,
-    opacity: 10,
+    outline: true,
+    opacity: 9,
   },
   labels: {
     ...labelBaseState,
@@ -88,6 +88,10 @@ const spatialCategoricalInitialConfig = {
   selectedCellSet: 'louvain',
   selectedSample: null,
   showImage: true,
+  // selectedSample is null by default and auto-populated with the first sample on
+  // mount, so excluding it from the reset comparison lets the button disable after a
+  // reset (and keeps the current sample rather than resetting which sample is shown).
+  keepValuesOnReset: ['selectedSample'],
 };
 
 // PLOTS & TABLES - Continuous Embedding
@@ -141,10 +145,10 @@ const spatialFeatureInitialConfig = {
   },
   axesRanges: {
     ...axesRangesBaseState,
-    xMin: 50,
-    xMax: 450,
-    yMin: 70,
-    yMax: 450,
+    xMin: 2000,
+    xMax: 2500,
+    yMin: 2000,
+    yMax: 2500,
   },
   title: {
     ...titleBaseState,
@@ -159,8 +163,8 @@ const spatialFeatureInitialConfig = {
   marker: {
     ...markerBaseState,
     size: 20,
-    outline: false,
-    opacity: 10,
+    outline: true,
+    opacity: 9,
   },
   labels: labelBaseState,
   logEquation: 'datum.expression*1',
@@ -168,8 +172,62 @@ const spatialFeatureInitialConfig = {
   expressionValue: 'raw',
   truncatedValues: true,
   selectedSample: null,
-  keepValuesOnReset: ['shownGene'],
+  // 'title' is auto-set to the gene name by the default-gene effect, and
+  // 'selectedSample' is auto-populated with the first sample on mount; keep both on
+  // reset (and skip them in the reset-disabled comparison) so those automatic writes
+  // don't permanently/repeatedly re-enable the Reset Plot button.
+  keepValuesOnReset: ['shownGene', 'title', 'selectedSample'],
   showImage: true,
+};
+
+// PLOTS & TABLES - Spatial Molecules Plot
+// Renders individual transcript molecules (one symbol per molecule) coloured by
+// gene, read from the molecules_by_gene artifact. One sample at a fixed extent;
+// the bounded molecule result is inlined as Vega `values` (no streaming).
+const spatialMoleculeInitialConfig = {
+  spec: '1.0.0',
+  legend: legendBaseState,
+  dimensions: {
+    ...dimensionsBaseState,
+    width: 500,
+    height: 500,
+  },
+  axes: {
+    ...axesBaseState,
+    defaultValues: ['x', 'y'],
+    offset: 0,
+  },
+  axesRanges: axesRangesBaseState,
+  title: {
+    ...titleBaseState,
+    dx: 0,
+    fontSize: 20,
+  },
+  fontStyle: fontStyleBaseState,
+  colour: colourBaseState,
+  marker: {
+    ...markerBaseState,
+    size: 0.4,
+    opacity: 8,
+  },
+  labels: labelBaseState,
+  // genes to render (gene symbols). Empty on init; the plot seeds a few default
+  // genes once the artifact loads (rendering every gene hangs Vega).
+  selectedGenes: [],
+  // per-gene render colours (gene symbol -> hex). Defaulted from the
+  // palette (first available colour) when a gene is seeded/added; the user can
+  // override each with the colour picker in the gene-selection panel.
+  geneColors: {},
+  selectedSample: null,
+  // segmentation outlines drawn behind the molecules (colour + opacity adjustable).
+  showSegmentationOutlines: true,
+  segmentationOutlineColour: '#CECBCB',
+  segmentationOutlineOpacity: 0.05,
+  // 'selectedSample'/'selectedGenes'/'geneColors' are auto-populated on mount (first
+  // sample + default genes + their palette colours). Reset Plot resets the styling
+  // but keeps those (skipped in the reset-disabled comparison so the automatic writes
+  // don't permanently re-enable the button).
+  keepValuesOnReset: ['selectedSample', 'selectedGenes', 'geneColors'],
 };
 
 // PLOTS & TABLES - Heatmap
@@ -529,7 +587,7 @@ const embeddingPreviewMitochondrialContentInitialConfig = {
   fontStyle: fontStyleBaseState,
   colour: {
     ...colourBaseState,
-    gradient: 'spectral',
+    gradient: 'inferno',
   },
   marker: markerBaseState,
   labels: labelBaseState,
@@ -564,7 +622,8 @@ const embeddingPreviewDoubletScoreInitialConfig = {
   fontStyle: fontStyleBaseState,
   colour: {
     ...colourBaseState,
-    gradient: 'spectral',
+    // inferno; not reversed so high doublet score = bright.
+    gradient: 'inferno',
   },
   marker: markerBaseState,
   labels: labelBaseState,
@@ -597,7 +656,9 @@ const embeddingPreviewNumOfGenesInitialConfig = {
   fontStyle: fontStyleBaseState,
   colour: {
     ...colourBaseState,
-    gradient: 'spectral',
+    // inferno (matches spatial QC "Genes detected"); reversed so low genes = bright.
+    gradient: 'inferno',
+    reverseCbar: true,
   },
   marker: markerBaseState,
   labels: labelBaseState,
@@ -629,7 +690,9 @@ const embeddingPreviewNumOfUmisInitialConfig = {
   fontStyle: fontStyleBaseState,
   colour: {
     ...colourBaseState,
-    gradient: 'spectral',
+    // inferno (matches spatial QC "UMIs"); reversed so low UMIs = bright.
+    gradient: 'inferno',
+    reverseCbar: true,
   },
   marker: markerBaseState,
   labels: labelBaseState,
@@ -648,7 +711,12 @@ const interactiveHeatmapInitialConfig = {
 const interactiveSpatialInitialConfig = {
   showImages: true,
   showSegmentations: true,
+  showSegmentationOutlines: true,
   groupSlidesBy: ['sample'],
+  // Xenium transcript/molecule overlay (only available when a molecules_by_gene
+  // was built). Off by default. When on AND a gene is being plotted, the focused
+  // gene's transcripts render as points in place of the per-cell expression fill.
+  showMolecules: false,
 };
 
 // CELL SIZE DISTRIBUTION - Cell Size Distribution Histogram
@@ -886,6 +954,65 @@ const doubletScoreHistogram = {
   probThreshold: 0.2,
 };
 
+// DATA PROCESSING - Spatial local-outlier filters (Visium HD)
+// Main plot: segmentations coloured by the metric (tissue image hidden by default
+// so the colouring reads clearly). `shownGene` is repurposed as the colour-legend
+// title (the metric name). Default gradient is 'inferno'.
+const makeSpatialOutlierPlotConfig = (legendTitle) => ({
+  ...spatialFeatureInitialConfig,
+  shownGene: legendTitle,
+  keepValuesOnReset: [],
+  truncatedValues: false,
+  showImage: false,
+  dimensions: { ...spatialFeatureInitialConfig.dimensions, width: 450, height: 450 },
+  colour: { ...spatialFeatureInitialConfig.colour, gradient: 'default' },
+});
+
+// UMI and Genes-detected outliers are LOW-value cells; mito outliers are HIGH-value.
+// On the white↔red 'default' scale, reverseCbar=true puts red at the LOW end (so low
+// UMIs / few genes = red), while mito keeps the default (high mito = red) — i.e. the
+// outlier end is red on all three. Users can flip this via the Colours panel.
+const makeReversedOutlierPlotConfig = (legendTitle) => {
+  const base = makeSpatialOutlierPlotConfig(legendTitle);
+  return {
+    ...base,
+    colour: { ...base.colour, reverseCbar: true },
+    dimensions: { ...base.dimensions, width: 450, height: 450 },
+  };
+};
+
+const spatialUmiOutlierPlot = makeReversedOutlierPlotConfig('UMIs');
+const spatialNumGenesOutlierPlot = makeReversedOutlierPlotConfig('Genes detected');
+const spatialMitoOutlierPlot = makeSpatialOutlierPlotConfig('Mitochondrial %');
+
+// Outlier-highlight slide: a SEPARATE, independently-styleable config from the
+// metric slide (so e.g. inverting the background only affects this view). Defaults
+// to hiding the tissue image — outliers are filled red, non-outliers grey, both at
+// the slider opacity (see SpatialOutlierFilterPlot).
+const makeSpatialOutlierHighlightConfig = (legendTitle) => ({
+  ...makeSpatialOutlierPlotConfig(legendTitle),
+  showImage: false,
+});
+
+const spatialUmiOutlierHighlightPlot = makeSpatialOutlierHighlightConfig('UMIs');
+const spatialNumGenesOutlierHighlightPlot = makeSpatialOutlierHighlightConfig('Genes detected');
+const spatialMitoOutlierHighlightPlot = makeSpatialOutlierHighlightConfig('Mitochondrial %');
+
+// Mini plot: histogram of the local-outlier z-scores with a cutoff rule.
+const makeZscoreHistogram = (xAxisText) => ({
+  ...doubletScoreHistogram,
+  axes: {
+    ...axesBaseState,
+    xAxisText,
+    yAxisText: 'Frequency',
+  },
+  cutoff: 3,
+});
+
+const spatialUmiOutlierZscoreHistogram = makeZscoreHistogram('UMI outlier z-score');
+const spatialNumGenesOutlierZscoreHistogram = makeZscoreHistogram('Genes detected outlier z-score');
+const spatialMitoOutlierZscoreHistogram = makeZscoreHistogram('Mitochondrial outlier z-score');
+
 // DATA INTEGRATION - Embedding by Samples
 const dataIntegrationEmbeddingInitialConfig = {
   spec: '1.0.0',
@@ -1022,10 +1149,20 @@ const initialPlotConfigStates = {
   classifierEmptyDropsPlot,
   featuresVsUMIsScatterplot,
   doubletScoreHistogram,
+  spatialUmiOutlierPlot,
+  spatialNumGenesOutlierPlot,
+  spatialMitoOutlierPlot,
+  spatialUmiOutlierHighlightPlot,
+  spatialNumGenesOutlierHighlightPlot,
+  spatialMitoOutlierHighlightPlot,
+  spatialUmiOutlierZscoreHistogram,
+  spatialNumGenesOutlierZscoreHistogram,
+  spatialMitoOutlierZscoreHistogram,
   embeddingCategorical: embeddingCategoricalInitialConfig,
   embeddingContinuous: embeddingContinuousInitialConfig,
   [plotTypes.SPATIAL_FEATURE]: spatialFeatureInitialConfig,
   [plotTypes.SPATIAL_CATEGORICAL]: spatialCategoricalInitialConfig,
+  [plotTypes.SPATIAL_MOLECULES]: spatialMoleculeInitialConfig,
   heatmap: heatmapInitialConfig,
   volcano: volcanoInitialConfig,
   markerHeatmap: markerHeatmapInitialConfig,

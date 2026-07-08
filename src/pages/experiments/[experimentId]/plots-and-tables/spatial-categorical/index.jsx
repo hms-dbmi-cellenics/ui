@@ -3,7 +3,6 @@ import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { useSelector, useDispatch } from 'react-redux';
 import MultiViewPlotEditor from 'components/plots/styling/MultiViewPlotEditor';
-import _ from 'lodash';
 import {
   Collapse,
   Select,
@@ -15,13 +14,12 @@ import MultiViewPlotGrid from 'components/plots/MultiViewPlotGrid';
 import SelectData from 'components/plots/styling/embedding-continuous/SelectData';
 import Header from 'components/Header';
 import PlotContainer from 'components/plots/PlotContainer';
-import { loadGeneExpression } from 'redux/actions/genes';
 
 import {
   updatePlotConfig,
 } from 'redux/actions/componentConfig/index';
 import { loadCellSets } from 'redux/actions/cellSets';
-import { getCellSets, getPlotConfigs, getCellSetsHierarchy } from 'redux/selectors';
+import { getCellSets, getCellSetsHierarchy, getPlotConfigs } from 'redux/selectors';
 import { plotNames, plotUuids, plotTypes } from 'utils/constants';
 import SpatialCategoricalReduxWrapper from 'components/plots/SpatialCategoricalReduxWrapper';
 
@@ -41,7 +39,6 @@ const SpatialCategoricalPage = ({ experimentId }) => {
   const plotConfigs = useSelector(getPlotConfigs(multiViewPlotUuids));
   const [selectedPlotUuid, setSelectedPlotUuid] = useState(`${plotUuid}-0`);
   const [updateAll, setUpdateAll] = useState(true);
-
 
   useEffect(() => {
     dispatch(loadCellSets(experimentId));
@@ -73,16 +70,16 @@ const SpatialCategoricalPage = ({ experimentId }) => {
       ],
     },
     {
-      panelTitle: 'Axes and margins',
-      controls: ['axesWithRanges'],
+      panelTitle: 'Axes options',
+      controls: ['axes'],
     },
     {
       panelTitle: 'Colour inversion',
       controls: ['colourInversion'],
     },
     {
-      panelTitle: 'Markers',
-      controls: ['markers'],
+      panelTitle: 'Segmentations',
+      controls: [{ name: 'markers', props: { spatial: true } }],
     },
     {
       panelTitle: 'Legend',
@@ -113,7 +110,6 @@ const SpatialCategoricalPage = ({ experimentId }) => {
     <SpatialCategoricalReduxWrapper
       experimentId={experimentId}
       plotUuid={plotUuidToRender}
-
     />
   );
 
@@ -132,8 +128,10 @@ const SpatialCategoricalPage = ({ experimentId }) => {
       </Panel>
       <Panel header='Select data' key='select-data'>
         <SelectData
-          config={config}
-          onUpdate={updatePlotWithChanges}
+          // read/write the selected plot's own config so the sample can be set
+          // per-plot in the multi-view (falls back to the container config pre-load)
+          config={plotConfigs[selectedPlotUuid] || config}
+          onUpdate={updateAll ? updateAllWithChanges : updatePlotWithChanges}
           cellSets={cellSets}
           plotType={plotType}
         />

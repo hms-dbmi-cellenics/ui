@@ -62,7 +62,7 @@ exports[`updateConfig Checking if empty update doesnt change anything 1`] = `
       },
       "marker": {
         "opacity": 5,
-        "outline": true,
+        "outline": false,
         "shape": "circle",
         "showOpacity": true,
         "size": 5,

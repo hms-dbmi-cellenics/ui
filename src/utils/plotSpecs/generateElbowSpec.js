@@ -19,14 +19,11 @@ const generateSpec = (config, plotData, numPCs) => {
     data: [
       {
         name: 'plotData',
-        values: plotData,
-        // Vega internally modifies objects during data transforms. If the plot data is frozen,
-        // Vega is not able to carry out the transform and will throw an error.
-        // https://github.com/vega/vega/issues/2453#issuecomment-604516777
-        format: {
-          type: 'json',
-          copy: true,
-        },
+        // Shallow-clone each datum: the `percent` formula transform below mutates the
+        // tuples, but the source array comes from the (frozen) redux store, so writing
+        // to the originals throws "Cannot assign to read only property 'percent'".
+        // (format.copy is unreliable for already-parsed values, so clone explicitly.)
+        values: (plotData || []).map((datum) => ({ ...datum })),
         transform: [
           {
             type: 'formula',

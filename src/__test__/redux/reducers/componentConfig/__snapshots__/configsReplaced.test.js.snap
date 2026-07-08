@@ -219,7 +219,7 @@ exports[`configsReplaced Replaces existing state 1`] = `
       },
       "marker": {
         "opacity": 5,
-        "outline": true,
+        "outline": false,
         "shape": "circle",
         "showOpacity": true,
         "size": 5,
@@ -305,7 +305,7 @@ exports[`configsReplaced Replaces existing state 1`] = `
       },
       "marker": {
         "opacity": 5,
-        "outline": true,
+        "outline": false,
         "shape": "circle",
         "showOpacity": true,
         "size": 5,
@@ -391,7 +391,7 @@ exports[`configsReplaced Replaces existing state 1`] = `
       },
       "marker": {
         "opacity": 5,
-        "outline": true,
+        "outline": false,
         "shape": "circle",
         "showOpacity": true,
         "size": 5,
@@ -470,7 +470,7 @@ exports[`configsReplaced Replaces existing state 1`] = `
       },
       "marker": {
         "opacity": 5,
-        "outline": true,
+        "outline": false,
         "shape": "circle",
         "showOpacity": true,
         "size": 5,
@@ -570,7 +570,7 @@ exports[`configsReplaced Replaces existing state 1`] = `
       },
       "marker": {
         "opacity": 5,
-        "outline": true,
+        "outline": false,
         "shape": "circle",
         "showOpacity": true,
         "size": 20,

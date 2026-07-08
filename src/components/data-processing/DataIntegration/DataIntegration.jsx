@@ -1,5 +1,5 @@
 import React, {
-  useState, useEffect, useRef, useCallback, useMemo,
+  useState, useEffect, useCallback, useMemo,
 } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import {
@@ -16,7 +16,6 @@ import {
   updatePlotConfig,
   loadPlotConfig,
   savePlotConfig,
-  resetPlotConfig,
 } from 'redux/actions/componentConfig';
 import { initialPlotConfigStates } from 'redux/reducers/componentConfig/initialState';
 
@@ -43,6 +42,9 @@ const DataIntegration = (props) => {
 
   const [selectedPlot, setSelectedPlot] = useState(isUnisample ? 'elbow' : 'embedding');
   const [plot, setPlot] = useState(null);
+  // per-plotUuid flag: the large-dataset marker default has settled (applied or not
+  // needed). Gates rendering so the embedding never flashes the standard marker.
+  const [markerSettled, setMarkerSettled] = useState({});
   const [isResetDisabled, setIsResetDisabled] = useState(true);
 
   const filterName = 'dataIntegration';
@@ -120,6 +122,14 @@ const DataIntegration = (props) => {
       blockedByConfigureEmbedding: false,
     },
   });
+
+  const completedSteps = useSelector(getBackendStatus(experimentId))
+    .status?.pipeline?.completedSteps;
+  const embeddingHasRun = Boolean(completedSteps?.includes('ConfigureEmbedding'));
+  // The embedding/frequency plots can't be rendered or persisted until
+  // ConfigureEmbedding has run — the plot config doesn't exist yet, so trying to
+  // save it errors with "couldn't save plot config". Gate all save paths on this.
+  const activePlotBlocked = plots[selectedPlot].blockedByConfigureEmbedding && !embeddingHasRun;
 
   const plotSpecificStylingControl = {
     embedding: [
@@ -233,7 +243,9 @@ const DataIntegration = (props) => {
 
   const updatePlotWithChanges = (obj) => {
     dispatch(updatePlotConfig(activePlotUuid, obj));
-    debounceSave(activePlotUuid);
+    // don't persist a plot whose embedding hasn't been computed yet (it doesn't
+    // exist on the backend — saving it errors)
+    if (!activePlotBlocked) debounceSave(activePlotUuid);
   };
 
   const isConfigEqual = (currentConfig, initialConfig) => {
@@ -290,7 +302,8 @@ const DataIntegration = (props) => {
   // Apply cell-count-aware marker defaults for large datasets in embedding plots
   // Only applies once when config is first loaded and hasn't been customized yet
   useEffect(() => {
-    if (!selectedConfig || !cellSets.accessible || activePlotType !== 'dataIntegrationEmbedding') return;
+    if (!selectedConfig || !cellSets.accessible || activePlotType !== 'dataIntegrationEmbedding'
+      || activePlotBlocked) return;
 
     const initialConfig = getEmbeddingInitialConfig(activePlotType, cellSets);
 
@@ -300,8 +313,10 @@ const DataIntegration = (props) => {
       const standardConfig = initialPlotConfigStates[activePlotType];
 
       // Only apply if marker config currently matches standard defaults (not yet customized)
-      const isUsingStandardDefaults = selectedConfig.marker.outline === standardConfig.marker.outline
-        && selectedConfig.marker.size === standardConfig.marker.size;
+      const isUsingStandardDefaults = (
+        selectedConfig.marker.outline === standardConfig.marker.outline
+        && selectedConfig.marker.size === standardConfig.marker.size
+      );
 
       if (isUsingStandardDefaults) {
         dispatch(updatePlotConfig(activePlotUuid, {
@@ -316,13 +331,28 @@ const DataIntegration = (props) => {
     }
   }, [activePlotUuid, activePlotType, cellSets?.accessible, !!selectedConfig]);
 
-  const completedSteps = useSelector(getBackendStatus(experimentId))
-    .status?.pipeline?.completedSteps;
-
-  const configureEmbeddingFinished = useRef(null);
+  // Mark the embedding plot's marker defaults "settled" once they no longer need
+  // adjusting (dataset not large, or the large-dataset marker already applied). Gates
+  // rendering so the standard marker is never shown first. One-time per plot.
   useEffect(() => {
-    configureEmbeddingFinished.current = completedSteps?.includes('ConfigureEmbedding');
-  }, [completedSteps]);
+    if (activePlotType !== 'dataIntegrationEmbedding' || !selectedConfig
+      || !cellSets.accessible || activePlotBlocked || markerSettled[activePlotUuid]) return;
+
+    const initialConfig = getEmbeddingInitialConfig(activePlotType, cellSets);
+    if (!initialConfig.defaultValues?.largeDatasetDefaults) {
+      setMarkerSettled((prev) => ({ ...prev, [activePlotUuid]: true }));
+      return;
+    }
+
+    const standardConfig = initialPlotConfigStates[activePlotType];
+    const stillStandard = selectedConfig.marker.outline === standardConfig.marker.outline
+      && selectedConfig.marker.size === standardConfig.marker.size;
+    const isAdjusted = selectedConfig.marker.outline === false && selectedConfig.marker.size === 1;
+    if (!stillStandard || isAdjusted) {
+      setMarkerSettled((prev) => ({ ...prev, [activePlotUuid]: true }));
+    }
+  }, [activePlotUuid, activePlotType, cellSets.accessible,
+    selectedConfig?.marker, activePlotBlocked, markerSettled]);
 
   useEffect(() => {
     Object.values(plots).forEach((obj) => {
@@ -333,8 +363,9 @@ const DataIntegration = (props) => {
   }, []);
 
   useEffect(() => {
-    // if we change a plot and the config is not saved yet
-    if (outstandingChanges) {
+    // if we change a plot and the config is not saved yet (but never try to save a
+    // plot whose embedding hasn't been computed — it doesn't exist on the backend)
+    if (outstandingChanges && !activePlotBlocked) {
       dispatch(savePlotConfig(experimentId, plots[selectedPlot].plotUuid));
     }
   }, [selectedPlot]);
@@ -350,11 +381,8 @@ const DataIntegration = (props) => {
   }, [selectedConfig, cellSets, plotData, calculationConfig]);
 
   const renderPlot = () => {
-    const disabledByConfigEmbedding = plots[selectedPlot].blockedByConfigureEmbedding
-      && !configureEmbeddingFinished.current;
-
     // Spinner for main window
-    if (!selectedConfig || disabledByConfigEmbedding || stepHadErrors) {
+    if (!selectedConfig || activePlotBlocked || stepHadErrors) {
       return (
         <center>
           <EmptyPlot mini={false} style={{ width: 400, height: 400 }} />
@@ -375,9 +403,17 @@ const DataIntegration = (props) => {
       );
     }
 
-    if (plot) {
+    // hold the loader until the large-dataset marker defaults have settled, so the
+    // embedding doesn't flash the standard point size/outline then re-adjust
+    if (plot && (activePlotType !== 'dataIntegrationEmbedding' || markerSettled[activePlotUuid])) {
       return plot;
     }
+
+    return (
+      <center>
+        <EmptyPlot mini={false} style={{ width: 400, height: 400 }} />
+      </center>
+    );
   };
   const radioStyle = {
     display: 'block',

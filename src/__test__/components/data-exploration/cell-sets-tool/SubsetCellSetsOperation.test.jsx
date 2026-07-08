@@ -5,6 +5,8 @@ import {
 
 import { Provider } from 'react-redux';
 import { makeStore } from 'redux/store';
+import configureMockStore from 'redux-mock-store';
+import thunk from 'redux-thunk';
 
 import userEvent from '@testing-library/user-event';
 import SubsetCellSetsOperation from 'components/data-exploration/cell-sets-tool/SubsetCellSetsOperation';
@@ -110,5 +112,37 @@ describe('SubsetCellSetsOperation', () => {
     });
 
     expect(mockOnCreate).not.toHaveBeenCalled();
+  });
+});
+
+describe('SubsetCellSetsOperation — disabled for spatial technologies', () => {
+  const mockStore = configureMockStore([thunk]);
+
+  const renderWithTech = (type) => {
+    const sampleId = 'sample-0';
+    const store = mockStore({
+      experimentSettings: { info: { sampleIds: [sampleId], experimentName: 'exp' } },
+      samples: { [sampleId]: { id: sampleId, type } },
+    });
+
+    render(
+      <Provider store={store}>
+        <SubsetCellSetsOperation onCreate={jest.fn()} />
+      </Provider>,
+    );
+  };
+
+  it.each(['visium_hd', 'xenium'])('disables the Subset button for spatial tech %s', (type) => {
+    renderWithTech(type);
+
+    const button = screen.getByLabelText(/Create new experiment from selected cellsets/i);
+    expect(button).toBeDisabled();
+  });
+
+  it('keeps the Subset button enabled for a non-spatial tech (10x)', () => {
+    renderWithTech('10x');
+
+    const button = screen.getByLabelText(/Create new experiment from selected cellsets/i);
+    expect(button).not.toBeDisabled();
   });
 });

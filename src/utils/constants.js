@@ -19,6 +19,8 @@ const modules = {
 const sampleTech = {
   '10X': '10x',
   H5: '10x_h5',
+  VISIUM_HD: 'visium_hd',
+  XENIUM: 'xenium',
   SEURAT_OBJECT: 'seurat_object',
   SEURAT_SPATIAL_OBJECT: 'seurat_spatial_object',
   SCE_OBJECT: 'sce_object',
@@ -34,7 +36,16 @@ const obj2sTechs = [
   sampleTech.SEURAT_SPATIAL_OBJECT,
 ];
 
-const spatialTechs = [sampleTech.SEURAT_SPATIAL_OBJECT];
+const spatialTechs = [sampleTech.SEURAT_SPATIAL_OBJECT, sampleTech.VISIUM_HD, sampleTech.XENIUM];
+
+// spatial technologies with no tissue image: cells render on a blank background
+// and no ome_zarr_zip tissue image is produced, so the image URL is not fetched
+const imagelessTechs = [sampleTech.XENIUM];
+
+// spatial technologies that can carry individual transcript molecules (a
+// molecules_by_gene artifact, built from the required transcripts.parquet input).
+// The Spatial Molecules plot type is only offered for these techs.
+const moleculeTechs = [sampleTech.XENIUM];
 
 const plotTypes = {
   CONTINUOUS_EMBEDDING: 'embeddingContinuous',
@@ -48,10 +59,15 @@ const plotTypes = {
   NORMALIZED_EXPRESSION_MATRIX: 'NormalizedExpressionMatrix',
   SPATIAL_CATEGORICAL: 'SpatialCategorical',
   SPATIAL_FEATURE: 'SpatialFeature',
+  SPATIAL_MOLECULES: 'SpatialMolecules',
   MULTI_VIEW_PLOT: 'multiView',
 };
 
-const spatialPlotTypes = [plotTypes.SPATIAL_CATEGORICAL, plotTypes.SPATIAL_FEATURE];
+const spatialPlotTypes = [
+  plotTypes.SPATIAL_CATEGORICAL,
+  plotTypes.SPATIAL_FEATURE,
+  plotTypes.SPATIAL_MOLECULES,
+];
 
 const plotUuids = {
   CONTINUOUS_EMBEDDING: 'embeddingContinuousMain',
@@ -65,6 +81,7 @@ const plotUuids = {
   NORMALIZED_EXPRESSION_MATRIX: 'normalized-matrix',
   SPATIAL_CATEGORICAL: 'spatialCategoricalMain',
   SPATIAL_FEATURE: 'spatialFeatureMain',
+  SPATIAL_MOLECULES: 'spatialMoleculesMain',
   getMultiPlotUuid: (plotType) => `${plotTypes.MULTI_VIEW_PLOT}-${plotType}`,
 };
 
@@ -81,9 +98,14 @@ const plotNames = {
   BATCH_DIFFERENTIAL_EXPRESSION: 'Batch Differential Expression Table',
   SPATIAL_CATEGORICAL: 'Spatial Categorical Plot',
   SPATIAL_FEATURE: 'Spatial Feature Plot',
+  SPATIAL_MOLECULES: 'Spatial Molecules Plot',
 };
 
-const spatialPlotNames = [plotNames.SPATIAL_CATEGORICAL, plotNames.SPATIAL_FEATURE];
+const spatialPlotNames = [
+  plotNames.SPATIAL_CATEGORICAL,
+  plotNames.SPATIAL_FEATURE,
+  plotNames.SPATIAL_MOLECULES,
+];
 
 const layout = {
   PANEL_HEADING_HEIGHT: 30,
@@ -107,6 +129,8 @@ export {
   sampleTech,
   obj2sTechs,
   spatialTechs,
+  imagelessTechs,
+  moleculeTechs,
   plotTypes,
   spatialPlotTypes,
   spatialPlotNames,

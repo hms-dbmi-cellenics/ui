@@ -1,10 +1,12 @@
 /* eslint-disable react/require-default-props */
-import React, { useState, useEffect, useCallback } from 'react';
+import React, {
+  useState, useEffect, useCallback, useMemo,
+} from 'react';
 import PropTypes from 'prop-types';
 import { useDispatch, useSelector } from 'react-redux';
 
 import {
-  Button, Card, Space, Tooltip,
+  Button, Card, Space, Tooltip, Skeleton,
 } from 'antd';
 import { InfoCircleOutlined } from '@ant-design/icons';
 import { initialPlotConfigStates } from 'redux/reducers/componentConfig/initialState';
@@ -17,7 +19,7 @@ import { getCellSets } from 'redux/selectors';
 import _ from 'lodash';
 import PlotStyling from 'components/plots/styling/PlotStyling';
 import MultiTileContainer from 'components/MultiTileContainer';
-import { getEmbeddingInitialConfig, isEmbeddingPlotType } from 'utils/plotConfig/getEmbeddingInitialConfig';
+import { getEmbeddingInitialConfig, isEmbeddingPlotType, getTotalCellCount } from 'utils/plotConfig/getEmbeddingInitialConfig';
 
 const PLOT = 'Plot';
 const CONTROLS = 'Controls';
@@ -43,7 +45,8 @@ const PlotContainer = (props) => {
   const { config } = useSelector((state) => state.componentConfig[plotUuid] || {});
   const cellSets = useSelector(getCellSets());
   const debounceSave = useCallback(
-    _.debounce(() => dispatch(savePlotConfig(experimentId, plotUuid)), saveDebounceTime), [plotUuid],
+    _.debounce(() => dispatch(savePlotConfig(experimentId, plotUuid)), saveDebounceTime),
+    [plotUuid],
   );
   const defaultOnUpdate = (obj) => {
     dispatch(updatePlotConfig(plotUuid, obj));
@@ -108,7 +111,8 @@ const PlotContainer = (props) => {
 
   // Auto-apply large-dataset defaults for embedding plots when config first loads with cellSets
   useEffect(() => {
-    if (!isEmbeddingPlotType(plotType) || !config || !cellSets?.properties || !cellSets?.hierarchy) return;
+    if (!isEmbeddingPlotType(plotType) || !config
+      || !cellSets?.properties || !cellSets?.hierarchy) return;
     if (config.defaultValues?.largeDatasetDefaults) return; // Already applied
 
     const cellCount = cellSets.hierarchy?.find((node) => node.key === 'sample')
@@ -126,6 +130,16 @@ const PlotContainer = (props) => {
     }
   }, [config, cellSets, plotType, plotUuid, experimentId]);
 
+  // True while a large-dataset embedding plot is still showing its standard marker —
+  // i.e. the large-dataset defaults haven't been applied yet. Used to hold a loader
+  // so the plot never flashes the standard point size/outline then re-adjusts.
+  const largeDatasetPending = useMemo(() => {
+    if (!isEmbeddingPlotType(plotType) || !config
+      || !cellSets?.properties || !cellSets?.hierarchy) return false;
+    if (config.defaultValues?.largeDatasetDefaults) return false; // already applied
+    return getTotalCellCount(cellSets) > 100000;
+  }, [plotType, config, cellSets]);
+
   const onClickReset = () => {
     // For embedding plots with large datasets, use optimized defaults
     if (isEmbeddingPlotType(plotType)) {
@@ -139,14 +153,29 @@ const PlotContainer = (props) => {
           }
           return acc;
         }, initialConfig);
-        
+
         dispatch(updatePlotConfig(plotUuid, resetConfig));
         debounceSave();
         onPlotReset();
         return;
       }
     }
-    
+
+    // Any plot may mark fields to keep across a reset (e.g. the selected sample /
+    // genes); restore the defaults but carry those fields over from the live config.
+    const defaultConfig = initialPlotConfigStates[plotType];
+    const keysToPreserve = defaultConfig?.keepValuesOnReset || [];
+    if (keysToPreserve.length > 0) {
+      const resetConfig = keysToPreserve.reduce((acc, key) => {
+        if (config?.[key] !== undefined) acc[key] = config[key];
+        return acc;
+      }, _.cloneDeep(defaultConfig));
+      dispatch(updatePlotConfig(plotUuid, resetConfig));
+      debounceSave();
+      onPlotReset();
+      return;
+    }
+
     dispatch(resetPlotConfig(experimentId, plotUuid, plotType));
     onPlotReset();
   };
@@ -173,7 +202,7 @@ const PlotContainer = (props) => {
     </Space>
   );
 
-  const renderDefaultControlPanel = (height) => (
+  const renderDefaultControlPanel = () => (
     <PlotStyling
       formConfig={plotStylingConfig}
       config={config}
@@ -186,7 +215,10 @@ const PlotContainer = (props) => {
   const TILE_MAP = {
     [PLOT]: {
       toolbarControls: renderPlotToolbarControls(),
-      component: () => children,
+      // hold a loader until large-dataset marker defaults are applied (no flash)
+      component: () => (largeDatasetPending
+        ? <center><Skeleton.Image active style={{ width: 400, height: 400 }} /></center>
+        : children),
       style: {
         display: 'flex',
         backgroundColor: 'white',
@@ -197,8 +229,8 @@ const PlotContainer = (props) => {
     },
     [CONTROLS]: {
       toolbarControls: [],
-      component: (width, height) => (
-        customControlPanel ?? renderDefaultControlPanel(height)
+      component: () => (
+        customControlPanel ?? renderDefaultControlPanel()
       ),
       style: { margin: '-10px' },
     },

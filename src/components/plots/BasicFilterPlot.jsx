@@ -16,7 +16,7 @@ const BasicFilterPlot = (props) => {
   }
   return (
     <center data-testid='vega-container'>
-      <Vega spec={spec} renderer='canvas' actions={actions} />
+      <Vega spec={spec} renderer='canvas' actions={actions} scaleFactor={3} />
     </center>
   );
 };

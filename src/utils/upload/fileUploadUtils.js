@@ -10,17 +10,20 @@ const techNamesToDisplay = {
   [sampleTech['10X']]: '10X Chromium',
   [sampleTech.RHAPSODY]: 'BD Rhapsody',
   [sampleTech.SEURAT_OBJECT]: 'Seurat',
-  [sampleTech.SEURAT_SPATIAL_OBJECT]: 'Seurat - Spatial',
   [sampleTech.SCE_OBJECT]: 'SingleCellExperiment',
   [sampleTech.ANNDATA_OBJECT]: 'AnnData',
   [sampleTech.H5]: '10X Chromium - H5',
   [sampleTech.PARSE]: 'Parse Evercode WT',
+  [sampleTech.VISIUM_HD]: 'Visium HD',
+  [sampleTech.XENIUM]: 'Xenium',
+  [sampleTech.SEURAT_SPATIAL_OBJECT]: 'Seurat - Spatial',
 };
 
 const techCategoryNames = {
   SINGLE_CELL_COUNT_MATRIX: 'SINGLE CELL - Sample Count Matrices',
   SINGLE_CELL_PREPROCESSED: 'SINGLE CELL - Preprocessed Object',
   SPATIAL_PREPROCESSED: 'SPATIAL - Preprocessed Object',
+  SPATIAL_COUNT_MATRIX: 'SPATIAL - Sample Count Matrices',
 };
 
 const matchFileName = (fileName, fileNames) => {
@@ -134,6 +137,93 @@ const fileUploadUtils = {
     filterFiles: filterFilesDefaultConstructor(sampleTech.H5),
     getFilePathToDisplay: getFilePathToDisplayDefaultConstructor(sampleTech.H5),
     getFileSampleAndName: getFileSampleAndNameDefault,
+  },
+  [sampleTech.VISIUM_HD]: {
+    category: techCategoryNames.SPATIAL_COUNT_MATRIX,
+    acceptedFiles: new Set([
+      'filtered_feature_cell_matrix.h5',
+      'cell_segmentations.geojson',
+      'tissue_hires_image.png',
+      'scalefactors_json.json',
+    ]),
+    inputInfo: [
+      ['💡Only supports output of Space Ranger 4.0+'],
+      ['<code>filtered_feature_cell_matrix.h5</code> - <span style="color: #acaaaa;">typically found in <code>segmented_outputs/</code></span>'],
+      ['<code>cell_segmentations.geojson</code> - <span style="color: #acaaaa;">typically found in <code>segmented_outputs/</code></span>'],
+      ['<code>tissue_hires_image.png</code> - <span style="color: #acaaaa;">typically found in <code>segmented_outputs/spatial/</code></span>'],
+      ['<code>scalefactors_json.json</code> - <span style="color: #acaaaa;">typically found in <code>segmented_outputs/spatial/</code></span>'],
+    ],
+    requiredFiles: [
+      sampleFileType.VISIUM_HD_FILTERED_FEATURE_CELL_MATRIX,
+      sampleFileType.VISIUM_HD_CELL_SEGMENTATIONS,
+      sampleFileType.VISIUM_HD_TISSUE_HIRES_IMAGE,
+      sampleFileType.VISIUM_HD_SCALEFACTORS_JSON,
+    ],
+    fileUploadParagraphs: [
+      'For each sample, upload a folder containing the 4 required files. The folder\'s name will be used to name the sample in it. You can change this name later in Data Management.',
+      'The required files for each sample are:',
+    ],
+    dropzoneText: 'Drag and drop folders here or click to browse.',
+    webkitdirectory: '',
+    isNameValid(fileName) { return matchFileName(fileName, this.acceptedFiles); },
+    getCorrespondingType(fileName) {
+      const fileNameToType = {
+        'filtered_feature_cell_matrix.h5': sampleFileType.VISIUM_HD_FILTERED_FEATURE_CELL_MATRIX,
+        'cell_segmentations.geojson': sampleFileType.VISIUM_HD_CELL_SEGMENTATIONS,
+        'tissue_hires_image.png': sampleFileType.VISIUM_HD_TISSUE_HIRES_IMAGE,
+        'scalefactors_json.json': sampleFileType.VISIUM_HD_SCALEFACTORS_JSON,
+      };
+      const allowedNames = Array.from(this.acceptedFiles);
+      const name = allowedNames.find((allowedName) => fileName.endsWith(allowedName));
+      return fileNameToType[name];
+    },
+    filterFiles: filterFilesDefaultConstructor(sampleTech.VISIUM_HD),
+    getFileSampleAndName: getFileSampleAndNameDefault,
+    getFilePathToDisplay: getFilePathToDisplayDefaultConstructor(sampleTech.VISIUM_HD),
+  },
+  [sampleTech.XENIUM]: {
+    category: techCategoryNames.SPATIAL_COUNT_MATRIX,
+    acceptedFiles: new Set([
+      'cell_feature_matrix.h5',
+      'cells.parquet',
+      'cell_boundaries.parquet',
+      'transcripts.parquet',
+    ]),
+    inputInfo: [
+      ['<code>cell_feature_matrix.h5</code> - <span style="color: #acaaaa;">found in the Xenium output directory</span>'],
+      ['<code>cells.parquet</code> - <span style="color: #acaaaa;">found in the Xenium output directory</span>'],
+      ['<code>cell_boundaries.parquet</code> - <span style="color: #acaaaa;">found in the Xenium output directory</span>'],
+      ['<code>transcripts.parquet</code> - <span style="color: #acaaaa;">found in the Xenium output directory</span>'],
+    ],
+    requiredFiles: [
+      sampleFileType.XENIUM_CELL_FEATURE_MATRIX,
+      sampleFileType.XENIUM_CELLS,
+      sampleFileType.XENIUM_CELL_BOUNDARIES,
+      sampleFileType.XENIUM_TRANSCRIPTS,
+    ],
+    fileUploadParagraphs: [
+      'For each sample, upload a folder containing the 4 required files. The folder\'s name will be used to name the sample in it. You can change this name later in Data Management.',
+      'The required files for each sample are:',
+    ],
+    dropzoneText: 'Drag and drop folders here or click to browse.',
+    webkitdirectory: '',
+    isNameValid(fileName) { return matchFileName(fileName, this.acceptedFiles); },
+    getCorrespondingType(fileName) {
+      const fileNameToType = {
+        'cell_feature_matrix.h5': sampleFileType.XENIUM_CELL_FEATURE_MATRIX,
+        'cells.parquet': sampleFileType.XENIUM_CELLS,
+        'cell_boundaries.parquet': sampleFileType.XENIUM_CELL_BOUNDARIES,
+        'transcripts.parquet': sampleFileType.XENIUM_TRANSCRIPTS,
+      };
+      // Match the longest accepted suffix first so e.g. 'cell_boundaries.parquet'
+      // isn't shadowed by the shorter 'cells.parquet'/'transcripts.parquet'.
+      const allowedNames = Array.from(this.acceptedFiles).sort((a, b) => b.length - a.length);
+      const name = allowedNames.find((allowedName) => fileName.endsWith(allowedName));
+      return fileNameToType[name];
+    },
+    filterFiles: filterFilesDefaultConstructor(sampleTech.XENIUM),
+    getFileSampleAndName: getFileSampleAndNameDefault,
+    getFilePathToDisplay: getFilePathToDisplayDefaultConstructor(sampleTech.XENIUM),
   },
   [sampleTech.RHAPSODY]: {
     category: techCategoryNames.SINGLE_CELL_COUNT_MATRIX,

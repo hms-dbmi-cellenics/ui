@@ -8,7 +8,7 @@ import {
   Radio,
 } from 'antd';
 
-import { spatialPlotTypes, plotUuids } from 'utils/constants';
+import { spatialPlotTypes } from 'utils/constants';
 
 import { metadataKeyToName } from 'utils/data-management/metadataUtils';
 
@@ -17,7 +17,7 @@ import InlineError from 'components/InlineError';
 const { Option, OptGroup } = Select;
 const SelectData = (props) => {
   const {
-    onUpdate, config, cellSets, disabled, plotType,
+    onUpdate, config, cellSets, disabled, plotType, showImageToggle,
   } = props;
 
   const {
@@ -55,12 +55,20 @@ const SelectData = (props) => {
     return <Skeleton.Input style={{ width: 200 }} active />;
   }
 
+  // Default the dropdown to the sample that's actually shown. Spatial plots have
+  // no 'All' option and default config.selectedSample to null, so fall back to the
+  // first sample (which is what the plot itself renders by default). Computed AFTER
+  // the guards above so we never touch a null config (which threw and crashed the
+  // control panel on first render).
+  const firstSampleKey = getMetadataOptions(parents[0]?.value)?.[0]?.key;
+  const selectedValue = config.selectedSample || (isSpatial ? firstSampleKey : 'All');
+
   return (
     <>
-      <p><strong>Included Samples:</strong></p>
+      <p><strong>{isSpatial ? 'Selected sample:' : 'Included Samples:'}</strong></p>
       <Form.Item>
         <Select
-          value={config.selectedSample}
+          value={selectedValue}
           disabled={disabled}
           onChange={(value) => {
             handleChange(value);
@@ -76,7 +84,7 @@ const SelectData = (props) => {
           ))}
         </Select>
       </Form.Item>
-      {isSpatial && (
+      {isSpatial && showImageToggle && (
         <>
           <p><strong>Toggle Image:</strong></p>
           <Form.Item>
@@ -102,11 +110,13 @@ SelectData.propTypes = {
   cellSets: PropTypes.object.isRequired,
   disabled: PropTypes.bool,
   plotType: PropTypes.string,
+  showImageToggle: PropTypes.bool,
 };
 
 SelectData.defaultProps = {
   config: null,
   disabled: false,
   plotType: null,
+  showImageToggle: true,
 };
 export default SelectData;

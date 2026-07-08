@@ -17,7 +17,6 @@ import {
   updatePlotConfig,
   loadPlotConfig,
   savePlotConfig,
-  resetPlotConfig,
 } from 'redux/actions/componentConfig';
 import { initialPlotConfigStates } from 'redux/reducers/componentConfig/initialState';
 
@@ -34,8 +33,17 @@ import EmptyPlot from 'components/plots/helpers/EmptyPlot';
 const { Panel } = Collapse;
 
 const ConfigureEmbedding = (props) => {
-  const { experimentId, onConfigChange, stepHadErrors } = props;
+  const {
+    experimentId, onConfigChange, stepHadErrors, isSpatial,
+  } = props;
   const [plot, setPlot] = useState(null);
+  // which plotUuid the current `plot` element was built for, so we don't briefly
+  // show the previous colouring's plot while switching (the build effect lags a render)
+  const [renderedPlotUuid, setRenderedPlotUuid] = useState(null);
+  // per-plotUuid flag: the large-dataset marker default has been resolved (applied,
+  // or determined unnecessary). Gates rendering so the embedding never first paints
+  // with the standard point size/outline and then visibly re-adjusts.
+  const [markerSettled, setMarkerSettled] = useState({});
   const filterName = 'configureEmbedding';
   const plotTypes = ['embedding', 'violin'];
   const [plotType, setPlotType] = useState('embedding');
@@ -61,8 +69,11 @@ const ConfigureEmbedding = (props) => {
   const debounceSave = useCallback(
     _.debounce((plotUuid) => dispatch(savePlotConfig(experimentId, plotUuid)), 2000), [],
   );
-  const cellMetaToLoad = ['mitochondrialContent', 'doubletScores', 'numOfGenes', 'numOfUmis'];
-  const controlsDisabledForViolin = plotType === 'violin';
+  // Spatial (visium_hd) datasets don't compute doublet scores, so don't load that
+  // cell metadata or offer it as a "colour plot by" option.
+  const cellMetaToLoad = isSpatial
+    ? ['mitochondrialContent', 'numOfGenes', 'numOfUmis']
+    : ['mitochondrialContent', 'doubletScores', 'numOfGenes', 'numOfUmis'];
   const { hierarchy } = cellSets;
 
   useEffect(() => {
@@ -136,7 +147,7 @@ const ConfigureEmbedding = (props) => {
   const continuousEmbStylingControls = [
     {
       panelTitle: 'Colours',
-      controls: ['colourScheme', 'colourInversion'],
+      controls: ['colourScheme', 'colourInversion', 'colourReverse'],
     },
     {
       panelTitle: 'Markers',
@@ -199,12 +210,6 @@ const ConfigureEmbedding = (props) => {
 
   const renderContinuousEmbedding = (colouring, config, actions) => {
     const { loading, data: plotData, error } = cellMeta[colouring];
-    const colourTitles = {
-      mitochondrialContent: 'Mitochondrial fraction',
-      doubletScores: 'Doublet score',
-      numOfGenes: 'Number of genes',
-      numOfUmis: 'Number of UMIs',
-    };
     const modifiedConfig = {
       ...config,
       legend: {
@@ -335,6 +340,10 @@ const ConfigureEmbedding = (props) => {
       },
     },
   };
+
+  // doublet scores aren't computed for spatial (visium_hd) datasets
+  if (isSpatial) delete plots.doubletScores;
+
   const currentPlot = plots[plotColouring].subPlots[plotType] || {};
   const { plotUuid: activePlotUuid, plotType: activePlotType } = currentPlot;
 
@@ -422,8 +431,10 @@ const ConfigureEmbedding = (props) => {
       const standardConfig = initialPlotConfigStates[currentPlot.plotType];
 
       // Only apply if marker config currently matches standard defaults (not yet customized)
-      const isUsingStandardDefaults = selectedConfig.marker.outline === standardConfig.marker.outline
-        && selectedConfig.marker.size === standardConfig.marker.size;
+      const isUsingStandardDefaults = (
+        selectedConfig.marker.outline === standardConfig.marker.outline
+        && selectedConfig.marker.size === standardConfig.marker.size
+      );
 
       if (isUsingStandardDefaults) {
         dispatch(updatePlotConfig(activePlotUuid, {
@@ -437,6 +448,34 @@ const ConfigureEmbedding = (props) => {
       }
     }
   }, [activePlotUuid, currentPlot?.plotType, cellSets?.accessible, !!selectedConfig]);
+
+  // Mark a plot's marker defaults "settled" once they no longer need adjusting:
+  // either the dataset isn't large, or the large-dataset marker has already been
+  // applied (config no longer matches the standard defaults). One-time per plot —
+  // once settled it stays settled so the user can freely customise the marker.
+  useEffect(() => {
+    if (plotType !== 'embedding' || !selectedConfig || !cellSets.accessible
+      || !currentPlot.plotType || markerSettled[activePlotUuid]) return;
+
+    const initialConfig = getEmbeddingInitialConfig(currentPlot.plotType, cellSets);
+    if (!initialConfig.defaultValues?.largeDatasetDefaults) {
+      setMarkerSettled((prev) => ({ ...prev, [activePlotUuid]: true }));
+      return;
+    }
+
+    const standardConfig = initialPlotConfigStates[currentPlot.plotType];
+    const stillStandard = selectedConfig.marker.outline === standardConfig.marker.outline
+      && selectedConfig.marker.size === standardConfig.marker.size;
+    // already at the large-dataset target (covers the case where the standard
+    // defaults happen to equal it, so we don't wait forever)
+    const isAdjusted = selectedConfig.marker.outline === false && selectedConfig.marker.size === 1;
+    // still standard (and not yet adjusted) → the adjustment effect above will
+    // dispatch the change; this effect re-runs when the marker updates and settles
+    if (!stillStandard || isAdjusted) {
+      setMarkerSettled((prev) => ({ ...prev, [activePlotUuid]: true }));
+    }
+  }, [activePlotUuid, currentPlot?.plotType, cellSets.accessible,
+    selectedConfig?.marker, plotType, markerSettled]);
 
   useEffect(() => {
     // if we change a plot and the config is not saved yet
@@ -461,8 +500,8 @@ const ConfigureEmbedding = (props) => {
     embeddingPlotUuids.forEach((plotUuid) => {
       if (plotUuid !== activePlotUuid) {
         const otherPlotConfig = plotConfigs[plotUuid];
-        if (otherPlotConfig &&
-          JSON.stringify(otherPlotConfig.marker) !== JSON.stringify(selectedConfig.marker)) {
+        if (otherPlotConfig
+          && JSON.stringify(otherPlotConfig.marker) !== JSON.stringify(selectedConfig.marker)) {
           dispatch(updatePlotConfig(plotUuid, { marker: selectedConfig.marker }));
         }
       }
@@ -480,8 +519,9 @@ const ConfigureEmbedding = (props) => {
 
     if (cellSets.accessible && selectedConfig) {
       setPlot(currentPlot.plot(selectedConfig, plotActions));
+      setRenderedPlotUuid(activePlotUuid);
     }
-  }, [selectedConfig, cellSets, cellMeta, plotType]);
+  }, [selectedConfig, cellSets, cellMeta, plotType, activePlotUuid]);
 
   const updatePlotWithChanges = (obj) => {
     // Get all embedding plot UUIDs
@@ -587,9 +627,19 @@ const ConfigureEmbedding = (props) => {
       );
     }
 
-    if (plot) {
+    // only show the plot once it's been (re)built for the current colouring/uuid AND
+    // its large-dataset marker defaults have settled — otherwise show a loader rather
+    // than the previous colouring's stale plot or a flash of the un-adjusted marker
+    if (plot && renderedPlotUuid === activePlotUuid
+      && (plotType !== 'embedding' || markerSettled[activePlotUuid])) {
       return plot;
     }
+
+    return (
+      <center>
+        <Loader />
+      </center>
+    );
   };
 
   const radioStyle = {
@@ -631,7 +681,10 @@ const ConfigureEmbedding = (props) => {
                   ))}
                 </Radio.Group>
                 Colour plot by:
-                <Radio.Group onChange={(e) => setPlotColouring(e.target.value)} value={plotColouring}>
+                <Radio.Group
+                  onChange={(e) => setPlotColouring(e.target.value)}
+                  value={plotColouring}
+                >
                   {Object.entries(plots).map(([key, plotObj]) => {
                     if (plots[key].subPlots[plotType]) {
                       return (
@@ -688,6 +741,11 @@ ConfigureEmbedding.propTypes = {
   experimentId: PropTypes.string.isRequired,
   onConfigChange: PropTypes.func.isRequired,
   stepHadErrors: PropTypes.bool.isRequired,
+  isSpatial: PropTypes.bool,
+};
+
+ConfigureEmbedding.defaultProps = {
+  isSpatial: false,
 };
 
 export default ConfigureEmbedding;
