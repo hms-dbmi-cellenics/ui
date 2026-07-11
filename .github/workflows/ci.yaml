@@ -280,8 +280,10 @@ jobs:
           tags: ${{ format('{0}/{1}:{2}', steps.login-ecr.outputs.registry, steps.ref.outputs.repo-name, steps.ref.outputs.image-tag) }}
           push: true
           provenance: false
-          cache-from: type=gha,scope=${{ github.workflow }}
-          cache-to: type=gha,mode=max,scope=${{ github.workflow }},ignore-error=true
+          # GHA cache (type=gha) disabled: the cache service repeatedly fails with
+          # "failed to reserve cache", which is fatal even with ignore-error=true.
+          # Restore via registry cache (type=registry to a dedicated mutable ECR repo)
+          # if build times become a problem.
 
   deploy:
     name: Deploy to Kubernetes
