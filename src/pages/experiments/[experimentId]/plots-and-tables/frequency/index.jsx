@@ -1,6 +1,8 @@
 /* eslint-disable import/no-unresolved */
 /* eslint-disable no-param-reassign */
-import React, { useEffect, useState, useRef } from 'react';
+import React, {
+  useEffect, useState, useMemo,
+} from 'react';
 import _ from 'lodash';
 import PropTypes from 'prop-types';
 import { useSelector, useDispatch } from 'react-redux';
@@ -45,12 +47,28 @@ const FrequencyPlotPage = ({ experimentId }) => {
 
   const cellSets = useSelector(getCellSets());
 
+  // Legacy plot configs can store the cell set's display *name* (e.g. after the
+  // louvain clustering was renamed) rather than its key. Since every lookup here
+  // resolves by key, fall back to 'louvain' when the stored proportionGrouping
+  // doesn't match an existing hierarchy key - otherwise the selector returns
+  // undefined and the plot crashes when reading its children.
+  const proportionGrouping = cellSets.hierarchy?.some(
+    ({ key }) => key === config?.proportionGrouping,
+  )
+    ? config.proportionGrouping
+    : 'louvain';
+
+  const plotConfig = useMemo(
+    () => (config ? { ...config, proportionGrouping } : config),
+    [config, proportionGrouping],
+  );
+
   const [cellSetClusters] = useSelector(
-    getCellSetsHierarchyByKeys([config?.proportionGrouping]),
+    getCellSetsHierarchyByKeys([proportionGrouping]),
   );
 
   const numLegendItems = useSelector(
-    getCellSetsHierarchyByKeys([config?.proportionGrouping]),
+    getCellSetsHierarchyByKeys([proportionGrouping]),
   )[0]?.children?.length;
 
   const experimentName = useSelector((state) => state.experimentSettings.info.experimentName);
@@ -131,7 +149,7 @@ const FrequencyPlotPage = ({ experimentId }) => {
       const entriesForCluster = plotData.filter((entry) => entry.yCellSetKey === cluster.key);
 
       const cellSetName = cellSets.properties[cluster.key].name;
-      const rootCellSetName = cellSets.properties[config.proportionGrouping].name;
+      const rootCellSetName = cellSets.properties[proportionGrouping].name;
       const newEntry = { [rootCellSetName]: cellSetName };
 
       entriesForCluster.forEach((entry) => {
@@ -197,7 +215,7 @@ const FrequencyPlotPage = ({ experimentId }) => {
         <center>
           <FrequencyPlot
             experimentId={experimentId}
-            config={config}
+            config={plotConfig}
             formatCSVData={formatCSVData}
           />
         </center>
