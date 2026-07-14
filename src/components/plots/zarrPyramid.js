@@ -92,11 +92,15 @@ export const openOmePyramid = (omeZarrUrl) => {
 
     let datasets = [{ path: '0' }];
     let axesMetadata = null;
+    let originalSize = null;
     try {
       const rootGroup = await open(rootNode, { kind: 'group' });
       const rootAttrs = await Promise.resolve(rootGroup.attrs);
       datasets = rootAttrs?.multiscales?.[0]?.datasets || datasets;
       axesMetadata = rootAttrs?.multiscales?.[0]?.axes || null;
+      // pipeline-written pre-pad tissue extent { width, height }; absent for
+      // un-padded / older images
+      originalSize = rootAttrs?.originalSize || null;
     } catch (_e) {
       // multiscale metadata is optional — fall back to the default dataset path
     }
@@ -112,6 +116,10 @@ export const openOmePyramid = (omeZarrUrl) => {
     const fullW = shape[shape.length - 1];
     const fullH = shape[shape.length - 2];
 
+    // original (pre-pad) tissue extent; falls back to the padded full extent
+    const origW = originalSize?.width ?? fullW;
+    const origH = originalSize?.height ?? fullH;
+
     attachLevelTransforms(levels);
 
     return {
@@ -119,6 +127,8 @@ export const openOmePyramid = (omeZarrUrl) => {
       axesMetadata,
       fullW,
       fullH,
+      origW,
+      origH,
     };
   })();
   promise.catch(() => pyramidCache.delete(omeZarrUrl));

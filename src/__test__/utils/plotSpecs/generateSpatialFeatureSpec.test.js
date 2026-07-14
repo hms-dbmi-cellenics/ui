@@ -186,4 +186,42 @@ describe('filterCells / generateData', () => {
     // only even cell ids survive
     result.forEach((datum) => expect(datum.x % 2).toBe(0));
   });
+
+  describe('viewport extent (padded vs original dims)', () => {
+    const signalValue = (spec, name) => spec.signals.find((s) => s.name === name).value;
+
+    it('uses the full padded extent when originalSize is absent', () => {
+      const spec = generateSpec(baseConfig(), 'mock', imageData, []);
+      // imageData = { imageWidth: 1000, imageHeight: 500 }
+      expect(signalValue(spec, 'initXdom')).toEqual([0, 1000]);
+      expect(signalValue(spec, 'initYdom')).toEqual([0, 500]);
+      expect(signalValue(spec, 'boundsX')).toEqual([0, 1000]);
+      expect(signalValue(spec, 'boundsY')).toEqual([0, 500]);
+    });
+
+    it('caps the viewport to the original tissue extent when padded', () => {
+      // padded canvas 1000x500, tissue only 600x300 (padding right + bottom)
+      const padded = {
+        imageWidth: 1000, imageHeight: 500, origWidth: 600, origHeight: 300,
+      };
+      const spec = generateSpec(baseConfig(), 'mock', padded, []);
+
+      // x is not flipped: content is on the left
+      expect(signalValue(spec, 'initXdom')).toEqual([0, 600]);
+      // y IS flipped (imageHeight - y), so tissue sits at the TOP of the range
+      expect(signalValue(spec, 'initYdom')).toEqual([500 - 300, 500]);
+      // max zoom-out (bounds) matches the tissue extent — no blank padding
+      expect(signalValue(spec, 'boundsX')).toEqual([0, 600]);
+      expect(signalValue(spec, 'boundsY')).toEqual([200, 500]);
+    });
+
+    it('keeps the y-flip anchored to the padded height', () => {
+      const padded = {
+        imageWidth: 1000, imageHeight: 500, origWidth: 600, origHeight: 300,
+      };
+      const spec = generateSpec(padded && baseConfig(), 'mock', padded, []);
+      const flip = JSON.stringify(spec).includes('500 - datum.y');
+      expect(flip).toBe(true);
+    });
+  });
 });

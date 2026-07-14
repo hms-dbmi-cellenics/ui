@@ -29,13 +29,23 @@ const generateSpec = (
 ) => {
   const { imageWidth, imageHeight } = imageData;
 
+  // Original (pre-pad) tissue extent. Images are padded (right + bottom) to a
+  // common size across samples for the multi-sample grid; here (single-sample)
+  // we cap the view to the tissue so the blank padding isn't shown. Falls back
+  // to the full padded extent when originalSize is absent (un-padded images) —
+  // then the domains below reduce to the previous [0, imageWidth/Height].
+  // The y-flip (imageHeight - y) stays anchored to the padded imageHeight, so
+  // tissue (top-left in data space) maps to the TOP of the flipped y-range.
+  const contentWidth = imageData.origWidth ?? imageWidth;
+  const contentHeight = imageData.origHeight ?? imageHeight;
+
   // Initial zoom/pan domains are ALWAYS the full image extent — the spec is
   // intentionally invariant to config.axesRanges so persisting a zoom never changes
   // the spec CONTENT (react-vega's VegaEmbed rebuilds on an expensive spec change),
   // which would flicker the slide. The persisted zoom (config.axesRanges) is
   // re-applied imperatively after (re)build via the plot's onNewView (restoreZoom).
-  const initXdom = [0, imageWidth];
-  const initYdom = [0, imageHeight];
+  const initXdom = [0, contentWidth];
+  const initYdom = [imageHeight - contentHeight, imageHeight];
 
   // Plot size always matches the containing box (config.dimensions) — the styling
   // panel for the full plot, the fixed mini-preview tile (MiniPlot) for previews.
@@ -317,7 +327,7 @@ const generateSpec = (
     ],
     // clamp zoom/pan to the full image extent so you can always zoom back out to it
     signals: spatialZoomSignals(
-      initXdom, initYdom, [0, imageWidth], [0, imageHeight], !config.miniPlot,
+      initXdom, initYdom, initXdom, initYdom, !config.miniPlot,
     ),
     scales: [
       {
