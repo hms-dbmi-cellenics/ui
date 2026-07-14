@@ -1,95 +1,66 @@
-import React, { useEffect, useState } from 'react';
-import _ from 'lodash';
+import React, { useMemo } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
-import {
-  Switch, Space,
-} from 'antd';
+import { Switch, Space } from 'antd';
+import { ClipLoader } from 'react-spinners';
 
 import { updatePlotConfig } from 'redux/actions/componentConfig';
 import { getCellSets, getCellSetsHierarchyByType, getGroupSlidesBy } from 'redux/selectors';
-import { ClipLoader } from 'react-spinners';
 import colors from 'utils/styling/colors';
 
-const convertToListData = (hierarchy, selectedKeys) => (
-  hierarchy.map(({ key, name }) => ({
-    key,
-    name,
-    selected: selectedKeys.includes(key),
-  }))
-);
+// Mutually-exclusive grouping picker, styled like the visible-layers toggles in
+// the same settings dropdown: one <Switch> "Name" row per available sample-level
+// metadata option, in a single column. "Samples" (the 'sample' class) is the
+// default flat view — samples in Cell sets & metadata tile order, ungrouped.
+// Picking a metadata track instead lays samples out one group per row.
+const SAMPLES_KEY = 'sample';
 
 const SpatialGroupBySettings = (props) => {
   const dispatch = useDispatch();
   const { componentType } = props;
 
   const { accessible: cellSetsAccessible } = useSelector(getCellSets());
-  const hierarchy = useSelector(getCellSetsHierarchyByType('metadataCategorical'));
+  // include 'sample' ("Samples") — it's the default flat/ungrouped option
+  const tracks = useSelector(getCellSetsHierarchyByType('metadataCategorical'));
   const groupSlidesBy = useSelector(getGroupSlidesBy(componentType));
 
-  const [listData, setListData] = useState([]);
+  // The active option: the stored selection if still available, else "Samples"
+  // (the default). Keep this in sync with SpatialViewer.
+  const selectedKey = useMemo(() => {
+    const available = tracks.map(({ key }) => key);
+    return groupSlidesBy.find((key) => available.includes(key)) ?? SAMPLES_KEY;
+  }, [groupSlidesBy, tracks]);
 
-  useEffect(() => {
-    if (!hierarchy || _.isEmpty(hierarchy)) return;
-
-    // Initialize listData based on hierarchy order
-    setListData(convertToListData(hierarchy, groupSlidesBy));
-  }, [hierarchy, groupSlidesBy]);
-
-  const setGroupSlidesBy = (selectedKey) => {
-    const newListData = listData.map((item) => ({
-      ...item,
-      selected: item.key === selectedKey,
-    }));
-
-    setListData(newListData);
-
-    // Update only with the newly selected key (or empty array if none)
-    dispatch(
-      updatePlotConfig(componentType, {
-        groupSlidesBy: selectedKey ? [selectedKey] : [],
-      }),
-    );
+  const setGroupSlidesBy = (key) => {
+    dispatch(updatePlotConfig(componentType, { groupSlidesBy: [key] }));
   };
 
-  const leftItem = (listDataItem) => (
-    <Switch
-      disabled
-      checked={listDataItem.selected}
-      onChange={() => {
-        setGroupSlidesBy(listDataItem.key);
-      }}
-    />
-  );
+  if (!cellSetsAccessible) {
+    return <center><ClipLoader size={20} color={colors.darkRed} /></center>;
+  }
 
-  const rightItem = (listDataItem) => (
-    <span style={{ marginLeft: 10 }}>
-      {listDataItem.name}
-    </span>
-  );
+  if (!tracks.length) {
+    return <div style={{ padding: '5px' }}>No sample metadata to group by.</div>;
+  }
 
-  const composeItem = (itemData) => (
-    // eslint-disable-next-line jsx-a11y/click-events-have-key-events
-    <div
-      key={itemData.key}
-      onClick={(e) => e.stopPropagation()}
-    >
-      {leftItem(itemData)}
-      {rightItem(itemData)}
-    </div>
-  );
+  const stopPropagationEvent = (e) => e.stopPropagation();
 
   return (
     <div style={{ padding: '5px' }}>
-      {cellSetsAccessible ? (
-        <Space direction='vertical'>
-          {listData.map((itemData) => composeItem(itemData))}
-        </Space>
-      ) : (
-        <center>
-          <ClipLoader size={20} color={colors.darkRed} />
-        </center>
-      )}
+      <Space direction='vertical'>
+        {tracks.map(({ key, name }) => (
+          // eslint-disable-next-line jsx-a11y/click-events-have-key-events
+          <div key={key} onClick={stopPropagationEvent}>
+            <Switch
+              checked={key === selectedKey}
+              // mutually exclusive: turning one on selects it (others turn off);
+              // ignore turning the active one off so there's always a selection
+              onChange={(checked) => checked && setGroupSlidesBy(key)}
+            />
+            <span style={{ marginLeft: 10 }}>{name}</span>
+          </div>
+        ))}
+      </Space>
     </div>
   );
 };

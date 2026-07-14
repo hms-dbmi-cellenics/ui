@@ -23,7 +23,8 @@ import { getSampleFileUrls } from 'utils/data-management/downloadSampleFile';
 import { loadComponentConfig } from 'redux/actions/componentConfig';
 import { loadEmbedding } from 'redux/actions/embedding';
 import { loadProcessingSettings } from 'redux/actions/experimentSettings';
-import { getCellSetsHierarchyByType, getCellSets } from 'redux/selectors';
+import { getCellSetsHierarchyByType, getCellSets, getGroupSlidesBy } from 'redux/selectors';
+import buildSpatialGridLayout from 'utils/spatial/buildSpatialGridLayout';
 import { createCellSet } from 'redux/actions/cellSets';
 import { updateCellInfo } from 'redux/actions/cellInfo';
 import { union } from 'utils/cellSetOperations';
@@ -161,10 +162,91 @@ const SpatialViewer = (props) => {
   const [segmentationsLoader, setSegmentationsLoader] = useState(null);
   const [offsetData, setOffsetData] = useState();
   const [perImageShape, setPerImageShape] = useState();
-  const [gridShape, setGridShape] = useState();
   const [viewState, setViewState] = useState(null);
   const viewStateRef = useRef(null);
   const hoveredByPointerRef = useRef(null);
+
+  // ── Group samples into rows by a sample-level metadata track ────────────────
+  // 'sample' is excluded (grouping by sample = one slide per row = ungrouped).
+  const groupSlidesBy = useSelector(getGroupSlidesBy(COMPONENT_TYPE));
+  const metadataTracks = useSelector(
+    getCellSetsHierarchyByType('metadataCategorical', ['sample']),
+  );
+
+  // The metadata track to group rows by, or null for the default flat
+  // "Samples" view (ungrouped). Only a real non-sample track groups; anything
+  // else ('sample' / empty / invalid) stays ungrouped.
+  const groupByKey = useMemo(() => {
+    const available = metadataTracks.map(({ key }) => key);
+    return groupSlidesBy.find((key) => available.includes(key)) ?? null;
+  }, [groupSlidesBy, metadataTracks]);
+
+  // Sample display order = the 'sample' cell class's child order in the Cell
+  // sets & metadata tile. The grid follows this order and re-lays out when the
+  // user reorders samples there (reordering mutates cellSetHierarchy).
+  const sampleRank = useMemo(() => {
+    const sampleNode = cellSetHierarchy?.find(({ key }) => key === 'sample');
+    const rank = new Map();
+    sampleNode?.children?.forEach(({ key }, i) => rank.set(key, i));
+    return rank;
+  }, [cellSetHierarchy]);
+
+  // Compare two sample indices by tile order; ties (e.g. samples absent from
+  // the tile) keep their original relative order.
+  const compareByRank = useCallback((a, b) => {
+    const ra = sampleRank.get(omeZarrSampleIds[a]) ?? Infinity;
+    const rb = sampleRank.get(omeZarrSampleIds[b]) ?? Infinity;
+    return ra === rb ? a - b : ra - rb;
+  }, [sampleRank, omeZarrSampleIds]);
+
+  // Sample indices (into omeZarrSampleIds) in tile order — drives the ungrouped
+  // layout sequence.
+  const orderedSampleIndices = useMemo(
+    () => omeZarrSampleIds.map((_id, i) => i).sort(compareByRank),
+    [omeZarrSampleIds, compareByRank],
+  );
+
+  // Ordered groups of sample indices (into omeZarrSampleIds) for the chosen
+  // track; null when ungrouped. A sample belongs to the group whose cellIds
+  // contain a representative cell of the sample (sample-level metadata assigns
+  // all of a sample's cells to one group). Any unmatched samples land in a
+  // trailing "Other" row so no sample disappears.
+  const sampleGroups = useMemo(() => {
+    if (!groupByKey || !omeZarrSampleIds.length || !cellSetProperties) return null;
+    const track = metadataTracks.find(({ key }) => key === groupByKey);
+    if (!track?.children?.length) return null;
+
+    const groups = track.children.map(({ key, name }) => ({
+      groupKey: key, name, sampleIndices: [],
+    }));
+    const other = { groupKey: '$other', name: 'Other', sampleIndices: [] };
+
+    omeZarrSampleIds.forEach((sampleId, sampleIndex) => {
+      const sampleCellIds = cellSetProperties[sampleId]?.cellIds;
+      const probe = sampleCellIds?.values().next().value;
+      const group = probe === undefined
+        ? undefined
+        : groups.find(({ groupKey }) => cellSetProperties[groupKey]?.cellIds?.has(probe));
+      (group ?? other).sampleIndices.push(sampleIndex);
+    });
+
+    const nonEmpty = groups.filter(({ sampleIndices }) => sampleIndices.length > 0);
+    if (other.sampleIndices.length > 0) nonEmpty.push(other);
+    // order samples within each row by the Cell sets tile order
+    nonEmpty.forEach((group) => group.sampleIndices.sort(compareByRank));
+    return nonEmpty.length ? nonEmpty : null;
+  }, [groupByKey, omeZarrSampleIds, cellSetProperties, metadataTracks, compareByRank]);
+
+  // Shared grid layout (shape + slot map + per-sample row/col) that the image
+  // grid, segmentation grid, centroids and molecules all key off, so they stay
+  // aligned. Image-driven techs size by image count, imageless by sample count.
+  // The default (ungrouped) view follows the Cell sets & metadata tile order.
+  const gridLayout = useMemo(() => {
+    const numItems = isImageless ? omeZarrSampleIds.length : omeZarrUrls.length;
+    return buildSpatialGridLayout(numItems, sampleGroups, orderedSampleIndices);
+  }, [isImageless, omeZarrSampleIds.length, omeZarrUrls.length, sampleGroups, orderedSampleIndices]);
+
+  const gridShape = gridLayout.gridShape;
 
   const deckglView = useMemo(() => new OrthographicView({ id: 'spatial', controller: true }), []);
 
@@ -183,8 +265,10 @@ const SpatialViewer = (props) => {
   useEffect(() => {
     if (!data || !omeZarrSampleIds.length || !cellSetProperties || !perImageShape || !gridShape) return;
     if (omeZarrSampleIds.some((id) => !cellSetProperties[id])) return;
-    setOffsetData(offsetCentroids(data, cellSetProperties, omeZarrSampleIds, perImageShape, gridShape));
-  }, [data, omeZarrSampleIds, cellSetProperties, perImageShape, gridShape]);
+    setOffsetData(offsetCentroids(
+      data, cellSetProperties, omeZarrSampleIds, perImageShape, gridShape, gridLayout.sampleRowCol,
+    ));
+  }, [data, omeZarrSampleIds, cellSetProperties, perImageShape, gridShape, gridLayout]);
 
   // ── URL fetching ──────────────────────────────────────────────────────────
   useEffect(() => {
@@ -240,25 +324,24 @@ const SpatialViewer = (props) => {
     })();
   }, [sampleIdsForFileUrls, experimentId, isObj2s, isImageless]);
 
-  // ── Grid shape ────────────────────────────────────────────────────────────
-  // Image-driven techs key the grid off the number of image OME-Zarrs; imageless
-  // techs (e.g. Xenium) have no images, so key it off the number of samples.
-  useEffect(() => {
-    const numItems = isImageless ? omeZarrSampleIds.length : omeZarrUrls.length;
-    if (!numItems) return;
-    const numColumns = Math.min(numItems, 4);
-    const numRows = Math.ceil(numItems / numColumns);
-    setGridShape((prev) => (
-      prev && prev[0] === numRows && prev[1] === numColumns ? prev : [numRows, numColumns]
-    ));
-  }, [omeZarrUrls, omeZarrSampleIds, isImageless]);
+  // Zarr roots are keyed only by URL, so regrouping (which changes the grid
+  // layout but not the underlying per-sample data) doesn't re-open the stores —
+  // only the grid adapter is rebuilt below.
+  const imageRoots = useMemo(
+    () => omeZarrUrls.map((url) => zarrRoot(ZipFileStore.fromUrl(url))),
+    [omeZarrUrls],
+  );
+  const segmentationRoots = useMemo(
+    () => segmentationsOmeZarrUrls.map((url) => zarrRoot(ZipFileStore.fromUrl(url))),
+    [segmentationsOmeZarrUrls],
+  );
 
   // ── Image loader ──────────────────────────────────────────────────────────
   useEffect(() => {
-    if (!omeZarrUrls.length || !gridShape) return;
-    const roots = omeZarrUrls.map((url) => zarrRoot(ZipFileStore.fromUrl(url)));
-    loadOmeZarrGrid(roots, gridShape).then(setLoader);
-  }, [omeZarrUrls, gridShape]);
+    if (!imageRoots.length) return;
+    loadOmeZarrGrid(imageRoots, gridShape, undefined, gridLayout.slotToSampleIndex)
+      .then(setLoader);
+  }, [imageRoots, gridLayout]);
 
   // ── Segmentations bitmask loader ──────────────────────────────────────────
   // The segmentation OME-Zarr holds the real cell-boundary polygons rasterised
@@ -267,12 +350,15 @@ const SpatialViewer = (props) => {
   // micron frame as the centroids — load and render it just like Visium HD
   // rather than falling back to approximate diamonds.
   useEffect(() => {
-    if (!segmentationsOmeZarrUrls.length || !gridShape) return;
-    const roots = segmentationsOmeZarrUrls.map((url) => zarrRoot(ZipFileStore.fromUrl(url)));
-    loadOmeZarrGrid(roots, gridShape)
+    if (!segmentationRoots.length) return;
+    // Fill empty grid cells with 0 (background) so the label bitmask treats
+    // filler tiles as background (excludeBackground → transparent), instead of
+    // a bogus cell id that the colour LUT would paint (brown/pink). The light
+    // image-grid filler (#f5f7f9) then shows through in those cells.
+    loadOmeZarrGrid(segmentationRoots, gridShape, 0, gridLayout.slotToSampleIndex)
       .then(setSegmentationsLoader)
       .catch((e) => console.error('[SpatialViewer] Segmentations loader error:', e));
-  }, [segmentationsOmeZarrUrls, gridShape]);
+  }, [segmentationRoots, gridLayout]);
 
   // ── Molecule artifact stores + meta ────────────────────────────────────────
   // One ZipFileStore per sample (null where the sample has no artifact). The
@@ -610,11 +696,12 @@ const SpatialViewer = (props) => {
     const [imageHeight, imageWidth] = perImageShape;
     const numColumns = gridShape[1];
     return omeZarrSampleIds.map((_id, sampleIndex) => {
-      const row = Math.floor(sampleIndex / numColumns);
-      const column = sampleIndex % numColumns;
+      const rowCol = gridLayout.sampleRowCol?.[sampleIndex];
+      const row = rowCol ? rowCol.row : Math.floor(sampleIndex / numColumns);
+      const column = rowCol ? rowCol.col : sampleIndex % numColumns;
       return [column * imageWidth, row * imageHeight];
     });
-  }, [omeZarrSampleIds, perImageShape, gridShape]);
+  }, [omeZarrSampleIds, perImageShape, gridShape, gridLayout]);
 
   const showMolecules = spatialSettings.showMolecules === true;
 
@@ -724,7 +811,11 @@ const SpatialViewer = (props) => {
       contrastLimits: [[0, 255], [0, 255], [0, 255]],
       colors: [[255, 0, 0], [0, 255, 0], [0, 0, 255]],
       channelsVisible: [true, true, true],
-      opacity: spatialSettings.showImages !== false ? 1 : 0,
+      // visible (not opacity) so deck.gl skips fetching/compositing the image
+      // tiles entirely when hidden (the default) — this is the expensive work,
+      // and avoiding it makes regrouping/layout changes much faster.
+      visible: spatialSettings.showImages !== false,
+      opacity: 1,
       colormap: null,
       pickable: false,
     });

@@ -31,7 +31,22 @@ function isAxis(axisOrLabel) {
   return typeof axisOrLabel[0] !== 'string';
 }
 
+// Opening a root's multiscale arrays (reading .zattrs/.zarray for every pyramid
+// level) depends only on the root, not on the grid layout. Cache it per root so
+// that re-laying out the grid (e.g. toggling the sample grouping, which rebuilds
+// the loaders) reuses the already-opened arrays instead of re-reading metadata
+// for every sample. Keyed on the (memoised) root object; GC'd with it.
+const multiscalesCache = new WeakMap();
+
 async function loadMultiscales(root) {
+  if (multiscalesCache.has(root)) return multiscalesCache.get(root);
+  const promise = loadMultiscalesUncached(root);
+  multiscalesCache.set(root, promise);
+  promise.catch(() => multiscalesCache.delete(root)); // don't cache failures
+  return promise;
+}
+
+async function loadMultiscalesUncached(root) {
   const rootAttrs = (await zarrOpen(root)).attrs;
 
   let paths = ['0'];
@@ -90,7 +105,7 @@ export async function loadOmeZarr(root) {
   };
 }
 
-export async function loadOmeZarrGrid(roots, gridSize) {
+export async function loadOmeZarrGrid(roots, gridSize, emptyFill, slotToArrIndex) {
   const dataArrays = await Promise.all(roots.map((root) => loadMultiscales(root)));
 
   const dataGroups = dataArrays.map(({ data }) => data);
@@ -106,7 +121,7 @@ export async function loadOmeZarrGrid(roots, gridSize) {
   const pyramid = dataGroups[0].map((_, resolution) => {
     const arrs = dataGroups.map((group) => group[resolution]);
     return new ZarritaPixelSource(
-      createZarrArrayAdapterGrid(arrs, gridSize),
+      createZarrArrayAdapterGrid(arrs, gridSize, emptyFill, slotToArrIndex),
       labels,
       tileSize,
     );
