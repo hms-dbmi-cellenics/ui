@@ -90,12 +90,22 @@ const CellSetsTool = (props) => {
   }, [hierarchy]);
 
   useEffect(() => {
-    const selectedCells = union(selectedCellSetKeys, properties);
+    // Count distinct selected cells that survive filtering in a single pass over
+    // the selected sets' cellIds. The previous approach built a union Set, spread
+    // it to an array, filtered, then built another Set — several full-size
+    // allocations that blocked the UI ("N cells selected" lagged) when selecting
+    // all clusters in large experiments.
+    const seen = new Set();
+    const filtered = filteredCellIds.current;
+    selectedCellSetKeys.forEach((key) => {
+      const cellIds = properties[key]?.cellIds;
+      if (!cellIds) return;
+      cellIds.forEach((cellId) => {
+        if (filtered.has(cellId)) seen.add(cellId);
+      });
+    });
 
-    const numSelectedFiltered = new Set([...selectedCells]
-      .filter((cellIndex) => filteredCellIds.current.has(cellIndex)));
-
-    setSelectedCellsCount(numSelectedFiltered.size);
+    setSelectedCellsCount(seen.size);
   }, [selectedCellSetKeys, properties]);
 
   const onNodeUpdate = useCallback((key, data) => {

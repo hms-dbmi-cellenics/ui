@@ -20,11 +20,15 @@ const union = (listOfSets, properties) => {
     return new Set();
   }
 
-  const sets = listOfSets.map((key) => properties[key]?.cellIds || []);
-  // flatten and transform list of Sets to list of lists
-  const unionSet = new Set(
-    sets.flatMap(set => [...set]),
-  );
+  // Add each set's cellIds straight into one Set. Avoids spreading every set
+  // into an array and flattening into one giant array first (which allocated
+  // ~2x the total cell count on every call) — this runs on every checkbox tick
+  // and hide/unhide, so it must stay cheap for large (100k+ cell) experiments.
+  const unionSet = new Set();
+  listOfSets.forEach((key) => {
+    const cellIds = properties[key]?.cellIds;
+    if (cellIds) cellIds.forEach((cellId) => unionSet.add(cellId));
+  });
 
   return unionSet;
 };
