@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useLayoutEffect, useRef, useState } from 'react';
 import { Card } from 'antd';
 import PropTypes from 'prop-types';
 import getCellInfoCoordinates from 'utils/data-exploration/getCellInfoCoordinates';
@@ -26,16 +26,23 @@ const CellInfo = (props) => {
     containerWidth, containerHeight, coordinates, cellInfo,
   } = props;
 
+  const wrapperRef = useRef(null);
   const [tooltipDimensions, setTooltipDimensions] = useState({ width: 0, height: 0 });
 
-  const getTooltipElement = useCallback((el) => {
-    if (!el) return;
-
-    setTooltipDimensions({
-      width: el.firstChild.offsetWidth,
-      height: el.firstChild.offsetHeight,
-    });
-  }, []);
+  // Re-measure on every render (the card resizes as its content changes between
+  // cells), before paint so the position never flashes. Only set state when the
+  // size actually changed, otherwise this would loop. Using a one-shot ref
+  // callback instead left the dimensions stale, so a bigger tooltip was clamped
+  // against the previous cell's smaller size and got cut off.
+  useLayoutEffect(() => {
+    const card = wrapperRef.current?.firstChild;
+    if (!card) return;
+    const width = card.offsetWidth;
+    const height = card.offsetHeight;
+    setTooltipDimensions((prev) => (
+      prev.width === width && prev.height === height ? prev : { width, height }
+    ));
+  });
 
   const { left, top } = getCellInfoCoordinates(
     coordinates,
@@ -47,7 +54,7 @@ const CellInfo = (props) => {
   return (
     // We have to wrap the <Card> in a <div> because Antd does not correctly set the ref
     // https://github.com/ant-design/ant-design/issues/28582
-    <div ref={getTooltipElement}>
+    <div ref={wrapperRef}>
       <Card
         size='small'
         style={{
