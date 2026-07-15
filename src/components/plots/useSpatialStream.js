@@ -11,16 +11,6 @@ import {
 // Tile edge length in level pixels. Smaller → more, cheaper requests; larger → fewer.
 const TILE_SIZE = 512;
 
-// Vega renders its canvas at window.devicePixelRatio, and viv (Data Exploration)
-// selects tile levels in DEVICE pixels too. So level selection here must scale the
-// plot's CSS size by the DPR — otherwise on a HiDPI (Retina) display we fetch a
-// level with ~half the linear resolution the canvas actually has and draw it
-// upscaled, which reads as pixelation. Clamped to 2 to bound bandwidth/memory on
-// 3× phones/4K panels (2× already matches the physical pixels closely enough).
-const pixelRatio = () => (
-  typeof window !== 'undefined' ? Math.min(window.devicePixelRatio || 1, 2) : 1
-);
-
 const keyOf = (tile) => `${tile.level}:${tile.tx}:${tile.ty}`;
 const intersects = (e, vp) => (
   e.xMax > vp.xMin && e.xMin < vp.xMax && e.yMax > vp.yMin && e.yMin < vp.yMax
@@ -165,8 +155,7 @@ const useSpatialStream = ({
     const segP = segFor();
     if (segP) {
       const { plotWidth: ow, plotHeight: oh } = plotDimsRef.current;
-      const dpr = pixelRatio();
-      const targetLevel = levelFor(segP, { ...vp, outputWidth: ow * dpr, outputHeight: oh * dpr });
+      const targetLevel = levelFor(segP, { ...vp, outputWidth: ow, outputHeight: oh });
       const coarsest = segP.levels.length - 1;
       const targetTiles = tilesAt(segP, targetLevel, vp);
 
@@ -234,8 +223,7 @@ const useSpatialStream = ({
     const dims = dimsRef.current;
     if (!vp || !dims) return;
     const { plotWidth: ow, plotHeight: oh } = plotDimsRef.current;
-    const dpr = pixelRatio();
-    const reqViewport = { ...vp, outputWidth: ow * dpr, outputHeight: oh * dpr };
+    const reqViewport = { ...vp, outputWidth: ow, outputHeight: oh };
 
     // tiles to load this pass: target level (priority 1) + coarsest fallback (0)
     const tilesToLoad = (p) => {
@@ -432,8 +420,7 @@ const useSpatialStream = ({
     const vp = viewportRef.current;
     if (!vp || !sampleKey) return;
     const { plotWidth: ow, plotHeight: oh } = plotDimsRef.current;
-    const dpr = pixelRatio();
-    const reqViewport = { ...vp, outputWidth: ow * dpr, outputHeight: oh * dpr };
+    const reqViewport = { ...vp, outputWidth: ow, outputHeight: oh };
     if (histP && showImage) {
       tilesAt(histP, levelFor(histP, reqViewport), vp).forEach((tile) => {
         const hit = peekTissueTile(sampleKey, tile);
