@@ -9,22 +9,45 @@ const cellInfo = {
   cellSets: ['Louvain : cluster1', 'anotherRootCluster : cluster2'],
 };
 
-const coordinates = {
-  current: {
-    x: 100,
-    y: 200,
-    width: 500,
-    height: 500,
-  },
-};
+const coordinates = { x: 100, y: 200 };
+
+// each tooltip line renders as "<bold label> value", so the label and value are
+// separate text nodes — match them individually
+const lineWithLabelAndValue = (label, value) => (
+  (content, node) => node?.textContent === `${label} ${value}`
+);
 
 describe('CellInfo', () => {
   it('renders cell info card with properties', () => {
-    render(<CellInfo coordinates={coordinates} cellInfo={cellInfo} />);
-    expect(screen.getByText(`Gene name: ${cellInfo.geneName}`)).toBeInTheDocument();
-    expect(screen.getByText(`Cell id: ${cellInfo.cellId}`)).toBeInTheDocument();
-    expect(screen.getByText(`Expression Level: ${cellInfo.expression}`)).toBeInTheDocument();
-    expect(screen.getByText(cellInfo.cellSets[0])).toBeInTheDocument();
-    expect(screen.getByText(cellInfo.cellSets[1])).toBeInTheDocument();
+    render(
+      <CellInfo
+        containerWidth={500}
+        containerHeight={500}
+        coordinates={coordinates}
+        cellInfo={cellInfo}
+      />,
+    );
+    expect(screen.getByText(lineWithLabelAndValue('Cell id:', cellInfo.cellId))).toBeInTheDocument();
+    expect(screen.getByText(lineWithLabelAndValue('Gene name:', cellInfo.geneName))).toBeInTheDocument();
+    expect(
+      screen.getByText(lineWithLabelAndValue('Expression Level:', cellInfo.expression)),
+    ).toBeInTheDocument();
+    // cell-set entries split into a bold "Parent :" label + value
+    expect(screen.getByText('cluster1')).toBeInTheDocument();
+    expect(screen.getByText('cluster2')).toBeInTheDocument();
+  });
+
+  it('renders category labels in bold', () => {
+    render(
+      <CellInfo
+        containerWidth={500}
+        containerHeight={500}
+        coordinates={coordinates}
+        cellInfo={cellInfo}
+      />,
+    );
+    const label = screen.getByText('Cell id:');
+    expect(label.tagName).toBe('SPAN');
+    expect(label).toHaveStyle({ fontWeight: 600 });
   });
 });

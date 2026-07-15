@@ -28,6 +28,7 @@ import buildSpatialGridLayout from 'utils/spatial/buildSpatialGridLayout';
 import { createCellSet } from 'redux/actions/cellSets';
 import { updateCellInfo } from 'redux/actions/cellInfo';
 import { union } from 'utils/cellSetOperations';
+import HOVER_SOURCE from 'utils/data-exploration/cellInfoHoverSource';
 import { imagelessTechs } from 'utils/constants';
 import _ from 'lodash';
 
@@ -119,6 +120,7 @@ const SpatialViewer = (props) => {
   }, [cellSetsHierarchyNodes, cellSetProperties]);
 
   const selectedCell = useSelector((state) => state.cellInfo.cellId);
+  const hoverSource = useSelector((state) => state.cellInfo.hoverSource);
   const expressionLoading = useSelector((state) => state.genes.expression.full.loading);
   const expressionMatrix = useSelector((state) => state.genes.expression.full.matrix);
 
@@ -595,7 +597,7 @@ const SpatialViewer = (props) => {
   // ── Callbacks ─────────────────────────────────────────────────────────────
   const setCellHighlight = useCallback((cell) => {
     if (!cell) return;
-    dispatch(updateCellInfo({ cellId: cell }));
+    dispatch(updateCellInfo({ cellId: cell, hoverSource: HOVER_SOURCE.spatial }));
   }, []);
 
   const clearCellHighlight = useCallback(() => {
@@ -1016,13 +1018,17 @@ const SpatialViewer = (props) => {
       ) : (
         (cellInfoVisible && cellInfoTooltip && activeTool !== 'polygon') ? (
           <div>
-            <CellInfo
-              containerWidth={width}
-              containerHeight={height}
-              componentType={EMBEDDING_TYPE}
-              coordinates={cellCoordinatesRef.current}
-              cellInfo={cellInfoTooltip}
-            />
+            {/* only show the tooltip when the hover happened in this plot;
+                linked plots still draw the crosshair below */}
+            {hoverSource === HOVER_SOURCE.spatial && (
+              <CellInfo
+                containerWidth={width}
+                containerHeight={height}
+                componentType={EMBEDDING_TYPE}
+                coordinates={cellCoordinatesRef.current}
+                cellInfo={cellInfoTooltip}
+              />
+            )}
             <CrossHair componentType={EMBEDDING_TYPE} coordinates={cellCoordinatesRef} />
           </div>
         ) : <></>

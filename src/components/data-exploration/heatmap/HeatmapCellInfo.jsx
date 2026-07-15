@@ -4,6 +4,7 @@ import PropTypes from 'prop-types';
 import getCellInfoCoordinates from 'utils/data-exploration/getCellInfoCoordinates';
 
 const cellInfoStyle = { fontSize: '0.75rem' };
+const labelStyle = { fontWeight: 600 };
 
 const HeatmapCellInfo = (props) => {
   const {
@@ -42,22 +43,29 @@ const HeatmapCellInfo = (props) => {
           position: 'absolute',
           left,
           top,
+          // keep each line on one row instead of wrapping mid-label near an edge
+          whiteSpace: 'nowrap',
+          // partially translucent so the heatmap underneath stays visible
+          opacity: 0.85,
           pointerEvents: 'none',
         }}
       >
         {cellId ? (
           <div style={cellInfoStyle}>
-            {`Cell id: ${cellId}`}
+            <span style={labelStyle}>Cell id:</span>
+            {` ${cellId}`}
           </div>
         ) : <></>}
         {geneName ? (
           <div style={cellInfoStyle}>
-            {`Gene name: ${geneName}`}
+            <span style={labelStyle}>Gene name:</span>
+            {` ${geneName}`}
           </div>
         ) : <></>}
         {geneExpression !== undefined ? (
           <div style={cellInfoStyle}>
-            Expression:&nbsp;
+            <span style={labelStyle}>Expression:</span>
+            &nbsp;
             {geneExpression}
           </div>
         ) : <></>}

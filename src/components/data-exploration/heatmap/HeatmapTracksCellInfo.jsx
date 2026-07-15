@@ -4,6 +4,7 @@ import PropTypes from 'prop-types';
 import getCellInfoCoordinates from 'utils/data-exploration/getCellInfoCoordinates';
 
 const cellInfoStyle = { fontSize: '0.75rem' };
+const labelStyle = { fontWeight: 600 };
 
 const HeatmapTracksCellInfo = (props) => {
   const {
@@ -40,17 +41,23 @@ const HeatmapTracksCellInfo = (props) => {
           position: 'absolute',
           left,
           top: '20px',
+          // keep each line on one row instead of wrapping mid-label near an edge
+          whiteSpace: 'nowrap',
+          // partially translucent so the heatmap underneath stays visible
+          opacity: 0.85,
           pointerEvents: 'none',
         }}
       >
         {cellId ? (
           <div style={cellInfoStyle}>
-            {`Cell id: ${cellId}`}
+            <span style={labelStyle}>Cell id:</span>
+            {` ${cellId}`}
           </div>
         ) : <></>}
         {trackName ? (
           <div style={cellInfoStyle}>
-            {`Group name: ${trackName}`}
+            <span style={labelStyle}>Group name:</span>
+            {` ${trackName}`}
           </div>
         ) : <></>}
       </Card>

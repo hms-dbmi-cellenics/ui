@@ -1,9 +1,12 @@
-const PDDG_TOP = 16; // px
-const PDDG_BOTTOM = 16; // px
-const PDDG_RIGHT = 16; // px
+const PADDING = 16; // px gap kept between the cursor/panel edge and the tooltip
 
-const CUTOFF = 3 / 4;
-
+// Position the hover tooltip next to the cursor without letting it spill out of
+// the plot panel. Preference is to the right of / below the cursor; each axis
+// flips to the other side only when that placement would overflow the real
+// panel edge. A final clamp keeps the whole card inside the panel even when the
+// tooltip is larger than the space on either side of the cursor (small
+// split-view panels, tall multi-cell-set tooltips) — the flip alone can't cover
+// that, which is what let the card fall outside the panel before.
 const getCellInfoCoordinates = (coordinates, dimensions, boundingX, boundingY) => {
   const {
     width: popupWidth,
@@ -15,14 +18,17 @@ const getCellInfoCoordinates = (coordinates, dimensions, boundingX, boundingY) =
     y: cursorY,
   } = coordinates;
 
-  const invertX = () => cursorX + popupWidth > boundingX * CUTOFF;
+  const overflowsRight = cursorX + PADDING + popupWidth > boundingX;
+  const overflowsBottom = cursorY + PADDING + popupHeight > boundingY;
 
-  // Padding bottom is removed from boundingY because the embedding
-  // has a padding at the top part of the embedding
-  const invertY = () => cursorY + popupHeight + PDDG_TOP + PDDG_BOTTOM > boundingY * CUTOFF;
+  let left = overflowsRight ? cursorX - PADDING - popupWidth : cursorX + PADDING;
+  let top = overflowsBottom ? cursorY - PADDING - popupHeight : cursorY + PADDING;
 
-  const left = invertX() ? cursorX - (popupWidth + PDDG_RIGHT) : cursorX + PDDG_RIGHT;
-  const top = invertY() ? cursorY - (popupHeight + PDDG_BOTTOM) : cursorY + PDDG_BOTTOM;
+  // Keep the tooltip within [PADDING, edge - size - PADDING]. When the tooltip
+  // is wider/taller than the panel this pins it to the top-left corner (the most
+  // useful part stays visible) rather than flying off-screen.
+  left = Math.max(PADDING, Math.min(left, boundingX - popupWidth - PADDING));
+  top = Math.max(PADDING, Math.min(top, boundingY - popupHeight - PADDING));
 
   return { left, top };
 };
