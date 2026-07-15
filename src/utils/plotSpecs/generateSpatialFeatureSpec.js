@@ -94,12 +94,16 @@ const generateSpec = (
 
   // 2a. Segmentation overlay — data-driven (image supplied via the `data` prop)
   // so recolouring is an in-place dataset update, not a view rebuild.
+  // smooth:false → nearest-neighbour scaling (no bilinear interpolation), so
+  // zoomed-in cells render as solid pixel blocks, matching the Data Exploration
+  // deck.gl BitmaskLayer (which samples the label texture with GL.NEAREST)
+  // instead of the fuzzy interpolation the canvas renderer applies by default.
   if (hasSegmentation) {
     marks.push({
       type: 'image',
       clip: true,
       from: { data: 'segOverlayData' },
-      encode: { update: tileEncode },
+      encode: { update: { ...tileEncode, smooth: { value: false } } },
     });
   } else {
     // 2b. Centroid dots — permanent fallback when no segmentation zarr available
