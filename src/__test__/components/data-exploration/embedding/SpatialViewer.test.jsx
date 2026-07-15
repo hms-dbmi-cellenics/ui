@@ -165,10 +165,15 @@ describe('SpatialViewer', () => {
     );
 
     // a zip store + zarr root per returned url, for both the image and segmentation grids
+    // (roots are memoised by url, so regrouping rebuilds the grid without re-opening stores)
     expect(zarrRoot).toHaveBeenCalledTimes(4);
 
-    // loads a grid for the image and a grid for the segmentations
-    expect(loadOmeZarrGrid).toHaveBeenCalledTimes(2);
+    // loads a grid for the image (emptyFill undefined) and one for the segmentations
+    // (emptyFill 0). The grid may be rebuilt when the sample grouping resolves, so
+    // assert both grids load rather than an exact call count.
+    const emptyFillArgs = loadOmeZarrGrid.mock.calls.map((call) => call[2]);
+    expect(emptyFillArgs).toContain(undefined); // image grid
+    expect(emptyFillArgs).toContain(0); // segmentation grid
   });
 
   it('renders correctly with initial data', () => {

@@ -88,14 +88,19 @@ const convertCellsData = (results, hidden, properties) => {
   };
 };
 
-const offsetCentroids = (results, properties, sampleIds, perImageShape, gridShape) => {
+const offsetCentroids = (
+  results, properties, sampleIds, perImageShape, gridShape, sampleRowCol = null,
+) => {
   const [imageHeight, imageWidth] = perImageShape;
   const numColumns = gridShape[1];
 
-  // Pre-calculate offsets for each sampleId
+  // Pre-calculate offsets for each sampleId. sampleRowCol (from
+  // buildSpatialGridLayout) places grouped samples; without it, fall back to
+  // dense row-major placement.
   const sampleOffsets = sampleIds.map((sampleId, sampleIndex) => {
-    const row = Math.floor(sampleIndex / numColumns);
-    const column = sampleIndex % numColumns;
+    const rowCol = sampleRowCol?.[sampleIndex];
+    const row = rowCol ? rowCol.row : Math.floor(sampleIndex / numColumns);
+    const column = rowCol ? rowCol.col : sampleIndex % numColumns;
     return {
       xOffset: column * imageWidth,
       yOffset: row * imageHeight,

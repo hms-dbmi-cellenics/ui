@@ -4,7 +4,7 @@ import getCellSets from '../cellSets/getCellSets';
 const getGroupSlidesBy = (plotUuid) => (cellSets, componentConfig) => {
   if (!cellSets.accessible) return [];
 
-  const groupSlidesBy = componentConfig[plotUuid]?.config.groupSlidesBy;
+  const groupSlidesBy = componentConfig[plotUuid]?.config?.groupSlidesBy;
   if (!groupSlidesBy?.length) return [];
 
   const { properties } = cellSets;

@@ -59,6 +59,20 @@ export const buildCellColorLUT = (offsetData, cellColors, hiddenCellIds, cellsIn
 
   const hasCellColors = Object.keys(cellColors).length > 0;
 
+  // Cells in the same cluster share one colour string, but parseColor runs a
+  // regex + parseInt per call. Cache by colour value so each distinct colour is
+  // parsed once instead of once per cell (this LUT is rebuilt on every hide/
+  // unhide and colour change, over every cell).
+  const parsedColorCache = new Map();
+  const parseColorCached = (colorValue) => {
+    let rgb = parsedColorCache.get(colorValue);
+    if (!rgb) {
+      rgb = parseColor(colorValue);
+      parsedColorCache.set(colorValue, rgb);
+    }
+    return rgb;
+  };
+
   offsetData.forEach((_, cellIdKey) => {
     if (hiddenCellIds.has(cellIdKey)) return;
     if (!cellsInAnyCluster.has(cellIdKey)) return;
@@ -70,7 +84,7 @@ export const buildCellColorLUT = (offsetData, cellColors, hiddenCellIds, cellsIn
     if (hasCellColors) {
       const colorValue = cellColors[String(cellIdKey)];
       if (colorValue) {
-        [r, g, b] = parseColor(colorValue);
+        [r, g, b] = parseColorCached(colorValue);
       } else {
         r = DEFAULT_CELL_GREY; g = DEFAULT_CELL_GREY; b = DEFAULT_CELL_GREY;
       }

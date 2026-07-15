@@ -361,7 +361,12 @@ const useSpatialStream = ({
     openOmePyramid(omeZarrUrl).then((p) => {
       if (cancelled || !p) return;
       histPyramidRef.current = { key: myKey, pyramid: p };
-      const dims = { imageWidth: p.fullW, imageHeight: p.fullH };
+      const dims = {
+        imageWidth: p.fullW,
+        imageHeight: p.fullH,
+        origWidth: p.origW,
+        origHeight: p.origH,
+      };
       dimsRef.current = dims;
       setImageDims(dims);
       if (!viewportRef.current) {
@@ -383,7 +388,12 @@ const useSpatialStream = ({
       if (cancelled || !p) return;
       segPyramidRef.current = { key: myKey, pyramid: p };
       if (!dimsRef.current) {
-        const dims = { imageWidth: p.fullW, imageHeight: p.fullH };
+        const dims = {
+          imageWidth: p.fullW,
+          imageHeight: p.fullH,
+          origWidth: p.origW,
+          origHeight: p.origH,
+        };
         dimsRef.current = dims;
         setImageDims(dims);
       }

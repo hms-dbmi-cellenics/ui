@@ -2,8 +2,9 @@
 
 import { slice, get } from 'zarrita';
 
-// use background color of tile for transparent data
-const SPATIAL_BACKGROUND_COLOR = { 0: 246, 1: 247, 2: 249 };
+// Light neutral canvas (#f5f7f9) used to fill the RGB image grid's empty cells
+// (the "filler" tiles that complete the last row of a multi-sample grid).
+const SPATIAL_BACKGROUND_COLOR = { 0: 245, 1: 247, 2: 249 };
 
 function getV2DataType(dtype) {
   const mapping = {
@@ -56,7 +57,19 @@ export function createZarrArrayAdapter(arr) {
   });
 }
 
-export function createZarrArrayAdapterGrid(arrs, [numRows, numCols]) {
+// emptyFill controls the value written into empty grid cells (filler tiles that
+// complete the last row). For the RGB image grid it's a per-channel object
+// (SPATIAL_BACKGROUND_COLOR → #f5f7f9). For the segmentation label grid pass 0
+// so the filler reads as background (excludeBackground makes it transparent,
+// revealing the light image filler beneath) instead of a bogus cell id.
+// slotToArrIndex maps each grid cell (row * numCols + col) to an index into
+// `arrs`, or null for an empty filler cell. When omitted, cells are filled
+// densely row-major (arrs[0], arrs[1], …) — the ungrouped default. A map lets
+// samples be grouped into rows with filler cells mid-grid (see
+// buildSpatialGridLayout).
+export function createZarrArrayAdapterGrid(
+  arrs, [numRows, numCols], emptyFill = SPATIAL_BACKGROUND_COLOR, slotToArrIndex = null,
+) {
   const firstArray = arrs[0];
 
   return new Proxy(firstArray, {
@@ -107,18 +120,30 @@ export function createZarrArrayAdapterGrid(arrs, [numRows, numCols]) {
                 }
               });
 
-              const imageIndex = row * numCols + col;
-              // e.g. if 3 images but grid is 2 x 2 then 1 empty image
-              const hasImage = imageIndex < arrs.length;
+              const slot = row * numCols + col;
+              // Resolve the grid cell to a backing image. With a slot map,
+              // cells can be empty mid-grid (grouped rows); without one, cells
+              // fill densely and are empty only past the sample count.
+              const arrIndex = slotToArrIndex ? slotToArrIndex[slot] : slot;
+              const hasImage = arrIndex !== null && arrIndex !== undefined
+                && arrIndex < arrs.length;
 
               return {
-                imageIndex,
+                imageIndex: arrIndex,
                 row,
                 col,
                 adjustedSelection,
                 hasImage,
               };
             })).filter(Boolean); // Remove any null results
+
+            // The requested region can fall entirely outside the grid — e.g. a
+            // stale tile request after the grid shape shrank when the sample
+            // grouping changed. Return a background tile of the requested size
+            // rather than letting combineGridData build from an empty list.
+            if (dataSelections.length === 0) {
+              return generateEmptyImageData(normalizedSelection, 0, 0, emptyFill).data;
+            }
 
             const dataPerImage = await Promise.all(
               dataSelections.map(({
@@ -132,7 +157,7 @@ export function createZarrArrayAdapterGrid(arrs, [numRows, numCols]) {
                 }
 
                 // Generate image data if the image doesn't exist
-                return generateEmptyImageData(adjustedSelection, row, col);
+                return generateEmptyImageData(adjustedSelection, row, col, emptyFill);
               }),
             );
 
@@ -157,16 +182,22 @@ export function createZarrArrayAdapterGrid(arrs, [numRows, numCols]) {
   });
 }
 
-function generateEmptyImageData(adjustedSelection, row, col) {
+function generateEmptyImageData(adjustedSelection, row, col, emptyFill = SPATIAL_BACKGROUND_COLOR) {
   // Extract the channel and slices for y and x dimensions
   const [channel, ySlice, xSlice] = adjustedSelection;
 
-  // Calculate the dimensions for the empty image data
-  const height = ySlice.stop - ySlice.start;
-  const width = xSlice.stop - xSlice.start;
+  // Calculate the dimensions for the empty image data. Clamp to >= 0: a stale
+  // out-of-bounds tile request (e.g. right after the grid shape shrinks when the
+  // sample grouping changes) can arrive with stop < start, which would make
+  // `new Int32Array(negative)` throw "Invalid typed array length".
+  const height = Math.max(0, ySlice.stop - ySlice.start);
+  const width = Math.max(0, xSlice.stop - xSlice.start);
 
-  // Create empty data using background color of spatial tile
-  const backgroundChannelValue = SPATIAL_BACKGROUND_COLOR[channel];
+  // Fill value for the empty cell: a per-channel object (RGB image background)
+  // or a scalar (e.g. 0 for the segmentation label grid).
+  const backgroundChannelValue = typeof emptyFill === 'object'
+    ? (emptyFill[channel] ?? 0)
+    : emptyFill;
   const data = new Int32Array(height * width).fill(backgroundChannelValue);
 
   // Return an object structured like Zarr array data
@@ -198,6 +229,12 @@ function calculateRanges(dimSelection, sizePerImage, imagesPerDimension) {
 }
 
 function combineGridData(dataArrays) {
+  if (dataArrays.length === 0) {
+    // No tiles intersect the request; nothing to composite. Return an empty
+    // tile instead of computing a negative grid size (Array(-Infinity)).
+    return { data: new Int32Array(0), shape: [0, 0], stride: [0, 1] };
+  }
+
   if (dataArrays.length === 1) {
     return dataArrays[0].data; // Directly return if only one image
   }

@@ -709,7 +709,9 @@ const interactiveHeatmapInitialConfig = {
 };
 
 const interactiveSpatialInitialConfig = {
-  showImages: true,
+  // tissue image hidden by default in Data Exploration — the segmentation
+  // overlay is the primary layer; users can enable images in the settings
+  showImages: false,
   showSegmentations: true,
   showSegmentationOutlines: true,
   groupSlidesBy: ['sample'],

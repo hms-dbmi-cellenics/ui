@@ -397,9 +397,10 @@ describe('HeatmapPlot', () => {
       await vitesscePropsSpy.setGeneHighlight(highlightedGene);
     });
 
-    // It shows the cell info tooltip
-    expect(screen.getByText(/Cell id: 2/i)).toBeInTheDocument();
-    expect(screen.getByText(/Gene name: S100a4/i)).toBeInTheDocument();
+    // It shows the cell info tooltip (label + value are separate nodes now, so
+    // match the whole line's text content)
+    expect(screen.getByText((c, node) => node?.textContent === 'Cell id: 2')).toBeInTheDocument();
+    expect(screen.getByText((c, node) => node?.textContent === 'Gene name: S100a4')).toBeInTheDocument();
 
     // On hovering outside
     await act(async () => {
@@ -417,8 +418,8 @@ describe('HeatmapPlot', () => {
     });
 
     // It shows the track cell info tooltip
-    expect(screen.getByText(/Cell id: 4/i)).toBeInTheDocument();
-    expect(screen.getByText(/Group name: Cluster 0/i)).toBeInTheDocument();
+    expect(screen.getByText((c, node) => node?.textContent === 'Cell id: 4')).toBeInTheDocument();
+    expect(screen.getByText((c, node) => node?.textContent === 'Group name: Cluster 0')).toBeInTheDocument();
 
     // On hovering outside heatmap tracks
     await act(async () => {

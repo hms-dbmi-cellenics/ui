@@ -22,6 +22,7 @@ import calculateInitialViewState from 'components/data-exploration/embedding/cal
 import { buildCellsQuadTree, selectCellsInPolygon } from 'components/data-exploration/embedding/lassoUtils';
 import parseColor from 'components/data-exploration/parseColor';
 import useFocusCellColors from 'components/data-exploration/useFocusCellColors';
+import HOVER_SOURCE from 'utils/data-exploration/cellInfoHoverSource';
 
 import { loadEmbedding } from 'redux/actions/embedding';
 import { getCellSetsHierarchyByType, getCellSets } from 'redux/selectors';
@@ -102,6 +103,7 @@ const Embedding = (props) => {
   } = cellSets;
 
   const selectedCell = useSelector((state) => state.cellInfo.cellId);
+  const hoverSource = useSelector((state) => state.cellInfo.hoverSource);
   const expressionLoading = useSelector((state) => state.genes.expression.full.loading);
   const expressionMatrix = useSelector((state) => state.genes.expression.full.matrix);
 
@@ -255,7 +257,7 @@ const Embedding = (props) => {
     // Keep last shown tooltip
     if (!cell) return;
 
-    dispatch(updateCellInfo({ cellId: cell }));
+    dispatch(updateCellInfo({ cellId: cell, hoverSource: HOVER_SOURCE.embedding }));
   }, []);
 
   const clearCellHighlight = useCallback(() => {
@@ -543,13 +545,17 @@ const Embedding = (props) => {
           ) : (
             (cellInfoVisible && cellInfoTooltip && activeTool !== 'polygon') ? (
               <div>
-                <CellInfo
-                  containerWidth={width}
-                  containerHeight={height}
-                  componentType={embeddingType}
-                  coordinates={cellCoordinatesRef.current}
-                  cellInfo={cellInfoTooltip}
-                />
+                {/* only show the tooltip when the hover happened in this plot;
+                    linked plots still draw the crosshair below */}
+                {hoverSource === HOVER_SOURCE.embedding && (
+                  <CellInfo
+                    containerWidth={width}
+                    containerHeight={height}
+                    componentType={embeddingType}
+                    coordinates={cellCoordinatesRef.current}
+                    cellInfo={cellInfoTooltip}
+                  />
+                )}
                 <CrossHair
                   componentType={embeddingType}
                   coordinates={cellCoordinatesRef}

@@ -24,6 +24,7 @@ import PlatformError from 'components/PlatformError';
 
 import HeatmapCellInfo from 'components/data-exploration/heatmap/HeatmapCellInfo';
 import HeatmapTracksCellInfo from 'components/data-exploration/heatmap/HeatmapTracksCellInfo';
+import HOVER_SOURCE from 'utils/data-exploration/cellInfoHoverSource';
 
 import getContainingCellSetsProperties from 'utils/cellSets/getContainingCellSetsProperties';
 import useConditionalEffect from 'utils/customHooks/useConditionalEffect';
@@ -374,7 +375,7 @@ const HeatmapPlot = (props) => {
 
   useEffect(() => {
     if (cellHighlight) {
-      dispatch(updateCellInfo({ cellId: cellHighlight }));
+      dispatch(updateCellInfo({ cellId: cellHighlight, hoverSource: HOVER_SOURCE.heatmap }));
     }
   }, [cellHighlight]);
 
@@ -462,7 +463,7 @@ const HeatmapPlot = (props) => {
       setHighlightedTrackData(null);
       return;
     }
-    dispatch(updateCellInfo({ cellId: info[0] }));
+    dispatch(updateCellInfo({ cellId: info[0], hoverSource: HOVER_SOURCE.heatmap }));
 
     const [cellIndexStr, trackIndex, mouseX, mouseY] = info;
 

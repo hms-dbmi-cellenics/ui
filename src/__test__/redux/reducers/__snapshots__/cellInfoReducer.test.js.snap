@@ -34,6 +34,7 @@ exports[`cellInfoReducer Updates cell info state on update action 1`] = `
     "store": "cellSets",
   },
   "groupedTrack": "louvain",
+  "hoverSource": undefined,
   "selectedTracks": [
     "louvain",
   ],

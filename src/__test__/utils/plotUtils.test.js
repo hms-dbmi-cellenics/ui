@@ -53,6 +53,24 @@ describe('offsetCentroids', () => {
     expect(offset[2]).toEqual([205, 5]);
   });
 
+  it('places samples by the provided sampleRowCol (grouped rows)', () => {
+    const results = [];
+    results[0] = [10, 20]; // sample-0
+    results[2] = [5, 5]; // sample-1
+
+    // group layout: sample-0 in row 0, sample-1 in row 1 (one per row)
+    const sampleRowCol = [{ row: 0, col: 0 }, { row: 1, col: 0 }];
+    const groupedGrid = [2, 1]; // 2 rows, 1 column
+
+    const offset = offsetCentroids(
+      results, properties, sampleIds, perImageShape, groupedGrid, sampleRowCol,
+    );
+
+    // sample-0: no offset; sample-1: shifted DOWN by one image height (row 1)
+    expect(offset[0]).toEqual([10, 20]);
+    expect(offset[2]).toEqual([5, 105]);
+  });
+
   it('leaves null/undefined (filtered) cells as holes, producing a sparse array', () => {
     const results = [];
     results[0] = [10, 20];

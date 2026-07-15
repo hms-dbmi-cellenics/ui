@@ -1,25 +1,31 @@
-import React, { useState, useCallback } from 'react';
+import React, { useLayoutEffect, useRef, useState } from 'react';
 import { Card } from 'antd';
 import PropTypes from 'prop-types';
 import getCellInfoCoordinates from 'utils/data-exploration/getCellInfoCoordinates';
 
 const cellInfoStyle = { fontSize: '0.75rem' };
+const labelStyle = { fontWeight: 600 };
 
 const HeatmapTracksCellInfo = (props) => {
   const {
     containerWidth, containerHeight, cellId, trackName, coordinates,
   } = props;
 
+  const wrapperRef = useRef(null);
   const [tooltipDimensions, setTooltipDimensions] = useState({ width: 0, height: 0 });
 
-  const getTooltipElement = useCallback((el) => {
-    if (!el) return;
-
-    setTooltipDimensions({
-      width: el.firstChild.offsetWidth,
-      height: el.firstChild.offsetHeight,
-    });
-  }, []);
+  // Re-measure on every render (the card resizes with its content) before paint,
+  // only setting state on a real change; a one-shot ref left dimensions stale and
+  // a bigger tooltip got clamped against the previous cell's size and cut off.
+  useLayoutEffect(() => {
+    const card = wrapperRef.current?.firstChild;
+    if (!card) return;
+    const width = card.offsetWidth;
+    const height = card.offsetHeight;
+    setTooltipDimensions((prev) => (
+      prev.width === width && prev.height === height ? prev : { width, height }
+    ));
+  });
 
   const { left } = getCellInfoCoordinates(
     coordinates,
@@ -31,7 +37,7 @@ const HeatmapTracksCellInfo = (props) => {
   const renderCellInfo = () => (
     // We have to wrap the <Card> in a <div> because Antd does not correctly set the ref
     // https://github.com/ant-design/ant-design/issues/28582
-    <div ref={getTooltipElement}>
+    <div ref={wrapperRef}>
       <Card
         size='small'
         style={{
@@ -40,17 +46,23 @@ const HeatmapTracksCellInfo = (props) => {
           position: 'absolute',
           left,
           top: '20px',
+          // keep each line on one row instead of wrapping mid-label near an edge
+          whiteSpace: 'nowrap',
+          // partially translucent so the heatmap underneath stays visible
+          opacity: 0.85,
           pointerEvents: 'none',
         }}
       >
         {cellId ? (
           <div style={cellInfoStyle}>
-            {`Cell id: ${cellId}`}
+            <span style={labelStyle}>Cell id:</span>
+            {` ${cellId}`}
           </div>
         ) : <></>}
         {trackName ? (
           <div style={cellInfoStyle}>
-            {`Group name: ${trackName}`}
+            <span style={labelStyle}>Group name:</span>
+            {` ${trackName}`}
           </div>
         ) : <></>}
       </Card>
