@@ -3,6 +3,7 @@ import { CELL_CLASS_DELETE } from 'redux/actionTypes/cellSets';
 import endUserMessages from 'utils/endUserMessages';
 import fetchAPI from 'utils/http/fetchAPI';
 import handleError from 'utils/http/handleError';
+import loadCellSets from 'redux/actions/cellSets/loadCellSets';
 
 const deleteCellClassJsonMerger = (cellClasskey) => (
   [{
@@ -27,6 +28,14 @@ const deleteCellSet = (
     return null;
   }
 
+  // Optimistically remove the cell class from the UI right away. The API PATCH
+  // rewrites the whole cell sets object (slow for large cell sets), so we don't
+  // block the UI on it; on failure we reload to restore the server's truth.
+  dispatch({
+    type: CELL_CLASS_DELETE,
+    payload: { key: cellClassKey },
+  });
+
   try {
     await fetchAPI(
       `/v2/experiments/${experimentId}/cellSets`,
@@ -38,13 +47,9 @@ const deleteCellSet = (
         body: JSON.stringify(deleteCellClassJsonMerger(cellClassKey)),
       },
     );
-
-    await dispatch({
-      type: CELL_CLASS_DELETE,
-      payload: { key: cellClassKey },
-    });
   } catch (e) {
     handleError(e, endUserMessages.ERROR_SAVING);
+    dispatch(loadCellSets(experimentId, true));
   }
 };
 

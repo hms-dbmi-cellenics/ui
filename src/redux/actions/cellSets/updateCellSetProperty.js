@@ -5,6 +5,7 @@ import { CELL_SETS_UPDATE_PROPERTY } from 'redux/actionTypes/cellSets';
 import fetchAPI from 'utils/http/fetchAPI';
 import endUserMessages from 'utils/endUserMessages';
 import handleError from 'utils/http/handleError';
+import loadCellSets from 'redux/actions/cellSets/loadCellSets';
 
 const updateCellSetPropertyJsonMerger = (cellSetKey, dataUpdated, cellClassKey) => (
   [{
@@ -63,6 +64,17 @@ const updateCellSetProperty = (
     ? updateCellClassPropertyJsonMerger(key, dataUpdated)
     : updateCellSetPropertyJsonMerger(key, dataUpdated, parentNodeKey);
 
+  // Optimistically update the UI (e.g. the new name/color) right away; the API
+  // PATCH rewrites the whole cell sets object so we don't block the UI on it.
+  // On failure we reload to restore the server's truth.
+  dispatch({
+    type: CELL_SETS_UPDATE_PROPERTY,
+    payload: {
+      cellSetKey: key,
+      dataUpdated,
+    },
+  });
+
   try {
     await fetchAPI(
       `/v2/experiments/${experimentId}/cellSets`,
@@ -74,16 +86,9 @@ const updateCellSetProperty = (
         body: JSON.stringify(jsonMergerUpdateObject),
       },
     );
-
-    await dispatch({
-      type: CELL_SETS_UPDATE_PROPERTY,
-      payload: {
-        cellSetKey: key,
-        dataUpdated,
-      },
-    });
   } catch (e) {
     handleError(e, endUserMessages.ERROR_SAVING);
+    dispatch(loadCellSets(experimentId, true));
   }
 };
 
