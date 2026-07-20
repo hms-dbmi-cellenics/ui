@@ -80,6 +80,9 @@ const waitForWorkRequest = async (
         worker: {
           statusCode: message.status_code,
           userMessage: message.user_message,
+          // int 0-100 when the task reports a bar-able progress, else null
+          // (null resets any previous bar for message-only phases)
+          progressPercent: message.progress_percent ?? null,
         },
       };
       dispatch(updateBackendStatus(experimentId, status));

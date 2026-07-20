@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import { BounceLoader } from 'react-spinners';
-import { Typography, Spin } from 'antd';
+import { Typography, Spin, Progress } from 'antd';
 import useSWR from 'swr';
 import React from 'react';
 import { useSelector } from 'react-redux';
@@ -39,15 +39,21 @@ const slowLoad = () => (
   </>
 );
 
-const fastLoad = (message) => (
+const fastLoad = (message, percent) => (
   <div style={{
     display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
   }}
   >
     <style>{spinnerStyles}</style>
-    <div style={{ padding: 25 }}>
-      <Spin size='large' className='loader-spinner' />
-    </div>
+    {typeof percent === 'number' ? (
+      <div style={{ width: 300, padding: 25 }}>
+        <Progress percent={percent} status='normal' strokeColor={colors.darkRed} />
+      </div>
+    ) : (
+      <div style={{ padding: 25 }}>
+        <Spin size='large' className='loader-spinner' />
+      </div>
+    )}
     <p style={{ textAlign: 'center' }}>
       <Text>
         {message || "We're getting your data ..."}
@@ -74,10 +80,10 @@ const Loader = ({ experimentId }) => {
   }
 
   if (workerInfo && workerInfo.userMessage) {
-    const { userMessage } = workerInfo;
+    const { userMessage, progressPercent } = workerInfo;
     return (
       <div>
-        {fastLoad(userMessage)}
+        {fastLoad(userMessage, progressPercent)}
       </div>
     );
   }
