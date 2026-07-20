@@ -448,7 +448,9 @@ const SpatialViewer = (props) => {
   // ── Initial view state ────────────────────────────────────────────────────
   useEffect(() => {
     if (!loader || !width || !height || viewState) return;
-    setViewState(getDefaultInitialViewState(loader.data, { width, height }, 0.5));
+    // zoomBackOff (3rd arg) is subtracted from the fit zoom; 0 = tight fit that
+    // fills the viewport (larger values leave more empty margin).
+    setViewState(getDefaultInitialViewState(loader.data, { width, height }, 0));
   }, [loader, width, height]);
 
   // ── Initial view state (imageless / micron-driven) ────────────────────────
@@ -469,8 +471,8 @@ const SpatialViewer = (props) => {
     const target = [(minX + maxX) / 2, (minY + maxY) / 2, 0];
     const extentX = Math.max(maxX - minX, 1);
     const extentY = Math.max(maxY - minY, 1);
-    // zoom such that the data extent fits the viewport (with a little padding)
-    const zoom = Math.log2(Math.min(width / extentX, height / extentY)) - 0.2;
+    // zoom such that the data extent fills the viewport (tight fit)
+    const zoom = Math.log2(Math.min(width / extentX, height / extentY));
     return { target, zoom };
   }, [offsetData, width, height, hiddenCellIds, cellsInAnyCluster]);
 
@@ -482,7 +484,7 @@ const SpatialViewer = (props) => {
     } else if (segmentationsLoader && width && height) {
       // offset centroids not ready yet: centre on the segmentation bitmask so
       // the polygons are visible even before the centroid overlay is built
-      setViewState(getDefaultInitialViewState(segmentationsLoader.data, { width, height }, 0.5));
+      setViewState(getDefaultInitialViewState(segmentationsLoader.data, { width, height }, 0));
     }
   }, [isImageless, fitViewToOffsetData, viewState, segmentationsLoader, width, height]);
 
@@ -698,7 +700,7 @@ const SpatialViewer = (props) => {
       return;
     }
     if (!loader || !width || !height) return;
-    setViewState(getDefaultInitialViewState(loader.data, { width, height }, 0.5));
+    setViewState(getDefaultInitialViewState(loader.data, { width, height }, 0));
   }, [loader, width, height, isImageless, fitViewToOffsetData]);
 
   // ── Molecule overlay: per-sample grid offsets + colour lookup ─────────────
