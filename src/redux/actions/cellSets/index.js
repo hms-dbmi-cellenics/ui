@@ -3,6 +3,7 @@ import deleteCellSet from './deleteCellSet';
 import deleteCellClass from './deleteCellClass';
 import runCellSetsClustering from './runCellSetsClustering';
 import runCellSetsAnnotation from './runCellSetsAnnotation';
+import runCassiaAnnotation from './runCassiaAnnotation';
 import updateCellSetsClustering from './updateCellSetsClustering';
 
 import loadCellSets from './loadCellSets';
@@ -18,6 +19,7 @@ export {
   deleteCellClass,
   runCellSetsClustering,
   runCellSetsAnnotation,
+  runCassiaAnnotation,
   updateCellSetsClustering,
   loadCellSets,
   reorderCellSet,

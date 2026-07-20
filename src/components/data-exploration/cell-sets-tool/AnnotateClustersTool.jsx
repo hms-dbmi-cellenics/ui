@@ -3,11 +3,39 @@ import PropTypes from 'prop-types';
 import _ from 'lodash';
 
 import {
+  Alert,
   Button,
-  Radio, Select, Space, Tooltip,
+  Input, Modal, Radio, Select, Space, Table, Tooltip, Typography,
 } from 'antd';
-import { runCellSetsAnnotation } from 'redux/actions/cellSets';
+import { runCellSetsAnnotation, runCassiaAnnotation } from 'redux/actions/cellSets';
 import { useDispatch } from 'react-redux';
+
+const { Text, Paragraph } = Typography;
+
+// Illustrative sample of the per-cluster marker gene table that is sent to
+// CASSIA's LLM provider. Values are dummy, shown only to convey the format.
+const exampleMarkerColumns = [
+  { title: 'cluster', dataIndex: 'cluster', key: 'cluster' },
+  { title: 'gene', dataIndex: 'gene', key: 'gene' },
+  { title: 'avg_log2FC', dataIndex: 'avg_log2FC', key: 'avg_log2FC' },
+  { title: 'pct.1', dataIndex: 'pct1', key: 'pct1' },
+  { title: 'pct.2', dataIndex: 'pct2', key: 'pct2' },
+];
+
+const exampleMarkerData = [
+  {
+    key: 1, cluster: 1, gene: 'CD3D', avg_log2FC: 3.42, pct1: 0.95, pct2: 0.08,
+  },
+  {
+    key: 2, cluster: 1, gene: 'IL7R', avg_log2FC: 2.88, pct1: 0.81, pct2: 0.12,
+  },
+  {
+    key: 3, cluster: 2, gene: 'MS4A1', avg_log2FC: 4.11, pct1: 0.97, pct2: 0.03,
+  },
+  {
+    key: 4, cluster: 2, gene: 'CD79A', avg_log2FC: 3.67, pct1: 0.89, pct2: 0.05,
+  },
+];
 
 const tissueOptions = [
   'Immune system',
@@ -59,54 +87,181 @@ const scTypeTooltipText = (
   </>
 );
 
+const cassiaTooltipText = (
+  <>
+    Automatic annotation is performed using CASSIA, a multi-agent large language
+    model system for interpretable cell type annotation developed by Elliot Xie
+    et al. It computes marker genes per cluster and uses an LLM to predict cell
+    types. Enter the species and tissue as free text (e.g. &quot;Human&quot;
+    and &quot;Large Intestine&quot;).
+    More details can be found in
+    {' '}
+    <a target='_blank' href='https://github.com/ElliotXie/CASSIA' rel='noreferrer'>the CASSIA github repo</a>
+    .
+  </>
+);
+
+const ANNOTATION_METHODS = {
+  SCTYPE: 'sctype',
+  CASSIA: 'cassia',
+};
+
 const AnnotateClustersTool = ({ experimentId, onRunAnnotation }) => {
   const dispatch = useDispatch();
 
+  const [method, setMethod] = useState(ANNOTATION_METHODS.SCTYPE);
   const [tissue, setTissue] = useState(null);
   const [species, setSpecies] = useState(null);
+  const [cassiaModalVisible, setCassiaModalVisible] = useState(false);
+
+  const isCassia = method === ANNOTATION_METHODS.CASSIA;
+
+  // tissue/species have different valid values per method (enum vs free text)
+  const onMethodChange = (e) => {
+    setMethod(e.target.value);
+    setTissue(null);
+    setSpecies(null);
+  };
+
+  const onCompute = () => {
+    // CASSIA sends data to an external LLM provider, so confirm first
+    if (isCassia) {
+      setCassiaModalVisible(true);
+      return;
+    }
+    dispatch(runCellSetsAnnotation(experimentId, species, tissue));
+    onRunAnnotation();
+  };
+
+  const onConfirmCassia = () => {
+    setCassiaModalVisible(false);
+    dispatch(runCassiaAnnotation(experimentId, species, tissue));
+    onRunAnnotation();
+  };
 
   return (
     <Space direction='vertical' size='large' style={{ width: '100%' }}>
-      <Radio.Group>
+      <Radio.Group value={method} onChange={onMethodChange}>
         <Tooltip title={scTypeTooltipText}>
-          <Radio>ScType</Radio>
+          <Radio value={ANNOTATION_METHODS.SCTYPE}>ScType</Radio>
+        </Tooltip>
+        <Tooltip title={cassiaTooltipText}>
+          <Radio value={ANNOTATION_METHODS.CASSIA}>CASSIA</Radio>
         </Tooltip>
       </Radio.Group>
 
       <Space direction='vertical' style={{ width: '100%' }}>
         Tissue type:
-        <Select
-          options={tissueOptions.map((option) => ({ label: option, value: option }))}
-          value={tissue}
-          placeholder='Select a tissue type'
-          onChange={setTissue}
-          style={{ width: '100%' }}
-          size='small'
-        />
+        {isCassia ? (
+          <Input
+            value={tissue ?? ''}
+            placeholder='e.g. Large Intestine'
+            onChange={(e) => setTissue(e.target.value || null)}
+            style={{ width: '100%' }}
+            size='small'
+          />
+        ) : (
+          <Select
+            options={tissueOptions.map((option) => ({ label: option, value: option }))}
+            value={tissue}
+            placeholder='Select a tissue type'
+            onChange={setTissue}
+            style={{ width: '100%' }}
+            size='small'
+          />
+        )}
       </Space>
 
       <Space direction='vertical' style={{ width: '100%' }}>
         Species:
-        <Select
-          options={speciesOptions.map((option) => ({ label: option, value: option }))}
-          value={species}
-          placeholder='Select a species'
-          onChange={setSpecies}
-          style={{ width: '100%' }}
-          size='small'
-        />
+        {isCassia ? (
+          <Input
+            value={species ?? ''}
+            placeholder='e.g. Human'
+            onChange={(e) => setSpecies(e.target.value || null)}
+            style={{ width: '100%' }}
+            size='small'
+          />
+        ) : (
+          <Select
+            options={speciesOptions.map((option) => ({ label: option, value: option }))}
+            value={species}
+            placeholder='Select a species'
+            onChange={setSpecies}
+            style={{ width: '100%' }}
+            size='small'
+          />
+        )}
       </Space>
 
       <Button
-        onClick={() => {
-          dispatch(runCellSetsAnnotation(experimentId, species, tissue));
-          onRunAnnotation();
-        }}
+        onClick={onCompute}
         disabled={_.isNil(tissue) || _.isNil(species)}
         size='small'
       >
         Compute
       </Button>
+
+      <Modal
+        title='Confirm CASSIA annotation'
+        open={cassiaModalVisible}
+        onCancel={() => setCassiaModalVisible(false)}
+        onOk={onConfirmCassia}
+        okText='Continue'
+        cancelText='Cancel'
+        width={640}
+      >
+        <Space direction='vertical' size='middle' style={{ width: '100%' }}>
+          <Alert
+            type='warning'
+            showIcon
+            message='This sends data to an external provider'
+            description={(
+              <>
+                CASSIA uses a third-party large language model (via OpenRouter)
+                to annotate your clusters. Continuing will send data outside
+                Cellenics to that provider.
+              </>
+            )}
+          />
+
+          <Paragraph style={{ marginBottom: 0 }}>
+            Only the following is sent — no raw expression counts and no
+            cell-level data leave Cellenics:
+            <ul style={{ marginBottom: 0 }}>
+              <li>
+                the
+                {' '}
+                <Text strong>marker genes for each cluster</Text>
+                {' '}
+                (with their summary statistics), in the format shown below
+              </li>
+              <li>
+                the tissue type
+                {' '}
+                <Text code>{tissue}</Text>
+                {' '}
+                and species
+                {' '}
+                <Text code>{species}</Text>
+              </li>
+            </ul>
+          </Paragraph>
+
+          <div>
+            <Text type='secondary'>
+              Example of the marker gene table (illustrative data):
+            </Text>
+            <Table
+              columns={exampleMarkerColumns}
+              dataSource={exampleMarkerData}
+              size='small'
+              pagination={false}
+              style={{ marginTop: 8 }}
+            />
+          </div>
+        </Space>
+      </Modal>
     </Space>
   );
 };
