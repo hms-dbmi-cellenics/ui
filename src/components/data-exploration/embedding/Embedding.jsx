@@ -163,8 +163,14 @@ const Embedding = (props) => {
   useEffect(() => {
     if (!data || !cellSetHidden || !cellSetProperties) return;
 
+    // Positions depend only on the embedding data and which cells are hidden;
+    // cellSetProperties is read for the hidden sets' (stable) cellIds but is
+    // intentionally NOT a dependency, so a rename/recolor doesn't rebuild the
+    // position arrays for every cell. cellSetHidden's reference only changes on
+    // hide/unhide/delete, and data on reclustering.
     setConvertedCellsData(convertCellsData(data, cellSetHidden, cellSetProperties));
-  }, [data, cellSetHidden, cellSetProperties]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [data, cellSetHidden]);
 
   const totalNumCells = useMemo(() => data?.length, [data]);
 

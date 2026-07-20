@@ -21,7 +21,11 @@ const composeTree = (hierarchy, properties, filterTypes = null) => {
         return ({
           ...node,
           ...restOfProperties,
-          cellIds: [...properties[node.key]?.cellIds || []],
+          // Share the (immutable, immer-frozen) cellIds array by reference
+          // rather than spread-copying it. Copying every cell id on each tree
+          // rebuild is O(total cells) and made rename/recolor/delete/select lag
+          // on large experiments; nothing mutates these arrays.
+          cellIds: properties[node.key]?.cellIds || [],
           children: node.children ? composeTreeRecursive(node.children, null) : undefined,
         });
       },
