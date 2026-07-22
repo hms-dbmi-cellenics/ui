@@ -12,29 +12,18 @@ import { useDispatch } from 'react-redux';
 
 const { Text, Paragraph } = Typography;
 
-// Illustrative sample of the per-cluster marker gene table that is sent to
-// CASSIA's LLM provider. Values are dummy, shown only to convey the format.
+// Illustrative sample of what is actually sent to CASSIA's LLM provider: for
+// each cluster, only the marker gene *names*, ranked by avg_log2FC from highest
+// to lowest (top 50). The summary statistics (avg_log2FC, pct.1, pct.2) are used
+// only locally to rank and filter the genes — they are NOT included in the prompt.
 const exampleMarkerColumns = [
   { title: 'cluster', dataIndex: 'cluster', key: 'cluster' },
-  { title: 'gene', dataIndex: 'gene', key: 'gene' },
-  { title: 'avg_log2FC', dataIndex: 'avg_log2FC', key: 'avg_log2FC' },
-  { title: 'pct.1', dataIndex: 'pct1', key: 'pct1' },
-  { title: 'pct.2', dataIndex: 'pct2', key: 'pct2' },
+  { title: 'ranked marker genes (highest → lowest)', dataIndex: 'genes', key: 'genes' },
 ];
 
 const exampleMarkerData = [
-  {
-    key: 1, cluster: 1, gene: 'CD3D', avg_log2FC: 3.42, pct1: 0.95, pct2: 0.08,
-  },
-  {
-    key: 2, cluster: 1, gene: 'IL7R', avg_log2FC: 2.88, pct1: 0.81, pct2: 0.12,
-  },
-  {
-    key: 3, cluster: 2, gene: 'MS4A1', avg_log2FC: 4.11, pct1: 0.97, pct2: 0.03,
-  },
-  {
-    key: 4, cluster: 2, gene: 'CD79A', avg_log2FC: 3.67, pct1: 0.89, pct2: 0.05,
-  },
+  { key: 1, cluster: 1, genes: 'CD3D, IL7R, CD3E, TRAC, CD2, LTB, … (top 50)' },
+  { key: 2, cluster: 2, genes: 'MS4A1, CD79A, CD79B, CD19, HLA-DRA, TCL1A, … (top 50)' },
 ];
 
 const tissueOptions = [
@@ -109,9 +98,10 @@ const ANNOTATION_METHODS = {
 const AnnotateClustersTool = ({ experimentId, onRunAnnotation }) => {
   const dispatch = useDispatch();
 
-  const [method, setMethod] = useState(ANNOTATION_METHODS.SCTYPE);
+  const [method, setMethod] = useState(ANNOTATION_METHODS.CASSIA);
   const [tissue, setTissue] = useState(null);
   const [species, setSpecies] = useState(null);
+  const [additionalInfo, setAdditionalInfo] = useState('');
   const [cassiaModalVisible, setCassiaModalVisible] = useState(false);
 
   const isCassia = method === ANNOTATION_METHODS.CASSIA;
@@ -121,6 +111,7 @@ const AnnotateClustersTool = ({ experimentId, onRunAnnotation }) => {
     setMethod(e.target.value);
     setTissue(null);
     setSpecies(null);
+    setAdditionalInfo('');
   };
 
   const onCompute = () => {
@@ -135,18 +126,18 @@ const AnnotateClustersTool = ({ experimentId, onRunAnnotation }) => {
 
   const onConfirmCassia = () => {
     setCassiaModalVisible(false);
-    dispatch(runCassiaAnnotation(experimentId, species, tissue));
+    dispatch(runCassiaAnnotation(experimentId, species, tissue, additionalInfo));
     onRunAnnotation();
   };
 
   return (
     <Space direction='vertical' size='large' style={{ width: '100%' }}>
       <Radio.Group value={method} onChange={onMethodChange}>
-        <Tooltip title={scTypeTooltipText}>
-          <Radio value={ANNOTATION_METHODS.SCTYPE}>ScType</Radio>
-        </Tooltip>
         <Tooltip title={cassiaTooltipText}>
           <Radio value={ANNOTATION_METHODS.CASSIA}>CASSIA</Radio>
+        </Tooltip>
+        <Tooltip title={scTypeTooltipText}>
+          <Radio value={ANNOTATION_METHODS.SCTYPE}>ScType</Radio>
         </Tooltip>
       </Radio.Group>
 
@@ -194,6 +185,21 @@ const AnnotateClustersTool = ({ experimentId, onRunAnnotation }) => {
         )}
       </Space>
 
+      {isCassia && (
+        <Space direction='vertical' style={{ width: '100%' }}>
+          Additional context (optional):
+          <Input.TextArea
+            value={additionalInfo}
+            placeholder={'e.g. Samples include colorectal tumor and normal adjacent tissue; '
+              + 'expect malignant epithelial populations.'}
+            onChange={(e) => setAdditionalInfo(e.target.value)}
+            autoSize={{ minRows: 2, maxRows: 5 }}
+            style={{ width: '100%' }}
+            size='small'
+          />
+        </Space>
+      )}
+
       <Button
         onClick={onCompute}
         disabled={_.isNil(tissue) || _.isNil(species)}
@@ -215,12 +221,25 @@ const AnnotateClustersTool = ({ experimentId, onRunAnnotation }) => {
           <Alert
             type='warning'
             showIcon
-            message='This sends data to an external provider'
+            message='This sends data to Amazon Bedrock'
             description={(
               <>
-                CASSIA uses a third-party large language model (via OpenRouter)
-                to annotate your clusters. Continuing will send data outside
-                Cellenics to that provider.
+                CASSIA uses a large language model hosted on Amazon Bedrock to
+                annotate your clusters. Continuing will send the data below
+                outside Cellenics to that service.
+                {' '}
+                Per
+                {' '}
+                <a
+                  target='_blank'
+                  rel='noreferrer'
+                  href='https://aws.amazon.com/bedrock/faqs/#security--banojj'
+                >
+                  AWS
+                </a>
+                , your inputs and the model outputs are not shared with the
+                model providers and are not used to train any models, and the
+                data is encrypted in transit and at rest within the AWS region.
               </>
             )}
           />
@@ -232,9 +251,11 @@ const AnnotateClustersTool = ({ experimentId, onRunAnnotation }) => {
               <li>
                 the
                 {' '}
-                <Text strong>marker genes for each cluster</Text>
+                <Text strong>names of the top marker genes for each cluster</Text>
                 {' '}
-                (with their summary statistics), in the format shown below
+                (ranked by fold-change, highest first), in the format shown
+                below — the underlying summary statistics are used only to rank
+                and filter the genes and are not sent
               </li>
               <li>
                 the tissue type
@@ -245,12 +266,20 @@ const AnnotateClustersTool = ({ experimentId, onRunAnnotation }) => {
                 {' '}
                 <Text code>{species}</Text>
               </li>
+              {additionalInfo.trim() && (
+                <li>
+                  the additional context you entered:
+                  {' '}
+                  <Text code>{additionalInfo.trim()}</Text>
+                </li>
+              )}
             </ul>
           </Paragraph>
 
           <div>
             <Text type='secondary'>
-              Example of the marker gene table (illustrative data):
+              Example of the ranked marker gene list sent per cluster
+              (illustrative genes):
             </Text>
             <Table
               columns={exampleMarkerColumns}

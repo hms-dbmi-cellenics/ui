@@ -8,7 +8,9 @@ import handleError from 'utils/http/handleError';
 import endUserMessages from 'utils/endUserMessages';
 import updateCellSetsClustering from 'redux/actions/cellSets/updateCellSetsClustering';
 
-const runCassiaAnnotation = (experimentId, species, tissue) => async (dispatch, getState) => {
+const runCassiaAnnotation = (
+  experimentId, species, tissue, additionalInfo = '',
+) => async (dispatch, getState) => {
   const { error, updatingClustering, loading } = getState().cellSets;
 
   if ((loading && updatingClustering) || error) return;
@@ -17,6 +19,7 @@ const runCassiaAnnotation = (experimentId, species, tissue) => async (dispatch, 
     name: 'CASSIAAnnotate',
     species,
     tissue,
+    additionalInfo,
   };
 
   dispatch({
