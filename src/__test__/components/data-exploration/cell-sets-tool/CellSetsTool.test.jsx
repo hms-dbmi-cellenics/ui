@@ -765,6 +765,10 @@ describe('AnnotateClustersTool', () => {
 
     // Switch to tab
     userEvent.click(annotateClustersTabTitle);
+
+    // CASSIA is the default method; these tests exercise the ScType select flow
+    // (dropdowns + direct dispatch), so switch to ScType first.
+    userEvent.click(screen.getByRole('radio', { name: 'ScType' }));
   });
 
   it('Renders correctly', async () => {
