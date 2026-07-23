@@ -66,4 +66,5 @@ export default {
   ERROR_CLONING_DEFAULT: 'We couldn\'t clone the project.',
   ERROR_CLONING_PIPELINE_LOCKED: 'We couldn\'t clone the project because data processing is currently running, wait until it finishes and try again',
   ERROR_CELL_SETS_ANNOTATION_FAILED: 'ScType annotation unsuccessful. Please ensure dataset contains gene symbols.',
+  ERROR_CASSIA_ANNOTATION_FAILED: 'CASSIA annotation unsuccessful. Please ensure dataset contains gene symbols and try again.',
 };

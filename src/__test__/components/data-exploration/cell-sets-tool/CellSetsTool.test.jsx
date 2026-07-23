@@ -723,14 +723,13 @@ describe('CellSetsTool', () => {
       userEvent.click(deleteAnnotatedCellClassButton);
     });
 
-    // get all the cell set groups
-    const numCellGroupsAfterDelete = screen.getAllByRole('img', { name: 'down' }).length;
-
     await waitFor(() => {
-      // This test used to assert that "Annotated cell set" text is not found in "screen"
-      // in order to verify that deletion was successful.
-      // 4 Cell groups: louvain, custom cell sets, sample, Track_1 (metadata)
-      expect(numCellGroupsAfterDelete).toEqual(4);
+      // Deletion is optimistic, so the annotated cell class is gone immediately.
+      // Count the expand carets: of the remaining groups (louvain, custom cell
+      // sets, sample, Track_1) only the three non-empty ones show a "down" caret
+      // - the empty "Custom cell sets" group shows none.
+      const numCellGroupsAfterDelete = screen.getAllByRole('img', { name: 'down' }).length;
+      expect(numCellGroupsAfterDelete).toEqual(3);
 
       expect(screen.queryByText('Annotated cell class')).toBeNull();
 
@@ -765,6 +764,10 @@ describe('AnnotateClustersTool', () => {
 
     // Switch to tab
     userEvent.click(annotateClustersTabTitle);
+
+    // CASSIA is the default method; these tests exercise the ScType select flow
+    // (dropdowns + direct dispatch), so switch to ScType first.
+    userEvent.click(screen.getByRole('radio', { name: 'ScType' }));
   });
 
   it('Renders correctly', async () => {

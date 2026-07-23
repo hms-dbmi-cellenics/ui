@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useDispatch } from 'react-redux';
 
 import { loadGeneExpression } from 'redux/actions/genes';
@@ -31,8 +31,29 @@ const useFocusCellColors = ({
   const dispatch = useDispatch();
   const [cellColors, setCellColors] = useState({});
 
-  // Focus change (a cell set / gene / metadata got selected, or cleared); also
-  // re-runs when the cell set properties or hierarchy change.
+  // Name-independent signature of the focused cell class's colouring: the
+  // focus target plus each child's colour and cell count. It changes on focus
+  // change / recolour / add / remove / membership change — but NOT on a rename.
+  // Keying the colouring effect on this (instead of the whole cellSetProperties
+  // object) means renaming a cell set no longer recomputes the colour of every
+  // cell and re-uploads the deck.gl colour buffer. Cheap: O(children).
+  const coloringSignature = useMemo(() => {
+    const { store, key } = focusData;
+    if (store !== 'cellSets') return `${store}:${key}`;
+
+    const node = cellSetHierarchy?.find((rootNode) => rootNode.key === key);
+    const children = node?.children ?? [];
+    const childSignature = children
+      .map((child) => {
+        const property = cellSetProperties[child.key];
+        return `${child.key}=${property?.color}#${property?.cellIds?.length}`;
+      })
+      .join(',');
+    return `cellSets:${key}:${childSignature}`;
+  }, [focusData, cellSetHierarchy, cellSetProperties]);
+
+  // Recolour cells when the focus target or its colouring changes (see
+  // coloringSignature). Reads the current hierarchy/properties inside.
   useEffect(() => {
     const { store, key } = focusData;
 
@@ -52,7 +73,7 @@ const useFocusCellColors = ({
 
     if (onFocusChange) onFocusChange();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [focusData, cellSetHierarchy, cellSetProperties]);
+  }, [coloringSignature]);
 
   // Focused gene's expression finished loading → colour cells by it.
   useEffect(() => {

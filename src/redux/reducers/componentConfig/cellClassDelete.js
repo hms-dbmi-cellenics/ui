@@ -10,7 +10,7 @@ const cellClassDelete = produce((draft, action) => {
   const { key: cellClassKey } = action.payload;
 
   Object.values(draft).forEach((value) => {
-    if (original(value)?.config?.groupedTracks.includes(cellClassKey)) {
+    if (original(value)?.config?.groupedTracks?.includes(cellClassKey)) {
       _.pull(value.config.groupedTracks, cellClassKey);
     }
   });

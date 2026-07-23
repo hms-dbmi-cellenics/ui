@@ -3,6 +3,7 @@ import { CELL_SETS_DELETE } from 'redux/actionTypes/cellSets';
 import endUserMessages from 'utils/endUserMessages';
 import fetchAPI from 'utils/http/fetchAPI';
 import handleError from 'utils/http/handleError';
+import loadCellSets from 'redux/actions/cellSets/loadCellSets';
 
 const deleteCellSetJsonMerger = (cellSetKey, cellClasskey) => (
   [{
@@ -33,6 +34,14 @@ const deleteCellSet = (experimentId, key) => async (dispatch, getState) => {
     return null;
   }
 
+  // Optimistically remove the cell set from the UI right away; the API PATCH
+  // rewrites the whole cell sets object (slow for large cell sets) so we don't
+  // block the UI on it. On failure we reload to restore the server's truth.
+  dispatch({
+    type: CELL_SETS_DELETE,
+    payload: { key },
+  });
+
   try {
     await fetchAPI(
       `/v2/experiments/${experimentId}/cellSets`,
@@ -46,13 +55,9 @@ const deleteCellSet = (experimentId, key) => async (dispatch, getState) => {
         ),
       },
     );
-
-    await dispatch({
-      type: CELL_SETS_DELETE,
-      payload: { key },
-    });
   } catch (e) {
     handleError(e, endUserMessages.ERROR_SAVING);
+    dispatch(loadCellSets(experimentId, true));
   }
 };
 

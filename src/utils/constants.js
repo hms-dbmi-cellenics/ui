@@ -121,6 +121,7 @@ const downsamplingMethods = {
 const cellSetsUpdatedMessages = {
   ClusterCells: endUserMessages.SUCCESS_CELL_SETS_RECLUSTERED,
   ScTypeAnnotate: endUserMessages.SUCCESS_CELL_SETS_ANNOTATED,
+  CASSIAAnnotate: endUserMessages.SUCCESS_CELL_SETS_ANNOTATED,
 };
 
 export {

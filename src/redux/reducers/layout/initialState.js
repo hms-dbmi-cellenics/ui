@@ -3,7 +3,7 @@ const initialLayoutSpatial = {
     direction: 'row',
     first: {
       first: {
-        first: 'UMAP', second: 'Spatial', direction: 'row', splitPercentage: 62,
+        first: 'UMAP', second: 'Spatial', direction: 'row', splitPercentage: 42,
       },
       second: {
         first: 'Heatmap',

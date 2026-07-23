@@ -97,27 +97,35 @@ const SpatialViewer = (props) => {
     hidden: cellSetHidden,
   } = cellSets;
 
+  // Only recompute when the set of hidden cell sets changes (its reference is
+  // stable across rename/recolor); cellSetProperties is read for the hidden
+  // sets' stable cellIds but is intentionally not a dependency.
   const hiddenCellIds = useMemo(() => {
     if (!cellSetHidden || !cellSetProperties) return new Set();
     return union([...cellSetHidden], cellSetProperties);
-  }, [cellSetHidden, cellSetProperties]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [cellSetHidden]);
 
   // Cells absent from every 'cellSets'-type cluster (louvain, leiden, …) were
   // filtered out during the analysis pipeline. They must never be rendered or
   // contribute to the layout, regardless of the active colouring scheme or
   // which cell sets are hidden.
+  // Key off the RAW hierarchy (referentially stable across rename/recolor),
+  // not getCellSetsHierarchyByType — that derived selector embeds cell set
+  // names, so it produces a new array on every rename and would otherwise
+  // rebuild this O(all cells) set (and the colour LUTs / deck.gl layers that
+  // depend on it). Type and cellIds are read from properties (stable values).
   const cellsInAnyCluster = useMemo(() => {
     const validIds = new Set();
-    cellSetsHierarchyNodes.forEach(({ children }) => {
-      children?.forEach(({ key }) => {
-        const props = cellSetProperties[key];
-        if (props?.cellIds) {
-          props.cellIds.forEach((id) => validIds.add(id));
-        }
+    cellSetHierarchy.forEach(({ key, children }) => {
+      if (cellSetProperties[key]?.type !== 'cellSets') return;
+      children?.forEach(({ key: childKey }) => {
+        cellSetProperties[childKey]?.cellIds?.forEach((id) => validIds.add(id));
       });
     });
     return validIds;
-  }, [cellSetsHierarchyNodes, cellSetProperties]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [cellSetHierarchy]);
 
   const selectedCell = useSelector((state) => state.cellInfo.cellId);
   const hoverSource = useSelector((state) => state.cellInfo.hoverSource);
@@ -264,13 +272,18 @@ const SpatialViewer = (props) => {
   }, [spatialSettings]);
 
   // ── Centroid offsets ──────────────────────────────────────────────────────
+  // Centroids depend on the embedding data and per-sample cellIds (stable
+  // across rename/recolor); cellSetProperties is read for the sample cellIds
+  // but is intentionally not a dependency so a rename doesn't recompute every
+  // cell's centroid.
   useEffect(() => {
     if (!data || !omeZarrSampleIds.length || !cellSetProperties || !perImageShape || !gridShape) return;
     if (omeZarrSampleIds.some((id) => !cellSetProperties[id])) return;
     setOffsetData(offsetCentroids(
       data, cellSetProperties, omeZarrSampleIds, perImageShape, gridShape, gridLayout.sampleRowCol,
     ));
-  }, [data, omeZarrSampleIds, cellSetProperties, perImageShape, gridShape, gridLayout]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [data, omeZarrSampleIds, perImageShape, gridShape, gridLayout]);
 
   // ── URL fetching ──────────────────────────────────────────────────────────
   useEffect(() => {
@@ -435,7 +448,9 @@ const SpatialViewer = (props) => {
   // ── Initial view state ────────────────────────────────────────────────────
   useEffect(() => {
     if (!loader || !width || !height || viewState) return;
-    setViewState(getDefaultInitialViewState(loader.data, { width, height }, 0.5));
+    // zoomBackOff (3rd arg) is subtracted from the fit zoom; 0 = tight fit that
+    // fills the viewport (larger values leave more empty margin).
+    setViewState(getDefaultInitialViewState(loader.data, { width, height }, 0));
   }, [loader, width, height]);
 
   // ── Initial view state (imageless / micron-driven) ────────────────────────
@@ -456,8 +471,8 @@ const SpatialViewer = (props) => {
     const target = [(minX + maxX) / 2, (minY + maxY) / 2, 0];
     const extentX = Math.max(maxX - minX, 1);
     const extentY = Math.max(maxY - minY, 1);
-    // zoom such that the data extent fits the viewport (with a little padding)
-    const zoom = Math.log2(Math.min(width / extentX, height / extentY)) - 0.2;
+    // zoom such that the data extent fills the viewport (tight fit)
+    const zoom = Math.log2(Math.min(width / extentX, height / extentY));
     return { target, zoom };
   }, [offsetData, width, height, hiddenCellIds, cellsInAnyCluster]);
 
@@ -469,7 +484,7 @@ const SpatialViewer = (props) => {
     } else if (segmentationsLoader && width && height) {
       // offset centroids not ready yet: centre on the segmentation bitmask so
       // the polygons are visible even before the centroid overlay is built
-      setViewState(getDefaultInitialViewState(segmentationsLoader.data, { width, height }, 0.5));
+      setViewState(getDefaultInitialViewState(segmentationsLoader.data, { width, height }, 0));
     }
   }, [isImageless, fitViewToOffsetData, viewState, segmentationsLoader, width, height]);
 
@@ -685,7 +700,7 @@ const SpatialViewer = (props) => {
       return;
     }
     if (!loader || !width || !height) return;
-    setViewState(getDefaultInitialViewState(loader.data, { width, height }, 0.5));
+    setViewState(getDefaultInitialViewState(loader.data, { width, height }, 0));
   }, [loader, width, height, isImageless, fitViewToOffsetData]);
 
   // ── Molecule overlay: per-sample grid offsets + colour lookup ─────────────
