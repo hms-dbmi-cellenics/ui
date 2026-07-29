@@ -1,6 +1,8 @@
 import seedrandom from 'seedrandom';
 import lruMemoize from 'lru-memoize';
 
+import { getCellSetKey, getCellSetClassKey } from 'utils/cellSets';
+
 // ─── Module-level helpers (not exported) ────────────────────────────────────
 
 const getCellClassIds = (key, hierarchy, properties) => {
@@ -284,9 +286,9 @@ const computeHiddenCellSets = (selectedPoints, cellSets) => {
   let hiddenCellSets = Array.from(cellSets.hidden || []);
 
   if (selectedPoints && selectedPoints !== 'All') {
-    const parts = selectedPoints.split('/');
-    if (parts.length === 2) {
-      const [categoryKey, selectedCellSetKey] = parts;
+    if (selectedPoints.includes('/')) {
+      const categoryKey = getCellSetClassKey(selectedPoints);
+      const selectedCellSetKey = getCellSetKey(selectedPoints);
       const categoryRoot = cellSets.hierarchy.find(
         (node) => node.key === categoryKey,
       );

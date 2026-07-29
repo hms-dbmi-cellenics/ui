@@ -1,5 +1,3 @@
-import _ from 'lodash';
-
 import { ComparisonType } from 'components/data-exploration/differential-expression-tool/DiffExprCompute';
 import { getCellSetKey, getCellSetClassKey } from 'utils/cellSets';
 
@@ -7,22 +5,39 @@ const MIN_NUM_CELLS_IN_GROUP = 10;
 const NUM_SAMPLES_SHOW_ERROR = 1;
 const NUM_SAMPLES_SHOW_WARNING = 2;
 
-const mapCellIdToSample = _.memoize(
-  (sampleKeys, properties) => {
-    const mapping = [];
-    sampleKeys.forEach((key, idx) => {
-      const { cellIds } = properties[key];
-      cellIds.forEach((cellId) => { mapping[cellId] = idx; });
-    });
+let lastSampleCellIdSets = null;
+let lastCellIdToSampleMap = null;
 
-    return mapping;
-  },
-  (sampleKeys) => sampleKeys.length,
-);
+// Building the mapping is O(number of cells), so it is cached between calls.
+// The cache is keyed on the identity of the samples' cellIds themselves: immer
+// keeps untouched cell sets referentially equal, so unrelated edits (renaming,
+// recoloring) reuse the mapping, while cell sets being reloaded (a reprocess,
+// a re-upload) rebuild it. Keying on the number of samples instead would hand
+// back a mapping built from a different experiment's cell ids.
+const mapCellIdToSample = (sampleKeys, properties) => {
+  const sampleCellIdSets = sampleKeys.map((key) => properties[key]?.cellIds);
+
+  const isCached = lastSampleCellIdSets?.length === sampleCellIdSets.length
+    && sampleCellIdSets.every((cellIds, idx) => cellIds === lastSampleCellIdSets[idx]);
+
+  if (isCached) return lastCellIdToSampleMap;
+
+  const mapping = [];
+  sampleCellIdSets.forEach((cellIds, idx) => {
+    if (!cellIds) return;
+
+    cellIds.forEach((cellId) => { mapping[cellId] = idx; });
+  });
+
+  lastSampleCellIdSets = sampleCellIdSets;
+  lastCellIdToSampleMap = mapping;
+
+  return mapping;
+};
 
 const getSampleKeys = (hierarchy) => hierarchy?.find(
   (rootNode) => (rootNode.key === 'sample'),
-)?.children.map((sample) => sample.key);
+)?.children?.map((sample) => sample.key) ?? [];
 
 const checkCanRunDiffExpr = (
   properties,
@@ -43,7 +58,7 @@ const checkCanRunDiffExpr = (
   if (!basis
     || !cellSet
     || !compareWith
-    || !cellIdToSampleMap.length > 0
+    || cellIdToSampleMap.length === 0
   ) {
     return canRunDiffExprResults.FALSE;
   }
@@ -59,8 +74,15 @@ const checkCanRunDiffExpr = (
     }, []);
     basisCellIds = new Set(allCellIds);
   } else {
+    // The selections live in redux and can outlive the cell sets they point at,
+    // e.g. if the cell sets were reloaded (reprocess, re-upload) or the cell
+    // class was deleted. Such a comparison can't be run.
+    if (!properties[basisCellSetKey]) return canRunDiffExprResults.FALSE;
+
     basisCellIds = properties[basisCellSetKey].cellIds;
   }
+
+  if (!properties[cellSetKey]) return canRunDiffExprResults.FALSE;
 
   const cellSetCellIds = Array.from(properties[cellSetKey].cellIds);
 
@@ -69,7 +91,7 @@ const checkCanRunDiffExpr = (
     const parentKey = getCellSetClassKey(cellSet);
 
     const otherGroupKeys = hierarchy.find((obj) => obj.key === parentKey)
-      .children.filter((child) => child.key !== cellSetKey);
+      ?.children.filter((child) => child.key !== cellSetKey) ?? [];
 
     compareWithCellIds = otherGroupKeys.reduce(
       (cumulativeGroupKeys, child) => cumulativeGroupKeys.concat(
@@ -77,6 +99,8 @@ const checkCanRunDiffExpr = (
       ), [],
     );
   } else {
+    if (!properties[compareWithKey]) return canRunDiffExprResults.FALSE;
+
     compareWithCellIds = Array.from(properties[compareWithKey].cellIds);
   }
 

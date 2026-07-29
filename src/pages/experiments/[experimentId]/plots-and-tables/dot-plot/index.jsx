@@ -33,6 +33,7 @@ import {
 } from 'redux/actions/componentConfig';
 
 import { getCellSets } from 'redux/selectors';
+import { getCellSetKey, getCellSetClassKey } from 'utils/cellSets';
 import { plotNames, plotTypes } from 'utils/constants';
 import PlatformError from 'components/PlatformError';
 
@@ -122,7 +123,8 @@ const DotPlotPage = (props) => {
 
   const hasGroupsToCompare = (baseCluster, filterCluster) => {
     // filterBy has the shape louvain/louvain-1
-    const [filterRootNode, filterKey] = filterCluster.split('/');
+    const filterRootNode = getCellSetClassKey(filterCluster);
+    const filterKey = filterCluster.includes('/') ? getCellSetKey(filterCluster) : undefined;
 
     // If 'All" is chosen for the dropdown,
     // there will always be representation from more than 1 group

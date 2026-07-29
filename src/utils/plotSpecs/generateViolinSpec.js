@@ -1,5 +1,7 @@
 import _ from 'lodash';
 
+import { getCellSetKey } from 'utils/cellSets';
+
 /* eslint-disable no-param-reassign */
 const generateSpec = (config, plotData) => {
   const numGroups = _.keys(plotData.groups).length;
@@ -483,8 +485,7 @@ const generateData = (
 
   const cells = [];
   if (cellSetToDisplayId && cellSetToDisplayId.includes('/')) {
-    // eslint-disable-next-line prefer-destructuring
-    cellSetToDisplayId = cellSetToDisplayId.split('/')[1];
+    cellSetToDisplayId = getCellSetKey(cellSetToDisplayId);
   }
 
   cellSetsIds.forEach((cellSetId) => {

@@ -5,6 +5,19 @@ import {
   DIFF_EXPR_LOADING, DIFF_EXPR_LOADED, DIFF_EXPR_ERROR,
   DIFF_EXPR_COMPARISON_TYPE_SET, DIFF_EXPR_COMPARISON_GROUP_SET,
 } from 'redux/actionTypes/differentialExpression';
+import { CELL_CLASS_DELETE, CELL_SETS_LOADED } from 'redux/actionTypes/cellSets';
+
+const stateWithComparison = (group) => ({
+  ...initialState,
+  comparison: {
+    ...initialState.comparison,
+    type: 'between',
+    group: {
+      ...initialState.comparison.group,
+      between: group,
+    },
+  },
+});
 
 describe('differentialExpressionReducer', () => {
   it('Reduces identical state on unknown action', () => expect(
@@ -151,5 +164,52 @@ describe('differentialExpressionReducer', () => {
     };
 
     expect(newState).toEqual(result);
+  });
+
+  it('Clears the selections of a deleted cell class', () => {
+    const newState = differentialExpressionReducer(
+      stateWithComparison({
+        basis: 'annotations/annotation-a',
+        cellSet: 'sample/sample-a',
+        compareWith: 'sample/sample-b',
+      }),
+      {
+        type: CELL_CLASS_DELETE,
+        payload: { experimentId: '1234', key: 'annotations' },
+      },
+    );
+
+    expect(newState.comparison.group.between).toEqual({
+      basis: null,
+      cellSet: 'sample/sample-a',
+      compareWith: 'sample/sample-b',
+    });
+  });
+
+  it('Clears the selections that no longer exist when cell sets are loaded', () => {
+    const newState = differentialExpressionReducer(
+      stateWithComparison({
+        basis: 'louvain/louvain-42',
+        cellSet: 'sample/sample-a',
+        compareWith: 'rest',
+      }),
+      {
+        type: CELL_SETS_LOADED,
+        payload: {
+          experimentId: '1234',
+          data: [
+            { key: 'louvain', children: [{ key: 'louvain-0' }] },
+            { key: 'sample', children: [{ key: 'sample-a' }, { key: 'sample-b' }] },
+          ],
+        },
+      },
+    );
+
+    // The cell set that isn't in the new cell sets is cleared, the others are kept
+    expect(newState.comparison.group.between).toEqual({
+      basis: null,
+      cellSet: 'sample/sample-a',
+      compareWith: 'rest',
+    });
   });
 });

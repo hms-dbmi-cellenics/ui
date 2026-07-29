@@ -12,6 +12,7 @@ import PropTypes from 'prop-types';
 import _ from 'lodash';
 
 import { getCellSets } from 'redux/selectors';
+import { getCellSetKey, getCellSetClassKey } from 'utils/cellSets';
 import loadDifferentialExpression from 'redux/actions/differentialExpression/loadDifferentialExpression';
 
 import GeneTable from 'components/data-exploration/generic-gene-table/GeneTable';
@@ -87,7 +88,8 @@ const DiffExprResults = (props) => {
   };
 
   const optionName = (word) => {
-    const [rootGroup, clusterName] = word.split('/');
+    const rootGroup = getCellSetClassKey(word);
+    const clusterName = word.includes('/') ? getCellSetKey(word) : undefined;
 
     let printString = '';
 
@@ -114,17 +116,16 @@ const DiffExprResults = (props) => {
     });
   };
 
-  const getCellSetKey = (word) => {
-    // Extract the cell set name part (after '/' if present)
-    const key = word?.split('/')[1] || word;
+  const getCellSetFileName = (word) => {
+    const key = getCellSetKey(word);
     // Get the friendly name from properties or use the key as fallback
     return (properties[key]?.name || _.capitalize(key || '')).replace(/\s+/g, '_');
   };
 
   const experimentNameClean = experimentName?.replace(/\s+/g, '_') || 'experiment';
-  const cellSetName = getCellSetKey(cellSet);
-  const compareWithName = getCellSetKey(compareWith);
-  const basisName = getCellSetKey(basis);
+  const cellSetName = getCellSetFileName(cellSet);
+  const compareWithName = getCellSetFileName(compareWith);
+  const basisName = getCellSetFileName(basis);
   const csvFileName = `${experimentNameClean}-${cellSetName}_vs_${compareWithName}_in_${basisName}.csv`;
 
   return (

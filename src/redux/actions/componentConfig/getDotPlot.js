@@ -9,6 +9,7 @@ import {
 import handleError from 'utils/http/handleError';
 import endUserMessages from 'utils/endUserMessages';
 import fetchWork from 'utils/work/fetchWork';
+import { getCellSetKey, getCellSetClassKey } from 'utils/cellSets';
 
 const getClusterNames = (state) => {
   const clusterIds = state.cellSets.hierarchy.reduce(
@@ -58,7 +59,10 @@ const getDotPlot = (
   const clusterNames = getClusterNames(getState());
   const timeout = getTimeoutForWorkerTask(getState(), 'PlotData');
 
-  const [filterGroup, filterKey] = config.selectedPoints.split('/');
+  const filterGroup = getCellSetClassKey(config.selectedPoints);
+  const filterKey = config.selectedPoints.includes('/')
+    ? getCellSetKey(config.selectedPoints)
+    : undefined;
 
   const body = {
     name: 'DotPlot',
