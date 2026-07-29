@@ -1,4 +1,4 @@
-import { CELL_SETS_DELETE } from 'redux/actionTypes/cellSets';
+import { CELL_SETS_DELETE, CELL_CLASS_DELETE, CELL_SETS_LOADED } from 'redux/actionTypes/cellSets';
 import {
   DIFF_EXPR_LOADING,
   DIFF_EXPR_LOADED,
@@ -16,6 +16,8 @@ import differentialExpressionSetType from 'redux/reducers/differentialExpression
 import differentialExpressionSetGroup from 'redux/reducers/differentialExpression/differentialExpressionSetGroup';
 import differentialExpressionSetGeneOrdering from 'redux/reducers/differentialExpression/differentialExpressionSetOrdering';
 import cellSetsDelete from 'redux/reducers/differentialExpression/cellSetsDelete';
+import cellClassDelete from 'redux/reducers/differentialExpression/cellClassDelete';
+import cellSetsLoaded from 'redux/reducers/differentialExpression/cellSetsLoaded';
 import initialState from 'redux/reducers/differentialExpression/initialState';
 
 const differentialExpressionReducer = (state = initialState, action) => {
@@ -43,6 +45,12 @@ const differentialExpressionReducer = (state = initialState, action) => {
     }
     case CELL_SETS_DELETE: {
       return cellSetsDelete(state, action);
+    }
+    case CELL_CLASS_DELETE: {
+      return cellClassDelete(state, action);
+    }
+    case CELL_SETS_LOADED: {
+      return cellSetsLoaded(state, action);
     }
     default: {
       return state;
