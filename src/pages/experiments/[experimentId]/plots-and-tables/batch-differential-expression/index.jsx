@@ -26,6 +26,7 @@ import { saveAs } from 'file-saver';
 import _ from 'lodash';
 import checkCanRunDiffExpr, { canRunDiffExprResults } from 'utils/extraActionCreators/differentialExpression/checkCanRunDiffExpr';
 import { metadataKeyToName } from 'utils/data-management/metadataUtils';
+import { getCellSetKey } from 'utils/cellSets';
 
 const comparisonTypes = {
   fullList: 'within',
@@ -41,9 +42,9 @@ const comparisonInitialState = {
 
 const cellSetNameFromKey = (properties, key) => {
   // some entries have the parent cell set in the name like sample/213123-asda-2321
-  // the second part after the slash is needed to return the cell set name
-  const keySplitted = key?.split('/')[1] || key;
-  return properties[keySplitted]?.name.replace(/\s+/g, '_') || keySplitted;
+  // the part after the first slash is needed to return the cell set name
+  const cellSetKey = getCellSetKey(key);
+  return properties[cellSetKey]?.name.replace(/\s+/g, '_') || cellSetKey;
 };
 
 const BatchDiffExpression = (props) => {
