@@ -10,6 +10,7 @@ import {
   EXPERIMENT_SETTINGS_PROCESSING_ERROR,
   EXPERIMENT_SETTINGS_SAMPLE_FILTER_UPDATE,
   EXPERIMENT_SETTINGS_SET_QC_STEP_ENABLED,
+  EXPERIMENT_SETTINGS_SET_SAMPLE_FILTER_SETTINGS_AUTO,
 } from 'redux/actionTypes/experimentSettings';
 
 import errorTypes from 'redux/actions/experimentSettings/errorTypes';
@@ -166,5 +167,53 @@ describe('experimentSettingsReducer', () => {
 
     expect(newState.info.pipelineVersion).toEqual(2);
     expect(newState).toMatchSnapshot();
+  });
+
+  describe('switching a sample filter to automatic', () => {
+    const sampleId = 'sample-1';
+    const defaultFilterSettings = {
+      method: 'localOutlier',
+      methodSettings: {
+        localOutlier: { cutoff: 3, binStep: 0.2 },
+        absoluteThreshold: { min: 120, max: null, binStep: 0.05 },
+      },
+    };
+    const stateWith = (filterSettings) => ({
+      ...initialState,
+      processing: {
+        ...initialState.processing,
+        spatialUmiOutlier: {
+          [sampleId]: { auto: false, filterSettings, defaultFilterSettings },
+        },
+      },
+    });
+    const setAuto = (state) => experimentSettingsReducer(state, {
+      type: EXPERIMENT_SETTINGS_SET_SAMPLE_FILTER_SETTINGS_AUTO,
+      payload: { step: 'spatialUmiOutlier', sampleId, isAuto: true },
+    });
+
+    it('keeps the chosen method and takes its default settings', () => {
+      const newState = setAuto(stateWith({
+        method: 'absoluteThreshold',
+        methodSettings: {
+          localOutlier: { cutoff: 1, binStep: 0.2 },
+          absoluteThreshold: { min: 5, max: 10, binStep: 0.05 },
+        },
+      }));
+
+      const { auto, filterSettings } = newState.processing.spatialUmiOutlier[sampleId];
+      expect(auto).toBe(true);
+      expect(filterSettings).toEqual({ ...defaultFilterSettings, method: 'absoluteThreshold' });
+    });
+
+    it('restores the defaults as-is for filters without methods', () => {
+      const state = stateWith({ minCellSize: 5 });
+      state.processing.spatialUmiOutlier[sampleId].defaultFilterSettings = { minCellSize: 1080 };
+
+      const newState = setAuto(state);
+
+      expect(newState.processing.spatialUmiOutlier[sampleId].filterSettings)
+        .toEqual({ minCellSize: 1080 });
+    });
   });
 });

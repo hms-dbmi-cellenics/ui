@@ -27,13 +27,33 @@ const isOutlier = (zscore, threshold, direction) => (
   direction === 'upper' ? zscore >= threshold : zscore <= -threshold
 );
 
+// absolute thresholds are inclusive bounds on the raw metric, matching the
+// pipeline; a null bound is not applied
+const isOutsideBounds = (raw, min, max) => (
+  (min !== null && min !== undefined && raw < min)
+  || (max !== null && max !== undefined && raw > max)
+);
+
+// Whether a cell is removed by the filter's current method. Cells missing the
+// value the method needs are left uncoloured.
+const getCellOutlierStatus = (cell, rule) => {
+  if (rule.method === 'absoluteThreshold') {
+    if (cell.raw === undefined || cell.raw === null) return undefined;
+    return isOutsideBounds(cell.raw, rule.min, rule.max);
+  }
+
+  if (cell.zscore === undefined || cell.zscore === null) return undefined;
+  return isOutlier(cell.zscore, rule.threshold, rule.direction);
+};
+
 // Build Map<cellId, [r,g,b]> for the outlier plot: outliers red, everything else
 // grey — both rendered at the slider opacity.
-const buildOutlierCellColorMap = (plotData, threshold, direction) => {
+const buildOutlierCellColorMap = (plotData, rule) => {
   const map = new Map();
-  (plotData || []).forEach(({ cellId, zscore }) => {
-    if (zscore === undefined || zscore === null) return;
-    map.set(cellId, isOutlier(zscore, threshold, direction) ? OUTLIER_COLOR : KEPT_COLOR);
+  (plotData || []).forEach((cell) => {
+    const outlier = getCellOutlierStatus(cell, rule);
+    if (outlier === undefined) return;
+    map.set(cell.cellId, outlier ? OUTLIER_COLOR : KEPT_COLOR);
   });
   return map;
 };
@@ -90,14 +110,17 @@ const buildMetricCellColorMap = (plotData, config) => {
 /**
  * Data-processing spatial filter plot. Two modes:
  *  - 'metric': tissue slide with segmentations coloured by the metric value.
- *  - 'outlier': segmentations beyond the z-score threshold filled red, the rest
- *    grey (recomputed live as the threshold changes).
- * Per-sample — all the data it needs is in `plotData` ([{ cellId, value, zscore, x, y }]).
+ *  - 'outlier': segmentations removed by the filter filled red, the rest grey
+ *    (recomputed live as the threshold changes). With method 'localOutlier' a
+ *    cell is removed beyond the z-score threshold; with 'absoluteThreshold'
+ *    when its raw value is outside [min, max].
+ * Per-sample — all the data it needs is in `plotData`
+ * ([{ cellId, value, raw, zscore, x, y }]).
  */
 const SpatialOutlierFilterPlot = (props) => {
   const {
     experimentId, sampleId, config, plotData, threshold, direction, mode, actions,
-    onZoomChange, cacheId,
+    onZoomChange, cacheId, method, min, max,
   } = props;
 
   const [plotSpec, setPlotSpec] = useState({});
@@ -155,13 +178,16 @@ const SpatialOutlierFilterPlot = (props) => {
 
   // colour map + key — threshold only affects the outlier view; cacheId/mode keep
   // filters that may share the same length/colours distinct.
+  const outlierRule = {
+    method, threshold, direction, min, max,
+  };
   const colorKey = [
-    cacheId, mode, direction, mode === 'outlier' ? threshold : 'metric', colorSignature,
+    cacheId, mode, mode === 'outlier' ? JSON.stringify(outlierRule) : 'metric', colorSignature,
   ].join(':');
   const cellColorMap = useMemo(() => {
     if (!plotData?.length || !config) return null;
     return mode === 'outlier'
-      ? buildOutlierCellColorMap(plotData, threshold, direction)
+      ? buildOutlierCellColorMap(plotData, outlierRule)
       : buildMetricCellColorMap(plotData, config);
     // colorKey captures mode/threshold/direction/colours/length
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -337,6 +363,9 @@ SpatialOutlierFilterPlot.defaultProps = {
   actions: true,
   threshold: 3,
   direction: 'lower',
+  method: 'localOutlier',
+  min: null,
+  max: null,
   mode: 'metric',
   onZoomChange: () => { },
   cacheId: '',
@@ -350,10 +379,13 @@ SpatialOutlierFilterPlot.propTypes = {
   cacheId: PropTypes.string,
   threshold: PropTypes.number,
   direction: PropTypes.oneOf(['lower', 'upper']),
+  method: PropTypes.oneOf(['localOutlier', 'absoluteThreshold']),
+  min: PropTypes.number,
+  max: PropTypes.number,
   mode: PropTypes.oneOf(['metric', 'outlier']),
   actions: PropTypes.oneOfType([PropTypes.bool, PropTypes.object]),
   onZoomChange: PropTypes.func,
 };
 
 export default SpatialOutlierFilterPlot;
-export { isOutlier };
+export { isOutlier, getCellOutlierStatus };

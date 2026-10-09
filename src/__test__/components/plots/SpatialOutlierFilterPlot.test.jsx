@@ -5,7 +5,7 @@ import { render } from '@testing-library/react';
 import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 
-import SpatialOutlierFilterPlot, { isOutlier } from 'components/plots/SpatialOutlierFilterPlot';
+import SpatialOutlierFilterPlot, { isOutlier, getCellOutlierStatus } from 'components/plots/SpatialOutlierFilterPlot';
 import { getSampleFileUrls } from 'utils/data-management/downloadSampleFile';
 
 jest.mock('utils/data-management/downloadSampleFile', () => ({
@@ -104,5 +104,32 @@ describe('isOutlier', () => {
     expect(isOutlier(-2.9, 3, 'lower')).toBe(false);
     expect(isOutlier(-5, 3, 'upper')).toBe(false);
     expect(isOutlier(5, 3, 'lower')).toBe(false);
+  });
+});
+
+describe('getCellOutlierStatus', () => {
+  const absolute = (min, max) => ({ method: 'absoluteThreshold', min, max });
+
+  it('uses inclusive raw bounds for absolute thresholds', () => {
+    expect(getCellOutlierStatus({ raw: 99 }, absolute(100, 1000))).toBe(true);
+    expect(getCellOutlierStatus({ raw: 100 }, absolute(100, 1000))).toBe(false);
+    expect(getCellOutlierStatus({ raw: 1000 }, absolute(100, 1000))).toBe(false);
+    expect(getCellOutlierStatus({ raw: 1001 }, absolute(100, 1000))).toBe(true);
+  });
+
+  it('does not apply a null bound', () => {
+    expect(getCellOutlierStatus({ raw: 1e9 }, absolute(100, null))).toBe(false);
+    expect(getCellOutlierStatus({ raw: 0 }, absolute(null, null))).toBe(false);
+  });
+
+  it('uses the z-score for local outliers, ignoring raw', () => {
+    const rule = { method: 'localOutlier', threshold: 3, direction: 'lower' };
+    expect(getCellOutlierStatus({ raw: 1, zscore: -3 }, rule)).toBe(true);
+    expect(getCellOutlierStatus({ raw: 1, zscore: 0 }, rule)).toBe(false);
+  });
+
+  it('leaves cells without the needed value uncoloured', () => {
+    expect(getCellOutlierStatus({ zscore: 0 }, absolute(1, 2))).toBeUndefined();
+    expect(getCellOutlierStatus({ raw: 5 }, { method: 'localOutlier', threshold: 3 })).toBeUndefined();
   });
 });
