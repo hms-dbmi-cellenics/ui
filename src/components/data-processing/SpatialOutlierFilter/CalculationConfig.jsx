@@ -61,6 +61,7 @@ const LogRangeThreshold = (props) => {
         <InputNumber
           addonBefore='Min'
           min={0}
+          precision={0}
           value={local.min}
           onChange={(value) => update({ ...local, min: value })}
           disabled={disabled}
@@ -69,6 +70,7 @@ const LogRangeThreshold = (props) => {
         <InputNumber
           addonBefore='Max'
           min={0}
+          precision={0}
           placeholder='none'
           value={local.max}
           onChange={(value) => update({ ...local, max: value })}
