@@ -22,8 +22,9 @@ const EMBEDDING_TYPE = 'images';
 const OUTLIER_COLOR = [255, 0, 0]; // red
 const KEPT_COLOR = [211, 211, 211]; // light grey
 
+// inclusive, matching the pipeline: a cell exactly at the cutoff is removed
 const isOutlier = (zscore, threshold, direction) => (
-  direction === 'upper' ? zscore > threshold : zscore < -threshold
+  direction === 'upper' ? zscore >= threshold : zscore <= -threshold
 );
 
 // Build Map<cellId, [r,g,b]> for the outlier plot: outliers red, everything else
@@ -355,3 +356,4 @@ SpatialOutlierFilterPlot.propTypes = {
 };
 
 export default SpatialOutlierFilterPlot;
+export { isOutlier };

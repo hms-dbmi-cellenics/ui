@@ -5,7 +5,7 @@ import { render } from '@testing-library/react';
 import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 
-import SpatialOutlierFilterPlot from 'components/plots/SpatialOutlierFilterPlot';
+import SpatialOutlierFilterPlot, { isOutlier } from 'components/plots/SpatialOutlierFilterPlot';
 import { getSampleFileUrls } from 'utils/data-management/downloadSampleFile';
 
 jest.mock('utils/data-management/downloadSampleFile', () => ({
@@ -90,5 +90,19 @@ describe('SpatialOutlierFilterPlot — imageless technology (e.g. Xenium)', () =
 
     const requested = getSampleFileUrls.mock.calls.map(([, , fileType]) => fileType);
     expect(requested).toContain('ome_zarr_zip');
+  });
+});
+
+describe('isOutlier', () => {
+  it('flags a cell exactly at the cutoff, like the pipeline', () => {
+    expect(isOutlier(3, 3, 'upper')).toBe(true);
+    expect(isOutlier(-3, 3, 'lower')).toBe(true);
+  });
+
+  it('keeps cells inside the cutoff', () => {
+    expect(isOutlier(2.9, 3, 'upper')).toBe(false);
+    expect(isOutlier(-2.9, 3, 'lower')).toBe(false);
+    expect(isOutlier(-5, 3, 'upper')).toBe(false);
+    expect(isOutlier(5, 3, 'lower')).toBe(false);
   });
 });
