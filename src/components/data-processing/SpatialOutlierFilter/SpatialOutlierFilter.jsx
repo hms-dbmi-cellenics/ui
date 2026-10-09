@@ -2,7 +2,7 @@ import React, { useMemo } from 'react';
 import PropTypes from 'prop-types';
 import { useSelector } from 'react-redux';
 
-import { imagelessTechs } from 'utils/constants';
+import { imagelessTechs, sampleTech } from 'utils/constants';
 import { generateDataProcessingPlotUuid } from 'utils/generateCustomPlotUuid';
 
 import PlotLayout from 'components/data-processing/PlotLayout';
@@ -29,13 +29,17 @@ const getRawRange = (plotData) => {
  * Shared implementation for the spatial QC metric filters (UMIs, genes, mito).
  * Each filter differs only in its config key, outlier direction, plot types and
  * titles — passed in by the thin wrapper components. Each can filter by spatial
- * local outlier (z-score) or by an absolute threshold on the raw metric.
+ * local outlier (z-score) or by an absolute threshold on the raw metric (Xenium
+ * only has absolute thresholds, as it has no local-outlier z-scores).
+ *
+ * Filters with another rule (e.g. Xenium count density) reuse the slides and
+ * layout by passing getOutlierRule, generateHistogram and calculationConfig.
  */
 const SpatialOutlierFilter = (props) => {
   const {
     experimentId, sampleId, sampleIds, onConfigChange, stepDisabled, stepHadErrors,
     filterName, direction, mainPlotType, outlierPlotType, histogramPlotType,
-    mainPlotTitle, histogramTitle,
+    mainPlotTitle, histogramTitle, getOutlierRule, generateHistogram, calculationConfig,
   } = props;
 
   // imageless techs (e.g. Xenium) render no tissue image, so the showImage
@@ -64,69 +68,65 @@ const SpatialOutlierFilter = (props) => {
 
   // the merged config holds the active method's settings (see PlotLayout);
   // mito (upper) only has a max
-  const getBounds = (config) => ({
+  const getMetricOutlierRule = (config) => ({
+    method,
+    threshold: config.cutoff,
+    direction,
     min: direction === 'lower' ? config.min ?? null : null,
     max: config.max ?? null,
   });
+  const outlierRule = getOutlierRule ?? getMetricOutlierRule;
+
+  const renderSlide = (mode) => (config, plotData, actions, onZoomChange) => {
+    const rule = outlierRule(config);
+    return (
+      <SpatialOutlierFilterPlot
+        experimentId={experimentId}
+        sampleId={sampleId}
+        config={config}
+        plotData={plotData}
+        cacheId={`${filterName}-${mode}`}
+        mode={mode}
+        method={rule.method}
+        threshold={rule.threshold}
+        direction={rule.direction ?? direction}
+        min={rule.min ?? null}
+        max={rule.max ?? null}
+        maxControls={rule.maxControls ?? null}
+        actions={actions}
+        onZoomChange={onZoomChange}
+      />
+    );
+  };
+
+  const generateMetricFilterHistogram = (config, plotData) => (isAbsolute
+    ? generateMetricHistogram(config, plotData, {
+      logScale: direction === 'lower',
+      xAxisTitle: direction === 'lower' ? `log10(${mainPlotTitle})` : mainPlotTitle,
+    })
+    : generateZscoreHistogram(config, plotData, direction));
 
   const plots = {
     metricPlot: {
       title: mainPlotTitle,
       plotUuid: slidePlotUuid,
       plotType: mainPlotType,
-      plot: (config, plotData, actions, onZoomChange) => (
-        <SpatialOutlierFilterPlot
-          experimentId={experimentId}
-          sampleId={sampleId}
-          config={config}
-          plotData={plotData}
-          cacheId={`${filterName}-metric`}
-          mode='metric'
-          method={method}
-          threshold={config.cutoff}
-          direction={direction}
-          min={getBounds(config).min}
-          max={getBounds(config).max}
-          actions={actions}
-          onZoomChange={onZoomChange}
-        />
-      ),
+      plot: renderSlide('metric'),
     },
     outlierPlot: {
       title: 'Outliers',
       plotUuid: outlierPlotUuid,
       dataPlotUuid: slidePlotUuid,
       plotType: outlierPlotType,
-      plot: (config, plotData, actions, onZoomChange) => (
-        <SpatialOutlierFilterPlot
-          experimentId={experimentId}
-          sampleId={sampleId}
-          config={config}
-          plotData={plotData}
-          cacheId={`${filterName}-outlier`}
-          mode='outlier'
-          method={method}
-          threshold={config.cutoff}
-          direction={direction}
-          min={getBounds(config).min}
-          max={getBounds(config).max}
-          actions={actions}
-          onZoomChange={onZoomChange}
-        />
-      ),
+      plot: renderSlide('outlier'),
     },
     zscoreHistogram: {
-      title: isAbsolute ? `${mainPlotTitle} distribution` : histogramTitle,
+      title: isAbsolute && !generateHistogram ? `${mainPlotTitle} distribution` : histogramTitle,
       plotUuid: generateDataProcessingPlotUuid(sampleId, filterName, 1),
       plotType: histogramPlotType,
       plot: (config, plotData, actions) => (
         <BasicFilterPlot
-          spec={isAbsolute
-            ? generateMetricHistogram(config, plotData, {
-              logScale: direction === 'lower',
-              xAxisTitle: direction === 'lower' ? `log10(${mainPlotTitle})` : mainPlotTitle,
-            })
-            : generateZscoreHistogram(config, plotData, direction)}
+          spec={(generateHistogram ?? generateMetricFilterHistogram)(config, plotData)}
           actions={actions}
           miniPlot={config.miniPlot}
         />
@@ -171,11 +171,14 @@ const SpatialOutlierFilter = (props) => {
     },
   ];
 
-  const renderCalculationConfig = () => (
+  const renderCalculationConfig = () => calculationConfig ?? (
     <CalculationConfig
       direction={direction}
       metricLabel={mainPlotTitle}
       rawRange={rawRange}
+      methods={technology === sampleTech.XENIUM
+        ? [ABSOLUTE_THRESHOLD]
+        : [LOCAL_OUTLIER, ABSOLUTE_THRESHOLD]}
     />
   );
 
@@ -210,10 +213,18 @@ SpatialOutlierFilter.propTypes = {
   histogramPlotType: PropTypes.string.isRequired,
   mainPlotTitle: PropTypes.string.isRequired,
   histogramTitle: PropTypes.string.isRequired,
+  // (config) => { method, threshold, direction, min, max, maxControls }
+  getOutlierRule: PropTypes.func,
+  // (config, plotData) => vega spec for the histogram
+  generateHistogram: PropTypes.func,
+  calculationConfig: PropTypes.element,
 };
 
 SpatialOutlierFilter.defaultProps = {
   stepDisabled: false,
+  getOutlierRule: null,
+  generateHistogram: null,
+  calculationConfig: null,
 };
 
 export default SpatialOutlierFilter;

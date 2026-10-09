@@ -1015,6 +1015,14 @@ const spatialUmiOutlierZscoreHistogram = makeZscoreHistogram('UMI outlier z-scor
 const spatialNumGenesOutlierZscoreHistogram = makeZscoreHistogram('Genes detected outlier z-score');
 const spatialMitoOutlierZscoreHistogram = makeZscoreHistogram('Mitochondrial outlier z-score');
 
+// Xenium count-density filter: low density is the outlier end, like UMIs
+const spatialCountDensityPlot = makeReversedOutlierPlotConfig('log(counts / µm²)');
+const spatialCountDensityHighlightPlot = makeSpatialOutlierHighlightConfig('log(counts / µm²)');
+const spatialCountDensityHistogram = {
+  ...makeZscoreHistogram('log(counts / µm²)'),
+  binStep: 0.05,
+};
+
 // DATA INTEGRATION - Embedding by Samples
 const dataIntegrationEmbeddingInitialConfig = {
   spec: '1.0.0',
@@ -1151,6 +1159,9 @@ const initialPlotConfigStates = {
   classifierEmptyDropsPlot,
   featuresVsUMIsScatterplot,
   doubletScoreHistogram,
+  spatialCountDensityPlot,
+  spatialCountDensityHighlightPlot,
+  spatialCountDensityHistogram,
   spatialUmiOutlierPlot,
   spatialNumGenesOutlierPlot,
   spatialMitoOutlierPlot,

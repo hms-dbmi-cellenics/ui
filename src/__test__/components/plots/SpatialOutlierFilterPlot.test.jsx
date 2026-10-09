@@ -133,3 +133,22 @@ describe('getCellOutlierStatus', () => {
     expect(getCellOutlierStatus({ raw: 5 }, { method: 'localOutlier', threshold: 3 })).toBeUndefined();
   });
 });
+
+describe('getCellOutlierStatus for count density', () => {
+  const rule = (maxControls = null) => ({ method: 'countDensity', threshold: -1, maxControls });
+
+  it('flags cells below the log density threshold', () => {
+    expect(getCellOutlierStatus({ value: -1.1, controls: 0 }, rule())).toBe(true);
+    expect(getCellOutlierStatus({ value: -1, controls: 0 }, rule())).toBe(false);
+  });
+
+  it('flags cells with more control counts than allowed, when control filtering is on', () => {
+    expect(getCellOutlierStatus({ value: 0, controls: 1 }, rule(0))).toBe(true);
+    expect(getCellOutlierStatus({ value: 0, controls: 1 }, rule(1))).toBe(false);
+    expect(getCellOutlierStatus({ value: 0, controls: 5 }, rule(null))).toBe(false);
+  });
+
+  it('leaves cells without a density uncoloured', () => {
+    expect(getCellOutlierStatus({ value: null, controls: 0 }, rule())).toBeUndefined();
+  });
+});
