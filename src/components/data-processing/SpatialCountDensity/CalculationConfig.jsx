@@ -28,9 +28,11 @@ const CountDensityCalculationConfig = (props) => {
           disabled={disabled}
         />
         {threshold !== null && (
-          <Text type='secondary'>
-            {`Removes cells below ${Math.exp(threshold).toFixed(3)} counts/µm²`}
-          </Text>
+          <div>
+            <Text type='secondary' style={{ whiteSpace: 'nowrap' }}>
+              {`Removes cells below ${Math.exp(threshold).toFixed(3)} counts/µm²`}
+            </Text>
+          </div>
         )}
       </Form.Item>
       <Form.Item label='Remove cells with control counts'>
