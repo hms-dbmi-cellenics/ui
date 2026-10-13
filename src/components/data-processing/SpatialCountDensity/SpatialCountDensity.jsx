@@ -11,7 +11,8 @@ const filterName = 'spatialCountDensity';
 
 // Xenium count-density filter (OSTA imaging QC): removes cells whose log count
 // density (counts per um^2 of cell area) is a 3-MAD low outlier for the sample,
-// and cells with control probe or codeword counts above a maximum.
+// and cells whose control probe and codeword counts are above a percent of
+// their counts.
 const SpatialCountDensity = ({
   experimentId, sampleId, sampleIds, onConfigChange, stepDisabled, stepHadErrors,
 }) => {
@@ -27,7 +28,7 @@ const SpatialCountDensity = ({
   const getOutlierRule = (config) => ({
     method: 'countDensity',
     threshold: getCountDensityThreshold(densityStats, config.nmads) ?? -Infinity,
-    maxControls: config.filterControls ? config.maxControlCounts : null,
+    maxControlPercent: config.filterControls ? config.maxControlPercent : null,
   });
 
   return (

@@ -38,11 +38,13 @@ const isOutsideBounds = (raw, min, max) => (
 // value the method needs are left uncoloured.
 const getCellOutlierStatus = (cell, rule) => {
   // Xenium count density: below the log-density threshold, or (when control
-  // filtering is on, i.e. maxControls is set) more control counts than allowed
+  // filtering is on, i.e. maxControlPercent is set) a higher percent of control
+  // counts than allowed
   if (rule.method === 'countDensity') {
     if (cell.value === undefined || cell.value === null) return undefined;
-    const highControls = rule.maxControls !== null && rule.maxControls !== undefined
-      && cell.controls > rule.maxControls;
+    const highControls = rule.maxControlPercent !== null
+      && rule.maxControlPercent !== undefined
+      && cell.controlPercent > rule.maxControlPercent;
     return cell.value < rule.threshold || highControls;
   }
 
@@ -130,7 +132,7 @@ const buildMetricCellColorMap = (plotData, config) => {
 const SpatialOutlierFilterPlot = (props) => {
   const {
     experimentId, sampleId, config, plotData, threshold, direction, mode, actions,
-    onZoomChange, cacheId, method, min, max, maxControls,
+    onZoomChange, cacheId, method, min, max, maxControlPercent,
   } = props;
 
   const [plotSpec, setPlotSpec] = useState({});
@@ -189,7 +191,7 @@ const SpatialOutlierFilterPlot = (props) => {
   // colour map + key — threshold only affects the outlier view; cacheId/mode keep
   // filters that may share the same length/colours distinct.
   const outlierRule = {
-    method, threshold, direction, min, max, maxControls,
+    method, threshold, direction, min, max, maxControlPercent,
   };
   const colorKey = [
     cacheId, mode, mode === 'outlier' ? JSON.stringify(outlierRule) : 'metric', colorSignature,
@@ -376,7 +378,7 @@ SpatialOutlierFilterPlot.defaultProps = {
   method: 'localOutlier',
   min: null,
   max: null,
-  maxControls: null,
+  maxControlPercent: null,
   mode: 'metric',
   onZoomChange: () => { },
   cacheId: '',
@@ -393,7 +395,7 @@ SpatialOutlierFilterPlot.propTypes = {
   method: PropTypes.oneOf(['localOutlier', 'absoluteThreshold', 'countDensity']),
   min: PropTypes.number,
   max: PropTypes.number,
-  maxControls: PropTypes.number,
+  maxControlPercent: PropTypes.number,
   mode: PropTypes.oneOf(['metric', 'outlier']),
   actions: PropTypes.oneOfType([PropTypes.bool, PropTypes.object]),
   onZoomChange: PropTypes.func,

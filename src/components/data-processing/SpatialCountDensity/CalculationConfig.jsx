@@ -1,16 +1,14 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import {
-  Form, Switch, InputNumber, Typography,
-} from 'antd';
+import { Form, Switch, Typography } from 'antd';
 
 import SliderWithInput from '../../SliderWithInput';
 
 const { Text } = Typography;
 
 // Settings for the Xenium count-density filter: how many MADs below the median
-// log count density a cell is removed at, and whether cells with control probe
-// or codeword counts above a maximum are removed too.
+// log count density a cell is removed at, and whether cells whose control probe
+// and codeword counts are above a maximum percent of their counts are removed too.
 const CountDensityCalculationConfig = (props) => {
   const {
     config, disabled, updateSettings, threshold,
@@ -35,19 +33,20 @@ const CountDensityCalculationConfig = (props) => {
           </div>
         )}
       </Form.Item>
-      <Form.Item label='Remove cells with control counts'>
+      <Form.Item label='Remove cells with high control counts'>
         <Switch
           checked={config.filterControls}
           onChange={(checked) => updateSettings({ filterControls: checked })}
           disabled={disabled}
         />
       </Form.Item>
-      <Form.Item label='Max control counts'>
-        <InputNumber
+      <Form.Item label='Max control % of counts'>
+        <SliderWithInput
           min={0}
-          precision={0}
-          value={config.maxControlCounts}
-          onChange={(value) => updateSettings({ maxControlCounts: value ?? 0 })}
+          max={50}
+          step={0.5}
+          value={config.maxControlPercent}
+          onUpdate={(newValue) => updateSettings({ maxControlPercent: newValue })}
           disabled={disabled || !config.filterControls}
         />
       </Form.Item>

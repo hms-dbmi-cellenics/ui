@@ -6,7 +6,7 @@ import '__test__/test-utils/setupTests';
 import CalculationConfig from 'components/data-processing/SpatialCountDensity/CalculationConfig';
 
 const config = {
-  nmads: 3, filterControls: true, maxControlCounts: 0, binStep: 0.05,
+  nmads: 3, filterControls: true, maxControlPercent: 5, binStep: 0.05,
 };
 
 describe('Count density CalculationConfig', () => {
@@ -34,7 +34,16 @@ describe('Count density CalculationConfig', () => {
   it('disables the control maximum when control filtering is off', () => {
     render(<CalculationConfig config={{ ...config, filterControls: false }} />);
 
-    const [, maxControlCounts] = screen.getAllByRole('spinbutton');
-    expect(maxControlCounts).toBeDisabled();
+    const [, maxControlPercent] = screen.getAllByRole('spinbutton');
+    expect(maxControlPercent).toBeDisabled();
+  });
+
+  it('shows the control maximum as a percent', () => {
+    render(<CalculationConfig config={config} />);
+
+    expect(screen.getByText('Max control % of counts')).toBeInTheDocument();
+    const [, maxControlPercent] = screen.getAllByRole('spinbutton');
+    expect(maxControlPercent).toHaveValue('5.0');
+    expect(maxControlPercent).not.toBeDisabled();
   });
 });

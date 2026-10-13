@@ -92,7 +92,7 @@ const SpatialOutlierFilter = (props) => {
         direction={rule.direction ?? direction}
         min={rule.min ?? null}
         max={rule.max ?? null}
-        maxControls={rule.maxControls ?? null}
+        maxControlPercent={rule.maxControlPercent ?? null}
         actions={actions}
         onZoomChange={onZoomChange}
       />
@@ -213,7 +213,7 @@ SpatialOutlierFilter.propTypes = {
   histogramPlotType: PropTypes.string.isRequired,
   mainPlotTitle: PropTypes.string.isRequired,
   histogramTitle: PropTypes.string.isRequired,
-  // (config) => { method, threshold, direction, min, max, maxControls }
+  // (config) => { method, threshold, direction, min, max, maxControlPercent }
   getOutlierRule: PropTypes.func,
   // (config, plotData) => vega spec for the histogram
   generateHistogram: PropTypes.func,
