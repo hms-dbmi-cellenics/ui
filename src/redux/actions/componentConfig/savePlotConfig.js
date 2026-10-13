@@ -14,7 +14,11 @@ const savePlotConfig = (experimentId, plotUuid) => async (dispatch, getState) =>
     loading,
     error,
     ...content
-  } = getState().componentConfig[plotUuid];
+  } = getState().componentConfig[plotUuid] ?? {};
+
+  // nothing to save until the plot's config has loaded (e.g. only plot data has
+  // arrived from the pipeline); the API rejects a save without a config
+  if (!content.config) return;
 
   try {
     await fetchAPI(

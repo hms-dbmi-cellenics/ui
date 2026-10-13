@@ -45,4 +45,28 @@ describe('updateConfig', () => {
     });
     expect(updateReturn).toMatchSnapshot();
   });
+
+  it('Plot data alone from the pipeline does not leave config changes to save', () => {
+    const updateReturn = updateReducer({}, {
+      type: UPDATE_CONFIG,
+      payload: {
+        dataChanges: [{ PC: 1, percentVariance: 0.1 }],
+        plotUuid: 'dataIntegration-1',
+      },
+    });
+
+    expect(updateReturn['dataIntegration-1'].plotData).toEqual([{ PC: 1, percentVariance: 0.1 }]);
+    expect(updateReturn['dataIntegration-1'].config).toBeUndefined();
+    expect(updateReturn['dataIntegration-1'].outstandingChanges).toBe(false);
+  });
+
+  it('Plot data keeps existing unsaved config changes', () => {
+    const state = { volcanoPlotMain: { config: { height: 1 }, outstandingChanges: true } };
+    const updateReturn = updateReducer(state, {
+      type: UPDATE_CONFIG,
+      payload: { dataChanges: [], plotUuid: 'volcanoPlotMain' },
+    });
+
+    expect(updateReturn.volcanoPlotMain.outstandingChanges).toBe(true);
+  });
 });
