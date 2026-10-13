@@ -5,7 +5,7 @@ import { render } from '@testing-library/react';
 import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 
-import SpatialOutlierFilterPlot from 'components/plots/SpatialOutlierFilterPlot';
+import SpatialOutlierFilterPlot, { isOutlier, getCellOutlierStatus } from 'components/plots/SpatialOutlierFilterPlot';
 import { getSampleFileUrls } from 'utils/data-management/downloadSampleFile';
 
 jest.mock('utils/data-management/downloadSampleFile', () => ({
@@ -90,5 +90,65 @@ describe('SpatialOutlierFilterPlot — imageless technology (e.g. Xenium)', () =
 
     const requested = getSampleFileUrls.mock.calls.map(([, , fileType]) => fileType);
     expect(requested).toContain('ome_zarr_zip');
+  });
+});
+
+describe('isOutlier', () => {
+  it('flags a cell exactly at the cutoff, like the pipeline', () => {
+    expect(isOutlier(3, 3, 'upper')).toBe(true);
+    expect(isOutlier(-3, 3, 'lower')).toBe(true);
+  });
+
+  it('keeps cells inside the cutoff', () => {
+    expect(isOutlier(2.9, 3, 'upper')).toBe(false);
+    expect(isOutlier(-2.9, 3, 'lower')).toBe(false);
+    expect(isOutlier(-5, 3, 'upper')).toBe(false);
+    expect(isOutlier(5, 3, 'lower')).toBe(false);
+  });
+});
+
+describe('getCellOutlierStatus', () => {
+  const absolute = (min, max) => ({ method: 'absoluteThreshold', min, max });
+
+  it('uses inclusive raw bounds for absolute thresholds', () => {
+    expect(getCellOutlierStatus({ raw: 99 }, absolute(100, 1000))).toBe(true);
+    expect(getCellOutlierStatus({ raw: 100 }, absolute(100, 1000))).toBe(false);
+    expect(getCellOutlierStatus({ raw: 1000 }, absolute(100, 1000))).toBe(false);
+    expect(getCellOutlierStatus({ raw: 1001 }, absolute(100, 1000))).toBe(true);
+  });
+
+  it('does not apply a null bound', () => {
+    expect(getCellOutlierStatus({ raw: 1e9 }, absolute(100, null))).toBe(false);
+    expect(getCellOutlierStatus({ raw: 0 }, absolute(null, null))).toBe(false);
+  });
+
+  it('uses the z-score for local outliers, ignoring raw', () => {
+    const rule = { method: 'localOutlier', threshold: 3, direction: 'lower' };
+    expect(getCellOutlierStatus({ raw: 1, zscore: -3 }, rule)).toBe(true);
+    expect(getCellOutlierStatus({ raw: 1, zscore: 0 }, rule)).toBe(false);
+  });
+
+  it('leaves cells without the needed value uncoloured', () => {
+    expect(getCellOutlierStatus({ zscore: 0 }, absolute(1, 2))).toBeUndefined();
+    expect(getCellOutlierStatus({ raw: 5 }, { method: 'localOutlier', threshold: 3 })).toBeUndefined();
+  });
+});
+
+describe('getCellOutlierStatus for count density', () => {
+  const rule = (maxControlPercent = null) => ({ method: 'countDensity', threshold: -1, maxControlPercent });
+
+  it('flags cells below the log density threshold', () => {
+    expect(getCellOutlierStatus({ value: -1.1, controlPercent: 0 }, rule())).toBe(true);
+    expect(getCellOutlierStatus({ value: -1, controlPercent: 0 }, rule())).toBe(false);
+  });
+
+  it('flags cells above the control percent, inclusive, when control filtering is on', () => {
+    expect(getCellOutlierStatus({ value: 0, controlPercent: 5.1 }, rule(5))).toBe(true);
+    expect(getCellOutlierStatus({ value: 0, controlPercent: 5 }, rule(5))).toBe(false);
+    expect(getCellOutlierStatus({ value: 0, controlPercent: 80 }, rule(null))).toBe(false);
+  });
+
+  it('leaves cells without a density uncoloured', () => {
+    expect(getCellOutlierStatus({ value: null, controlPercent: 0 }, rule())).toBeUndefined();
   });
 });

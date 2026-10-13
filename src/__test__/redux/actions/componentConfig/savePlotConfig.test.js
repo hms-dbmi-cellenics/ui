@@ -60,4 +60,17 @@ describe('savePlotConfig', () => {
     expect(pushNotificationMessage).toHaveBeenCalledTimes(1);
     expect(pushNotificationMessage).toHaveBeenCalledWith('error', endUserMessages.ERROR_SAVING_PLOT_CONFIG);
   });
+
+  it('Does not send a save before the plot config has loaded', async () => {
+    const storeWithDataOnly = mockStore({
+      componentConfig: { 'dataIntegration-1': { plotData: [], outstandingChanges: true } },
+    });
+
+    await act(async () => {
+      await storeWithDataOnly.dispatch(savePlotConfig(experimentId, 'dataIntegration-1'));
+    });
+
+    expect(fetchMock).not.toHaveBeenCalled();
+    expect(pushNotificationMessage).not.toHaveBeenCalled();
+  });
 });

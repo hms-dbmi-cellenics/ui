@@ -18,7 +18,9 @@ const updateConfig = (state, action) => {
       ...state[plotUuid],
       config: newConfig,
       plotData: newData,
-      outstandingChanges: true,
+      // plot data is never saved (see savePlotConfig), so only config changes
+      // leave something to save
+      outstandingChanges: configChanges ? true : Boolean(state[plotUuid]?.outstandingChanges),
     },
   };
 };

@@ -222,7 +222,9 @@ const FileUploadModal = (props) => {
                   onChange={(value) => setSelectedTech(value)}
                   // Fix the width so that the dropdown doesn't change size when the value changes
                   style={{ width: 250 }}
-                  listHeight={420}
+                  // 10 technologies + 4 group headers at 32px each, plus padding: show
+                  // them all without scrolling
+                  listHeight={480}
                 >
                   {
                     // Iterate over categories and each technology within them

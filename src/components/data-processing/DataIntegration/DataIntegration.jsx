@@ -356,7 +356,8 @@ const DataIntegration = (props) => {
 
   useEffect(() => {
     Object.values(plots).forEach((obj) => {
-      if (!plotConfigs[obj.plotUuid]) {
+      // an entry can hold pipeline plot data without its config yet
+      if (!plotConfigs[obj.plotUuid]?.config) {
         dispatch(loadPlotConfig(experimentId, obj.plotUuid, obj.plotType));
       }
     });
