@@ -28,7 +28,7 @@ const CountDensityCalculationConfig = (props) => {
           disabled={disabled}
         />
         {threshold !== null && (
-          <div>
+          <div style={{ marginTop: 8 }}>
             <Text type='secondary' style={{ whiteSpace: 'nowrap' }}>
               {`Removes cells below ${Math.exp(threshold).toFixed(3)} counts/µm²`}
             </Text>
