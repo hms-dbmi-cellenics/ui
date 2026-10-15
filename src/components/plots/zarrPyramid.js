@@ -14,12 +14,14 @@ import ZipFileStore from 'components/data-exploration/spatial/ZipFileStore';
 // and every subsequent viewport tile reuse one open instead of re-reading
 // metadata on each zoom. Histology and segmentation are different URLs → distinct
 // cache entries.
-// LRU-capped: keyed by the SIGNED url, which changes on every fetch, so without a
-// cap a long session (each plot mount / sample switch re-signs the url) accumulates
-// one zip store per url forever — and each store caches decompressed chunks as tiles
-// stream, growing unbounded. Capping releases stores from no-longer-open slides.
+// Keyed by the signed url, which getSampleFileUrls caches per sample/file type, so
+// remounts (e.g. switching between Data Processing and Plots and tables) hit here.
+// LRU-capped so a long session doesn't hold open pyramids for every slide visited;
+// sized for histology + segmentation across a handful of samples.
 const pyramidCache = new Map();
-const PYRAMID_CACHE_MAX = 8;
+const PYRAMID_CACHE_MAX = 16;
+
+export const clearPyramidCache = () => pyramidCache.clear();
 
 // ── Per-level coordinate frame ──────────────────────────────────────────────
 // Every tile is positioned in the plot from its data-space extent. To keep the

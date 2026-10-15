@@ -7,6 +7,7 @@ import { updateProcessingSettingsFromQC, loadedProcessingConfig, updatePipelineV
 import { updateBackendStatus } from 'redux/actions/backendStatus';
 import { updatePlotData, replaceLoadedConfigs } from 'redux/actions/componentConfig';
 import endUserMessages from 'utils/endUserMessages';
+import clearSpatialCaches from 'utils/spatial/clearSpatialCaches';
 
 jest.mock('redux/actions/cellSets/updateCellSetsClustering');
 jest.mock('redux/actions/experimentSettings', () => ({
@@ -20,6 +21,7 @@ jest.mock('redux/actions/cellSets/loadCellSets');
 jest.mock('redux/actions/componentConfig/replaceLoadedConfigs');
 
 jest.mock('utils/pushNotificationMessage');
+jest.mock('utils/spatial/clearSpatialCaches');
 jest.spyOn(global.console, 'error');
 
 const mockDispatch = jest.fn();
@@ -182,6 +184,15 @@ describe('ExperimentUpdatesHandler', () => {
 
     expect(mockDispatch).toHaveBeenCalledTimes(2);
     expect(pushNotificationMessage).not.toHaveBeenCalled();
+  });
+
+  it('Clears spatial caches on GEM2S and OBJ2S updates only', () => {
+    triggerExperimentUpdate(mockGem2sUpdate);
+    triggerExperimentUpdate(mockObj2sUpdate);
+    expect(clearSpatialCaches).toHaveBeenCalledTimes(2);
+
+    triggerExperimentUpdate(mockQcUpdate);
+    expect(clearSpatialCaches).toHaveBeenCalledTimes(2);
   });
 
   it('Triggers properly for QC updates ', () => {

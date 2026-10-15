@@ -77,6 +77,16 @@ const evict = (resolved, promises, releaseFn) => {
   }
 };
 
+// Drop every cached tile, e.g. after gem2s/obj2s rewrites a sample's images and
+// segmentations (tiles are keyed by experiment+sample, not by file version).
+export const clearSpatialTileCache = () => {
+  tissueResolved.forEach((entry) => releaseOverlay(entry?.url));
+  tissueResolved.clear();
+  tissuePromises.clear();
+  segResolved.clear();
+  segPromises.clear();
+};
+
 export const peekTissueTile = (sampleKey, tile) => {
   const key = tileKey(sampleKey, tile);
   if (!tissueResolved.has(key)) return null;

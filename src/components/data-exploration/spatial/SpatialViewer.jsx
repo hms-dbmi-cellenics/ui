@@ -170,6 +170,9 @@ const SpatialViewer = (props) => {
   const [moleculeMeta, setMoleculeMeta] = useState(null);
   const [loader, setLoader] = useState(null);
   const [segmentationsLoader, setSegmentationsLoader] = useState(null);
+  // set once we know there's no segmentation bitmask (missing or failed to
+  // load), so the diamond fallback isn't drawn while it is still loading
+  const [segmentationsUnavailable, setSegmentationsUnavailable] = useState(false);
   const [offsetData, setOffsetData] = useState();
   const [perImageShape, setPerImageShape] = useState();
   const [viewState, setViewState] = useState(null);
@@ -322,9 +325,10 @@ const SpatialViewer = (props) => {
           console.error('[SpatialViewer] Image URL fetch failed:', imageResult.reason);
         }
 
-        if (segResult.status === 'fulfilled') {
+        if (segResult.status === 'fulfilled' && segResult.value.length) {
           setSegmentationsOmeZarrUrls(segResult.value.map(({ url }) => url));
         } else {
+          setSegmentationsUnavailable(true);
           console.info('[SpatialViewer] segmentations_ome_zarr_zip unavailable — diamond fallback active.');
         }
 
@@ -372,7 +376,10 @@ const SpatialViewer = (props) => {
     // image-grid filler (#f5f7f9) then shows through in those cells.
     loadOmeZarrGrid(segmentationRoots, gridShape, 0, gridLayout.slotToSampleIndex)
       .then(setSegmentationsLoader)
-      .catch((e) => console.error('[SpatialViewer] Segmentations loader error:', e));
+      .catch((e) => {
+        console.error('[SpatialViewer] Segmentations loader error:', e);
+        setSegmentationsUnavailable(true);
+      });
   }, [segmentationRoots, gridLayout]);
 
   // ── Molecule artifact stores + meta ────────────────────────────────────────
@@ -492,7 +499,8 @@ const SpatialViewer = (props) => {
   const showLoader = useMemo(() => {
     const dataNotReady = !data || loading;
     const geneNotReady = focusData.store === 'genes' && !expressionMatrix.geneIsLoaded(focusData.key);
-    return dataNotReady || geneNotReady;
+    const segmentationsNotReady = !segmentationsLoader && !segmentationsUnavailable;
+    return dataNotReady || geneNotReady || segmentationsNotReady;
   });
 
   // ── Embedding settings ────────────────────────────────────────────────────
@@ -530,7 +538,7 @@ const SpatialViewer = (props) => {
 
   // ── Diamond fallback ──────────────────────────────────────────────────────
   const polygonShapeData = useMemo(() => {
-    if (segmentationsLoader || !offsetData) return null;
+    if (!segmentationsUnavailable || !offsetData) return null;
     const shapes = [];
     offsetData.forEach(([x, y], key) => {
       if (hiddenCellIds.has(key)) return;
@@ -542,7 +550,7 @@ const SpatialViewer = (props) => {
       });
     });
     return shapes.length > 0 ? shapes : null;
-  }, [offsetData, hiddenCellIds, cellsInAnyCluster, segmentationsLoader]);
+  }, [offsetData, hiddenCellIds, cellsInAnyCluster, segmentationsUnavailable]);
 
   const polygonColorMap = useMemo(() => {
     if (!polygonShapeData) return null;
@@ -905,7 +913,7 @@ const SpatialViewer = (props) => {
     const result = [];
 
     // Diamond fallback — only when no bitmask OME-Zarr is available
-    if (!segmentationsLoader && polygonShapeData) {
+    if (polygonShapeData) {
       result.push(new PolygonLayer({
         id: 'segmentations-polygon',
         data: polygonShapeData,

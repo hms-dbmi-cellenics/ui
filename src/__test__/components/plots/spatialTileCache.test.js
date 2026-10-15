@@ -32,6 +32,7 @@ const deferred = () => {
 describe('spatialTileCache', () => {
   let loadTissueTile;
   let peekTissueTile;
+  let clearSpatialTileCache;
   let readImageTile;
   let deferreds;
 
@@ -50,6 +51,7 @@ describe('spatialTileCache', () => {
     const cache = require('components/plots/spatialTileCache');
     loadTissueTile = cache.loadTissueTile;
     peekTissueTile = cache.peekTissueTile;
+    clearSpatialTileCache = cache.clearSpatialTileCache;
   });
 
   const wanted = () => true;
@@ -104,5 +106,23 @@ describe('spatialTileCache', () => {
     loadTissueTile({}, 'exp-s', tile, { isWanted: () => want });
     await tick();
     expect(readImageTile).toHaveBeenCalledTimes(1);
+  });
+
+  it('clearSpatialTileCache drops cached tiles so they are decoded again', async () => {
+    const tile = makeTile(0, 4, 4);
+    const result = { url: 'seg-overlay://10', extent: tile.extent };
+    const promise = loadTissueTile({}, 'exp-s', tile, { isWanted: wanted });
+    await tick();
+    deferreds[0].resolve(result);
+    await promise;
+    await tick();
+    expect(peekTissueTile('exp-s', tile)).toEqual(result);
+
+    clearSpatialTileCache();
+    expect(peekTissueTile('exp-s', tile)).toBeNull();
+
+    loadTissueTile({}, 'exp-s', tile, { isWanted: wanted });
+    await tick();
+    expect(readImageTile).toHaveBeenCalledTimes(2);
   });
 });
