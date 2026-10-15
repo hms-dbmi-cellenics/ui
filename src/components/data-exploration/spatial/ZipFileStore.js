@@ -9,7 +9,8 @@ function strip_prefix(path) {
 // ── Download stats ──────────────────────────────────────────────────────────
 // Per-zip accounting of what was actually fetched vs the zip's full size, to check
 // range reads in a real session. Run `spatialZipStats()` in the browser console
-// for a table; `spatialZipStats({ reset: true })` clears it.
+// for a table; `spatialZipStats({ reset: true })` zeroes the counters (keeping each
+// zip's mode and size, since already-open stores won't re-register them).
 const zipStats = new Map();
 
 const describeUrl = (href) => {
@@ -49,10 +50,15 @@ const toMB = (bytes) => (bytes == null ? null : Number((bytes / 1e6).toFixed(2))
 
 export const spatialZipStats = ({ reset = false } = {}) => {
   if (reset) {
-    zipStats.clear();
+    zipStats.forEach((stats) => {
+      Object.assign(stats, {
+        fetchedBytes: 0, requests: 0, chunkReads: 0, chunkCacheHits: 0,
+      });
+    });
     return undefined;
   }
-  const rows = [...zipStats.values()].map((s) => ({
+  // only zips touched since the last reset
+  const rows = [...zipStats.values()].filter((s) => s.chunkReads || s.requests).map((s) => ({
     file: s.file,
     mode: s.mode,
     zipMB: toMB(s.zipBytes),
@@ -64,8 +70,10 @@ export const spatialZipStats = ({ reset = false } = {}) => {
   }));
   const zipBytes = rows.reduce((n, r) => n + (r.zipMB ?? 0), 0);
   const fetched = rows.reduce((n, r) => n + r.fetchedMB, 0);
+  const hits = rows.reduce((n, r) => n + r.chunkCacheHits, 0);
+  const reads = rows.reduce((n, r) => n + r.chunkReads, 0);
   console.table(rows);
-  console.info(`[ZipFileStore] fetched ${fetched.toFixed(2)} MB of ${zipBytes.toFixed(2)} MB across ${rows.length} zips`);
+  console.info(`[ZipFileStore] fetched ${fetched.toFixed(2)} MB of ${zipBytes.toFixed(2)} MB across ${rows.length} zips; ${hits}/${reads} chunk reads served from cache`);
   return rows;
 };
 

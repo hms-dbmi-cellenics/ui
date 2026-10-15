@@ -182,4 +182,22 @@ describe('ZipFileStore range reads', () => {
     expect(row.fetchedPct).toEqual(100);
     expect(row.requests).toEqual(1);
   });
+
+  it('Reset zeroes counters but keeps each zip mode and size', async () => {
+    const zip = buildStoredZip(files);
+    global.fetch = mockRangeFetch(zip);
+    ZipFileStore.registerSize(url, zip.length);
+
+    const store = ZipFileStore.fromUrl(url);
+    await store.get('/0/0/0/0');
+    spatialZipStats({ reset: true });
+    expect(spatialZipStats()).toEqual([]);
+
+    await store.get('/0/0/0/0');
+    const [row] = spatialZipStats();
+    expect(row.mode).toEqual('range');
+    expect(row.zipMB).not.toBeNull();
+    expect(row.fetchedMB).toEqual(0);
+    expect(row.chunkCacheHits).toEqual(1);
+  });
 });
