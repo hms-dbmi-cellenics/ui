@@ -3,7 +3,8 @@ import * as INI from 'ini';
 import { qcSteps } from '../qcSteps';
 
 const exportQCParameters = (config) => {
-  const sortedConfig = qcSteps.map((s, i) => [`${i + 1}-${s}`, config[s] ?? {}]).sort();
+  // qcSteps is in canonical order; a string sort would put "10-" before "2-"
+  const sortedConfig = qcSteps.map((s, i) => [`${i + 1}-${s}`, config[s] ?? {}]);
   const string = INI.stringify(Object.fromEntries(sortedConfig), { whitespace: true });
   return new Blob([string], { type: 'text/plain;charset=utf-8' });
 };

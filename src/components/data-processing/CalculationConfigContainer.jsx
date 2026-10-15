@@ -74,6 +74,8 @@ const CalculationConfigContainer = (props) => {
           onFilterSettingsChange();
         },
         disabled: stepDisabled || auto,
+        // lets a child keep controls usable in automatic mode (e.g. a method choice)
+        stepDisabled,
       })}
 
       {

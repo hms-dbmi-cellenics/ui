@@ -1,29 +1,57 @@
 import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 
-import { qcSteps, getUserFriendlyQCStepName } from 'utils/qcSteps';
+import { qcSteps, getUserFriendlyQCStepName, getQcStepsForTechnology } from 'utils/qcSteps';
 import { spatialPlotTypes, plotTypes } from 'utils/constants';
 import updateFilterSettings from 'redux/actions/experimentSettings/processingConfig/updateFilterSettings';
 import { EXPERIMENT_SETTINGS_SAMPLE_FILTER_UPDATE } from 'redux/actionTypes/experimentSettings';
 
-const spatialSteps = ['spatialUmiOutlier', 'spatialNumGenesOutlier', 'spatialMitoOutlier'];
+const spatialSteps = ['spatialCountDensity', 'spatialUmiOutlier', 'spatialNumGenesOutlier', 'spatialMitoOutlier'];
 
 describe('qcSteps', () => {
-  it('includes the three spatial outlier steps in canonical order', () => {
-    spatialSteps.forEach((step) => expect(qcSteps).toContain(step));
+  it('includes the spatial steps in canonical order', () => {
+    const idx = (s) => qcSteps.indexOf(s);
 
     // they sit together, after doubletScores and before dataIntegration
-    const idx = (s) => qcSteps.indexOf(s);
-    expect(idx('spatialUmiOutlier')).toBeGreaterThan(idx('doubletScores'));
-    expect(idx('spatialMitoOutlier')).toBeLessThan(idx('dataIntegration'));
+    expect(idx('spatialCountDensity')).toBe(idx('doubletScores') + 1);
+    expect(idx('spatialUmiOutlier')).toBe(idx('spatialCountDensity') + 1);
     expect(idx('spatialNumGenesOutlier')).toBe(idx('spatialUmiOutlier') + 1);
     expect(idx('spatialMitoOutlier')).toBe(idx('spatialNumGenesOutlier') + 1);
+    expect(idx('dataIntegration')).toBe(idx('spatialMitoOutlier') + 1);
   });
 
   it('maps each spatial step to a user-friendly name', () => {
+    expect(getUserFriendlyQCStepName('spatialCountDensity')).toBe('Count density filter');
     expect(getUserFriendlyQCStepName('spatialUmiOutlier')).toBe('UMI filter');
     expect(getUserFriendlyQCStepName('spatialNumGenesOutlier')).toBe('Number of genes filter');
     expect(getUserFriendlyQCStepName('spatialMitoOutlier')).toBe('Mitochondrial content filter');
+  });
+});
+
+describe('getQcStepsForTechnology', () => {
+  const singleCellSteps = [
+    'classifier', 'cellSizeDistribution', 'mitochondrialContent', 'numGenesVsNumUmis',
+    'doubletScores', 'dataIntegration', 'configureEmbedding',
+  ];
+
+  it('keeps the single-cell steps unchanged for non-spatial technologies', () => {
+    ['10x', 'rhapsody', 'parse', 'seurat_object', undefined].forEach((technology) => {
+      expect(getQcStepsForTechnology(technology)).toEqual(singleCellSteps);
+    });
+  });
+
+  it('runs the three metric filters for Visium HD', () => {
+    expect(getQcStepsForTechnology('visium_hd')).toEqual([
+      'spatialUmiOutlier', 'spatialNumGenesOutlier', 'spatialMitoOutlier',
+      'dataIntegration', 'configureEmbedding',
+    ]);
+  });
+
+  it('runs count density, UMI and gene filters (no mito) for Xenium', () => {
+    expect(getQcStepsForTechnology('xenium')).toEqual([
+      'spatialCountDensity', 'spatialUmiOutlier', 'spatialNumGenesOutlier',
+      'dataIntegration', 'configureEmbedding',
+    ]);
   });
 });
 

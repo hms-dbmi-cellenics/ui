@@ -36,7 +36,7 @@ import {
   saveProcessingSettings,
   setQCStepEnabled,
 } from 'redux/actions/experimentSettings';
-import { getUserFriendlyQCStepName, qcSteps } from 'utils/qcSteps';
+import { getUserFriendlyQCStepName, getQcStepsForTechnology, qcSteps } from 'utils/qcSteps';
 
 import CellSizeDistribution from 'components/data-processing/CellSizeDistribution/CellSizeDistribution';
 import Classifier from 'components/data-processing/Classifier/Classifier';
@@ -46,6 +46,7 @@ import DoubletScores from 'components/data-processing/DoubletScores/DoubletScore
 import GenesVsUMIs from 'components/data-processing/GenesVsUMIs/GenesVsUMIs';
 import Header from 'components/Header';
 import MitochondrialContent from 'components/data-processing/MitochondrialContent/MitochondrialContent';
+import SpatialCountDensity from 'components/data-processing/SpatialCountDensity/SpatialCountDensity';
 import SpatialUmiOutlier from 'components/data-processing/SpatialUmiOutlier/SpatialUmiOutlier';
 import SpatialNumGenesOutlier from 'components/data-processing/SpatialNumGenesOutlier/SpatialNumGenesOutlier';
 import SpatialMitoOutlier from 'components/data-processing/SpatialMitoOutlier/SpatialMitoOutlier';
@@ -314,9 +315,33 @@ const DataProcessingPage = ({ experimentId, experimentData }) => {
       ),
     },
     {
+      key: 'spatialCountDensity',
+      name: getUserFriendlyQCStepName('spatialCountDensity'),
+      description: 'Removes cells with an unusually low count density (counts per µm² of cell area): by default, more than 3 median absolute deviations below the sample median on the log scale. Optionally also removes cells with negative control probe or codeword counts. Removed cells are shown in red on the tissue slide.',
+      multiSample: true,
+      render: (key) => (
+        <SingleComponentMultipleDataContainer
+          defaultActiveKey={sampleKeys}
+          inputsList={inputsList}
+          baseComponentRenderer={(sample) => (
+            <SpatialCountDensity
+              experimentId={experimentId}
+              filtering
+              key={key}
+              sampleId={sample.key}
+              sampleIds={sampleKeys}
+              onConfigChange={() => onConfigChange(key)}
+              stepDisabled={!checkIfSampleIsEnabled(key)}
+              stepHadErrors={getStepHadErrors(key)}
+            />
+          )}
+        />
+      ),
+    },
+    {
       key: 'spatialUmiOutlier',
       name: getUserFriendlyQCStepName('spatialUmiOutlier'),
-      description: 'Spatial filter that removes cells whose total UMI count is a local outlier on the log scale, i.e. unusually low compared to their spatial neighborhood. Cells beyond the chosen z-score threshold are outlined in red on the tissue slide.',
+      description: 'Removes cells with a low total UMI count: either a local outlier on the log scale (unusually low compared to their spatial neighborhood, beyond the chosen z-score), or outside an absolute minimum and optional maximum. Removed cells are shown in red on the tissue slide.',
       multiSample: true,
       render: (key) => (
         <SingleComponentMultipleDataContainer
@@ -340,7 +365,7 @@ const DataProcessingPage = ({ experimentId, experimentData }) => {
     {
       key: 'spatialNumGenesOutlier',
       name: getUserFriendlyQCStepName('spatialNumGenesOutlier'),
-      description: 'Spatial filter that removes cells whose number of detected genes is a local outlier on the log scale, i.e. unusually low compared to their spatial neighborhood. Cells beyond the chosen z-score threshold are outlined in red on the tissue slide.',
+      description: 'Removes cells with few detected genes: either a local outlier on the log scale (unusually low compared to their spatial neighborhood, beyond the chosen z-score), or outside an absolute minimum and optional maximum. Removed cells are shown in red on the tissue slide.',
       multiSample: true,
       render: (key) => (
         <SingleComponentMultipleDataContainer
@@ -364,7 +389,7 @@ const DataProcessingPage = ({ experimentId, experimentData }) => {
     {
       key: 'spatialMitoOutlier',
       name: getUserFriendlyQCStepName('spatialMitoOutlier'),
-      description: 'Spatial filter that removes cells whose mitochondrial content is a local outlier, i.e. unusually high compared to their spatial neighborhood. Cells beyond the chosen z-score threshold are outlined in red on the tissue slide.',
+      description: 'Removes cells with high mitochondrial content: either a local outlier (unusually high compared to their spatial neighborhood, beyond the chosen z-score), or above an absolute maximum percentage. Removed cells are shown in red on the tissue slide.',
       multiSample: true,
       render: (key) => (
         <SingleComponentMultipleDataContainer
@@ -420,16 +445,11 @@ const DataProcessingPage = ({ experimentId, experimentData }) => {
   // the canonical representation
   console.assert(_.isEqual(qcSteps, allSteps.map((s) => s.key)));
 
-  // Spatial (Visium HD) datasets run a different set of filters: cells are defined
-  // by segmentation, so the single-cell filters are replaced by spatial local-outlier
-  // filters. Show only the filter set matching the dataset's technology.
-  const SPATIAL_ONLY_STEPS = ['spatialUmiOutlier', 'spatialNumGenesOutlier', 'spatialMitoOutlier'];
-  const SINGLE_CELL_ONLY_STEPS = ['classifier', 'cellSizeDistribution', 'mitochondrialContent', 'numGenesVsNumUmis', 'doubletScores'];
-  const steps = allSteps.filter((s) => {
-    if (SPATIAL_ONLY_STEPS.includes(s.key)) return isSpatial;
-    if (SINGLE_CELL_ONLY_STEPS.includes(s.key)) return !isSpatial;
-    return true; // dataIntegration & configureEmbedding always shown
-  });
+  // Spatial datasets run a different set of filters: cells are defined by
+  // segmentation, so the single-cell filters are replaced by spatial ones, which
+  // differ per technology. Show only the steps the dataset's technology runs.
+  const technologySteps = getQcStepsForTechnology(selectedTechnology);
+  const steps = allSteps.filter((s) => technologySteps.includes(s.key));
 
   const currentStep = steps[stepIdx];
 
