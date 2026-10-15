@@ -4,6 +4,7 @@ import { replaceLoadedConfigs, updatePlotData } from 'redux/actions/componentCon
 import { loadCellSets, updateCellSetsClustering } from 'redux/actions/cellSets';
 import { loadSamples } from 'redux/actions/samples';
 import { reloadExperimentInfo } from 'redux/actions/experiments';
+import clearSpatialCaches from 'utils/spatial/clearSpatialCaches';
 
 import pushNotificationMessage from 'utils/pushNotificationMessage';
 import { cellSetsUpdatedMessages } from 'utils/constants';
@@ -20,6 +21,10 @@ const updateTypes = {
 const experimentUpdatesHandler = (dispatch) => (experimentId, update) => {
   if (update.status) {
     dispatch(updateBackendStatus(experimentId, update.status));
+  }
+
+  if (update.type === updateTypes.GEM2S || update.type === updateTypes.OBJ2S) {
+    clearSpatialCaches();
   }
 
   if (update.response?.error) {
