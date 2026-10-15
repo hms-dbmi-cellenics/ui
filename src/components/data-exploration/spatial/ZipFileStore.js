@@ -221,7 +221,6 @@ class ZipFileStore {
       const stats = statsFor(reader.url);
       stats.mode = 'range';
       stats.zipBytes = reader.length;
-      console.info(`[ZipFileStore] range-reading ${stats.file} (${toMB(reader.length)} MB zip)`);
       this.info = unzip(reader);
     } else if (reader.url) {
       this.info = ZipFileStore.downloadWhole(reader.url).then((blob) => unzip(new BlobReader(blob)));
@@ -233,7 +232,6 @@ class ZipFileStore {
   static async downloadWhole(href) {
     const stats = statsFor(href);
     stats.mode = 'whole';
-    console.info(`[ZipFileStore] downloading whole zip ${stats.file} (no size registered)`);
     const req = await fetch(href);
     if (!req.ok) {
       throw new Error(`failed http request ${href}, status: ${req.status}: ${req.statusText}`);
