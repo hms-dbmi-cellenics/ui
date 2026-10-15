@@ -1,4 +1,4 @@
-import ZipFileStore from 'components/data-exploration/spatial/ZipFileStore';
+import ZipFileStore, { spatialZipStats } from 'components/data-exploration/spatial/ZipFileStore';
 
 // Minimal stored (uncompressed) zip writer — enough for unzipit to parse.
 // `localExtra` bytes are added to each LOCAL header only, like Info-ZIP does.
@@ -51,7 +51,12 @@ const buildStoredZip = (files, localExtra = 0) => {
 const mockRangeFetch = (zip) => jest.fn(async (url, opts = {}) => {
   const range = opts.headers?.Range;
   if (!range) {
-    return { ok: true, status: 200, blob: async () => new Blob([zip]) };
+    // jsdom's Blob has no arrayBuffer(), so hand back a minimal blob-like
+    const blob = {
+      size: zip.length,
+      slice: (from, to) => ({ arrayBuffer: async () => zip.slice(from, to).buffer }),
+    };
+    return { ok: true, status: 200, blob: async () => blob };
   }
   const [, from, to] = range.match(/bytes=(\d+)-(\d+)/).map(Number);
   const body = zip.slice(from, Math.min(to + 1, zip.length));
@@ -69,6 +74,13 @@ describe('ZipFileStore range reads', () => {
 
   beforeEach(() => {
     ZipFileStore.clearCache();
+    spatialZipStats({ reset: true });
+    jest.spyOn(console, 'info').mockImplementation(() => {});
+    jest.spyOn(console, 'table').mockImplementation(() => {});
+  });
+
+  afterEach(() => {
+    jest.restoreAllMocks();
   });
 
   it('Reads each entry with a single range request once the size is known', async () => {
@@ -83,6 +95,16 @@ describe('ZipFileStore range reads', () => {
     expect(await store.get('/0/0/0/0')).toEqual(files['0/0/0/0']);
     expect(global.fetch.mock.calls.length - afterDirectory).toEqual(1);
     // never downloads the whole file
+    global.fetch.mock.calls.forEach(([, opts]) => expect(opts?.headers?.Range).toBeDefined());
+  });
+
+  it('Accepts sizes serialised as strings (BIGINT column)', async () => {
+    const zip = buildStoredZip(files);
+    global.fetch = mockRangeFetch(zip);
+    ZipFileStore.registerSize(url, String(zip.length));
+
+    const store = ZipFileStore.fromUrl(url);
+    expect(await store.get('/0/0/0/0')).toEqual(files['0/0/0/0']);
     global.fetch.mock.calls.forEach(([, opts]) => expect(opts?.headers?.Range).toBeDefined());
   });
 
@@ -127,5 +149,37 @@ describe('ZipFileStore range reads', () => {
     const store = ZipFileStore.fromUrl(url);
     expect(await store.get('/0/0/0/0')).toEqual(files['0/0/0/0']);
     expect(global.fetch.mock.calls[0][1]?.headers?.Range).toBeUndefined();
+  });
+
+  it('Reports range-read downloads as a fraction of the zip', async () => {
+    // larger than unzipit's ~64KB tail read, so a partial read is visible
+    const big = new Uint8Array(300000);
+    const zip = buildStoredZip({ ...files, '0/1/0/0': big });
+    global.fetch = mockRangeFetch(zip);
+    ZipFileStore.registerSize(url, zip.length);
+
+    const store = ZipFileStore.fromUrl(url);
+    await store.get('/0/0/0/0');
+    await store.get('/0/0/0/0');
+
+    const [row] = spatialZipStats();
+    expect(row.mode).toEqual('range');
+    expect(row.zipMB).toEqual(Number((zip.length / 1e6).toFixed(2)));
+    expect(row.fetchedPct).toBeLessThan(100);
+    expect(row.chunkReads).toEqual(2);
+    expect(row.chunkCacheHits).toEqual(1);
+    expect(row.requests).toEqual(global.fetch.mock.calls.length);
+  });
+
+  it('Reports whole-zip downloads as the full file', async () => {
+    const zip = buildStoredZip(files);
+    global.fetch = mockRangeFetch(zip);
+
+    await ZipFileStore.fromUrl(url).get('/0/0/0/0');
+
+    const [row] = spatialZipStats();
+    expect(row.mode).toEqual('whole');
+    expect(row.fetchedPct).toEqual(100);
+    expect(row.requests).toEqual(1);
   });
 });

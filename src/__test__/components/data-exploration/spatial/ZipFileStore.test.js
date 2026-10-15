@@ -5,19 +5,30 @@ jest.mock('unzipit', () => ({
   unzip: jest.fn(() => Promise.resolve({ entries: {} })),
 }));
 
+// whole-zip downloads go through fetch → blob before unzip
+const mockFetchOk = () => jest.fn(async () => ({ ok: true, blob: async () => ({ size: 1 }) }));
+
 describe('ZipFileStore.fromUrl', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     ZipFileStore.clearCache();
+    global.fetch = mockFetchOk();
+    jest.spyOn(console, 'info').mockImplementation(() => {});
   });
 
-  it('Reuses the store (and its central directory) for the same url', () => {
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
+  it('Reuses the store (and its central directory) for the same url', async () => {
     const a = ZipFileStore.fromUrl('https://example.com/a.zip');
     const b = ZipFileStore.fromUrl('https://example.com/a.zip');
     const c = ZipFileStore.fromUrl('https://example.com/c.zip');
+    await Promise.all([a.info, c.info]);
 
     expect(b).toBe(a);
     expect(c).not.toBe(a);
+    expect(global.fetch).toHaveBeenCalledTimes(2);
     expect(unzip).toHaveBeenCalledTimes(2);
   });
 

@@ -6,6 +6,71 @@ function strip_prefix(path) {
   return path.slice(1);
 }
 
+// ── Download stats ──────────────────────────────────────────────────────────
+// Per-zip accounting of what was actually fetched vs the zip's full size, to check
+// range reads in a real session. Run `spatialZipStats()` in the browser console
+// for a table; `spatialZipStats({ reset: true })` clears it.
+const zipStats = new Map();
+
+const describeUrl = (href) => {
+  try {
+    const { hostname, pathname } = new URL(href);
+    // bucket name says the file kind (spatial-images / -segmentations / -molecules)
+    return `${hostname.split('.')[0]}${decodeURIComponent(pathname)}`;
+  } catch (e) {
+    return String(href);
+  }
+};
+
+const statsFor = (href) => {
+  let stats = zipStats.get(href);
+  if (!stats) {
+    stats = {
+      file: describeUrl(href),
+      mode: null,
+      zipBytes: null,
+      fetchedBytes: 0,
+      requests: 0,
+      chunkReads: 0,
+      chunkCacheHits: 0,
+    };
+    zipStats.set(href, stats);
+  }
+  return stats;
+};
+
+const countFetch = (href, bytes) => {
+  const stats = statsFor(href);
+  stats.requests += 1;
+  stats.fetchedBytes += bytes;
+};
+
+const toMB = (bytes) => (bytes == null ? null : Number((bytes / 1e6).toFixed(2)));
+
+export const spatialZipStats = ({ reset = false } = {}) => {
+  if (reset) {
+    zipStats.clear();
+    return undefined;
+  }
+  const rows = [...zipStats.values()].map((s) => ({
+    file: s.file,
+    mode: s.mode,
+    zipMB: toMB(s.zipBytes),
+    fetchedMB: toMB(s.fetchedBytes),
+    fetchedPct: s.zipBytes ? Number(((100 * s.fetchedBytes) / s.zipBytes).toFixed(1)) : null,
+    requests: s.requests,
+    chunkReads: s.chunkReads,
+    chunkCacheHits: s.chunkCacheHits,
+  }));
+  const zipBytes = rows.reduce((n, r) => n + (r.zipMB ?? 0), 0);
+  const fetched = rows.reduce((n, r) => n + r.fetchedMB, 0);
+  console.table(rows);
+  console.info(`[ZipFileStore] fetched ${fetched.toFixed(2)} MB of ${zipBytes.toFixed(2)} MB across ${rows.length} zips`);
+  return rows;
+};
+
+if (typeof window !== 'undefined') window.spatialZipStats = spatialZipStats;
+
 function fetch_range(url, offset, length, opts = {}) {
   if (offset !== undefined && length !== undefined) {
     // merge request opts
@@ -65,7 +130,9 @@ class HTTPRangeReader {
     if (!req.ok) {
       throw new Error(`failed http request ${this.url}, status: ${req.status} offset: ${offset} size: ${size}: ${req.statusText}`);
     }
-    return new Uint8Array(await req.arrayBuffer());
+    const bytes = new Uint8Array(await req.arrayBuffer());
+    countFetch(this.url, bytes.byteLength);
+    return bytes;
   }
 }
 // ── Known zip sizes ─────────────────────────────────────────────────────────
@@ -95,14 +162,18 @@ const chunkInflight = new Map();
 let chunkCacheBytes = 0;
 const CHUNK_CACHE_MAX_BYTES = 256 * 1024 * 1024;
 
-const getCachedChunk = (key, load) => {
+const getCachedChunk = (key, load, onHit) => {
   const hit = chunkCache.get(key);
   if (hit) {
+    onHit();
     chunkCache.delete(key);
     chunkCache.set(key, hit);
     return Promise.resolve(hit);
   }
-  if (chunkInflight.has(key)) return chunkInflight.get(key);
+  if (chunkInflight.has(key)) {
+    onHit();
+    return chunkInflight.get(key);
+  }
 
   const promise = load().then((bytes) => {
     chunkInflight.delete(key);
@@ -138,15 +209,45 @@ class ZipFileStore {
     // range-read when the length is known up front (or for in-memory blobs);
     // otherwise unzip(url) downloads the whole zip
     this.ranged = reader instanceof HTTPRangeReader && reader.length !== undefined;
-    this.info = unzip(this.ranged || !reader.url ? reader : reader.url);
+    if (this.ranged) {
+      const stats = statsFor(reader.url);
+      stats.mode = 'range';
+      stats.zipBytes = reader.length;
+      console.info(`[ZipFileStore] range-reading ${stats.file} (${toMB(reader.length)} MB zip)`);
+      this.info = unzip(reader);
+    } else if (reader.url) {
+      this.info = ZipFileStore.downloadWhole(reader.url).then((blob) => unzip(new BlobReader(blob)));
+    } else {
+      this.info = unzip(reader);
+    }
+  }
+  // Same as unzip(url) (one GET of the whole file), but counted in the stats.
+  static async downloadWhole(href) {
+    const stats = statsFor(href);
+    stats.mode = 'whole';
+    console.info(`[ZipFileStore] downloading whole zip ${stats.file} (no size registered)`);
+    const req = await fetch(href);
+    if (!req.ok) {
+      throw new Error(`failed http request ${href}, status: ${req.status}: ${req.statusText}`);
+    }
+    const blob = await req.blob();
+    stats.zipBytes = blob.size;
+    countFetch(href, blob.size);
+    return blob;
   }
   async get(key) {
     const path = strip_prefix(key);
     let entry = (await this.info).entries[path];
     if (!entry)
       return;
+    if (this.reader.url) statsFor(this.reader.url).chunkReads += 1;
     if (!this.ranged) return new Uint8Array(await entry.arrayBuffer());
-    return getCachedChunk(`${this.reader.url}|${path}`, () => this.readEntry(entry));
+    const stats = statsFor(this.reader.url);
+    return getCachedChunk(
+      `${this.reader.url}|${path}`,
+      () => this.readEntry(entry),
+      () => { stats.chunkCacheHits += 1; },
+    );
   }
   // Read a stored (uncompressed) entry's header + data in a single range request.
   // unzipit's entry.arrayBuffer() reads the 30-byte local header first and the
@@ -175,7 +276,9 @@ class ZipFileStore {
   }
   // Record a zip's byte size (from the downloadUrl response) so fromUrl can
   // range-read it.
-  static registerSize(href, size) {
+  static registerSize(href, rawSize) {
+    // sample_file.size is BIGINT, which the API serialises as a string
+    const size = Number(rawSize);
     if (!href || !Number.isFinite(size) || size <= 0) return;
     knownSizes.delete(href);
     knownSizes.set(href, size);
