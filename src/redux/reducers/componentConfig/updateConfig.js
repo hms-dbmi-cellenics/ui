@@ -1,5 +1,6 @@
 import _ from 'lodash';
 import { mergeObjectReplacingArrays } from 'utils/arrayUtils';
+import expandColumnarPlotData from 'utils/plotData/expandColumnarPlotData';
 
 const updateConfig = (state, action) => {
   const { plotUuid, configChanges = null, dataChanges = null } = action.payload;
@@ -10,7 +11,7 @@ const updateConfig = (state, action) => {
     newConfig = mergeObjectReplacingArrays(newConfig, configChanges);
   }
 
-  const newData = dataChanges ?? state[plotUuid]?.plotData;
+  const newData = expandColumnarPlotData(dataChanges) ?? state[plotUuid]?.plotData;
 
   return {
     ...state,

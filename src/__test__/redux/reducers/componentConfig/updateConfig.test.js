@@ -69,4 +69,18 @@ describe('updateConfig', () => {
 
     expect(updateReturn.volcanoPlotMain.outstandingChanges).toBe(true);
   });
+
+  it('Expands columnar plot data from QC updates', () => {
+    const updateReturn = updateReducer({}, {
+      type: UPDATE_CONFIG,
+      payload: {
+        plotUuid: 'sample-spatialUmiOutlier-0',
+        dataChanges: { columnar: { cellId: [0, 1], value: [2, 3] } },
+      },
+    });
+
+    expect(updateReturn['sample-spatialUmiOutlier-0'].plotData).toEqual([
+      { cellId: 0, value: 2 }, { cellId: 1, value: 3 },
+    ]);
+  });
 });

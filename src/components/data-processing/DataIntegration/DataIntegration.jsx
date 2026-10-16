@@ -17,6 +17,7 @@ import {
   loadPlotConfig,
   savePlotConfig,
 } from 'redux/actions/componentConfig';
+import { loadCellSets } from 'redux/actions/cellSets';
 import { initialPlotConfigStates } from 'redux/reducers/componentConfig/initialState';
 
 import CategoricalEmbeddingPlot from 'components/plots/CategoricalEmbeddingPlot';
@@ -54,6 +55,12 @@ const DataIntegration = (props) => {
   const debounceSave = useCallback(
     _.debounce((plotUuid) => dispatch(savePlotConfig(experimentId, plotUuid)), 2000), [],
   );
+
+  // loaded here rather than by the data processing page: the filter steps
+  // before this one don't use cell sets, and they can be tens of MB
+  useEffect(() => {
+    dispatch(loadCellSets(experimentId));
+  }, []);
 
   const numLegendItems = useSelector(getCellSetsHierarchyByKeys(['sample']))[0]?.children?.length;
 
