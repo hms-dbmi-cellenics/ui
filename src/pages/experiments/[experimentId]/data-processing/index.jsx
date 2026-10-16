@@ -58,7 +58,6 @@ import StatusIndicator from 'components/data-processing/StatusIndicator';
 import _ from 'lodash';
 import { getBackendStatus } from 'redux/selectors';
 
-import { loadCellSets } from 'redux/actions/cellSets';
 import { loadSamples } from 'redux/actions/samples';
 import { runQC } from 'redux/actions/pipeline';
 
@@ -120,7 +119,6 @@ const DataProcessingPage = ({ experimentId, experimentData }) => {
     }
 
     dispatch(loadSamples(experimentId));
-    dispatch(loadCellSets(experimentId));
 
     isUserAuthorized(experimentId, getURL(experimentId), 'POST').then(setRunQCAuthorized);
   }, []);

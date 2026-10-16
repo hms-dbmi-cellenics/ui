@@ -22,6 +22,7 @@ import { initialPlotConfigStates } from 'redux/reducers/componentConfig/initialS
 
 import PlotStyling from 'components/plots/styling/PlotStyling';
 import loadCellMeta from 'redux/actions/cellMeta';
+import { loadCellSets } from 'redux/actions/cellSets';
 import { generateDataProcessingPlotUuid } from 'utils/generateCustomPlotUuid';
 import Loader from 'components/Loader';
 import { getCellSets } from 'redux/selectors';
@@ -75,6 +76,11 @@ const ConfigureEmbedding = (props) => {
     ? ['mitochondrialContent', 'numOfGenes', 'numOfUmis']
     : ['mitochondrialContent', 'doubletScores', 'numOfGenes', 'numOfUmis'];
   const { hierarchy } = cellSets;
+
+  // loaded here rather than by the data processing page (see DataIntegration)
+  useEffect(() => {
+    dispatch(loadCellSets(experimentId));
+  }, []);
 
   useEffect(() => {
     cellMetaToLoad.forEach((dataName) => {

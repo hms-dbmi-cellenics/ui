@@ -180,6 +180,21 @@ describe('DataProcessingPage', () => {
     expect(nextButton.closest('button')).toBeInTheDocument();
   });
 
+  it('Does not load cell sets for the filter steps', async () => {
+    fetchMock.mockIf(new RegExp(`/v2/access/${experimentId}/check?.*`), () => Promise.resolve(JSON.stringify(true)));
+
+    const store = getStore();
+
+    render(
+      <Provider store={store}>
+        {dataProcessingPageFactory()}
+      </Provider>,
+    );
+
+    await waitFor(() => expect(screen.getByText(/Classifier/i)).toBeInTheDocument());
+    expect(fetchMock.mock.calls.some(([url]) => url.includes('/cellSets'))).toBe(false);
+  });
+
   it('Last button of the filter should redirect to Data Exploration', () => {
     fetchMock.mockIf(new RegExp(`/v2/access/${experimentId}/check?.*`), () => Promise.resolve(JSON.stringify(true)));
 

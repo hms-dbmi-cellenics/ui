@@ -115,6 +115,20 @@ describe('Configure Embedding', () => {
     expect(screen.getAllByText('Select data')).toBeDefined();
   });
 
+  it('loads cell sets itself when they are not loaded yet', async () => {
+    const store = makeStore();
+    await store.dispatch(loadBackendStatus(fake.EXPERIMENT_ID));
+    await store.dispatch(loadProcessingSettings(fake.EXPERIMENT_ID));
+    fetchMock.mockClear();
+
+    await renderConfigureEmbedding(store);
+
+    await waitFor(() => {
+      expect(store.getState().cellSets.initialLoadPending).toBe(false);
+    });
+    expect(fetchMock.mock.calls.some(([url]) => url.endsWith('/cellSets'))).toBe(true);
+  });
+
   it('allows selecting different plot types', async () => {
     await renderConfigureEmbedding(storeState);
 

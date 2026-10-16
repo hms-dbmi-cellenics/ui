@@ -100,6 +100,20 @@ describe('DataIntegration', () => {
     });
   });
 
+  it('loads cell sets itself when they are not loaded yet', async () => {
+    const store = makeStore();
+    await store.dispatch(loadBackendStatus(fake.EXPERIMENT_ID));
+    await store.dispatch(loadProcessingSettings(fake.EXPERIMENT_ID));
+    fetchMock.mockClear();
+
+    await renderDataIntegration(store);
+
+    await waitFor(() => {
+      expect(store.getState().cellSets.initialLoadPending).toBe(false);
+    });
+    expect(fetchMock.mock.calls.some(([url]) => url.endsWith('/cellSets'))).toBe(true);
+  });
+
   it('allows selecting other plots', async () => {
     await renderDataIntegration(storeState);
     const plots = [frequencyPlotTitle, elbowPlotTitle, embeddingsPlotTitle];
