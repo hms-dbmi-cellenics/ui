@@ -1,4 +1,5 @@
 import { initialPlotDataState } from 'redux/reducers/componentConfig/initialState';
+import expandColumnarPlotData from 'utils/plotData/expandColumnarPlotData';
 
 const loadPlotConfig = (state, action) => {
   const {
@@ -16,7 +17,7 @@ const loadPlotConfig = (state, action) => {
       ...state[plotUuid],
       experimentId,
       plotType,
-      plotData,
+      plotData: expandColumnarPlotData(plotData),
       config,
       outstandingChanges: false,
     },
