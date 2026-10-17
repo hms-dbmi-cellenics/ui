@@ -71,6 +71,11 @@ export function createZarrArrayAdapterGrid(
   arrs, [numRows, numCols], emptyFill = SPATIAL_BACKGROUND_COLOR, slotToArrIndex = null,
 ) {
   const firstArray = arrs[0];
+  // Composite tiles must use the typed array matching the dtype we report: viv
+  // picks the WebGL texture format from the dtype, and uploading any other
+  // typed array fails (e.g. "type UNSIGNED_BYTE but ArrayBufferView not
+  // Uint8Array"), leaving the layer blank.
+  const TypedArray = typedArrayFor(firstArray.dtype);
 
   return new Proxy(firstArray, {
     get(target, prop) {
@@ -142,7 +147,9 @@ export function createZarrArrayAdapterGrid(
             // grouping changed. Return a background tile of the requested size
             // rather than letting combineGridData build from an empty list.
             if (dataSelections.length === 0) {
-              return generateEmptyImageData(normalizedSelection, 0, 0, emptyFill).data;
+              return generateEmptyImageData(
+                normalizedSelection, 0, 0, emptyFill, TypedArray,
+              ).data;
             }
 
             const dataPerImage = await Promise.all(
@@ -157,11 +164,13 @@ export function createZarrArrayAdapterGrid(
                 }
 
                 // Generate image data if the image doesn't exist
-                return generateEmptyImageData(adjustedSelection, row, col, emptyFill);
+                return generateEmptyImageData(
+                  adjustedSelection, row, col, emptyFill, TypedArray,
+                );
               }),
             );
 
-            return combineGridData(dataPerImage);
+            return combineGridData(dataPerImage, TypedArray);
           }
         };
       }
@@ -182,14 +191,33 @@ export function createZarrArrayAdapterGrid(
   });
 }
 
-function generateEmptyImageData(adjustedSelection, row, col, emptyFill = SPATIAL_BACKGROUND_COLOR) {
+const typedArrays = {
+  int8: Int8Array,
+  uint8: Uint8Array,
+  int16: Int16Array,
+  uint16: Uint16Array,
+  int32: Int32Array,
+  uint32: Uint32Array,
+  float32: Float32Array,
+  float64: Float64Array,
+};
+
+function typedArrayFor(dtype) {
+  const TypedArray = typedArrays[dtype];
+  if (!TypedArray) throw new Error(`Unsupported dtype ${dtype}`);
+  return TypedArray;
+}
+
+function generateEmptyImageData(
+  adjustedSelection, row, col, emptyFill = SPATIAL_BACKGROUND_COLOR, TypedArray = Int32Array,
+) {
   // Extract the channel and slices for y and x dimensions
   const [channel, ySlice, xSlice] = adjustedSelection;
 
   // Calculate the dimensions for the empty image data. Clamp to >= 0: a stale
   // out-of-bounds tile request (e.g. right after the grid shape shrinks when the
   // sample grouping changes) can arrive with stop < start, which would make
-  // `new Int32Array(negative)` throw "Invalid typed array length".
+  // `new TypedArray(negative)` throw "Invalid typed array length".
   const height = Math.max(0, ySlice.stop - ySlice.start);
   const width = Math.max(0, xSlice.stop - xSlice.start);
 
@@ -198,7 +226,7 @@ function generateEmptyImageData(adjustedSelection, row, col, emptyFill = SPATIAL
   const backgroundChannelValue = typeof emptyFill === 'object'
     ? (emptyFill[channel] ?? 0)
     : emptyFill;
-  const data = new Int32Array(height * width).fill(backgroundChannelValue);
+  const data = new TypedArray(height * width).fill(backgroundChannelValue);
 
   // Return an object structured like Zarr array data
   return {
@@ -228,11 +256,11 @@ function calculateRanges(dimSelection, sizePerImage, imagesPerDimension) {
   });
 }
 
-function combineGridData(dataArrays) {
+function combineGridData(dataArrays, TypedArray = Int32Array) {
   if (dataArrays.length === 0) {
     // No tiles intersect the request; nothing to composite. Return an empty
     // tile instead of computing a negative grid size (Array(-Infinity)).
-    return { data: new Int32Array(0), shape: [0, 0], stride: [0, 1] };
+    return { data: new TypedArray(0), shape: [0, 0], stride: [0, 1] };
   }
 
   if (dataArrays.length === 1) {
@@ -259,9 +287,8 @@ function combineGridData(dataArrays) {
   const totalHeight = rowHeights.reduce((sum, h) => sum + h, 0);
   const totalWidth = colWidths.reduce((sum, w) => sum + w, 0);
 
-  // Uint8Array causes WebGL: INVALID_OPERATION:
-  // texImage2D: type INT but ArrayBufferView not Int32Array
-  const combinedData = new Int32Array(totalHeight * totalWidth);
+  // must match the reported dtype (see createZarrArrayAdapterGrid)
+  const combinedData = new TypedArray(totalHeight * totalWidth);
 
   // Calculate offsets using row heights and column widths and place image data
   dataArrays.forEach(({ data, row, col }) => {
