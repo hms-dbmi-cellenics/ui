@@ -36,4 +36,27 @@ describe('expandColumnarPlotData', () => {
     expect(expandColumnarPlotData(null)).toBeNull();
     expect(expandColumnarPlotData(undefined)).toBeUndefined();
   });
+
+  it('Derives value from raw with log1p', () => {
+    const expanded = expandColumnarPlotData({
+      columnar: { cellId: [0, 1, 2], raw: [0, Math.E - 1, null] },
+      valueTransform: 'log1p',
+    });
+
+    expect(expanded.map(({ value }) => value)).toEqual([0, 1, null]);
+    expect(expanded[1].raw).toEqual(Math.E - 1);
+  });
+
+  it('Uses raw as the value when the transform is none', () => {
+    expect(expandColumnarPlotData({
+      columnar: { cellId: [0], raw: [12.5] },
+      valueTransform: 'none',
+    })).toEqual([{ cellId: 0, raw: 12.5, value: 12.5 }]);
+  });
+
+  it('Keeps a sent value column instead of deriving one', () => {
+    expect(expandColumnarPlotData({
+      columnar: { cellId: [0], value: [3], controlPercent: [50] },
+    })).toEqual([{ cellId: 0, value: 3, controlPercent: 50 }]);
+  });
 });

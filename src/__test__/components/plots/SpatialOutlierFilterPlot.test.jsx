@@ -7,6 +7,8 @@ import thunk from 'redux-thunk';
 
 import SpatialOutlierFilterPlot, { isOutlier, getCellOutlierStatus } from 'components/plots/SpatialOutlierFilterPlot';
 import { getSampleFileUrls } from 'utils/data-management/downloadSampleFile';
+import { loadPlotConfig } from 'redux/actions/componentConfig';
+import useSpatialStream from 'components/plots/useSpatialStream';
 
 jest.mock('utils/data-management/downloadSampleFile', () => ({
   getSampleFileUrls: jest.fn(),
@@ -27,6 +29,10 @@ jest.mock('components/plots/useSpatialStream', () => ({
     onViewportChange: jest.fn(),
     ready: false,
   })),
+}));
+
+jest.mock('redux/actions/componentConfig', () => ({
+  loadPlotConfig: jest.fn(() => ({ type: 'MOCK_LOAD_PLOT_CONFIG' })),
 }));
 
 jest.mock('components/plots/usePreventWheelScroll', () => ({
@@ -150,5 +156,84 @@ describe('getCellOutlierStatus for count density', () => {
 
   it('leaves cells without a density uncoloured', () => {
     expect(getCellOutlierStatus({ value: null, controlPercent: 0 }, rule())).toBeUndefined();
+  });
+});
+
+describe('SpatialOutlierFilterPlot — cell coordinates for the centroid fallback', () => {
+  const coordsPlotUuid = `${sampleId}-spatialUmiOutlier-4`;
+  const streamResult = (segmentationsAvailable) => ({
+    imageDims: null,
+    segmentationsAvailable,
+    segProbeDone: true,
+    tissueImageData: null,
+    segOverlayData: null,
+    onViewportChange: jest.fn(),
+    ready: false,
+  });
+
+  const renderWithData = async (plotData, componentConfig = {}) => {
+    const store = mockStore({
+      samples: { [sampleId]: { id: sampleId, type: 'visium_hd' } },
+      componentConfig,
+    });
+
+    await act(async () => {
+      render(
+        <Provider store={store}>
+          <SpatialOutlierFilterPlot
+            experimentId={experimentId}
+            sampleId={sampleId}
+            config={config}
+            plotData={plotData}
+            coordsPlotUuid={coordsPlotUuid}
+          />
+        </Provider>,
+      );
+    });
+  };
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+    getSampleFileUrls.mockResolvedValue([{ url: 'http://example.com/file.zip' }]);
+  });
+
+  afterEach(() => {
+    useSpatialStream.mockImplementation(() => streamResult(false));
+  });
+
+  it('fetches coordinates when the sample has no segmentation', async () => {
+    useSpatialStream.mockImplementation(() => streamResult(false));
+
+    await renderWithData([{ cellId: 0, raw: 10, value: 2.4 }]);
+
+    expect(loadPlotConfig).toHaveBeenCalledWith(experimentId, coordsPlotUuid, 'spatialCellCoordinates');
+  });
+
+  it('does not fetch coordinates when the sample has a segmentation', async () => {
+    useSpatialStream.mockImplementation(() => streamResult(true));
+
+    await renderWithData([{ cellId: 0, raw: 10, value: 2.4 }]);
+
+    expect(loadPlotConfig).not.toHaveBeenCalled();
+  });
+
+  it('does not fetch coordinates that plotData already has (older experiments)', async () => {
+    useSpatialStream.mockImplementation(() => streamResult(false));
+
+    await renderWithData([{
+      cellId: 0, raw: 10, value: 2.4, x: 1, y: 2,
+    }]);
+
+    expect(loadPlotConfig).not.toHaveBeenCalled();
+  });
+
+  it('does not fetch coordinates again once loaded', async () => {
+    useSpatialStream.mockImplementation(() => streamResult(false));
+
+    await renderWithData([{ cellId: 0, raw: 10, value: 2.4 }], {
+      [coordsPlotUuid]: { plotData: [{ cellId: 0, x: 1, y: 2 }] },
+    });
+
+    expect(loadPlotConfig).not.toHaveBeenCalled();
   });
 });
