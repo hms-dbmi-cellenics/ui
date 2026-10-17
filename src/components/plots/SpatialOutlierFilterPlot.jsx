@@ -8,7 +8,8 @@ import 'vega-webgl-renderer';
 import _ from 'lodash';
 
 import { Spin } from 'antd';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
+import { loadPlotConfig } from 'redux/actions/componentConfig';
 import colors from 'utils/styling/colors';
 import { generateSpec } from 'utils/plotSpecs/generateSpatialFeatureSpec';
 import { getSampleFileUrls } from 'utils/data-management/downloadSampleFile';
@@ -126,14 +127,18 @@ const buildMetricCellColorMap = (plotData, config) => {
  *    cell is removed beyond the z-score threshold; with 'absoluteThreshold'
  *    when its raw value is outside [min, max]; with 'countDensity' when its log
  *    count density is below the threshold or it has too many control counts.
- * Per-sample — all the data it needs is in `plotData`
- * ([{ cellId, value, raw, zscore, x, y }]).
+ * Per-sample — the per-cell data it needs is in `plotData`
+ * ([{ cellId, value, raw, zscore }]). Cell coordinates are only needed to draw
+ * centroid dots when the sample has no segmentation; they come from `plotData`
+ * for older experiments, otherwise from the separate `coordsPlotUuid` plot.
  */
 const SpatialOutlierFilterPlot = (props) => {
   const {
     experimentId, sampleId, config, plotData, threshold, direction, mode, actions,
-    onZoomChange, cacheId, method, min, max, maxControlPercent,
+    onZoomChange, cacheId, method, min, max, maxControlPercent, coordsPlotUuid,
   } = props;
+
+  const dispatch = useDispatch();
 
   const [plotSpec, setPlotSpec] = useState({});
   const [omeZarrUrl, setOmeZarrUrl] = useState(null);
@@ -228,6 +233,21 @@ const SpatialOutlierFilterPlot = (props) => {
     outline: config?.marker?.outline ?? false,
   });
 
+  // ── Cell coordinates (centroid fallback only) ──────────────────────────────
+  // Only samples without a segmentation draw centroid dots, so only they fetch
+  // the coordinates plot — and only when plotData doesn't already carry x/y.
+  const coordsEntry = useSelector(
+    (state) => (coordsPlotUuid ? state.componentConfig?.[coordsPlotUuid] : undefined),
+  );
+  const coordsData = coordsEntry?.plotData;
+  const needsCoords = Boolean(coordsPlotUuid) && segProbeDone && !segmentationsAvailable
+    && plotData?.length > 0 && plotData[0].x === undefined;
+  useEffect(() => {
+    if (needsCoords && !coordsEntry) {
+      dispatch(loadPlotConfig(experimentId, coordsPlotUuid, 'spatialCellCoordinates'));
+    }
+  }, [needsCoords, coordsEntry, experimentId, coordsPlotUuid]);
+
   // mouse zoom/pan → persist axes range (debounced) AND stream a sharper tile.
   const persistZoom = useMemo(() => _.debounce((axesRanges) => {
     onZoomChangeRef.current(axesRanges);
@@ -285,8 +305,14 @@ const SpatialOutlierFilterPlot = (props) => {
       return;
     }
 
-    // Centroid-fallback data (used only when no segmentation zarr is available)
-    const specData = plotData.map(({ x, y, value }) => ({ x, y, value }));
+    // Centroid-fallback data (used only when no segmentation zarr is available).
+    // Coordinates live in plotData for older experiments, else in coordsData.
+    const coordsById = coordsData?.length
+      ? new Map(coordsData.map(({ cellId, x, y }) => [cellId, { x, y }]))
+      : null;
+    const specData = plotData.map(({
+      cellId, x, y, value,
+    }) => ({ ...(coordsById?.get(cellId) ?? { x, y }), value }));
 
     const spec = generateSpec(
       config, EMBEDDING_TYPE, imageDims, specData, segmentationsAvailable,
@@ -323,7 +349,8 @@ const SpatialOutlierFilterPlot = (props) => {
 
     setPlotSpec(spec);
   }, [
-    specSignature, plotData, mode, segmentationsAvailable, segProbeDone, imageDims, ready,
+    specSignature, plotData, coordsData, mode, segmentationsAvailable, segProbeDone, imageDims,
+    ready,
   ]);
 
   // tissue + overlay tiles streamed to Vega in place (no view rebuild) via `data`
@@ -372,6 +399,7 @@ const SpatialOutlierFilterPlot = (props) => {
 SpatialOutlierFilterPlot.defaultProps = {
   config: null,
   plotData: null,
+  coordsPlotUuid: null,
   actions: true,
   threshold: 3,
   direction: 'lower',
@@ -389,6 +417,7 @@ SpatialOutlierFilterPlot.propTypes = {
   sampleId: PropTypes.string.isRequired,
   config: PropTypes.object,
   plotData: PropTypes.array,
+  coordsPlotUuid: PropTypes.string,
   cacheId: PropTypes.string,
   threshold: PropTypes.number,
   direction: PropTypes.oneOf(['lower', 'upper']),

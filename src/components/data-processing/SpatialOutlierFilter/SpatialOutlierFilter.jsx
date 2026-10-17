@@ -62,6 +62,8 @@ const SpatialOutlierFilter = (props) => {
   // `dataPlotUuid`.
   const slidePlotUuid = generateDataProcessingPlotUuid(sampleId, filterName, 0);
   const outlierPlotUuid = generateDataProcessingPlotUuid(sampleId, filterName, 3);
+  // cell coordinates, only fetched for samples without a segmentation
+  const coordsPlotUuid = generateDataProcessingPlotUuid(sampleId, filterName, 4);
 
   const slidePlotData = useSelector((state) => state.componentConfig[slidePlotUuid]?.plotData);
   const rawRange = useMemo(() => getRawRange(slidePlotData), [slidePlotData]);
@@ -85,6 +87,7 @@ const SpatialOutlierFilter = (props) => {
         sampleId={sampleId}
         config={config}
         plotData={plotData}
+        coordsPlotUuid={coordsPlotUuid}
         cacheId={`${filterName}-${mode}`}
         mode={mode}
         method={rule.method}
