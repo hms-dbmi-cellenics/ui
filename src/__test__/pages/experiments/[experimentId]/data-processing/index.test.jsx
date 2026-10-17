@@ -180,7 +180,7 @@ describe('DataProcessingPage', () => {
     expect(nextButton.closest('button')).toBeInTheDocument();
   });
 
-  it('Does not load cell sets for the filter steps', async () => {
+  it('Does not load cell sets on the first step', async () => {
     fetchMock.mockIf(new RegExp(`/v2/access/${experimentId}/check?.*`), () => Promise.resolve(JSON.stringify(true)));
 
     const store = getStore();
@@ -192,7 +192,26 @@ describe('DataProcessingPage', () => {
     );
 
     await waitFor(() => expect(screen.getByText(/Classifier/i)).toBeInTheDocument());
+    expect(_.map(store.getActions(), 'type')).not.toContain('cellSets/loading');
     expect(fetchMock.mock.calls.some(([url]) => url.includes('/cellSets'))).toBe(false);
+  });
+
+  it('Starts loading cell sets in the background after leaving the first step', async () => {
+    fetchMock.mockIf(new RegExp(`/v2/access/${experimentId}/check?.*`), () => Promise.resolve(JSON.stringify(true)));
+
+    const store = getStore();
+
+    render(
+      <Provider store={store}>
+        {dataProcessingPageFactory()}
+      </Provider>,
+    );
+
+    userEvent.click(screen.getAllByRole('img', { name: 'right' })[0]);
+
+    await waitFor(() => {
+      expect(fetchMock.mock.calls.some(([url]) => url.includes('/cellSets'))).toBe(true);
+    });
   });
 
   it('Last button of the filter should redirect to Data Exploration', () => {
