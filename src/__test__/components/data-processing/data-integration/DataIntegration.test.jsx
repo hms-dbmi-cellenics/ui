@@ -37,6 +37,7 @@ const frequencyPlotTitle = 'Frequency plot coloured by sample';
 enableFetchMocks();
 
 jest.mock('utils/work/fetchWork');
+jest.mock('components/Loader', () => jest.fn(() => <div data-testid='mockLoader'>Mock Loader</div>));
 
 const mockWorkerResponses = {
   GetEmbedding: mockEmbedding,
@@ -112,6 +113,20 @@ describe('DataIntegration', () => {
       expect(store.getState().cellSets.initialLoadPending).toBe(false);
     });
     expect(fetchMock.mock.calls.some(([url]) => url.endsWith('/cellSets'))).toBe(true);
+  });
+
+  it('shows the loader while cell sets are still loading', async () => {
+    fetchMock.mockIf(/.*/, (req) => (req.url.endsWith('/cellSets')
+      ? new Promise(() => {}) // never resolves
+      : mockAPI(mockApiResponses)(req)));
+
+    const store = makeStore();
+    await store.dispatch(loadBackendStatus(fake.EXPERIMENT_ID));
+    await store.dispatch(loadProcessingSettings(fake.EXPERIMENT_ID));
+
+    await renderDataIntegration(store);
+
+    await waitFor(() => expect(screen.getByTestId('mockLoader')).toBeInTheDocument());
   });
 
   it('allows selecting other plots', async () => {

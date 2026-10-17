@@ -25,6 +25,7 @@ import FrequencyPlot from 'components/plots/FrequencyPlot';
 import ElbowPlot from 'components/plots/ElbowPlot';
 import { generateDataProcessingPlotUuid } from 'utils/generateCustomPlotUuid';
 import EmptyPlot from 'components/plots/helpers/EmptyPlot';
+import Loader from 'components/Loader';
 import { getEmbeddingInitialConfig } from 'utils/plotConfig/getEmbeddingInitialConfig';
 import PlotStyling from 'components/plots/styling/PlotStyling';
 import { getIsUnisample } from 'utils/experimentPredicates';
@@ -415,6 +416,15 @@ const DataIntegration = (props) => {
     // embedding doesn't flash the standard point size/outline then re-adjust
     if (plot && (activePlotType !== 'dataIntegrationEmbedding' || markerSettled[activePlotUuid])) {
       return plot;
+    }
+
+    // cell sets can take a while on large experiments: the plots wait for them
+    if (!cellSets.accessible && !cellSets.error) {
+      return (
+        <center>
+          <Loader experimentId={experimentId} />
+        </center>
+      );
     }
 
     return (
