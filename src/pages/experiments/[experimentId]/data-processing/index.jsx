@@ -59,6 +59,7 @@ import _ from 'lodash';
 import { getBackendStatus } from 'redux/selectors';
 
 import { loadSamples } from 'redux/actions/samples';
+import { loadCellSets } from 'redux/actions/cellSets';
 import { runQC } from 'redux/actions/pipeline';
 
 import { useAppRouter } from 'utils/AppRouteProvider';
@@ -109,6 +110,13 @@ const DataProcessingPage = ({ experimentId, experimentData }) => {
   const qcVersionIsOld = pipelineVersion < config.pipelineVersionToRerunQC;
 
   const [stepIdx, setStepIdx] = useState(0);
+
+  // Only the embedding steps use cell sets, which can be tens of MB. Fetch them in
+  // the background once the user moves past the first step, so the first step's
+  // own data isn't competing with them but they're ready by the embedding steps.
+  useEffect(() => {
+    if (stepIdx > 0) dispatch(loadCellSets(experimentId));
+  }, [stepIdx]);
   const [runQCModalVisible, setRunQCModalVisible] = useState(false);
   const [inputsList, setInputsList] = useState([]);
 
