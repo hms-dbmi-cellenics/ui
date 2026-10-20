@@ -57,6 +57,7 @@ const toMB = (bytes) => (bytes == null ? null : Number((bytes / 1e6).toFixed(2))
 
 export const spatialZipStats = ({ reset = false } = {}) => {
   const tiles = requestStats('decodedTiles');
+  const chunks = requestStats('decodedChunks');
   if (reset) {
     zipStats.forEach((stats) => {
       Object.assign(stats, {
@@ -71,6 +72,7 @@ export const spatialZipStats = ({ reset = false } = {}) => {
       });
     });
     Object.assign(tiles, newRequestStats());
+    Object.assign(chunks, newRequestStats());
     return undefined;
   }
   // only zips touched since the last reset
@@ -98,7 +100,8 @@ export const spatialZipStats = ({ reset = false } = {}) => {
   console.table(rows);
   console.info(`[ZipFileStore] fetched ${sum('fetchedMB').toFixed(2)} MB of ${sum('zipMB').toFixed(2)} MB across ${rows.length} zips; ${sum('chunkCacheHits')}/${sum('chunkReads')} chunk reads served from cache`);
   console.info(`[ZipFileStore] cancelled tiles: ${sum('cancelledReads')} chunk reads cancelled, ${sum('abortedRequests')} downloads aborted (≤ ${sum('abortedMB').toFixed(2)} MB not downloaded); ${sum('urlRefreshes')} expired urls re-signed`);
-  console.info(`[ZipFileStore] decoded tiles: ${tiles.started} read + decoded; reused instead of decoded again: ${tiles.joined} while in flight, ${tiles.reused} already finished; ${tiles.cancelled} cancelled, ${tiles.aborted} aborted (download stopped as no layer still wanted it)`);
+  console.info(`[ZipFileStore] Data Exploration decoded tiles: ${tiles.started} read + decoded; reused instead of decoded again: ${tiles.joined} while in flight, ${tiles.reused} already finished; ${tiles.cancelled} cancelled, ${tiles.aborted} aborted (download stopped as no layer still wanted it)`);
+  console.info(`[ZipFileStore] Vega plots' decoded chunks: ${chunks.started} decoded; reused instead of decoded again: ${chunks.joined} while in flight, ${chunks.reused} already decoded`);
   return rows;
 };
 
