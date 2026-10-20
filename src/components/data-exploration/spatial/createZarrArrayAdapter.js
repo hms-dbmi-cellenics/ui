@@ -1,6 +1,7 @@
 // from https://github.com/vitessce/vitessce/blob/main/packages/utils/zarr-utils/src/adapter.ts
 
 import { slice, get } from 'zarrita';
+import sharedRequest, { requestStats } from './sharedRequest';
 
 // Light neutral canvas (#f5f7f9) used to fill the RGB image grid's empty cells
 // (the "filler" tiles that complete the last row of a multi-sample grid).
@@ -30,7 +31,9 @@ export function createZarrArrayAdapter(arr) {
   return new Proxy(arr, {
     get(target, prop) {
       if (prop === 'getRaw') {
-        return (selection) => get(
+        // viv passes { storeOptions: { signal } }; zarrita hands `opts` to
+        // store.get so the range reads abort with the tile
+        return (selection, options) => get(
           target,
           selection ? selection.map((s) => {
             if (typeof s === 'object' && s !== null) {
@@ -38,6 +41,7 @@ export function createZarrArrayAdapter(arr) {
             }
             return s;
           }) : target.shape.map(() => null),
+          { opts: options?.storeOptions },
         );
       }
       if (prop === 'getRawChunk') {
@@ -57,6 +61,10 @@ export function createZarrArrayAdapter(arr) {
   });
 }
 
+// Finished tiles kept per grid adapter: about a viewport's worth at the busiest
+// zoom, across a few samples. A 512² int32 segmentation tile is ~1 MB.
+const FINISHED_TILES_MAX = 64;
+
 // emptyFill controls the value written into empty grid cells (filler tiles that
 // complete the last row). For the RGB image grid it's a per-channel object
 // (SPATIAL_BACKGROUND_COLOR → #f5f7f9). For the segmentation label grid pass 0
@@ -71,107 +79,144 @@ export function createZarrArrayAdapterGrid(
   arrs, [numRows, numCols], emptyFill = SPATIAL_BACKGROUND_COLOR, slotToArrIndex = null,
 ) {
   const firstArray = arrs[0];
+  // The segmentation fill, outline and hover layers share one loader and ask for
+  // the same tiles; share each tile's read + decode + composite between them (and
+  // abort it only when all of them have dropped the tile). Layers often ask for a
+  // tile after another has finished it (e.g. the outline-mode hover layer), so
+  // also keep the last few finished tiles. They're the same objects the layers'
+  // own tile caches hold, so this mostly costs nothing extra.
+  const inflightTiles = new Map();
+  const finishedTiles = new Map();
   // Composite tiles must use the typed array matching the dtype we report: viv
   // picks the WebGL texture format from the dtype, and uploading any other
   // typed array fails (e.g. "type UNSIGNED_BYTE but ArrayBufferView not
   // Uint8Array"), leaving the layer blank.
   const TypedArray = typedArrayFor(firstArray.dtype);
 
+  // Read the grid cells a (non-null) tile selection covers and composite them.
+  async function getGridTile(selection, signal) {
+    const { shape } = firstArray;
+    const [heightPerImage, widthPerImage] = shape.slice(-2);
+
+    // Normalize the selection, ensuring that any null
+    // values for x or y axes default to a grid-wide range
+    // Use provided selection unless it's nullish,
+    // in which case calculate the grid spanning range
+    const normalizedSelection = selection.map((s, i) => s ?? {
+      start: 0,
+      stop: (i === shape.length - 2
+        ? heightPerImage * numRows // Full range for y-axis based on number of rows
+        : widthPerImage * numCols), // Full range for x-axis based on number of columns
+      step: 1,
+    });
+
+    // Calculate the y-axis (row-wise) and x-axis
+    // (column-wise) slice ranges for each image in the grid
+    const yRanges = calculateRanges(
+      normalizedSelection[shape.length - 2],
+      heightPerImage,
+      numRows,
+    );
+    const xRanges = calculateRanges(
+      normalizedSelection[shape.length - 1],
+      widthPerImage,
+      numCols,
+    );
+
+    const dataSelections = yRanges.flatMap((yRange, row) => xRanges.map((xRange, col) => {
+      if (!yRange || !xRange) return null; // Immediately filter out null ranges
+
+      // Generate a list of data selections across the grid based on calculated ranges.
+      const adjustedSelection = normalizedSelection.map((dimSelection, i) => {
+        switch (i) {
+          case shape.length - 2:
+            return slice(yRange.start, yRange.stop, yRange.step);
+          case shape.length - 1:
+            return slice(xRange.start, xRange.stop, xRange.step);
+          default:
+            return dimSelection;
+        }
+      });
+
+      const slot = row * numCols + col;
+      // Resolve the grid cell to a backing image. With a slot map,
+      // cells can be empty mid-grid (grouped rows); without one, cells
+      // fill densely and are empty only past the sample count.
+      const arrIndex = slotToArrIndex ? slotToArrIndex[slot] : slot;
+      const hasImage = arrIndex !== null && arrIndex !== undefined
+        && arrIndex < arrs.length;
+
+      return {
+        imageIndex: arrIndex,
+        row,
+        col,
+        adjustedSelection,
+        hasImage,
+      };
+    })).filter(Boolean); // Remove any null results
+
+    // The requested region can fall entirely outside the grid — e.g. a
+    // stale tile request after the grid shape shrank when the sample
+    // grouping changed. Return a background tile of the requested size
+    // rather than letting combineGridData build from an empty list.
+    if (dataSelections.length === 0) {
+      return generateEmptyImageData(
+        normalizedSelection, 0, 0, emptyFill, TypedArray,
+      ).data;
+    }
+
+    const dataPerImage = await Promise.all(
+      dataSelections.map(({
+        imageIndex, adjustedSelection, hasImage, row, col,
+      }) => {
+        if (hasImage) {
+          return get(
+            arrs[imageIndex],
+            adjustedSelection,
+            { opts: { signal } },
+          ).then((data) => ({ data, row, col }));
+        }
+
+        // Generate image data if the image doesn't exist
+        return generateEmptyImageData(
+          adjustedSelection, row, col, emptyFill, TypedArray,
+        );
+      }),
+    );
+
+    return combineGridData(dataPerImage, TypedArray);
+  }
+
   return new Proxy(firstArray, {
     get(target, prop) {
       if (prop === 'getRaw') {
-        return async (selection) => {
-          const { shape } = firstArray;
-          const [heightPerImage, widthPerImage] = shape.slice(-2);
+        return (selection, options) => {
+          if (!selection) return Promise.resolve(undefined);
+          const signal = options?.storeOptions?.signal;
+          const stats = requestStats('decodedTiles');
+          const key = JSON.stringify(selection);
 
-          if (selection) {
-            // Normalize the selection, ensuring that any null
-            // values for x or y axes default to a grid-wide range
-            // Use provided selection unless it's nullish,
-            // in which case calculate the grid spanning range
-            const normalizedSelection = selection.map((s, i) => s ?? {
-              start: 0,
-              stop: (i === shape.length - 2
-                ? heightPerImage * numRows // Full range for y-axis based on number of rows
-                : widthPerImage * numCols), // Full range for x-axis based on number of columns
-              step: 1,
-            });
-
-            // Calculate the y-axis (row-wise) and x-axis
-            // (column-wise) slice ranges for each image in the grid
-            const yRanges = calculateRanges(
-              normalizedSelection[shape.length - 2],
-              heightPerImage,
-              numRows,
-            );
-            const xRanges = calculateRanges(
-              normalizedSelection[shape.length - 1],
-              widthPerImage,
-              numCols,
-            );
-
-            const dataSelections = yRanges.flatMap((yRange, row) => xRanges.map((xRange, col) => {
-              if (!yRange || !xRange) return null; // Immediately filter out null ranges
-
-              // Generate a list of data selections across the grid based on calculated ranges.
-              const adjustedSelection = normalizedSelection.map((dimSelection, i) => {
-                switch (i) {
-                  case shape.length - 2:
-                    return slice(yRange.start, yRange.stop, yRange.step);
-                  case shape.length - 1:
-                    return slice(xRange.start, xRange.stop, xRange.step);
-                  default:
-                    return dimSelection;
-                }
-              });
-
-              const slot = row * numCols + col;
-              // Resolve the grid cell to a backing image. With a slot map,
-              // cells can be empty mid-grid (grouped rows); without one, cells
-              // fill densely and are empty only past the sample count.
-              const arrIndex = slotToArrIndex ? slotToArrIndex[slot] : slot;
-              const hasImage = arrIndex !== null && arrIndex !== undefined
-                && arrIndex < arrs.length;
-
-              return {
-                imageIndex: arrIndex,
-                row,
-                col,
-                adjustedSelection,
-                hasImage,
-              };
-            })).filter(Boolean); // Remove any null results
-
-            // The requested region can fall entirely outside the grid — e.g. a
-            // stale tile request after the grid shape shrank when the sample
-            // grouping changed. Return a background tile of the requested size
-            // rather than letting combineGridData build from an empty list.
-            if (dataSelections.length === 0) {
-              return generateEmptyImageData(
-                normalizedSelection, 0, 0, emptyFill, TypedArray,
-              ).data;
-            }
-
-            const dataPerImage = await Promise.all(
-              dataSelections.map(({
-                imageIndex, adjustedSelection, hasImage, row, col,
-              }) => {
-                if (hasImage) {
-                  return get(
-                    arrs[imageIndex],
-                    adjustedSelection,
-                  ).then((data) => ({ data, row, col }));
-                }
-
-                // Generate image data if the image doesn't exist
-                return generateEmptyImageData(
-                  adjustedSelection, row, col, emptyFill, TypedArray,
-                );
-              }),
-            );
-
-            return combineGridData(dataPerImage, TypedArray);
+          const finished = finishedTiles.get(key);
+          if (finished) {
+            stats.reused += 1;
+            finishedTiles.delete(key);
+            finishedTiles.set(key, finished);
+            return Promise.resolve(finished);
           }
+
+          return sharedRequest(
+            inflightTiles,
+            key,
+            (loadSignal) => getGridTile(selection, loadSignal).then((tile) => {
+              finishedTiles.set(key, tile);
+              while (finishedTiles.size > FINISHED_TILES_MAX) {
+                finishedTiles.delete(finishedTiles.keys().next().value);
+              }
+              return tile;
+            }),
+            signal,
+            stats,
+          );
         };
       }
 

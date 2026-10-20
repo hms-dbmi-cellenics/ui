@@ -86,4 +86,25 @@ describe('downloadFromUrl', () => {
     expect(registerSpy).toHaveBeenCalledWith('mockDownloadUrl', 1234);
     registerSpy.mockRestore();
   });
+
+  it('Registers a refresher that re-signs the same file and drops the stale cache entry', async () => {
+    const registerSpy = jest.spyOn(ZipFileStore, 'registerRefresher');
+    fetchMock.mockResponseOnce(JSON.stringify([
+      { url: 'oldUrlA', fileId: 'a' }, { url: 'oldUrlB', fileId: 'b' },
+    ]));
+
+    await getSampleFileUrls(fake.EXPERIMENT_ID, fake.SAMPLE_ID, 'ome_zarr_zip');
+    const refreshB = registerSpy.mock.calls.find(([url]) => url === 'oldUrlB')[1];
+
+    fetchMock.mockResponseOnce(JSON.stringify([
+      { url: 'newUrlA', fileId: 'a' }, { url: 'newUrlB', fileId: 'b' },
+    ]));
+    expect(await refreshB()).toEqual('newUrlB');
+
+    // the expired urls are no longer served from the cache
+    fetchMock.mockResponseOnce(JSON.stringify([{ url: 'newerUrlA', fileId: 'a' }]));
+    expect(await getSampleFileUrls(fake.EXPERIMENT_ID, fake.SAMPLE_ID, 'ome_zarr_zip'))
+      .toEqual([{ url: 'newerUrlA', fileId: 'a' }]);
+    registerSpy.mockRestore();
+  });
 });
