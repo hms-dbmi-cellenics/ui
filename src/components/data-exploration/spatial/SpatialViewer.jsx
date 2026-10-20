@@ -68,6 +68,9 @@ const OUTLINE_COLOR_MOLECULES = [216, 202, 222];
 // The interactive molecule overlay renders the single focused gene in one fixed
 // colour (it is not per-gene coloured — the Plots & Tables molecule plot is).
 const MOLECULE_OVERLAY_COLOR = [138, 9, 61];
+// Stable across rebuilds: viv's getTileData updateTriggers include `selections`,
+// which deck.gl compares by reference, so a fresh array reloads every image tile.
+const IMAGE_SELECTIONS = [{ c: 0 }, { c: 1 }, { c: 2 }];
 
 const DeckGL = dynamic(() => import('@deck.gl/react').then((mod) => mod.DeckGL), { ssr: false });
 
@@ -832,7 +835,7 @@ const SpatialViewer = (props) => {
     return new MultiscaleImageLayer({
       id: 'image-layer',
       loader: loader.data,
-      selections: [{ c: 0 }, { c: 1 }, { c: 2 }],
+      selections: IMAGE_SELECTIONS,
       contrastLimits: [[0, 255], [0, 255], [0, 255]],
       colors: [[255, 0, 0], [0, 255, 0], [0, 0, 255]],
       channelsVisible: [true, true, true],

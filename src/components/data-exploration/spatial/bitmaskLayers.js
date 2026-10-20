@@ -140,6 +140,15 @@ export const buildHoverFillLUT = (selectedCell, cellColors) => {
   return lut;
 };
 
+// Module-level so every rebuilt layer passes the SAME arrays. viv puts
+// `selections` in getTileData's updateTriggers, which deck.gl compares by
+// reference: a fresh `[{ c: 0 }]` per rebuild (the fill layer rebuilds on every
+// hover and colour change) made deck reload every segmentation tile each time.
+const BITMASK_SELECTIONS = [{ c: 0 }];
+const BITMASK_CHANNELS_VISIBLE = [true];
+const BITMASK_CONTRAST_LIMITS = [[0, 65535]];
+const BITMASK_COLORS = [[255, 255, 255]];
+
 // Factory for the three near-identical bitmask MultiscaleImageLayers (fill,
 // outline, hover-fill). They differ only in id, the colour LUT, the hovered cell
 // and whether only outlines are drawn; everything else is shared here.
@@ -148,10 +157,10 @@ export const makeBitmaskLayer = ({
 }) => new MultiscaleImageLayer({
   id,
   loader,
-  selections: [{ c: 0 }],
-  channelsVisible: [true],
-  contrastLimits: [[0, 65535]],
-  colors: [[255, 255, 255]],
+  selections: BITMASK_SELECTIONS,
+  channelsVisible: BITMASK_CHANNELS_VISIBLE,
+  contrastLimits: BITMASK_CONTRAST_LIMITS,
+  colors: BITMASK_COLORS,
   opacity,
   visible: true,
   pickable: false,
