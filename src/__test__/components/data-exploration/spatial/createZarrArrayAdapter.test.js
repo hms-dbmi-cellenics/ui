@@ -68,4 +68,40 @@ describe('createZarrArrayAdapterGrid', () => {
 
     expect(tile.data).toBeInstanceOf(Uint8Array);
   });
+
+  it('shares one read between layers asking for the same tile', async () => {
+    const { get } = jest.requireMock('zarrita');
+    get.mockClear();
+    const adapter = createZarrArrayAdapterGrid([makeArray('int32', 7)], [1, 1], 0);
+
+    const [a, b] = await Promise.all([adapter.getRaw(fullGrid(1)), adapter.getRaw(fullGrid(1))]);
+
+    expect(b).toBe(a);
+    expect(get).toHaveBeenCalledTimes(1);
+  });
+
+  it('reuses a finished tile for a layer that asks for it later', async () => {
+    const { get } = jest.requireMock('zarrita');
+    get.mockClear();
+    const adapter = createZarrArrayAdapterGrid([makeArray('int32', 7)], [1, 1], 0);
+
+    const first = await adapter.getRaw(fullGrid(1));
+    const later = await adapter.getRaw(fullGrid(1));
+
+    expect(later).toBe(first);
+    expect(get).toHaveBeenCalledTimes(1);
+  });
+
+  it('passes the tile abort signal through to the store reads', async () => {
+    const { get } = jest.requireMock('zarrita');
+    get.mockClear();
+    const adapter = createZarrArrayAdapterGrid([makeArray('int32', 7)], [1, 1], 0);
+    const controller = new AbortController();
+
+    await adapter.getRaw(fullGrid(1), { storeOptions: { signal: controller.signal } });
+
+    // the shared read's own signal, aborted once every tile reader has aborted
+    const [, , opts] = get.mock.calls[0];
+    expect(opts.opts.signal).toBeInstanceOf(AbortSignal);
+  });
 });
