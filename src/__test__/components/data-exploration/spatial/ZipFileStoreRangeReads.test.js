@@ -47,8 +47,12 @@ const buildStoredZip = (files, localExtra = 0) => {
   return out;
 };
 
-// fetch that serves byte ranges of `zip` and records each request
-const mockRangeFetch = (zip) => jest.fn(async (url, opts = {}) => {
+// fetch that serves byte ranges of `zip` and records each request. Urls in
+// `expiredUrls` answer 400, like S3 for a url signed with an expired token.
+const mockRangeFetch = (zip, expiredUrls = []) => jest.fn(async (url, opts = {}) => {
+  if (expiredUrls.includes(url)) {
+    return { ok: false, status: 400, statusText: 'Bad Request' };
+  }
   const range = opts.headers?.Range;
   if (!range) {
     // jsdom's Blob has no arrayBuffer(), so hand back a minimal blob-like
@@ -199,5 +203,112 @@ describe('ZipFileStore range reads', () => {
     expect(row.zipMB).not.toBeNull();
     expect(row.fetchedMB).toEqual(0);
     expect(row.chunkCacheHits).toEqual(1);
+  });
+
+  it('Re-signs an expired url once and keeps reading through the same store', async () => {
+    const freshUrl = 'https://example.com/re-signed.zip';
+    const zip = buildStoredZip(files);
+    global.fetch = mockRangeFetch(zip);
+    ZipFileStore.registerSize(url, zip.length);
+    const refresh = jest.fn(async () => freshUrl);
+    ZipFileStore.registerRefresher(url, refresh);
+
+    const store = ZipFileStore.fromUrl(url);
+    await store.info;
+
+    // the signature expires mid-session
+    global.fetch = mockRangeFetch(zip, [url]);
+    const [a, b] = await Promise.all([store.get('/0/0/0/0'), store.get('/0/.zarray')]);
+
+    expect(a).toEqual(files['0/0/0/0']);
+    expect(b).toEqual(files['0/.zarray']);
+    // concurrent failures share one re-sign; each read retries the new url once
+    expect(refresh).toHaveBeenCalledTimes(1);
+    expect(global.fetch.mock.calls.map(([u]) => u)).toEqual([url, url, freshUrl, freshUrl]);
+    // the store keeps its original cache key
+    expect(ZipFileStore.fromUrl(url)).toBe(store);
+  });
+
+  it('Fails with the original error when the url cannot be re-signed', async () => {
+    const zip = buildStoredZip(files);
+    global.fetch = mockRangeFetch(zip);
+    ZipFileStore.registerSize(url, zip.length);
+
+    const store = ZipFileStore.fromUrl(url);
+    await store.info;
+    global.fetch = mockRangeFetch(zip, [url]);
+
+    await expect(store.get('/0/0/0/0')).rejects.toThrow('status: 400');
+  });
+
+  it('Re-signs an expired url for whole-zip downloads too', async () => {
+    const freshUrl = 'https://example.com/re-signed.zip';
+    const zip = buildStoredZip(files);
+    global.fetch = mockRangeFetch(zip, [url]);
+    ZipFileStore.registerRefresher(url, async () => freshUrl);
+
+    expect(await ZipFileStore.fromUrl(url).get('/0/0/0/0')).toEqual(files['0/0/0/0']);
+    expect(global.fetch.mock.calls.map(([u]) => u)).toEqual([url, freshUrl]);
+  });
+
+  it('Aborts the range read once every reader of a chunk has aborted', async () => {
+    const zip = buildStoredZip(files);
+    global.fetch = mockRangeFetch(zip);
+    ZipFileStore.registerSize(url, zip.length);
+    const store = ZipFileStore.fromUrl(url);
+    await store.info;
+
+    let fetchSignal;
+    global.fetch = jest.fn((u, opts) => {
+      fetchSignal = opts.signal;
+      return new Promise(() => {}); // never answers
+    });
+
+    const first = new AbortController();
+    const second = new AbortController();
+    const a = store.get('/0/0/0/0', { signal: first.signal });
+    const b = store.get('/0/0/0/0', { signal: second.signal });
+    await new Promise((resolve) => { setTimeout(resolve, 0); });
+
+    expect(global.fetch).toHaveBeenCalledTimes(1);
+    first.abort();
+    await expect(a).rejects.toMatchObject({ name: 'AbortError' });
+    expect(fetchSignal.aborted).toBe(false);
+
+    second.abort();
+    await expect(b).rejects.toMatchObject({ name: 'AbortError' });
+    expect(fetchSignal.aborted).toBe(true);
+  });
+
+  it('Counts cancelled reads, aborted downloads and their requested bytes', async () => {
+    // big enough to show up in the MB columns
+    const zip = buildStoredZip({ ...files, '0/0/0/0': new Uint8Array(50000) });
+    global.fetch = mockRangeFetch(zip);
+    ZipFileStore.registerSize(url, zip.length);
+    const store = ZipFileStore.fromUrl(url);
+    await store.info;
+    spatialZipStats({ reset: true });
+
+    // a fetch that only settles by aborting, like a real one
+    global.fetch = jest.fn((u, opts) => new Promise((resolve, reject) => {
+      opts.signal.addEventListener('abort', () => reject(new DOMException('Aborted', 'AbortError')));
+    }));
+
+    const first = new AbortController();
+    const second = new AbortController();
+    const a = store.get('/0/0/0/0', { signal: first.signal });
+    const b = store.get('/0/0/0/0', { signal: second.signal });
+    await new Promise((resolve) => { setTimeout(resolve, 0); });
+    first.abort();
+    second.abort();
+    await expect(a).rejects.toMatchObject({ name: 'AbortError' });
+    await expect(b).rejects.toMatchObject({ name: 'AbortError' });
+    await new Promise((resolve) => { setTimeout(resolve, 0); });
+
+    const [row] = spatialZipStats();
+    expect(row.cancelledReads).toEqual(2);
+    expect(row.abortedRequests).toEqual(1);
+    expect(row.abortedMB).toEqual(0.05);
+    expect(row.requests).toEqual(0);
   });
 });

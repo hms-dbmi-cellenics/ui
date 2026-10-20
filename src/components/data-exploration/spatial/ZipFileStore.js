@@ -1,6 +1,7 @@
 /* eslint-disable */
 // adapted from @zarrita/storage so that GET is used instead of HEAD (presigned urls need to be different based on method)
 import { unzip } from "unzipit";
+import sharedRequest, { newRequestStats, requestStats } from "./sharedRequest";
 
 function strip_prefix(path) {
   return path.slice(1);
@@ -11,6 +12,8 @@ function strip_prefix(path) {
 // range reads in a real session. Run `spatialZipStats()` in the browser console
 // for a table; `spatialZipStats({ reset: true })` zeroes the counters (keeping each
 // zip's mode and size, since already-open stores won't re-register them).
+// Also counts what tile cancellation saved: range reads aborted mid-flight and
+// the bytes they had asked for, plus url re-signs after a signature expired.
 const zipStats = new Map();
 
 const describeUrl = (href) => {
@@ -34,6 +37,10 @@ const statsFor = (href) => {
       requests: 0,
       chunkReads: 0,
       chunkCacheHits: 0,
+      abortedRequests: 0,
+      abortedBytes: 0,
+      urlRefreshes: 0,
+      chunkLoads: newRequestStats(),
     };
     zipStats.set(href, stats);
   }
@@ -49,31 +56,49 @@ const countFetch = (href, bytes) => {
 const toMB = (bytes) => (bytes == null ? null : Number((bytes / 1e6).toFixed(2)));
 
 export const spatialZipStats = ({ reset = false } = {}) => {
+  const tiles = requestStats('decodedTiles');
   if (reset) {
     zipStats.forEach((stats) => {
       Object.assign(stats, {
-        fetchedBytes: 0, requests: 0, chunkReads: 0, chunkCacheHits: 0,
+        fetchedBytes: 0,
+        requests: 0,
+        chunkReads: 0,
+        chunkCacheHits: 0,
+        abortedRequests: 0,
+        abortedBytes: 0,
+        urlRefreshes: 0,
+        chunkLoads: newRequestStats(),
       });
     });
+    Object.assign(tiles, newRequestStats());
     return undefined;
   }
   // only zips touched since the last reset
-  const rows = [...zipStats.values()].filter((s) => s.chunkReads || s.requests).map((s) => ({
-    file: s.file,
-    mode: s.mode,
-    zipMB: toMB(s.zipBytes),
-    fetchedMB: toMB(s.fetchedBytes),
-    fetchedPct: s.zipBytes ? Number(((100 * s.fetchedBytes) / s.zipBytes).toFixed(1)) : null,
-    requests: s.requests,
-    chunkReads: s.chunkReads,
-    chunkCacheHits: s.chunkCacheHits,
-  }));
-  const zipBytes = rows.reduce((n, r) => n + (r.zipMB ?? 0), 0);
-  const fetched = rows.reduce((n, r) => n + r.fetchedMB, 0);
-  const hits = rows.reduce((n, r) => n + r.chunkCacheHits, 0);
-  const reads = rows.reduce((n, r) => n + r.chunkReads, 0);
+  const rows = [...zipStats.values()]
+    .filter((s) => s.chunkReads || s.requests || s.abortedRequests)
+    .map((s) => ({
+      file: s.file,
+      mode: s.mode,
+      zipMB: toMB(s.zipBytes),
+      fetchedMB: toMB(s.fetchedBytes),
+      fetchedPct: s.zipBytes ? Number(((100 * s.fetchedBytes) / s.zipBytes).toFixed(1)) : null,
+      requests: s.requests,
+      chunkReads: s.chunkReads,
+      chunkCacheHits: s.chunkCacheHits,
+      // chunk reads whose tile was cancelled; some of them aborted a download,
+      // the rest kept going because another layer still needed the chunk
+      cancelledReads: s.chunkLoads.cancelled,
+      abortedRequests: s.abortedRequests,
+      // what the aborted range reads had asked for — an upper bound on the bytes
+      // saved, since one aborted mid-transfer may have received part of it
+      abortedMB: toMB(s.abortedBytes),
+      urlRefreshes: s.urlRefreshes,
+    }));
+  const sum = (key) => rows.reduce((n, r) => n + (r[key] ?? 0), 0);
   console.table(rows);
-  console.info(`[ZipFileStore] fetched ${fetched.toFixed(2)} MB of ${zipBytes.toFixed(2)} MB across ${rows.length} zips; ${hits}/${reads} chunk reads served from cache`);
+  console.info(`[ZipFileStore] fetched ${sum('fetchedMB').toFixed(2)} MB of ${sum('zipMB').toFixed(2)} MB across ${rows.length} zips; ${sum('chunkCacheHits')}/${sum('chunkReads')} chunk reads served from cache`);
+  console.info(`[ZipFileStore] cancelled tiles: ${sum('cancelledReads')} chunk reads cancelled, ${sum('abortedRequests')} downloads aborted (≤ ${sum('abortedMB').toFixed(2)} MB not downloaded); ${sum('urlRefreshes')} expired urls re-signed`);
+  console.info(`[ZipFileStore] decoded tiles: ${tiles.started} read + decoded; reused instead of decoded again: ${tiles.joined} while in flight, ${tiles.reused} already finished; ${tiles.cancelled} cancelled, ${tiles.aborted} aborted (download stopped as no layer still wanted it)`);
   return rows;
 };
 
@@ -107,18 +132,65 @@ class BlobReader {
   }
 }
 
+// ── Signed url refresh ──────────────────────────────────────────────────────
+// The API signs urls with temporary (STS) credentials, so a "24h" url stops
+// working as soon as that session token expires — S3 then answers 400
+// ExpiredToken (or 403). getSampleFileUrls registers how to re-sign each url; a
+// reader that hits an expired url re-signs it once and retries.
+const refreshers = new Map();
+const REFRESHERS_MAX = 256;
+const isExpiredUrlStatus = (status) => status === 400 || status === 403;
+
 class HTTPRangeReader {
   url;
   length;
   constructor(url) {
+    // `url` identifies the zip (cache keys, stats); `signedUrl` is what's fetched
+    // and is replaced when the signature expires
     this.url = url;
+    this.signedUrl = url;
+    this.refreshing = null;
+  }
+  // Re-sign once per expiry: concurrent reads that failed on the same stale url
+  // share one refresh, and reads that started before it just retry the new url.
+  refresh(staleUrl) {
+    if (this.signedUrl !== staleUrl) return Promise.resolve(this.signedUrl);
+    if (!this.refreshing) {
+      const refresher = refreshers.get(this.url);
+      if (!refresher) return Promise.resolve(null);
+      const stats = statsFor(this.url);
+      this.refreshing = refresher()
+        .then((fresh) => {
+          if (fresh) {
+            this.signedUrl = fresh;
+            stats.urlRefreshes += 1;
+            console.info(`[ZipFileStore] signed url expired, re-signed: ${stats.file}`);
+          } else {
+            console.warn(`[ZipFileStore] signed url expired and the file has no new url: ${stats.file}`);
+          }
+          return fresh;
+        })
+        .catch((e) => {
+          console.warn(`[ZipFileStore] signed url expired and re-signing failed: ${stats.file}`, e);
+          return null;
+        })
+        .finally(() => { this.refreshing = null; });
+    }
+    return this.refreshing;
+  }
+  async fetch(offset, length, opts) {
+    const signed = this.signedUrl;
+    const req = await fetch_range(signed, offset, length, opts);
+    if (!isExpiredUrlStatus(req.status)) return req;
+    const fresh = await this.refresh(signed);
+    return fresh ? fetch_range(fresh, offset, length, opts) : req;
   }
   async getLength() {
     if (this.length === undefined) {
 
       // const req = await fetch(this.url, { method: "HEAD" });
       // use GET to request headers only (first byte)
-      const req = await fetch_range(this.url, 0, 1);
+      const req = await this.fetch(0, 1);
 
       if (!req.ok) {
         throw new Error(`failed http request ${this.url}, status: ${req.status}: ${req.statusText}`);
@@ -130,15 +202,25 @@ class HTTPRangeReader {
     }
     return this.length;
   }
-  async read(offset, size) {
+  async read(offset, size, signal) {
     if (size === 0) {
       return new Uint8Array(0);
     }
-    const req = await fetch_range(this.url, offset, size);
-    if (!req.ok) {
-      throw new Error(`failed http request ${this.url}, status: ${req.status} offset: ${offset} size: ${size}: ${req.statusText}`);
+    let bytes;
+    try {
+      const req = await this.fetch(offset, size, { signal });
+      if (!req.ok) {
+        throw new Error(`failed http request ${this.url}, status: ${req.status} offset: ${offset} size: ${size}: ${req.statusText}`);
+      }
+      bytes = new Uint8Array(await req.arrayBuffer());
+    } catch (e) {
+      if (signal?.aborted) {
+        const stats = statsFor(this.url);
+        stats.abortedRequests += 1;
+        stats.abortedBytes += size;
+      }
+      throw e;
     }
-    const bytes = new Uint8Array(await req.arrayBuffer());
     countFetch(this.url, bytes.byteLength);
     return bytes;
   }
@@ -170,7 +252,9 @@ const chunkInflight = new Map();
 let chunkCacheBytes = 0;
 const CHUNK_CACHE_MAX_BYTES = 256 * 1024 * 1024;
 
-const getCachedChunk = (key, load, onHit) => {
+// `load(signal)` is aborted once every caller waiting on it has aborted (see
+// sharedRequest), e.g. when deck.gl drops the tiles that needed this chunk.
+const getCachedChunk = (key, load, onHit, signal, loadStats) => {
   const hit = chunkCache.get(key);
   if (hit) {
     onHit();
@@ -178,13 +262,9 @@ const getCachedChunk = (key, load, onHit) => {
     chunkCache.set(key, hit);
     return Promise.resolve(hit);
   }
-  if (chunkInflight.has(key)) {
-    onHit();
-    return chunkInflight.get(key);
-  }
+  if (chunkInflight.has(key)) onHit();
 
-  const promise = load().then((bytes) => {
-    chunkInflight.delete(key);
+  return sharedRequest(chunkInflight, key, (loadSignal) => load(loadSignal).then((bytes) => {
     if (bytes && bytes.byteLength <= CHUNK_CACHE_MAX_BYTES) {
       chunkCache.set(key, bytes);
       chunkCacheBytes += bytes.byteLength;
@@ -195,12 +275,7 @@ const getCachedChunk = (key, load, onHit) => {
       }
     }
     return bytes;
-  }, (e) => {
-    chunkInflight.delete(key);
-    throw e;
-  });
-  chunkInflight.set(key, promise);
-  return promise;
+  }), signal, loadStats);
 };
 
 // Local file header is 30 bytes + name + extra field. The extra field isn't in
@@ -223,16 +298,17 @@ class ZipFileStore {
       stats.zipBytes = reader.length;
       this.info = unzip(reader);
     } else if (reader.url) {
-      this.info = ZipFileStore.downloadWhole(reader.url).then((blob) => unzip(new BlobReader(blob)));
+      this.info = ZipFileStore.downloadWhole(reader).then((blob) => unzip(new BlobReader(blob)));
     } else {
       this.info = unzip(reader);
     }
   }
   // Same as unzip(url) (one GET of the whole file), but counted in the stats.
-  static async downloadWhole(href) {
+  static async downloadWhole(reader) {
+    const href = reader.url;
     const stats = statsFor(href);
     stats.mode = 'whole';
-    const req = await fetch(href);
+    const req = await reader.fetch();
     if (!req.ok) {
       throw new Error(`failed http request ${href}, status: ${req.status}: ${req.statusText}`);
     }
@@ -241,7 +317,9 @@ class ZipFileStore {
     countFetch(href, blob.size);
     return blob;
   }
-  async get(key) {
+  // `opts.signal` (zarrita passes the store options through) aborts a range read
+  // that's no longer needed.
+  async get(key, opts) {
     const path = strip_prefix(key);
     let entry = (await this.info).entries[path];
     if (!entry)
@@ -251,21 +329,23 @@ class ZipFileStore {
     const stats = statsFor(this.reader.url);
     return getCachedChunk(
       `${this.reader.url}|${path}`,
-      () => this.readEntry(entry),
+      (signal) => this.readEntry(entry, signal),
       () => { stats.chunkCacheHits += 1; },
+      opts?.signal,
+      stats.chunkLoads,
     );
   }
   // Read a stored (uncompressed) entry's header + data in a single range request.
   // unzipit's entry.arrayBuffer() reads the 30-byte local header first and the
   // data second — two sequential round trips per chunk.
-  async readEntry(entry) {
+  async readEntry(entry, signal) {
     const raw = entry._rawEntry;
     if (raw.compressionMethod !== 0 || (raw.generalPurposeBitFlag & 0x1)) {
       return new Uint8Array(await entry.arrayBuffer());
     }
     const start = raw.relativeOffsetOfLocalHeader;
     const guess = 30 + raw.nameBytes.length + LOCAL_EXTRA_SLACK + raw.compressedSize;
-    const buf = await this.reader.read(start, Math.min(guess, this.reader.length - start));
+    const buf = await this.reader.read(start, Math.min(guess, this.reader.length - start), signal);
     const view = new DataView(buf.buffer, buf.byteOffset, buf.byteLength);
     if (view.getUint32(0, true) !== LOCAL_HEADER_SIGNATURE) {
       throw new Error(`invalid local file header signature for ${raw.name}`);
@@ -292,6 +372,16 @@ class ZipFileStore {
       knownSizes.delete(knownSizes.keys().next().value);
     }
   }
+  // Record how to get a freshly signed url for a zip once its signature expires.
+  // `refresh` resolves to the new url (or null).
+  static registerRefresher(href, refresh) {
+    if (!href || typeof refresh !== 'function') return;
+    refreshers.delete(href);
+    refreshers.set(href, refresh);
+    while (refreshers.size > REFRESHERS_MAX) {
+      refreshers.delete(refreshers.keys().next().value);
+    }
+  }
   // Cached per url (LRU). A store whose zip failed to open is dropped so the next
   // call retries.
   static fromUrl(href) {
@@ -314,6 +404,7 @@ class ZipFileStore {
   static clearCache() {
     storeCache.clear();
     knownSizes.clear();
+    refreshers.clear();
     chunkCache.clear();
     chunkInflight.clear();
     chunkCacheBytes = 0;
