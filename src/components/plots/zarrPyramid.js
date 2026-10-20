@@ -2,6 +2,7 @@ import {
   root as zarrRoot, open,
 } from 'zarrita';
 import ZipFileStore from 'components/data-exploration/spatial/ZipFileStore';
+import sharedRequest, { requestStats } from 'components/data-exploration/spatial/sharedRequest';
 
 // Generic OME-Zarr pyramid access shared by the histology tile renderer
 // (getImageUrls) and the segmentation region decoder (loadSegmentationOverlay).
@@ -21,7 +22,67 @@ import ZipFileStore from 'components/data-exploration/spatial/ZipFileStore';
 const pyramidCache = new Map();
 const PYRAMID_CACHE_MAX = 16;
 
-export const clearPyramidCache = () => pyramidCache.clear();
+// ── Decoded chunk cache ─────────────────────────────────────────────────────
+// zarrita decodes every chunk a selection touches, in full, on every get(). The
+// segmentation tile streamer reads each 512px tile with a 1px halo (for outline
+// edges across tile seams), and tiles line up with the 512px chunks, so an
+// interior tile touches its 3x3 chunk neighbourhood: each chunk was decoded up to
+// 9 times. Image tiles read R/G/B with three gets, which with (3, 512, 512) chunks
+// all decode the same chunk. Keep recently decoded chunks (shared, read-only:
+// zarrita only copies out of them) so each is decoded once.
+const decodedChunks = new Map();
+const inflightChunks = new Map();
+let decodedChunkBytes = 0;
+// ~64 segmentation chunks (512² float32 ≈ 1 MB): a viewport of tiles plus the
+// ring of neighbours their halos reach into
+const DECODED_CHUNKS_MAX_BYTES = 64 * 1024 * 1024;
+
+const rememberChunk = (key, chunk) => {
+  const bytes = chunk?.data?.byteLength ?? 0;
+  if (bytes > DECODED_CHUNKS_MAX_BYTES) return;
+  decodedChunks.set(key, chunk);
+  decodedChunkBytes += bytes;
+  while (decodedChunkBytes > DECODED_CHUNKS_MAX_BYTES) {
+    const oldest = decodedChunks.keys().next().value;
+    decodedChunkBytes -= decodedChunks.get(oldest).data.byteLength;
+    decodedChunks.delete(oldest);
+  }
+};
+
+// `id` must be unique per array (zip url + level path).
+const withDecodedChunkCache = (arr, id) => new Proxy(arr, {
+  get(target, prop) {
+    if (prop !== 'getChunk') return Reflect.get(target, prop);
+    return (coords, opts) => {
+      const key = `${id}|${coords.join(',')}`;
+      const stats = requestStats('decodedChunks');
+      const hit = decodedChunks.get(key);
+      if (hit) {
+        stats.reused += 1;
+        decodedChunks.delete(key);
+        decodedChunks.set(key, hit);
+        return Promise.resolve(hit);
+      }
+      return sharedRequest(
+        inflightChunks,
+        key,
+        () => target.getChunk(coords, opts).then((chunk) => {
+          rememberChunk(key, chunk);
+          return chunk;
+        }),
+        opts?.signal,
+        stats,
+      );
+    };
+  },
+});
+
+export const clearPyramidCache = () => {
+  pyramidCache.clear();
+  decodedChunks.clear();
+  inflightChunks.clear();
+  decodedChunkBytes = 0;
+};
 
 // ── Per-level coordinate frame ──────────────────────────────────────────────
 // Every tile is positioned in the plot from its data-space extent. To keep the
@@ -110,7 +171,7 @@ export const openOmePyramid = (omeZarrUrl) => {
     const levels = await Promise.all(
       datasets.map(async ({ path }) => {
         const arr = await open(rootNode.resolve(path), { kind: 'array' });
-        return { arr, shape: arr.shape };
+        return { arr: withDecodedChunkCache(arr, `${omeZarrUrl}|${path}`), shape: arr.shape };
       }),
     );
 

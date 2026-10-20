@@ -15,7 +15,7 @@ jest.mock('components/data-exploration/spatial/ZipFileStore', () => ({
 
 // eslint-disable-next-line import/first
 import {
-  resolvePyramidRegion, openOmePyramid, pickLevel, tilesForViewport,
+  resolvePyramidRegion, openOmePyramid, pickLevel, tilesForViewport, clearPyramidCache,
 } from 'components/plots/zarrPyramid';
 
 // Helper: build a fake `levels` array of { shape } where shape is [h, w] (or
@@ -378,5 +378,71 @@ describe('openOmePyramid', () => {
     expect(retry.fullW).toBe(20);
     expect(retry.fullH).toBe(10);
     expect(mockFromUrl).toHaveBeenCalledTimes(2);
+  });
+});
+
+describe('openOmePyramid decoded chunk cache', () => {
+  let getChunk;
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+    clearPyramidCache();
+    getChunk = jest.fn(async (coords) => ({
+      data: new Float32Array(4).fill(coords[1] * 10 + coords[2]),
+      shape: [2, 2],
+      stride: [2, 1],
+    }));
+    mockOpen.mockImplementation((node, { kind }) => {
+      if (kind === 'group') {
+        return Promise.resolve({ attrs: { multiscales: [{ datasets: [{ path: '0' }, { path: '1' }] }] } });
+      }
+      return Promise.resolve({ shape: [1, 600, 900], chunks: [1, 512, 512], getChunk });
+    });
+  });
+
+  it('decodes each chunk once when several tiles (or halos) read it', async () => {
+    const { levels } = await openOmePyramid('https://example.com/seg.zarr.zip');
+
+    const a = await levels[0].arr.getChunk([0, 1, 1]);
+    const b = await levels[0].arr.getChunk([0, 1, 1]);
+
+    expect(b).toBe(a);
+    expect(getChunk).toHaveBeenCalledTimes(1);
+  });
+
+  it('shares a decode between concurrent reads of the same chunk', async () => {
+    const { levels } = await openOmePyramid('https://example.com/seg.zarr.zip');
+
+    const [a, b] = await Promise.all([
+      levels[0].arr.getChunk([0, 0, 0]), levels[0].arr.getChunk([0, 0, 0]),
+    ]);
+
+    expect(b).toBe(a);
+    expect(getChunk).toHaveBeenCalledTimes(1);
+  });
+
+  it('keeps chunks of different levels and coordinates apart', async () => {
+    const { levels } = await openOmePyramid('https://example.com/seg.zarr.zip');
+
+    await levels[0].arr.getChunk([0, 0, 1]);
+    await levels[0].arr.getChunk([0, 1, 0]);
+    await levels[1].arr.getChunk([0, 0, 1]);
+
+    expect(getChunk).toHaveBeenCalledTimes(3);
+  });
+
+  it('does not cache failed decodes (e.g. a missing chunk)', async () => {
+    getChunk.mockRejectedValueOnce(new Error('missing'));
+    const { levels } = await openOmePyramid('https://example.com/seg.zarr.zip');
+
+    await expect(levels[0].arr.getChunk([0, 0, 0])).rejects.toThrow('missing');
+    await expect(levels[0].arr.getChunk([0, 0, 0])).resolves.toBeDefined();
+    expect(getChunk).toHaveBeenCalledTimes(2);
+  });
+
+  it('still exposes the array itself (shape, chunks) to zarrita', async () => {
+    const { levels } = await openOmePyramid('https://example.com/seg.zarr.zip');
+    expect(levels[0].arr.chunks).toEqual([1, 512, 512]);
+    expect(levels[0].shape).toEqual([1, 600, 900]);
   });
 });
