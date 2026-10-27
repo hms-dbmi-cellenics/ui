@@ -44,6 +44,15 @@ describe('useCentroidOverlay', () => {
     expect(ctx.arc).toHaveBeenCalledTimes(100);
   });
 
+  it('fills a color with many cells in batches, which browsers can fill', () => {
+    const manyCells = Array.from({ length: 25000 }, (_, i) => [i % 500, Math.floor(i / 500)]);
+    const oneColor = new Map(manyCells.map((_, i) => [i, [255, 0, 0]]));
+
+    render({ embeddingData: manyCells, colorMap: oneColor });
+
+    expect(ctx.fill).toHaveBeenCalledTimes(3);
+  });
+
   it('scales the dot area with marker size', () => {
     const rows = render({ markerSize: 80 });
 

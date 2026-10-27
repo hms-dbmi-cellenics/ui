@@ -11,6 +11,9 @@ const MAX_CANVAS_SIZE = 4096;
 // round when zoomed in
 const MAX_PIXELS_PER_CELL = 16;
 
+// Dots filled per canvas path
+const MAX_SHAPES_PER_FILL = 10000;
+
 // marker.size the spatial plots default to: draws dots at the size of the cells
 // they stand for
 const DEFAULT_MARKER_SIZE = 20;
@@ -62,7 +65,7 @@ const drawCentroids = (canvas, embeddingData, colorMap, imageHeight, radius, opa
   byColor.forEach((colorCells, key) => {
     ctx.fillStyle = `rgb(${key})`;
     ctx.beginPath();
-    colorCells.forEach(({ x, y }) => {
+    colorCells.forEach(({ x, y }, index) => {
       const px = (x - xMin) * pixelsPerUnit;
       // canvas rows run top-down
       const py = (yMax - y) * pixelsPerUnit;
@@ -71,6 +74,12 @@ const drawCentroids = (canvas, embeddingData, colorMap, imageHeight, radius, opa
       } else {
         ctx.moveTo(px + pixelRadius, py);
         ctx.arc(px, py, pixelRadius, 0, 2 * Math.PI);
+      }
+      // browsers silently skip filling paths of too many shapes, e.g. the hundreds
+      // of thousands of cells that don't express a gene
+      if ((index + 1) % MAX_SHAPES_PER_FILL === 0) {
+        ctx.fill();
+        ctx.beginPath();
       }
     });
     ctx.fill();
