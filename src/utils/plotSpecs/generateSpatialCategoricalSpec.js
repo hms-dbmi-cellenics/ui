@@ -3,6 +3,7 @@
 import { getAllCells, getSampleCells } from 'utils/cellSets';
 import _ from 'lodash';
 import spatialZoomSignals from 'utils/plotSpecs/spatialZoomSignals';
+import spatialCentroidSize from 'utils/plotSpecs/spatialCentroidSize';
 
 const paddingSize = 5;
 
@@ -158,7 +159,7 @@ const generateSpec = (
         update: {
           x: { scale: 'x', field: 'x' },
           y: { scale: 'y', field: 'flipped_y' },
-          size: [{ value: config?.marker.size }],
+          ...spatialCentroidSize(plotData, config?.marker.size),
           stroke: config?.marker.outline
             ? { scale: 'cellSetMarkColors', field: 'cellSetKey' }
             : null,

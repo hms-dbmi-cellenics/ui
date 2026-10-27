@@ -2,6 +2,7 @@
 
 import { getAllCells, getSampleCells } from 'utils/cellSets';
 import spatialZoomSignals from 'utils/plotSpecs/spatialZoomSignals';
+import spatialCentroidSize from 'utils/plotSpecs/spatialCentroidSize';
 
 /**
  * @param {object}      config
@@ -115,7 +116,7 @@ const generateSpec = (
         update: {
           x: { scale: 'x', field: 'x' },
           y: { scale: 'y', field: 'flipped_y' },
-          size: [{ value: config?.marker.size }],
+          ...spatialCentroidSize(plotData, config?.marker.size),
           stroke: config?.marker.outline ? { scale: 'color', field: 'value' } : null,
           fill: { scale: 'color', field: 'value' },
           shape: { value: config?.marker.shape },
