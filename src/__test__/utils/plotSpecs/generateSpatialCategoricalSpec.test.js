@@ -136,6 +136,35 @@ describe('filterCells / generateData', () => {
     });
   });
 
+  describe('legend', () => {
+    // as many clusters as a large spatial dataset has
+    const manyLegendsData = _.range(51).map((i) => ({
+      key: `louvain-${i}`, name: `Cluster ${i}`, color: '#111111',
+    }));
+
+    it('splits a long legend beside the plot into columns, with room reserved for all', () => {
+      const spec = generateSpec(baseConfig(), 'mock', imageData, [], manyLegendsData);
+      const twoClusterSpec = generateSpec(baseConfig(), 'mock', imageData, [], legendsData);
+
+      expect(spec.legends[0].columns).toBe(2);
+      expect(spec.padding.right).toBeGreaterThan(twoClusterSpec.padding.right);
+      expect(spec.legends[0].labelLimit).toBe(0);
+    });
+
+    it('reserves room for all rows of a long legend below the plot', () => {
+      const config = baseConfig();
+      config.legend.position = 'bottom';
+
+      const spec = generateSpec(config, 'mock', imageData, [], manyLegendsData);
+      const twoClusterSpec = generateSpec(config, 'mock', imageData, [], legendsData);
+      const { columns } = spec.legends[0];
+
+      expect(columns).toBeGreaterThan(1);
+      expect(spec.padding.bottom - twoClusterSpec.padding.bottom)
+        .toBeGreaterThanOrEqual((Math.ceil(51 / columns) - 1) * 15);
+    });
+  });
+
   it('generateData drops cells with no embedding coordinate', () => {
     const sparseEmbedding = _.range(30).map((i) => (i % 2 === 0 ? [i, i] : undefined));
     const { plotData } = generateData(mockCellSetsReduxObject, 'All', 'louvain', sparseEmbedding);
