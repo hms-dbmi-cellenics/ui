@@ -22,6 +22,8 @@ import PlatformError from '../PlatformError';
 import Loader from '../Loader';
 
 const EMBEDDING_TYPE = 'images';
+// the plot's extent past its outermost cells, when framed on them
+const CELLS_FRAME_MARGIN = 1.02;
 
 const SpatialCategoricalPlot = (props) => {
   const {
@@ -64,31 +66,40 @@ const SpatialCategoricalPlot = (props) => {
   const onZoomChangeRef = useRef(onZoomChange);
   onZoomChangeRef.current = onZoomChange;
 
+  // An obj2s experiment's samples are its sample cell sets (its spatial files are
+  // linked to them). Joined so the URL fetch below only re-runs when they change.
+  const sampleCellSetIdsKey = useMemo(
+    () => (cellSets.hierarchy?.find(({ key }) => key === 'sample')?.children ?? [])
+      .map(({ key }) => key).join(','),
+    [cellSets.hierarchy],
+  );
+
   // ── Fetch image URLs ────────────────────────────────────────────────────────
   useEffect(() => {
+    // obj2s samples come from the cell sets, wait for them
+    if (isObj2s && !sampleCellSetIdsKey) return;
+
     (async () => {
       try {
-        // imageless techs (e.g. Xenium) have no tissue image; still register the
-        // sample ids (with null urls) so the selected-sample default and the stream
-        // initialise — image dimensions come from the segmentation pyramid instead.
-        // An obj2s experiment's samples are the sample cell sets with segmentations.
-        if (isImageless) {
-          const sampleIds = isObj2s
-            ? (await getSpatialFileUrls(experimentId, sampleIdsForFileUrls, 'segmentations_ome_zarr_zip', isObj2s))
-              .map(({ sampleId }) => sampleId)
-            : sampleIdsForFileUrls;
-
-          setOmeZarrUrls(sampleIds.map((sampleId) => ({ url: null, sampleId })));
+        // imageless techs (e.g. Xenium) have no tissue image, nor may a spatial
+        // object (e.g. before its technology is known); still register the sample
+        // ids (with null urls) so the selected-sample default and the stream
+        // initialise — the plot is then framed by the segmentations or the cells.
+        const images = isImageless ? [] : await getSpatialFileUrls(
+          experimentId, sampleIdsForFileUrls, 'ome_zarr_zip', isObj2s, { optional: true },
+        );
+        if (images.length) {
+          setOmeZarrUrls(images.map(({ url, sampleId }) => ({ url, sampleId })));
           return;
         }
 
-        const results = await getSpatialFileUrls(experimentId, sampleIdsForFileUrls, 'ome_zarr_zip', isObj2s);
-        setOmeZarrUrls(results.map(({ url, sampleId }) => ({ url, sampleId })));
+        const sampleIds = isObj2s ? sampleCellSetIdsKey.split(',') : sampleIdsForFileUrls;
+        setOmeZarrUrls(sampleIds.map((sampleId) => ({ url: null, sampleId })));
       } catch (error) {
         console.error('Error fetching image URLs:', error);
       }
     })();
-  }, [sampleIdsForFileUrls, experimentId, isObj2s, isImageless]);
+  }, [sampleIdsForFileUrls, experimentId, isObj2s, isImageless, sampleCellSetIdsKey]);
 
   // ── Fetch segmentation URLs (optional) ─────────────────────────────────────
   useEffect(() => {
@@ -161,13 +172,12 @@ const SpatialCategoricalPlot = (props) => {
     : (segEntry?.url ?? null);
 
   const {
-    imageDims,
+    imageDims: streamImageDims,
     segmentationsAvailable,
     segProbeDone,
     tissueImageData,
     segOverlayData,
     onViewportChange,
-    ready,
   } = useSpatialStream({
     experimentId,
     sampleId: selectedSample,
@@ -181,6 +191,30 @@ const SpatialCategoricalPlot = (props) => {
     opacity: (config?.marker?.opacity ?? 10) / 10,
     outline: config?.marker?.outline ?? false,
   });
+
+  // no tissue image or segmentations to frame the plot (e.g. Xenium objects with
+  // only centroids): frame it on the cells
+  const hasImage = omeZarrUrls?.some(({ url }) => url);
+  const cellsImageDims = useMemo(() => {
+    if (streamImageDims || hasImage || !segProbeDone || segmentationsAvailable
+      || !embeddingData?.length) {
+      return null;
+    }
+    let width = 0;
+    let height = 0;
+    embeddingData.forEach((coordinates) => {
+      if (!coordinates) return;
+      width = Math.max(width, coordinates[0]);
+      height = Math.max(height, coordinates[1]);
+    });
+    // a margin so the outermost cells' dots aren't cut off
+    return {
+      imageWidth: Math.ceil(width * CELLS_FRAME_MARGIN),
+      imageHeight: Math.ceil(height * CELLS_FRAME_MARGIN),
+    };
+  }, [streamImageDims, hasImage, segProbeDone, segmentationsAvailable, embeddingData]);
+  const imageDims = streamImageDims ?? cellsImageDims;
+  const ready = !!imageDims;
 
   // no segmentations: centroid dots, drawn into one image so zooming stays fast
   const {
