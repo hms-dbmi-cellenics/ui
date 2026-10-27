@@ -38,7 +38,7 @@ const downloadProcessedMatrix = (experimentId) => async (dispatch, getState) => 
       experimentId, body, getState, dispatch, { timeout },
     );
 
-    downloadFromUrl(writeToFileURL(data), `${experimentId}_processed_matrix.rds`);
+    downloadFromUrl(writeToFileURL(data), `${experimentId}_processed_matrix.zip`);
   } catch (e) {
     handleError(e, endUserMessages.ERROR_DOWNLOADING_OBJ2S);
   }

@@ -103,7 +103,7 @@ describe('DownloadDataButton', () => {
 
     const options = await getMenuItems();
     expect(options).toHaveLength(2);
-    expect(options[0]).toHaveTextContent('Processed Seurat object (.rds)');
+    expect(options[0]).toHaveTextContent('Processed Seurat object (.zip)');
     expect(options[1]).toHaveTextContent('Data Processing settings (.txt)');
     expect(options[0]).toHaveAttribute('aria-disabled', 'false');
     expect(options[1]).toHaveAttribute('aria-disabled', 'false');
@@ -202,7 +202,7 @@ describe('DownloadDataButton', () => {
     expect(fetchWork.mock.calls).toMatchSnapshot();
 
     expect(writeToFileURL).toHaveBeenCalledWith(mockResult);
-    expect(downloadFromUrl).toHaveBeenCalledWith(mockFileUrl, `${experimentId}_processed_matrix.rds`);
+    expect(downloadFromUrl).toHaveBeenCalledWith(mockFileUrl, `${experimentId}_processed_matrix.zip`);
   });
 
   it('Shows an error if there is an error downloading data', async () => {

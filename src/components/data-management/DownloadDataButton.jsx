@@ -97,7 +97,7 @@ const DownloadDataButton = () => {
           placement='left'
         >
           <Space>
-            Processed Seurat object (.rds)
+            Processed Seurat object (.zip)
             {downloadingProcessedSeurat && <ClipLoader size={20} color='#8f0b10' />}
           </Space>
         </Tooltip>
