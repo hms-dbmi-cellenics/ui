@@ -6,6 +6,7 @@ import Header from 'components/Header';
 import PlotsTablesContainer from 'components/plots/PlotsTablesContainer';
 import SingleTileContainer from 'components/SingleTileContainer';
 import { spatialTechs, moleculeTechs } from 'utils/constants';
+import { getSpatialTechnology } from 'utils/data-management/getSpatialFileUrls';
 
 const PlotsTablesHome = (props) => {
   const { experimentId, experimentData } = props;
@@ -14,7 +15,9 @@ const PlotsTablesHome = (props) => {
   const selectedTechnology = (samples[experimentData?.sampleIds?.[0]]?.type || false);
 
   const isSpatial = spatialTechs.includes(selectedTechnology);
-  const hasMolecules = moleculeTechs.includes(selectedTechnology);
+  const hasMolecules = moleculeTechs.includes(
+    getSpatialTechnology(samples[experimentData?.sampleIds?.[0]]),
+  );
 
   return (
     <>

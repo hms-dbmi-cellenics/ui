@@ -16,7 +16,7 @@ import loadGeneList from 'redux/actions/genes/loadGeneList';
 import getHighestDispersionGenes from 'utils/getHighestDispersionGenes';
 import { getCellSets } from 'redux/selectors';
 import { filterCells } from 'utils/plotSpecs/generateSpatialFeatureSpec';
-import { getSampleFileUrls } from 'utils/data-management/downloadSampleFile';
+import { getSpatialFileUrls } from 'utils/data-management/getSpatialFileUrls';
 import loadMoleculeNodes, { loadMoleculeMeta } from 'utils/spatial/loadMoleculeNodes';
 import { resolveGeneColors } from 'utils/spatial/moleculeColors';
 import ZipFileStore from 'components/data-exploration/spatial/ZipFileStore';
@@ -275,17 +275,13 @@ const SpatialMoleculePlot = (props) => {
     if (!sampleIdsForFileUrls?.length) return;
     (async () => {
       try {
-        const results = await Promise.all(
-          // molecules_by_gene is built for every Xenium sample (transcripts.parquet
-          // is a required input).
-          sampleIdsForFileUrls.map((sampleId) => getSampleFileUrls(experimentId, sampleId, 'molecules_by_gene')),
+        // molecules_by_gene is built for every Xenium sample uploaded as count
+        // matrices (transcripts.parquet is a required input), objects may not
+        // have molecules.
+        const results = await getSpatialFileUrls(
+          experimentId, sampleIdsForFileUrls, 'molecules_by_gene', isObj2s, { optional: true },
         );
-        setMoleculeUrls(results.map((sampleUrls, i) => ({
-          url: sampleUrls?.[0]?.url ?? null,
-          sampleId: isObj2s
-            ? (sampleUrls?.[0]?.fileId ?? sampleIdsForFileUrls[i])
-            : sampleIdsForFileUrls[i],
-        })));
+        setMoleculeUrls(results.map(({ url, sampleId }) => ({ url, sampleId })));
       } catch (e) {
         console.error('[SpatialMoleculePlot] molecule URL fetch error:', e);
         setMoleculeUrls([]);
@@ -298,14 +294,8 @@ const SpatialMoleculePlot = (props) => {
     if (!sampleIdsForFileUrls?.length) return;
     (async () => {
       try {
-        const results = (await Promise.all(
-          sampleIdsForFileUrls.map((sampleId) => getSampleFileUrls(experimentId, sampleId, 'segmentations_ome_zarr_zip')),
-        )).flat();
-
-        setSegmentationZarrUrls(results.map(({ url, fileId }, i) => ({
-          url,
-          sampleId: isObj2s ? fileId : sampleIdsForFileUrls[i],
-        })));
+        const results = await getSpatialFileUrls(experimentId, sampleIdsForFileUrls, 'segmentations_ome_zarr_zip', isObj2s);
+        setSegmentationZarrUrls(results.map(({ url, sampleId }) => ({ url, sampleId })));
       } catch (_e) {
         console.info('[SpatialMoleculePlot] segmentations_ome_zarr_zip not available');
         setSegmentationZarrUrls([]); // empty = confirmed unavailable

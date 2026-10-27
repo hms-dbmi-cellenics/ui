@@ -13,7 +13,7 @@ import { loadEmbedding } from 'redux/actions/embedding';
 import { loadProcessingSettings } from 'redux/actions/experimentSettings';
 import { getCellSets } from 'redux/selectors';
 import { generateSpec, generateData, filterCells } from 'utils/plotSpecs/generateSpatialFeatureSpec';
-import { getSampleFileUrls } from 'utils/data-management/downloadSampleFile';
+import { getSpatialFileUrls, getSpatialTechnology } from 'utils/data-management/getSpatialFileUrls';
 import { imagelessTechs } from 'utils/constants';
 import useSpatialStream from './useSpatialStream';
 import usePreventWheelScroll from './usePreventWheelScroll';
@@ -114,7 +114,9 @@ const SpatialFeaturePlot = (props) => {
     (state) => state.backendStatus[experimentId]?.status?.obj2s?.status,
   );
   const isObj2s = !_.isNil(obj2sStatusRaw) && obj2sStatusRaw !== 'NOT_CREATED';
-  const technology = useSelector((state) => state.samples?.[sampleIdsForFileUrls?.[0]]?.type);
+  const technology = useSelector(
+    (state) => getSpatialTechnology(state.samples?.[sampleIdsForFileUrls?.[0]]),
+  );
   const isImageless = imagelessTechs.includes(technology);
 
   const [plotSpec, setPlotSpec] = useState({});
@@ -129,25 +131,24 @@ const SpatialFeaturePlot = (props) => {
 
   // ── Fetch image URLs ────────────────────────────────────────────────────────
   useEffect(() => {
-    // imageless techs (e.g. Xenium) have no tissue image; still register the
-    // sample ids (with null urls) so the selected-sample default and the stream
-    // initialise — image dimensions come from the segmentation pyramid instead.
-    if (isImageless) {
-      setOmeZarrUrls(sampleIdsForFileUrls.map((sampleId) => ({ url: null, sampleId })));
-      return;
-    }
     (async () => {
       try {
-        const results = (await Promise.all(
-          sampleIdsForFileUrls.map((sampleId) => getSampleFileUrls(experimentId, sampleId, 'ome_zarr_zip')),
-        )).flat();
+        // imageless techs (e.g. Xenium) have no tissue image; still register the
+        // sample ids (with null urls) so the selected-sample default and the stream
+        // initialise — image dimensions come from the segmentation pyramid instead.
+        // An obj2s experiment's samples are the sample cell sets with segmentations.
+        if (isImageless) {
+          const sampleIds = isObj2s
+            ? (await getSpatialFileUrls(experimentId, sampleIdsForFileUrls, 'segmentations_ome_zarr_zip', isObj2s))
+              .map(({ sampleId }) => sampleId)
+            : sampleIdsForFileUrls;
 
-        const signedUrls = results.map(({ url, fileId }, i) => ({
-          url,
-          sampleId: isObj2s ? fileId : sampleIdsForFileUrls[i],
-        }));
+          setOmeZarrUrls(sampleIds.map((sampleId) => ({ url: null, sampleId })));
+          return;
+        }
 
-        setOmeZarrUrls(signedUrls);
+        const results = await getSpatialFileUrls(experimentId, sampleIdsForFileUrls, 'ome_zarr_zip', isObj2s);
+        setOmeZarrUrls(results.map(({ url, sampleId }) => ({ url, sampleId })));
       } catch (e) {
         console.error('Error fetching image URLs:', e);
       }
@@ -158,16 +159,8 @@ const SpatialFeaturePlot = (props) => {
   useEffect(() => {
     (async () => {
       try {
-        const results = (await Promise.all(
-          sampleIdsForFileUrls.map((sampleId) => getSampleFileUrls(experimentId, sampleId, 'segmentations_ome_zarr_zip')),
-        )).flat();
-
-        const signedUrls = results.map(({ url, fileId }, i) => ({
-          url,
-          sampleId: isObj2s ? fileId : sampleIdsForFileUrls[i],
-        }));
-
-        setSegmentationZarrUrls(signedUrls);
+        const results = await getSpatialFileUrls(experimentId, sampleIdsForFileUrls, 'segmentations_ome_zarr_zip', isObj2s);
+        setSegmentationZarrUrls(results.map(({ url, sampleId }) => ({ url, sampleId })));
       } catch (_e) {
         console.info('[SpatialFeaturePlot] segmentations_ome_zarr_zip not available — centroid fallback active');
         setSegmentationZarrUrls([]); // empty = confirmed unavailable
