@@ -42,11 +42,47 @@ const isEmbeddingPlotType = (plotType) => {
   return embeddingPlots.includes(plotType);
 };
 
+// Small datasets get larger points so they don't look sparse. Vega symbol size is an
+// area in px²; the standard size (5) is kept from 4k cells upwards.
+const getSmallDatasetMarkerSize = (totalCells) => Math.min(30, Math.round(20000 / totalCells));
+
 /**
- * Gets the initial configuration for an embedding plot, adjusted based on cell count.
- * For embedding plots with >100k cells:
- * - Sets marker.outline to false
- * - Sets marker.size to 1
+ * Gets the cell-count-aware marker for an embedding plot, or null if the
+ * standard marker is already appropriate.
+ * - >100k cells: no outline, size 1
+ * - small datasets: larger points (scaled by cell count)
+ *
+ * @param {Object} standardMarker - The marker from the standard initial config
+ * @param {number} totalCells - Total number of cells
+ * @returns {Object|null}
+ */
+const getCellCountMarker = (standardMarker, totalCells) => {
+  if (!totalCells) return null;
+
+  if (totalCells > 100000) {
+    return { ...standardMarker, outline: false, size: 1 };
+  }
+
+  const size = getSmallDatasetMarkerSize(totalCells);
+  if (size > standardMarker.size) {
+    return { ...standardMarker, size };
+  }
+
+  return null;
+};
+
+/**
+ * Whether the marker has been changed from the standard defaults (by the user,
+ * or by previously applied cell-count defaults).
+ */
+const isMarkerCustomized = (marker, plotType) => {
+  const standardMarker = initialPlotConfigStates[plotType].marker;
+  return marker.outline !== standardMarker.outline || marker.size !== standardMarker.size;
+};
+
+/**
+ * Gets the initial configuration for an embedding plot, adjusted based on cell count
+ * (see getCellCountMarker).
  *
  * @param {string} plotType - The plot type
  * @param {Object} cellSets - The cellSets object from redux (optional)
@@ -55,29 +91,25 @@ const isEmbeddingPlotType = (plotType) => {
 const getEmbeddingInitialConfig = (plotType, cellSets = null) => {
   const baseConfig = { ...initialPlotConfigStates[plotType] };
 
-  // Apply conditional defaults for embedding plots with large datasets
-  if (isEmbeddingPlotType(plotType) && cellSets) {
-    const totalCells = getTotalCellCount(cellSets);
+  if (!isEmbeddingPlotType(plotType) || !cellSets) return baseConfig;
 
-    if (totalCells > 100000) {
-      return {
-        ...baseConfig,
-        marker: {
-          ...baseConfig.marker,
-          outline: false,
-          size: 1,
-        },
-        // Store the conditional defaults info for use in reset logic
-        defaultValues: {
-          ...baseConfig.defaultValues,
-          largeDatasetDefaults: true,
-          cellCount: totalCells,
-        },
-      };
-    }
-  }
+  const totalCells = getTotalCellCount(cellSets);
+  const marker = getCellCountMarker(baseConfig.marker, totalCells);
 
-  return baseConfig;
+  if (!marker) return baseConfig;
+
+  return {
+    ...baseConfig,
+    marker,
+    // Store the conditional defaults info for use in reset logic
+    defaultValues: {
+      ...baseConfig.defaultValues,
+      cellCountDefaults: true,
+      cellCount: totalCells,
+    },
+  };
 };
 
-export { getEmbeddingInitialConfig, getTotalCellCount, isEmbeddingPlotType };
+export {
+  getEmbeddingInitialConfig, getTotalCellCount, isEmbeddingPlotType, isMarkerCustomized,
+};

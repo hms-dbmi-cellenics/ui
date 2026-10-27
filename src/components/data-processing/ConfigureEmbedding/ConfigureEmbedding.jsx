@@ -18,7 +18,6 @@ import {
   loadPlotConfig,
   savePlotConfig,
 } from 'redux/actions/componentConfig';
-import { initialPlotConfigStates } from 'redux/reducers/componentConfig/initialState';
 
 import PlotStyling from 'components/plots/styling/PlotStyling';
 import loadCellMeta from 'redux/actions/cellMeta';
@@ -26,7 +25,7 @@ import { loadCellSets } from 'redux/actions/cellSets';
 import { generateDataProcessingPlotUuid } from 'utils/generateCustomPlotUuid';
 import Loader from 'components/Loader';
 import { getCellSets } from 'redux/selectors';
-import { getEmbeddingInitialConfig } from 'utils/plotConfig/getEmbeddingInitialConfig';
+import { getEmbeddingInitialConfig, isMarkerCustomized } from 'utils/plotConfig/getEmbeddingInitialConfig';
 import CalculationConfig from 'components/data-processing/ConfigureEmbedding/CalculationConfig';
 import PlotLegendAlert, { MAX_LEGEND_ITEMS } from 'components/plots/helpers/PlotLegendAlert';
 import EmptyPlot from 'components/plots/helpers/EmptyPlot';
@@ -41,7 +40,7 @@ const ConfigureEmbedding = (props) => {
   // which plotUuid the current `plot` element was built for, so we don't briefly
   // show the previous colouring's plot while switching (the build effect lags a render)
   const [renderedPlotUuid, setRenderedPlotUuid] = useState(null);
-  // per-plotUuid flag: the large-dataset marker default has been resolved (applied,
+  // per-plotUuid flag: the cell-count marker default has been resolved (applied,
   // or determined unnecessary). Gates rendering so the embedding never first paints
   // with the standard point size/outline and then visibly re-adjusts.
   const [markerSettled, setMarkerSettled] = useState({});
@@ -424,39 +423,29 @@ const ConfigureEmbedding = (props) => {
     if (showAlert) updatePlotWithChanges({ legend: { showAlert, enabled: !showAlert } });
   }, [!selectedConfig, activePlotType, cellSets.accessible]);
 
-  // Apply cell-count-aware marker defaults for large datasets in embedding plots
+  // Apply cell-count-aware marker defaults in embedding plots
   // Only applies once when config is first loaded and hasn't been customized yet
   useEffect(() => {
     if (!selectedConfig || !cellSets.accessible || plotType !== 'embedding' || !currentPlot) return;
 
     const initialConfig = getEmbeddingInitialConfig(currentPlot.plotType, cellSets);
 
-    // Check if we should apply large dataset defaults
-    if (initialConfig.defaultValues?.largeDatasetDefaults) {
-      // Get the standard (non-adjusted) initial config to check if marker was already customized
-      const standardConfig = initialPlotConfigStates[currentPlot.plotType];
-
-      // Only apply if marker config currently matches standard defaults (not yet customized)
-      const isUsingStandardDefaults = (
-        selectedConfig.marker.outline === standardConfig.marker.outline
-        && selectedConfig.marker.size === standardConfig.marker.size
-      );
-
-      if (isUsingStandardDefaults) {
-        dispatch(updatePlotConfig(activePlotUuid, {
-          marker: {
-            ...selectedConfig.marker,
-            outline: false,
-            size: 1,
-          },
-        }));
-        debounceSave(activePlotUuid);
-      }
+    // Only apply if marker config currently matches standard defaults (not yet customized)
+    if (initialConfig.defaultValues?.cellCountDefaults
+      && !isMarkerCustomized(selectedConfig.marker, currentPlot.plotType)) {
+      dispatch(updatePlotConfig(activePlotUuid, {
+        marker: {
+          ...selectedConfig.marker,
+          outline: initialConfig.marker.outline,
+          size: initialConfig.marker.size,
+        },
+      }));
+      debounceSave(activePlotUuid);
     }
   }, [activePlotUuid, currentPlot?.plotType, cellSets?.accessible, !!selectedConfig]);
 
   // Mark a plot's marker defaults "settled" once they no longer need adjusting:
-  // either the dataset isn't large, or the large-dataset marker has already been
+  // either no cell-count default applies, or the cell-count marker has already been
   // applied (config no longer matches the standard defaults). One-time per plot —
   // once settled it stays settled so the user can freely customise the marker.
   useEffect(() => {
@@ -464,17 +453,16 @@ const ConfigureEmbedding = (props) => {
       || !currentPlot.plotType || markerSettled[activePlotUuid]) return;
 
     const initialConfig = getEmbeddingInitialConfig(currentPlot.plotType, cellSets);
-    if (!initialConfig.defaultValues?.largeDatasetDefaults) {
+    if (!initialConfig.defaultValues?.cellCountDefaults) {
       setMarkerSettled((prev) => ({ ...prev, [activePlotUuid]: true }));
       return;
     }
 
-    const standardConfig = initialPlotConfigStates[currentPlot.plotType];
-    const stillStandard = selectedConfig.marker.outline === standardConfig.marker.outline
-      && selectedConfig.marker.size === standardConfig.marker.size;
-    // already at the large-dataset target (covers the case where the standard
+    const stillStandard = !isMarkerCustomized(selectedConfig.marker, currentPlot.plotType);
+    // already at the cell-count target (covers the case where the standard
     // defaults happen to equal it, so we don't wait forever)
-    const isAdjusted = selectedConfig.marker.outline === false && selectedConfig.marker.size === 1;
+    const isAdjusted = selectedConfig.marker.outline === initialConfig.marker.outline
+      && selectedConfig.marker.size === initialConfig.marker.size;
     // still standard (and not yet adjusted) → the adjustment effect above will
     // dispatch the change; this effect re-runs when the marker updates and settles
     if (!stillStandard || isAdjusted) {
@@ -634,7 +622,7 @@ const ConfigureEmbedding = (props) => {
     }
 
     // only show the plot once it's been (re)built for the current colouring/uuid AND
-    // its large-dataset marker defaults have settled — otherwise show a loader rather
+    // its cell-count marker defaults have settled — otherwise show a loader rather
     // than the previous colouring's stale plot or a flash of the un-adjusted marker
     if (plot && renderedPlotUuid === activePlotUuid
       && (plotType !== 'embedding' || markerSettled[activePlotUuid])) {
