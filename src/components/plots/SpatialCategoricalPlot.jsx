@@ -16,6 +16,7 @@ import { getSpatialFileUrls, getSpatialTechnology } from 'utils/data-management/
 import { imagelessTechs } from 'utils/constants';
 import { parseHexColor } from './loadSegmentationOverlay';
 import useSpatialStream from './useSpatialStream';
+import useCentroidOverlay from './useCentroidOverlay';
 import usePreventWheelScroll from './usePreventWheelScroll';
 import PlatformError from '../PlatformError';
 import Loader from '../Loader';
@@ -129,10 +130,9 @@ const SpatialCategoricalPlot = (props) => {
       .join('|')].join('::');
   }, [selectedSample, config?.selectedCellSet, cellSets.hierarchy, cellSets.properties]);
 
-  // ── Segmentation overlay colour map (per-cell) ──────────────────────────────
-  const segmentationsAvailableGuess = segmentationZarrUrls?.length > 0;
+  // ── Overlay colour map (per-cell, segmentations or centroid dots) ──────────
   const cellColorMap = useMemo(() => {
-    if (!segmentationsAvailableGuess || !cellSets.accessible
+    if (!cellSets.accessible
       || !config?.selectedCellSet || !selectedSample) {
       return null;
     }
@@ -145,7 +145,7 @@ const SpatialCategoricalPlot = (props) => {
     );
     // colorSignature already captures sample/cell-set/colours
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [colorSignature, segmentationsAvailableGuess, cellSets.accessible]);
+  }, [colorSignature, cellSets.accessible]);
 
   // ── Viewport streaming (base + detail tiles for tissue & segmentation) ──────
   const segEntry = useMemo(
@@ -180,6 +180,16 @@ const SpatialCategoricalPlot = (props) => {
     colorKey: colorSignature,
     opacity: (config?.marker?.opacity ?? 10) / 10,
     outline: config?.marker?.outline ?? false,
+  });
+
+  // no segmentations: centroid dots, drawn into one image so zooming stays fast
+  const centroidOverlayData = useCentroidOverlay({
+    enabled: segProbeDone && !segmentationsAvailable,
+    embeddingData,
+    colorMap: cellColorMap,
+    imageDims,
+    opacity: (config?.marker?.opacity ?? 10) / 10,
+    markerSize: config?.marker?.size,
   });
 
   // mouse zoom/pan → persist axes range (debounced) AND stream a sharper tile.
@@ -239,11 +249,13 @@ const SpatialCategoricalPlot = (props) => {
   const specSignature = useMemo(() => {
     if (!config) return '';
     const c = { ...config, axesRanges: undefined };
-    if (segmentationsAvailable && c.marker) {
-      c.marker = { ...c.marker, opacity: undefined, outline: undefined };
+    if (c.marker) {
+      c.marker = {
+        ...c.marker, opacity: undefined, outline: undefined, size: undefined,
+      };
     }
     return JSON.stringify(c);
-  }, [config, segmentationsAvailable]);
+  }, [config]);
   useEffect(() => {
     if (!ready || !imageDims || !segProbeDone) {
       setPlotSpec({});
@@ -261,7 +273,8 @@ const SpatialCategoricalPlot = (props) => {
         imageDims,
         plotData,
         cellSetLegendsData,
-        segmentationsAvailable,
+        // segmentations or centroid dots, both drawn as an overlay image
+        true,
       ));
     }
   }, [
@@ -272,8 +285,8 @@ const SpatialCategoricalPlot = (props) => {
   // tissue + overlay tiles streamed to Vega in place (no view rebuild) via `data`
   const vegaData = useMemo(() => ({
     tissueImageData,
-    segOverlayData,
-  }), [tissueImageData, segOverlayData]);
+    segOverlayData: centroidOverlayData ?? segOverlayData,
+  }), [tissueImageData, segOverlayData, centroidOverlayData]);
 
   // ── Render ──────────────────────────────────────────────────────────────────
   const render = () => {

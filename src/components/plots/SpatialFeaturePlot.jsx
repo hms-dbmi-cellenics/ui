@@ -16,6 +16,7 @@ import { generateSpec, generateData, filterCells } from 'utils/plotSpecs/generat
 import { getSpatialFileUrls, getSpatialTechnology } from 'utils/data-management/getSpatialFileUrls';
 import { imagelessTechs } from 'utils/constants';
 import useSpatialStream from './useSpatialStream';
+import useCentroidOverlay from './useCentroidOverlay';
 import usePreventWheelScroll from './usePreventWheelScroll';
 import PlatformError from '../PlatformError';
 import Loader from '../Loader';
@@ -208,10 +209,9 @@ const SpatialFeaturePlot = (props) => {
     plotData,
   ]);
 
-  // ── Segmentation overlay colour map (per-cell), recomputed on colour change ──
-  const segmentationsAvailableGuess = segmentationZarrUrls?.length > 0;
+  // ── Overlay colour map (per-cell, segmentations or centroid dots) ──────────
   const cellColorMap = useMemo(() => {
-    if (!segmentationsAvailableGuess || !config || !plotData?.length
+    if (!config || !plotData?.length
       || !cellSets.accessible || !embeddingData?.length || !selectedSample) {
       return null;
     }
@@ -220,7 +220,7 @@ const SpatialFeaturePlot = (props) => {
     return buildFeatureCellColorMap(filteredCellIds, activeData, embeddingData, config);
     // colorSignature already captures gene/truncation/colour/sample/length
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [colorSignature, segmentationsAvailableGuess, cellSets.accessible, embeddingData]);
+  }, [colorSignature, cellSets.accessible, embeddingData]);
 
   // ── Viewport streaming (base + detail tiles for tissue & segmentation) ──────
   const segEntry = useMemo(
@@ -256,6 +256,16 @@ const SpatialFeaturePlot = (props) => {
     colorKey: colorSignature,
     opacity: (config?.marker?.opacity ?? 10) / 10,
     outline: config?.marker?.outline ?? false,
+  });
+
+  // no segmentations: centroid dots, drawn into one image so zooming stays fast
+  const centroidOverlayData = useCentroidOverlay({
+    enabled: segProbeDone && !segmentationsAvailable,
+    embeddingData,
+    colorMap: cellColorMap,
+    imageDims,
+    opacity: (config?.marker?.opacity ?? 10) / 10,
+    markerSize: config?.marker?.size,
   });
 
   // mouse zoom/pan → persist the resulting axes range into the plot config
@@ -317,18 +327,20 @@ const SpatialFeaturePlot = (props) => {
   // Tiles + overlay are NOT part of the spec — they stream in via the `data` prop —
   // so zoom/recolour update the view in place without rebuilding it.
 
-  // Spec signature EXCLUDING axesRanges and (when segmentation is shown) the
-  // overlay-only opacity/outline — so persisting mouse zoom into axesRanges and
-  // tweaking opacity/outline never regenerate the spec and thus never rebuild the
-  // view. Genuine changes (gene, gradient, dimensions, sample, …) still respec.
+  // Spec signature EXCLUDING axesRanges and the overlay-only marker styling — so
+  // persisting mouse zoom into axesRanges and tweaking opacity/outline/size never
+  // regenerate the spec and thus never rebuild the view. Genuine changes (gene,
+  // gradient, dimensions, sample, …) still respec.
   const specSignature = useMemo(() => {
     if (!config) return '';
     const c = { ...config, axesRanges: undefined };
-    if (segmentationsAvailable && c.marker) {
-      c.marker = { ...c.marker, opacity: undefined, outline: undefined };
+    if (c.marker) {
+      c.marker = {
+        ...c.marker, opacity: undefined, outline: undefined, size: undefined,
+      };
     }
     return JSON.stringify(c);
-  }, [config, segmentationsAvailable]);
+  }, [config]);
   useEffect(() => {
     // Image dims not ready / segmentation availability not yet known → loader
     if (!ready || !imageDims || !segProbeDone) {
@@ -349,7 +361,8 @@ const SpatialFeaturePlot = (props) => {
       const specData = generateData(cellSets, selectedSample, activeData, embeddingData);
 
       setPlotSpec(generateSpec(
-        config, EMBEDDING_TYPE, imageDims, specData, segmentationsAvailable,
+        // segmentations or centroid dots, both drawn as an overlay image
+        config, EMBEDDING_TYPE, imageDims, specData, true,
       ));
     }
   }, [
@@ -360,8 +373,8 @@ const SpatialFeaturePlot = (props) => {
   // tissue + overlay tiles streamed to Vega in place (no view rebuild) via `data`
   const vegaData = useMemo(() => ({
     tissueImageData,
-    segOverlayData,
-  }), [tissueImageData, segOverlayData]);
+    segOverlayData: centroidOverlayData ?? segOverlayData,
+  }), [tissueImageData, segOverlayData, centroidOverlayData]);
 
   // ── Render ──────────────────────────────────────────────────────────────────
   const render = () => {
