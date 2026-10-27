@@ -6,7 +6,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import * as vega from 'vega';
 import PropTypes from 'prop-types';
 import { OrthographicView, OrthographicViewport, COORDINATE_SYSTEM } from '@deck.gl/core';
-import { PolygonLayer, ScatterplotLayer } from '@deck.gl/layers';
+import { ScatterplotLayer } from '@deck.gl/layers';
 import { EditableGeoJsonLayer } from '@nebula.gl/layers';
 import { DrawPolygonByDraggingMode } from '@nebula.gl/edit-modes';
 import { MultiscaleImageLayer, getDefaultInitialViewState } from '@hms-dbmi/viv';
@@ -39,6 +39,7 @@ import { root as zarrRoot } from 'zarrita';
 import { offsetCentroids } from 'utils/plotUtils';
 import getContainingCellSetsProperties from 'utils/cellSets/getContainingCellSetsProperties';
 import ZipFileStore from 'components/data-exploration/spatial/ZipFileStore';
+import getCentroidRadius from 'components/data-exploration/spatial/getCentroidRadius';
 import parseColor from 'components/data-exploration/parseColor';
 import loadMoleculeNodes, {
   loadMoleculeMeta,
@@ -62,7 +63,8 @@ const EMBEDDING_TYPE = 'images';
 
 const LASSO_MODE_CONFIG = { dragToDraw: true };
 const EMPTY_DATA = { type: 'FeatureCollection', features: [] };
-const DIAMOND_RADIUS = 5;
+// fallback centroid radius, used only when the cell spacing can't be estimated
+const CENTROID_RADIUS = 5;
 const POLYGON_HIGHLIGHT_COLOR = [51, 51, 51, 150];
 const DEFAULT_COLOR = [128, 128, 128, 255];
 // cell outlines while the molecule overlay is active.
@@ -178,7 +180,7 @@ const SpatialViewer = (props) => {
   const [loader, setLoader] = useState(null);
   const [segmentationsLoader, setSegmentationsLoader] = useState(null);
   // set once we know there's no segmentation bitmask (missing or failed to
-  // load), so the diamond fallback isn't drawn while it is still loading
+  // load), so the centroid fallback isn't drawn while it is still loading
   const [segmentationsUnavailable, setSegmentationsUnavailable] = useState(false);
   const [offsetData, setOffsetData] = useState();
   const [perImageShape, setPerImageShape] = useState();
@@ -329,7 +331,7 @@ const SpatialViewer = (props) => {
           // No tissue image for this tech (e.g. Xenium); the layout is driven by
           // the micron coordinates, so we only need the sample ids here. An obj2s
           // experiment's samples are its sample cell sets (with or without
-          // segmentations: centroids-only objects fall back to centroid diamonds).
+          // segmentations: centroids-only objects fall back to centroid circles).
           sampleIds = isObj2s
             ? sampleCellSetIdsKey.split(',')
             : sampleIdsForFileUrls;
@@ -387,7 +389,7 @@ const SpatialViewer = (props) => {
   // onto a micron-sized canvas (gem2s sizes it to the polygon coordinate
   // extent), so for imageless techs (e.g. Xenium) the bitmask shares the same
   // micron frame as the centroids — load and render it just like Visium HD
-  // rather than falling back to approximate diamonds.
+  // rather than falling back to approximate centroid circles.
   useEffect(() => {
     if (!segmentationRoots.length) return;
     // Fill empty grid cells with 0 (background) so the label bitmask treats
@@ -556,18 +558,23 @@ const SpatialViewer = (props) => {
     [cellColors, offsetData, hiddenCellIds, cellsInAnyCluster],
   );
 
-  // ── Diamond fallback ──────────────────────────────────────────────────────
+  // ── Centroid fallback ─────────────────────────────────────────────────────
+  // circles at the cell centroids when there are no segmentations, sized from
+  // the cell spacing so neighbouring circles don't overlap
+  const centroidRadius = useMemo(
+    () => (segmentationsUnavailable && offsetData
+      ? getCentroidRadius(offsetData, CENTROID_RADIUS)
+      : CENTROID_RADIUS),
+    [segmentationsUnavailable, offsetData],
+  );
+
   const polygonShapeData = useMemo(() => {
     if (!segmentationsUnavailable || !offsetData) return null;
     const shapes = [];
     offsetData.forEach(([x, y], key) => {
       if (hiddenCellIds.has(key)) return;
       if (!cellsInAnyCluster.has(key)) return;
-      const r = DIAMOND_RADIUS;
-      shapes.push({
-        polygon: new Float32Array([x, y + r, x + r, y, x, y - r, x - r, y, x, y + r]),
-        cellId: key.toString(),
-      });
+      shapes.push({ position: [x, y], cellId: key.toString() });
     });
     return shapes.length > 0 ? shapes : null;
   }, [offsetData, hiddenCellIds, cellsInAnyCluster, segmentationsUnavailable]);
@@ -686,7 +693,7 @@ const SpatialViewer = (props) => {
       return;
     }
 
-    // Fallback: diamond polygon layer
+    // Fallback: centroid circles layer
     const layerId = info.layer?.id;
     if (layerId === 'segmentations-polygon' && info.object) {
       hoveredByPointerRef.current = info.object.cellId;
@@ -932,9 +939,9 @@ const SpatialViewer = (props) => {
   const cellAndSelectionLayers = useMemo(() => {
     const result = [];
 
-    // Diamond fallback — only when no bitmask OME-Zarr is available
+    // Centroid fallback — only when no bitmask OME-Zarr is available
     if (polygonShapeData) {
-      result.push(new PolygonLayer({
+      result.push(new ScatterplotLayer({
         id: 'segmentations-polygon',
         data: polygonShapeData,
         visible: cellLayerVisible,
@@ -945,13 +952,13 @@ const SpatialViewer = (props) => {
         filled: true,
         stroked: false,
         opacity: 0.8,
-        _normalize: false,
-        positionFormat: 'XY',
-        getPolygon: (d) => d.polygon,
+        // radius in coordinate units, so circles scale with zoom like the tissue
+        radiusUnits: 'common',
+        getPosition: (d) => d.position,
+        getRadius: centroidRadius,
         getFillColor: (d) => polygonColorMap?.get(d.cellId) ?? DEFAULT_COLOR,
         updateTriggers: {
           getFillColor: [polygonColorMap],
-          getPolygon: [polygonShapeData],
         },
       }));
     }
@@ -981,7 +988,7 @@ const SpatialViewer = (props) => {
 
     return result;
   }, [
-    segmentationsLoader, polygonShapeData, polygonColorMap,
+    segmentationsLoader, polygonShapeData, polygonColorMap, centroidRadius,
     cellLayerVisible, activeTool, cellsQuadTree, handleEdit,
   ]);
 
