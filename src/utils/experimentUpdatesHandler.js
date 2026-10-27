@@ -125,6 +125,9 @@ const onObj2sUpdate = (update, dispatch, experimentId) => {
   // If the pipeline finished we have a new clustering, so fetch it
   if (update.status.obj2s.status === 'SUCCEEDED') {
     dispatch(loadCellSets(experimentId, true));
+    // and the spatial technology it detected (e.g. xenium) is saved on the sample,
+    // which decides which spatial files there are (e.g. no tissue image for xenium)
+    dispatch(loadSamples(experimentId));
   }
 };
 

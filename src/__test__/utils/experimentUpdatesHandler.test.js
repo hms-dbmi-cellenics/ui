@@ -5,6 +5,7 @@ import pushNotificationMessage from 'utils/pushNotificationMessage';
 import { updateCellSetsClustering, loadCellSets } from 'redux/actions/cellSets';
 import { updateProcessingSettingsFromQC, loadedProcessingConfig, updatePipelineVersion } from 'redux/actions/experimentSettings';
 import { updateBackendStatus } from 'redux/actions/backendStatus';
+import { loadSamples } from 'redux/actions/samples';
 import { updatePlotData, replaceLoadedConfigs } from 'redux/actions/componentConfig';
 import endUserMessages from 'utils/endUserMessages';
 import clearSpatialCaches from 'utils/spatial/clearSpatialCaches';
@@ -18,6 +19,7 @@ jest.mock('redux/actions/experimentSettings', () => ({
 jest.mock('redux/actions/backendStatus/updateBackendStatus');
 jest.mock('redux/actions/componentConfig/updatePlotData');
 jest.mock('redux/actions/cellSets/loadCellSets');
+jest.mock('redux/actions/samples', () => ({ loadSamples: jest.fn() }));
 jest.mock('redux/actions/componentConfig/replaceLoadedConfigs');
 
 jest.mock('utils/pushNotificationMessage');
@@ -160,7 +162,7 @@ describe('ExperimentUpdatesHandler', () => {
     expect(mockDispatch).toHaveBeenCalledTimes(1);
   });
 
-  it('Loads cell sets if Obj2s pipeline completes ', () => {
+  it('Loads cell sets and samples if Obj2s pipeline completes ', () => {
     const mockUpdate = {
       ...mockObj2sUpdate,
       status: {
@@ -182,7 +184,10 @@ describe('ExperimentUpdatesHandler', () => {
     const loadCellSetsParams = loadCellSets.mock.calls[0];
     expect(loadCellSetsParams).toMatchSnapshot();
 
-    expect(mockDispatch).toHaveBeenCalledTimes(2);
+    // Dispatch 3 - load samples, for the spatial technology obj2s saved on them
+    expect(loadSamples).toHaveBeenCalledWith(fake.EXPERIMENT_ID);
+
+    expect(mockDispatch).toHaveBeenCalledTimes(3);
     expect(pushNotificationMessage).not.toHaveBeenCalled();
   });
 
