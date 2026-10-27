@@ -18,6 +18,7 @@ import { getBackendStatus } from 'redux/selectors';
 import { loadExperiments, setActiveExperiment } from 'redux/actions/experiments';
 
 import { updateExperimentInfo } from 'redux/actions/experimentSettings';
+import { SAMPLES_LOADED } from 'redux/actionTypes/samples';
 
 import mockAPI, {
   generateDefaultMockAPIResponses,
@@ -240,6 +241,39 @@ describe('ContentWrapper', () => {
     expect(screen.getByText('Data Exploration').closest('li')).toHaveAttribute('aria-disabled', 'false');
 
     // Plots and Tables link is not disabled
+    expect(screen.getByText('Plots and Tables').closest('li')).toHaveAttribute('aria-disabled', 'false');
+  });
+
+  it('Data exploration and plots are enabled in data management for a processed obj2s project', async () => {
+    // only the obj2s status says the project is processed (gem2s never ran)
+    calculateGem2sRerunStatus.mockImplementation(({ status }) => ({
+      rerun: status !== 'SUCCEEDED', reasons: [], complete: status === 'SUCCEEDED',
+    }));
+
+    // a stable object, as a new one per render would re-trigger the rerun status effect
+    const mockBackendStatus = {
+      loading: false,
+      error: false,
+      status: {
+        pipeline: { status: 'NOT_CREATED' },
+        gem2s: { status: 'NOT_CREATED', shouldRerun: false },
+        obj2s: { status: 'SUCCEEDED', shouldRerun: false },
+      },
+    };
+    getBackendStatus.mockImplementation(() => () => mockBackendStatus);
+
+    // the technology comes from the selected experiment's samples, as data
+    // management has no experiment in the route (so no experimentData)
+    store.dispatch({
+      type: SAMPLES_LOADED,
+      payload: { samples: { [sampleIds[0]]: { uuid: sampleIds[0], type: 'seurat_spatial_object' } } },
+    });
+
+    await renderContentWrapper(undefined, {});
+
+    // only data processing is blocked for a processed obj2s project
+    expect(screen.getByText('Data Processing').closest('li')).toHaveAttribute('aria-disabled', 'true');
+    expect(screen.getByText('Data Exploration').closest('li')).toHaveAttribute('aria-disabled', 'false');
     expect(screen.getByText('Plots and Tables').closest('li')).toHaveAttribute('aria-disabled', 'false');
   });
 
