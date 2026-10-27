@@ -92,7 +92,7 @@ const Components = [
 describe.each(Components)('%s — imageless technology (e.g. Xenium)', (_name, Component) => {
   let onSampleDefault;
 
-  const renderPlot = async (technology) => {
+  const renderPlot = async (technology, plotConfig = config) => {
     onSampleDefault = jest.fn();
     const store = mockStore(buildState(technology));
     await act(async () => {
@@ -100,7 +100,7 @@ describe.each(Components)('%s — imageless technology (e.g. Xenium)', (_name, C
         <Provider store={store}>
           <Component
             experimentId={experimentId}
-            config={config}
+            config={plotConfig}
             onSampleDefault={onSampleDefault}
           />
         </Provider>,
@@ -131,6 +131,18 @@ describe.each(Components)('%s — imageless technology (e.g. Xenium)', (_name, C
     await renderPlot('xenium');
 
     expect(onSampleDefault).toHaveBeenCalledWith(sampleId);
+  });
+
+  it('replaces a saved sample that no longer exists (e.g. after an obj2s rerun)', async () => {
+    await renderPlot('visium_hd', { ...config, selectedSample: 'sample-from-previous-run' });
+
+    expect(onSampleDefault).toHaveBeenCalledWith(sampleId);
+  });
+
+  it('keeps a saved sample that still exists', async () => {
+    await renderPlot('visium_hd', { ...config, selectedSample: sampleId });
+
+    expect(onSampleDefault).not.toHaveBeenCalled();
   });
 
   it('does fetch the tissue image for a non-imageless spatial tech (visium_hd)', async () => {

@@ -306,7 +306,8 @@ const SpatialMoleculePlot = (props) => {
   // ── Default selected sample ─────────────────────────────────────────────────
   useEffect(() => {
     if (!moleculeUrls || !config) return;
-    if (config.selectedSample) {
+    // a saved sample can be gone: rerunning obj2s gives its samples new ids
+    if (moleculeUrls.some(({ sampleId }) => sampleId === config.selectedSample)) {
       setSelectedSample(config.selectedSample);
     } else {
       const def = moleculeUrls[0]?.sampleId;

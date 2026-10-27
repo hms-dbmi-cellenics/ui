@@ -169,12 +169,13 @@ const SpatialFeaturePlot = (props) => {
   }, [sampleIdsForFileUrls, experimentId, isObj2s]);
 
   // ── Default selected sample ─────────────────────────────────────────────────
-  // When the config has no sample yet, default to the first one AND persist it back
+  // When the config has no (existing) sample, default to the first one AND persist it back
   // to the config, so the "Selected sample" dropdown reflects what's actually shown
   // (its own fallback uses a different ordering and would otherwise mismatch).
   useEffect(() => {
     if (!omeZarrUrls || !config) return;
-    if (config.selectedSample) {
+    // a saved sample can be gone: rerunning obj2s gives its samples new ids
+    if (omeZarrUrls.some(({ sampleId }) => sampleId === config.selectedSample)) {
       setSelectedSample(config.selectedSample);
     } else {
       const def = omeZarrUrls[0]?.sampleId;
