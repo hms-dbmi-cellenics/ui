@@ -183,13 +183,18 @@ const SpatialCategoricalPlot = (props) => {
   });
 
   // no segmentations: centroid dots, drawn into one image so zooming stays fast
-  const centroidOverlayData = useCentroidOverlay({
+  const {
+    overlayData: centroidOverlayData,
+    onViewportChange: onCentroidViewportChange,
+  } = useCentroidOverlay({
     enabled: segProbeDone && !segmentationsAvailable,
     embeddingData,
     colorMap: cellColorMap,
     imageDims,
     opacity: (config?.marker?.opacity ?? 10) / 10,
     markerSize: config?.marker?.size,
+    plotWidth: config?.dimensions?.width,
+    plotHeight: config?.dimensions?.height,
   });
 
   // mouse zoom/pan → persist axes range (debounced) AND stream a sharper tile.
@@ -200,6 +205,7 @@ const SpatialCategoricalPlot = (props) => {
     if (config?.miniPlot) return; // mini previews never zoom/stream — always full extent
     const [xdom, ydom] = value;
     onViewportChange(xdom, ydom);
+    onCentroidViewportChange(xdom, ydom);
     persistZoom({
       xAxisAuto: false,
       xMin: xdom[0],
@@ -223,12 +229,14 @@ const SpatialCategoricalPlot = (props) => {
     if (ar && ar.xAxisAuto === false) {
       view.signal('initXdom', [ar.xMin, ar.xMax]).signal('initYdom', [ar.yMin, ar.yMax]).runAsync();
       onViewportChange([ar.xMin, ar.xMax], [ar.yMin, ar.yMax]);
+      onCentroidViewportChange([ar.xMin, ar.xMax], [ar.yMin, ar.yMax]);
     } else {
       // No persisted zoom (e.g. after Reset Plot): the rebuilt view is at full extent
       // (its initXdom/initYdom signals). Tell the streamer so it re-streams the whole
       // slide — otherwise it keeps the pre-reset zoomed-in tiles and only that region
       // shows.
       onViewportChange(view.signal('initXdom'), view.signal('initYdom'));
+      onCentroidViewportChange(view.signal('initXdom'), view.signal('initYdom'));
     }
   }, [onViewportChange, isMiniPlot]);
 

@@ -1,6 +1,8 @@
-import { renderHook } from '@testing-library/react';
+import { act, renderHook } from '@testing-library/react';
 
 import useCentroidOverlay from 'components/plots/useCentroidOverlay';
+
+jest.useFakeTimers();
 
 const ctx = {
   clearRect: jest.fn(),
@@ -19,9 +21,19 @@ const embeddingData = Array.from(
 const colorMap = new Map(embeddingData.map((_, i) => [i, i < 50 ? [255, 0, 0] : [0, 0, 255]]));
 const imageDims = { imageWidth: 100, imageHeight: 100 };
 
-const render = (params) => renderHook(() => useCentroidOverlay({
-  enabled: true, embeddingData, colorMap, imageDims, opacity: 1, markerSize: 20, ...params,
-})).result.current;
+const renderOverlay = (params) => renderHook(() => useCentroidOverlay({
+  enabled: true,
+  embeddingData,
+  colorMap,
+  imageDims,
+  opacity: 1,
+  markerSize: 20,
+  plotWidth: 500,
+  plotHeight: 500,
+  ...params,
+}));
+
+const render = (params) => renderOverlay(params).result.current.overlayData;
 
 describe('useCentroidOverlay', () => {
   beforeEach(() => jest.clearAllMocks());
@@ -63,5 +75,49 @@ describe('useCentroidOverlay', () => {
   it('draws nothing when segmentations are shown instead', () => {
     expect(render({ enabled: false })).toBeNull();
     expect(ctx.fill).not.toHaveBeenCalled();
+  });
+
+  describe('zoomed in', () => {
+    const zoomTo = (result, xdom, ydom) => {
+      act(() => result.current.onViewportChange(xdom, ydom));
+    };
+
+    it('draws the view sharper once zooming pauses, shown alone', () => {
+      const { result } = renderOverlay();
+
+      zoomTo(result, [0, 20], [80, 100]);
+      // while zooming, only the whole slide image
+      expect(result.current.overlayData).toHaveLength(1);
+
+      act(() => jest.runAllTimers());
+
+      const rows = result.current.overlayData;
+      expect(rows).toHaveLength(1);
+      // the view plus a quarter of it on each side, within the cells
+      expect(rows[0]).toMatchObject({
+        x1: -5, x2: 25, y1: 75, y2: 105,
+      });
+    });
+
+    it('keeps the whole slide image under the sharp view while zooming again', () => {
+      const { result } = renderOverlay();
+      zoomTo(result, [0, 20], [80, 100]);
+      act(() => jest.runAllTimers());
+
+      zoomTo(result, [0, 40], [60, 100]);
+
+      expect(result.current.overlayData).toHaveLength(2);
+    });
+
+    it('draws no detail image when the whole slide image is already as sharp', () => {
+      // 1 screen pixel per unit, less than the whole slide image's 1.6
+      const { result } = renderOverlay({ plotWidth: 100, plotHeight: 100 });
+      const [baseRow] = result.current.overlayData;
+
+      zoomTo(result, [-5, 95], [5, 105]);
+      act(() => jest.runAllTimers());
+
+      expect(result.current.overlayData).toEqual([baseRow]);
+    });
   });
 });
