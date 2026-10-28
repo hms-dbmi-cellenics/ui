@@ -3,8 +3,17 @@
 import { getAllCells, getSampleCells } from 'utils/cellSets';
 import _ from 'lodash';
 import spatialZoomSignals from 'utils/plotSpecs/spatialZoomSignals';
+import spatialCentroidSize from 'utils/plotSpecs/spatialCentroidSize';
 
-const paddingSize = 5;
+// legend layout, in pixels
+const LEGEND_OFFSET = 40;
+const LEGEND_SYMBOL_DIAMETER = 10;
+const LEGEND_LABEL_OFFSET = 4;
+const LEGEND_ROW_PADDING = 4;
+const LEGEND_COLUMN_PADDING = 10;
+const LEGEND_TITLE_PADDING = 8;
+// average character width relative to the font size
+const CHARACTER_WIDTH_PER_FONT_SIZE = 0.6;
 
 /**
  * @param {object}      config
@@ -54,36 +63,44 @@ const generateSpec = (
   const plotHeight = config.dimensions.height;
 
   let legend = [];
+  // room the legend takes beside the plot, reserved in the fixed padding below
+  let legendWidth = 0;
+  let legendHeight = 0;
 
   if (config.legend.enabled) {
-    const positionIsRight = config.legend.position === 'right';
-    const colorSymbolSize = 30;
-    const characterSizeHorizontal = 5.5;
-    const characterSizeVertical = 11;
-    const xTickSize = 140;
+    const isVertical = ['left', 'right'].includes(config.legend.position);
+    const title = config?.legend.title === '' ? null : (config?.legend.title || 'Cluster Name');
+    const { labelFontSize, titleFontSize } = config.legend;
 
-    const maxLegendItemsPerCol = Math.floor(
-      (config.dimensions.height - xTickSize - (2 * paddingSize)) / characterSizeVertical,
-    );
-    const legendSize = colorSymbolSize + _.max(
-      cellSetLegendsData.map((legendData) => legendData.name.length * characterSizeHorizontal),
-    );
-    const legendColumns = positionIsRight
-      ? Math.ceil(cellSetLegendsData.length / maxLegendItemsPerCol)
-      : Math.floor(config.dimensions.width / legendSize);
-    const labelLimit = positionIsRight ? 0 : legendSize;
+    // estimated from the font sizes, as the legend can't be measured before render
+    const rowHeight = Math.max(LEGEND_SYMBOL_DIAMETER, labelFontSize) + LEGEND_ROW_PADDING;
+    const titleHeight = title ? titleFontSize + LEGEND_TITLE_PADDING : 0;
+    const longestLabel = _.max(cellSetLegendsData.map(({ name }) => name.length)) ?? 0;
+    const columnWidth = LEGEND_SYMBOL_DIAMETER + LEGEND_LABEL_OFFSET
+      + longestLabel * labelFontSize * CHARACTER_WIDTH_PER_FONT_SIZE + LEGEND_COLUMN_PADDING;
+
+    // beside the plot: as many rows as fit its height. Above or below: as many
+    // columns as fit its width
+    const legendColumns = isVertical
+      ? Math.ceil(cellSetLegendsData.length
+        / Math.max(1, Math.floor((plotHeight - titleHeight) / rowHeight)))
+      : Math.max(1, Math.floor(plotWidth / columnWidth));
+    const legendRows = Math.ceil(cellSetLegendsData.length / legendColumns);
+
+    legendWidth = LEGEND_OFFSET + legendColumns * columnWidth;
+    legendHeight = LEGEND_OFFSET + titleHeight + legendRows * rowHeight;
 
     legend = [{
       fill: 'cellSetLabelColors',
-      title: config?.legend.title === '' ? null : (config?.legend.title || 'Cluster Name'),
+      title,
       titleColor: config?.colour.masterColour,
       titleFontSize: config?.legend.titleFontSize,
       labelFontSize: config?.legend.labelFontSize,
       type: 'symbol',
       orient: config?.legend.position,
-      offset: 40,
+      offset: LEGEND_OFFSET,
       symbolType: 'circle',
-      symbolSize: 100,
+      symbolSize: LEGEND_SYMBOL_DIAMETER ** 2,
       encode: {
         labels: {
           update: {
@@ -97,7 +114,12 @@ const generateSpec = (
       titleFont: config?.fontStyle.font,
       symbolLimit: 0,
       columns: legendColumns,
-      labelLimit,
+      rowPadding: LEGEND_ROW_PADDING,
+      columnPadding: LEGEND_COLUMN_PADDING,
+      labelOffset: LEGEND_LABEL_OFFSET,
+      titlePadding: LEGEND_TITLE_PADDING,
+      // the reserved room fits the longest label
+      labelLimit: 0,
     }];
   }
 
@@ -158,7 +180,7 @@ const generateSpec = (
         update: {
           x: { scale: 'x', field: 'x' },
           y: { scale: 'y', field: 'flipped_y' },
-          size: [{ value: config?.marker.size }],
+          ...spatialCentroidSize(plotData, config?.marker.size),
           stroke: config?.marker.outline
             ? { scale: 'cellSetMarkColors', field: 'cellSetKey' }
             : null,
@@ -283,11 +305,11 @@ const generateSpec = (
   // Here we reserve constant room for the axes/title/legend instead.
   const legendPos = config.legend.enabled ? config.legend.position : null;
   const padding = config.miniPlot ? 0 : {
-    left: (config.axes.yAxisLabels ? 54 : 8) + (legendPos === 'left' ? 150 : 0),
-    right: 8 + (legendPos && !['left', 'top', 'bottom'].includes(legendPos) ? 150 : 0),
-    top: (config.title?.text ? 28 : 8) + (legendPos === 'top' ? 56 : 0),
+    left: (config.axes.yAxisLabels ? 54 : 8) + (legendPos === 'left' ? legendWidth : 0),
+    right: 8 + (legendPos && !['left', 'top', 'bottom'].includes(legendPos) ? legendWidth : 0),
+    top: (config.title?.text ? 28 : 8) + (legendPos === 'top' ? legendHeight : 0),
     bottom: (config.axes.xAxisLabels ? (config.axes.xAxisRotateLabels ? 58 : 34) : 8)
-      + (legendPos === 'bottom' ? 64 : 0),
+      + (legendPos === 'bottom' ? legendHeight : 0),
   };
 
   return {

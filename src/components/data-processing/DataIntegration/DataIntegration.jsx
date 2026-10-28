@@ -18,7 +18,6 @@ import {
   savePlotConfig,
 } from 'redux/actions/componentConfig';
 import { loadCellSets } from 'redux/actions/cellSets';
-import { initialPlotConfigStates } from 'redux/reducers/componentConfig/initialState';
 
 import CategoricalEmbeddingPlot from 'components/plots/CategoricalEmbeddingPlot';
 import FrequencyPlot from 'components/plots/FrequencyPlot';
@@ -26,7 +25,7 @@ import ElbowPlot from 'components/plots/ElbowPlot';
 import { generateDataProcessingPlotUuid } from 'utils/generateCustomPlotUuid';
 import EmptyPlot from 'components/plots/helpers/EmptyPlot';
 import Loader from 'components/Loader';
-import { getEmbeddingInitialConfig } from 'utils/plotConfig/getEmbeddingInitialConfig';
+import { getEmbeddingInitialConfig, isMarkerCustomized } from 'utils/plotConfig/getEmbeddingInitialConfig';
 import PlotStyling from 'components/plots/styling/PlotStyling';
 import { getIsUnisample } from 'utils/experimentPredicates';
 import PlotLegendAlert, { MAX_LEGEND_ITEMS } from 'components/plots/helpers/PlotLegendAlert';
@@ -44,7 +43,7 @@ const DataIntegration = (props) => {
 
   const [selectedPlot, setSelectedPlot] = useState(isUnisample ? 'elbow' : 'embedding');
   const [plot, setPlot] = useState(null);
-  // per-plotUuid flag: the large-dataset marker default has settled (applied or not
+  // per-plotUuid flag: the cell-count marker default has settled (applied or not
   // needed). Gates rendering so the embedding never flashes the standard marker.
   const [markerSettled, setMarkerSettled] = useState({});
   const [isResetDisabled, setIsResetDisabled] = useState(true);
@@ -307,7 +306,7 @@ const DataIntegration = (props) => {
     if (showAlert) updatePlotWithChanges({ legend: { showAlert, enabled: !showAlert } });
   }, [!selectedConfig, activePlotType, cellSets.accessible]);
 
-  // Apply cell-count-aware marker defaults for large datasets in embedding plots
+  // Apply cell-count-aware marker defaults in embedding plots
   // Only applies once when config is first loaded and hasn't been customized yet
   useEffect(() => {
     if (!selectedConfig || !cellSets.accessible || activePlotType !== 'dataIntegrationEmbedding'
@@ -315,47 +314,36 @@ const DataIntegration = (props) => {
 
     const initialConfig = getEmbeddingInitialConfig(activePlotType, cellSets);
 
-    // Check if we should apply large dataset defaults
-    if (initialConfig.defaultValues?.largeDatasetDefaults) {
-      // Get the standard (non-adjusted) initial config to check if marker was already customized
-      const standardConfig = initialPlotConfigStates[activePlotType];
-
-      // Only apply if marker config currently matches standard defaults (not yet customized)
-      const isUsingStandardDefaults = (
-        selectedConfig.marker.outline === standardConfig.marker.outline
-        && selectedConfig.marker.size === standardConfig.marker.size
-      );
-
-      if (isUsingStandardDefaults) {
-        dispatch(updatePlotConfig(activePlotUuid, {
-          marker: {
-            ...selectedConfig.marker,
-            outline: false,
-            size: 1,
-          },
-        }));
-        debounceSave(activePlotUuid);
-      }
+    // Only apply if marker config currently matches standard defaults (not yet customized)
+    if (initialConfig.defaultValues?.cellCountDefaults
+      && !isMarkerCustomized(selectedConfig.marker, activePlotType)) {
+      dispatch(updatePlotConfig(activePlotUuid, {
+        marker: {
+          ...selectedConfig.marker,
+          outline: initialConfig.marker.outline,
+          size: initialConfig.marker.size,
+        },
+      }));
+      debounceSave(activePlotUuid);
     }
   }, [activePlotUuid, activePlotType, cellSets?.accessible, !!selectedConfig]);
 
   // Mark the embedding plot's marker defaults "settled" once they no longer need
-  // adjusting (dataset not large, or the large-dataset marker already applied). Gates
+  // adjusting (no cell-count default, or the cell-count marker already applied). Gates
   // rendering so the standard marker is never shown first. One-time per plot.
   useEffect(() => {
     if (activePlotType !== 'dataIntegrationEmbedding' || !selectedConfig
       || !cellSets.accessible || activePlotBlocked || markerSettled[activePlotUuid]) return;
 
     const initialConfig = getEmbeddingInitialConfig(activePlotType, cellSets);
-    if (!initialConfig.defaultValues?.largeDatasetDefaults) {
+    if (!initialConfig.defaultValues?.cellCountDefaults) {
       setMarkerSettled((prev) => ({ ...prev, [activePlotUuid]: true }));
       return;
     }
 
-    const standardConfig = initialPlotConfigStates[activePlotType];
-    const stillStandard = selectedConfig.marker.outline === standardConfig.marker.outline
-      && selectedConfig.marker.size === standardConfig.marker.size;
-    const isAdjusted = selectedConfig.marker.outline === false && selectedConfig.marker.size === 1;
+    const stillStandard = !isMarkerCustomized(selectedConfig.marker, activePlotType);
+    const isAdjusted = selectedConfig.marker.outline === initialConfig.marker.outline
+      && selectedConfig.marker.size === initialConfig.marker.size;
     if (!stillStandard || isAdjusted) {
       setMarkerSettled((prev) => ({ ...prev, [activePlotUuid]: true }));
     }
@@ -412,7 +400,7 @@ const DataIntegration = (props) => {
       );
     }
 
-    // hold the loader until the large-dataset marker defaults have settled, so the
+    // hold the loader until the cell-count marker defaults have settled, so the
     // embedding doesn't flash the standard point size/outline then re-adjust
     if (plot && (activePlotType !== 'dataIntegrationEmbedding' || markerSettled[activePlotUuid])) {
       return plot;

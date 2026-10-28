@@ -12,6 +12,7 @@ import {
 
 import { updatePlotConfig } from 'redux/actions/componentConfig';
 import { imagelessTechs } from 'utils/constants';
+import { getSpatialTechnology } from 'utils/data-management/getSpatialFileUrls';
 
 const SpatialVisibleLayersSettings = (props) => {
   const dispatch = useDispatch();
@@ -28,7 +29,9 @@ const SpatialVisibleLayersSettings = (props) => {
   // would control a layer that never renders — hide it for those technologies.
   // The molecule overlay is likewise a Xenium-only feature.
   const sampleIds = useSelector((state) => state.experimentSettings.info.sampleIds);
-  const technology = useSelector((state) => state.samples?.[sampleIds?.[0]]?.type);
+  const technology = useSelector(
+    (state) => getSpatialTechnology(state.samples?.[sampleIds?.[0]]),
+  );
   const isImageless = imagelessTechs.includes(technology);
 
   const [listData, setListData] = useState([]);

@@ -8,7 +8,7 @@ import sampleFileType from 'utils/sampleFileType';
 // dragging the wrong file (e.g. a CSV) into a Xenium slot.
 
 // HDF5 signature: the first 8 bytes of every HDF5 file.
-// See https://docs.hdfgroup.org/hdf5/develop/_f_m_t3.html (Format Signature)
+// See https://support.hdfgroup.org/documentation/hdf5/latest/_f_m_t3.html (Format Signature)
 const HDF5_MAGIC = [0x89, 0x48, 0x44, 0x46, 0x0d, 0x0a, 0x1a, 0x0a];
 
 // Apache Parquet files begin and end with the 4-byte "PAR1" marker.

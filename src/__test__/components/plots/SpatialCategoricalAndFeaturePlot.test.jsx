@@ -8,6 +8,7 @@ import thunk from 'redux-thunk';
 import SpatialCategoricalPlot from 'components/plots/SpatialCategoricalPlot';
 import SpatialFeaturePlot from 'components/plots/SpatialFeaturePlot';
 import { getSampleFileUrls } from 'utils/data-management/downloadSampleFile';
+import { getCellSets } from 'redux/selectors';
 
 jest.mock('utils/data-management/downloadSampleFile', () => ({
   getSampleFileUrls: jest.fn(),
@@ -73,13 +74,13 @@ const config = {
   selectedCellSet: 'louvain',
 };
 
-const buildState = (technology) => ({
+const buildState = (technology, obj2sStatus = 'NOT_CREATED') => ({
   embeddings: { images: { data: [[1, 2]], loading: false, error: false } },
   experimentSettings: {
     info: { sampleIds: [sampleId] },
     originalProcessing: { configureEmbedding: { embeddingSettings: {} } },
   },
-  backendStatus: { [experimentId]: { status: { obj2s: { status: 'NOT_CREATED' } } } },
+  backendStatus: { [experimentId]: { status: { obj2s: { status: obj2sStatus } } } },
   samples: { [sampleId]: { id: sampleId, type: technology } },
   genes: { expression: { full: { loading: false, matrix: {} } } },
 });
@@ -92,15 +93,15 @@ const Components = [
 describe.each(Components)('%s — imageless technology (e.g. Xenium)', (_name, Component) => {
   let onSampleDefault;
 
-  const renderPlot = async (technology) => {
+  const renderPlot = async (technology, plotConfig = config, obj2sStatus = undefined) => {
     onSampleDefault = jest.fn();
-    const store = mockStore(buildState(technology));
+    const store = mockStore(buildState(technology, obj2sStatus));
     await act(async () => {
       render(
         <Provider store={store}>
           <Component
             experimentId={experimentId}
-            config={config}
+            config={plotConfig}
             onSampleDefault={onSampleDefault}
           />
         </Provider>,
@@ -131,6 +132,37 @@ describe.each(Components)('%s — imageless technology (e.g. Xenium)', (_name, C
     await renderPlot('xenium');
 
     expect(onSampleDefault).toHaveBeenCalledWith(sampleId);
+  });
+
+  it('replaces a saved sample that no longer exists (e.g. after an obj2s rerun)', async () => {
+    await renderPlot('visium_hd', { ...config, selectedSample: 'sample-from-previous-run' });
+
+    expect(onSampleDefault).toHaveBeenCalledWith(sampleId);
+  });
+
+  it('keeps a saved sample that still exists', async () => {
+    await renderPlot('visium_hd', { ...config, selectedSample: sampleId });
+
+    expect(onSampleDefault).not.toHaveBeenCalled();
+  });
+
+  it('treats a spatial object without a tissue image as imageless', async () => {
+    getSampleFileUrls.mockRejectedValue(new Error('404 Not Found'));
+
+    await renderPlot('seurat_spatial_object');
+
+    expect(onSampleDefault).toHaveBeenCalledWith(sampleId);
+  });
+
+  it('takes the samples of an obj2s object without segmentations from its sample cell sets', async () => {
+    getSampleFileUrls.mockRejectedValue(new Error('404 Not Found'));
+    const cellSets = getCellSets()();
+    cellSets.hierarchy = [{ key: 'sample', children: [{ key: 'sample-cell-set' }] }];
+
+    await renderPlot('xenium', config, 'SUCCEEDED');
+    cellSets.hierarchy = [];
+
+    expect(onSampleDefault).toHaveBeenCalledWith('sample-cell-set');
   });
 
   it('does fetch the tissue image for a non-imageless spatial tech (visium_hd)', async () => {

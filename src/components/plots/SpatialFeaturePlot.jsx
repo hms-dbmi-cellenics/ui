@@ -13,14 +13,17 @@ import { loadEmbedding } from 'redux/actions/embedding';
 import { loadProcessingSettings } from 'redux/actions/experimentSettings';
 import { getCellSets } from 'redux/selectors';
 import { generateSpec, generateData, filterCells } from 'utils/plotSpecs/generateSpatialFeatureSpec';
-import { getSampleFileUrls } from 'utils/data-management/downloadSampleFile';
+import { getSpatialFileUrls, getSpatialTechnology } from 'utils/data-management/getSpatialFileUrls';
 import { imagelessTechs } from 'utils/constants';
 import useSpatialStream from './useSpatialStream';
+import useCentroidOverlay from './useCentroidOverlay';
 import usePreventWheelScroll from './usePreventWheelScroll';
 import PlatformError from '../PlatformError';
 import Loader from '../Loader';
 
 const EMBEDDING_TYPE = 'images';
+// the plot's extent past its outermost cells, when framed on them
+const CELLS_FRAME_MARGIN = 1.02;
 
 // Parse a CSS color string returned by vega.scheme interpolators into [r, g, b].
 const parseCssColor = (cssColor) => {
@@ -114,7 +117,9 @@ const SpatialFeaturePlot = (props) => {
     (state) => state.backendStatus[experimentId]?.status?.obj2s?.status,
   );
   const isObj2s = !_.isNil(obj2sStatusRaw) && obj2sStatusRaw !== 'NOT_CREATED';
-  const technology = useSelector((state) => state.samples?.[sampleIdsForFileUrls?.[0]]?.type);
+  const technology = useSelector(
+    (state) => getSpatialTechnology(state.samples?.[sampleIdsForFileUrls?.[0]]),
+  );
   const isImageless = imagelessTechs.includes(technology);
 
   const [plotSpec, setPlotSpec] = useState({});
@@ -127,47 +132,47 @@ const SpatialFeaturePlot = (props) => {
   const onZoomChangeRef = useRef(onZoomChange);
   onZoomChangeRef.current = onZoomChange;
 
+  // An obj2s experiment's samples are its sample cell sets (its spatial files are
+  // linked to them). Joined so the URL fetch below only re-runs when they change.
+  const sampleCellSetIdsKey = useMemo(
+    () => (cellSets.hierarchy?.find(({ key }) => key === 'sample')?.children ?? [])
+      .map(({ key }) => key).join(','),
+    [cellSets.hierarchy],
+  );
+
   // ── Fetch image URLs ────────────────────────────────────────────────────────
   useEffect(() => {
-    // imageless techs (e.g. Xenium) have no tissue image; still register the
-    // sample ids (with null urls) so the selected-sample default and the stream
-    // initialise — image dimensions come from the segmentation pyramid instead.
-    if (isImageless) {
-      setOmeZarrUrls(sampleIdsForFileUrls.map((sampleId) => ({ url: null, sampleId })));
-      return;
-    }
+    // obj2s samples come from the cell sets, wait for them
+    if (isObj2s && !sampleCellSetIdsKey) return;
+
     (async () => {
       try {
-        const results = (await Promise.all(
-          sampleIdsForFileUrls.map((sampleId) => getSampleFileUrls(experimentId, sampleId, 'ome_zarr_zip')),
-        )).flat();
+        // imageless techs (e.g. Xenium) have no tissue image, nor may a spatial
+        // object (e.g. before its technology is known); still register the sample
+        // ids (with null urls) so the selected-sample default and the stream
+        // initialise — the plot is then framed by the segmentations or the cells.
+        const images = isImageless ? [] : await getSpatialFileUrls(
+          experimentId, sampleIdsForFileUrls, 'ome_zarr_zip', isObj2s, { optional: true },
+        );
+        if (images.length) {
+          setOmeZarrUrls(images.map(({ url, sampleId }) => ({ url, sampleId })));
+          return;
+        }
 
-        const signedUrls = results.map(({ url, fileId }, i) => ({
-          url,
-          sampleId: isObj2s ? fileId : sampleIdsForFileUrls[i],
-        }));
-
-        setOmeZarrUrls(signedUrls);
+        const sampleIds = isObj2s ? sampleCellSetIdsKey.split(',') : sampleIdsForFileUrls;
+        setOmeZarrUrls(sampleIds.map((sampleId) => ({ url: null, sampleId })));
       } catch (e) {
         console.error('Error fetching image URLs:', e);
       }
     })();
-  }, [sampleIdsForFileUrls, experimentId, isObj2s, isImageless]);
+  }, [sampleIdsForFileUrls, experimentId, isObj2s, isImageless, sampleCellSetIdsKey]);
 
   // ── Fetch segmentation URLs (optional) ─────────────────────────────────────
   useEffect(() => {
     (async () => {
       try {
-        const results = (await Promise.all(
-          sampleIdsForFileUrls.map((sampleId) => getSampleFileUrls(experimentId, sampleId, 'segmentations_ome_zarr_zip')),
-        )).flat();
-
-        const signedUrls = results.map(({ url, fileId }, i) => ({
-          url,
-          sampleId: isObj2s ? fileId : sampleIdsForFileUrls[i],
-        }));
-
-        setSegmentationZarrUrls(signedUrls);
+        const results = await getSpatialFileUrls(experimentId, sampleIdsForFileUrls, 'segmentations_ome_zarr_zip', isObj2s);
+        setSegmentationZarrUrls(results.map(({ url, sampleId }) => ({ url, sampleId })));
       } catch (_e) {
         console.info('[SpatialFeaturePlot] segmentations_ome_zarr_zip not available — centroid fallback active');
         setSegmentationZarrUrls([]); // empty = confirmed unavailable
@@ -176,12 +181,13 @@ const SpatialFeaturePlot = (props) => {
   }, [sampleIdsForFileUrls, experimentId, isObj2s]);
 
   // ── Default selected sample ─────────────────────────────────────────────────
-  // When the config has no sample yet, default to the first one AND persist it back
+  // When the config has no (existing) sample, default to the first one AND persist it back
   // to the config, so the "Selected sample" dropdown reflects what's actually shown
   // (its own fallback uses a different ordering and would otherwise mismatch).
   useEffect(() => {
     if (!omeZarrUrls || !config) return;
-    if (config.selectedSample) {
+    // a saved sample can be gone: rerunning obj2s gives its samples new ids
+    if (omeZarrUrls.some(({ sampleId }) => sampleId === config.selectedSample)) {
       setSelectedSample(config.selectedSample);
     } else {
       const def = omeZarrUrls[0]?.sampleId;
@@ -214,10 +220,9 @@ const SpatialFeaturePlot = (props) => {
     plotData,
   ]);
 
-  // ── Segmentation overlay colour map (per-cell), recomputed on colour change ──
-  const segmentationsAvailableGuess = segmentationZarrUrls?.length > 0;
+  // ── Overlay colour map (per-cell, segmentations or centroid dots) ──────────
   const cellColorMap = useMemo(() => {
-    if (!segmentationsAvailableGuess || !config || !plotData?.length
+    if (!config || !plotData?.length
       || !cellSets.accessible || !embeddingData?.length || !selectedSample) {
       return null;
     }
@@ -226,7 +231,7 @@ const SpatialFeaturePlot = (props) => {
     return buildFeatureCellColorMap(filteredCellIds, activeData, embeddingData, config);
     // colorSignature already captures gene/truncation/colour/sample/length
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [colorSignature, segmentationsAvailableGuess, cellSets.accessible, embeddingData]);
+  }, [colorSignature, cellSets.accessible, embeddingData]);
 
   // ── Viewport streaming (base + detail tiles for tissue & segmentation) ──────
   const segEntry = useMemo(
@@ -243,13 +248,12 @@ const SpatialFeaturePlot = (props) => {
     : (segEntry?.url ?? null);
 
   const {
-    imageDims,
+    imageDims: streamImageDims,
     segmentationsAvailable,
     segProbeDone,
     tissueImageData,
     segOverlayData,
     onViewportChange,
-    ready,
   } = useSpatialStream({
     experimentId,
     sampleId: selectedSample,
@@ -264,6 +268,45 @@ const SpatialFeaturePlot = (props) => {
     outline: config?.marker?.outline ?? false,
   });
 
+  // no tissue image or segmentations to frame the plot (e.g. Xenium objects with
+  // only centroids): frame it on the cells
+  const hasImage = omeZarrUrls?.some(({ url }) => url);
+  const cellsImageDims = useMemo(() => {
+    if (streamImageDims || hasImage || !segProbeDone || segmentationsAvailable
+      || !embeddingData?.length) {
+      return null;
+    }
+    let width = 0;
+    let height = 0;
+    embeddingData.forEach((coordinates) => {
+      if (!coordinates) return;
+      width = Math.max(width, coordinates[0]);
+      height = Math.max(height, coordinates[1]);
+    });
+    // a margin so the outermost cells' dots aren't cut off
+    return {
+      imageWidth: Math.ceil(width * CELLS_FRAME_MARGIN),
+      imageHeight: Math.ceil(height * CELLS_FRAME_MARGIN),
+    };
+  }, [streamImageDims, hasImage, segProbeDone, segmentationsAvailable, embeddingData]);
+  const imageDims = streamImageDims ?? cellsImageDims;
+  const ready = !!imageDims;
+
+  // no segmentations: centroid dots, drawn into one image so zooming stays fast
+  const {
+    overlayData: centroidOverlayData,
+    onViewportChange: onCentroidViewportChange,
+  } = useCentroidOverlay({
+    enabled: segProbeDone && !segmentationsAvailable,
+    embeddingData,
+    colorMap: cellColorMap,
+    imageDims,
+    opacity: (config?.marker?.opacity ?? 10) / 10,
+    markerSize: config?.marker?.size,
+    plotWidth: config?.dimensions?.width,
+    plotHeight: config?.dimensions?.height,
+  });
+
   // mouse zoom/pan → persist the resulting axes range into the plot config
   // (debounced) so zoom survives navigation/sessions, AND stream a sharper viewport
   // tile. axesRanges is excluded from the spec signature below, so writing it does
@@ -275,6 +318,7 @@ const SpatialFeaturePlot = (props) => {
     if (config?.miniPlot) return; // mini previews never zoom/stream — always full extent
     const [xdom, ydom] = value;
     onViewportChange(xdom, ydom);
+    onCentroidViewportChange(xdom, ydom);
     persistZoom({
       xAxisAuto: false,
       xMin: xdom[0],
@@ -298,12 +342,14 @@ const SpatialFeaturePlot = (props) => {
     if (ar && ar.xAxisAuto === false) {
       view.signal('initXdom', [ar.xMin, ar.xMax]).signal('initYdom', [ar.yMin, ar.yMax]).runAsync();
       onViewportChange([ar.xMin, ar.xMax], [ar.yMin, ar.yMax]);
+      onCentroidViewportChange([ar.xMin, ar.xMax], [ar.yMin, ar.yMax]);
     } else {
       // No persisted zoom (e.g. after Reset Plot): the rebuilt view is at full extent
       // (its initXdom/initYdom signals). Tell the streamer so it re-streams the whole
       // slide — otherwise it keeps the pre-reset zoomed-in tiles and only that region
       // shows.
       onViewportChange(view.signal('initXdom'), view.signal('initYdom'));
+      onCentroidViewportChange(view.signal('initXdom'), view.signal('initYdom'));
     }
   }, [onViewportChange, isMiniPlot]);
 
@@ -323,18 +369,20 @@ const SpatialFeaturePlot = (props) => {
   // Tiles + overlay are NOT part of the spec — they stream in via the `data` prop —
   // so zoom/recolour update the view in place without rebuilding it.
 
-  // Spec signature EXCLUDING axesRanges and (when segmentation is shown) the
-  // overlay-only opacity/outline — so persisting mouse zoom into axesRanges and
-  // tweaking opacity/outline never regenerate the spec and thus never rebuild the
-  // view. Genuine changes (gene, gradient, dimensions, sample, …) still respec.
+  // Spec signature EXCLUDING axesRanges and the overlay-only marker styling — so
+  // persisting mouse zoom into axesRanges and tweaking opacity/outline/size never
+  // regenerate the spec and thus never rebuild the view. Genuine changes (gene,
+  // gradient, dimensions, sample, …) still respec.
   const specSignature = useMemo(() => {
     if (!config) return '';
     const c = { ...config, axesRanges: undefined };
-    if (segmentationsAvailable && c.marker) {
-      c.marker = { ...c.marker, opacity: undefined, outline: undefined };
+    if (c.marker) {
+      c.marker = {
+        ...c.marker, opacity: undefined, outline: undefined, size: undefined,
+      };
     }
     return JSON.stringify(c);
-  }, [config, segmentationsAvailable]);
+  }, [config]);
   useEffect(() => {
     // Image dims not ready / segmentation availability not yet known → loader
     if (!ready || !imageDims || !segProbeDone) {
@@ -355,7 +403,8 @@ const SpatialFeaturePlot = (props) => {
       const specData = generateData(cellSets, selectedSample, activeData, embeddingData);
 
       setPlotSpec(generateSpec(
-        config, EMBEDDING_TYPE, imageDims, specData, segmentationsAvailable,
+        // segmentations or centroid dots, both drawn as an overlay image
+        config, EMBEDDING_TYPE, imageDims, specData, true,
       ));
     }
   }, [
@@ -366,8 +415,8 @@ const SpatialFeaturePlot = (props) => {
   // tissue + overlay tiles streamed to Vega in place (no view rebuild) via `data`
   const vegaData = useMemo(() => ({
     tissueImageData,
-    segOverlayData,
-  }), [tissueImageData, segOverlayData]);
+    segOverlayData: centroidOverlayData ?? segOverlayData,
+  }), [tissueImageData, segOverlayData, centroidOverlayData]);
 
   // ── Render ──────────────────────────────────────────────────────────────────
   const render = () => {

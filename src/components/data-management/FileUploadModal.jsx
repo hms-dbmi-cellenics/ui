@@ -13,6 +13,7 @@ import {
   Divider,
   List,
   Tooltip,
+  Alert,
 } from 'antd';
 import {
   CheckCircleTwoTone, CloseCircleTwoTone, DeleteOutlined, WarningOutlined,
@@ -137,7 +138,9 @@ const FileUploadModal = (props) => {
     setFiles({ valid: newArray, invalid: files.invalid });
   };
 
-  const { fileUploadParagraphs, dropzoneText, webkitdirectory } = fileUploadUtils[selectedTech];
+  const {
+    fileUploadParagraphs, fileUploadWarning, dropzoneText, webkitdirectory,
+  } = fileUploadUtils[selectedTech];
 
   // Group technologies by category
   const groupedTechnologies = Object.entries(fileUploadUtils).reduce((acc, [tech, details]) => {
@@ -152,6 +155,13 @@ const FileUploadModal = (props) => {
   const renderHelpText = () => (
     <>
       <Space direction='vertical' style={{ width: '100%' }}>
+        {fileUploadWarning && (
+          <Alert
+            type='warning'
+            showIcon
+            message={<div dangerouslySetInnerHTML={{ __html: fileUploadWarning }} />}
+          />
+        )}
         {
           fileUploadParagraphs.map((text) => (
             <Paragraph key={text}>

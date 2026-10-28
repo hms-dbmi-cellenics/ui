@@ -22,7 +22,7 @@ const ClassifierConfig = (props) => {
               A false discovery rate (FDR) is calculated for each cell barcode by using the
               {' '}
               <a
-                href='https://rdrr.io/github/MarioniLab/DropletUtils/man/emptyDrops.html'
+                href='https://rdrr.io/bioc/DropletUtils/man/emptyDrops.html'
                 target='_blank'
                 rel='noreferrer'
               >

@@ -6,7 +6,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import * as vega from 'vega';
 import PropTypes from 'prop-types';
 import { OrthographicView, OrthographicViewport, COORDINATE_SYSTEM } from '@deck.gl/core';
-import { PolygonLayer, ScatterplotLayer } from '@deck.gl/layers';
+import { ScatterplotLayer } from '@deck.gl/layers';
 import { EditableGeoJsonLayer } from '@nebula.gl/layers';
 import { DrawPolygonByDraggingMode } from '@nebula.gl/edit-modes';
 import { MultiscaleImageLayer, getDefaultInitialViewState } from '@hms-dbmi/viv';
@@ -18,7 +18,6 @@ import PlatformError from 'components/PlatformError';
 import Loader from 'components/Loader';
 import ToolMenu from 'components/data-exploration/embedding/ToolMenu';
 import { buildCellsQuadTree, selectCellsInPolygon } from 'components/data-exploration/embedding/lassoUtils';
-import { getSampleFileUrls } from 'utils/data-management/downloadSampleFile';
 
 import { loadComponentConfig } from 'redux/actions/componentConfig';
 import { loadEmbedding } from 'redux/actions/embedding';
@@ -30,6 +29,9 @@ import { updateCellInfo } from 'redux/actions/cellInfo';
 import { union } from 'utils/cellSetOperations';
 import HOVER_SOURCE from 'utils/data-exploration/cellInfoHoverSource';
 import { imagelessTechs } from 'utils/constants';
+import {
+  getSpatialFileUrls, alignFileUrls, getSpatialTechnology,
+} from 'utils/data-management/getSpatialFileUrls';
 import _ from 'lodash';
 
 import { root as zarrRoot } from 'zarrita';
@@ -37,6 +39,7 @@ import { root as zarrRoot } from 'zarrita';
 import { offsetCentroids } from 'utils/plotUtils';
 import getContainingCellSetsProperties from 'utils/cellSets/getContainingCellSetsProperties';
 import ZipFileStore from 'components/data-exploration/spatial/ZipFileStore';
+import getCentroidRadius from 'components/data-exploration/spatial/getCentroidRadius';
 import parseColor from 'components/data-exploration/parseColor';
 import loadMoleculeNodes, {
   loadMoleculeMeta,
@@ -60,7 +63,8 @@ const EMBEDDING_TYPE = 'images';
 
 const LASSO_MODE_CONFIG = { dragToDraw: true };
 const EMPTY_DATA = { type: 'FeatureCollection', features: [] };
-const DIAMOND_RADIUS = 5;
+// fallback centroid radius, used only when the cell spacing can't be estimated
+const CENTROID_RADIUS = 5;
 const POLYGON_HIGHLIGHT_COLOR = [51, 51, 51, 150];
 const DEFAULT_COLOR = [128, 128, 128, 255];
 // cell outlines while the molecule overlay is active.
@@ -143,7 +147,9 @@ const SpatialViewer = (props) => {
   // centroids + segmentation polygons in micron coordinates. For those the
   // multi-sample tiling cannot be image-driven, so we derive the grid layout
   // and the per-sample offset extent from the micron coordinates instead.
-  const technology = useSelector((state) => state.samples?.[sampleIdsForFileUrls?.[0]]?.type);
+  const technology = useSelector(
+    (state) => getSpatialTechnology(state.samples?.[sampleIdsForFileUrls?.[0]]),
+  );
   const isImageless = imagelessTechs.includes(technology);
 
   const cellCoordinatesRef = useRef({ x: 200, y: 300 });
@@ -174,7 +180,7 @@ const SpatialViewer = (props) => {
   const [loader, setLoader] = useState(null);
   const [segmentationsLoader, setSegmentationsLoader] = useState(null);
   // set once we know there's no segmentation bitmask (missing or failed to
-  // load), so the diamond fallback isn't drawn while it is still loading
+  // load), so the centroid fallback isn't drawn while it is still loading
   const [segmentationsUnavailable, setSegmentationsUnavailable] = useState(false);
   const [offsetData, setOffsetData] = useState();
   const [perImageShape, setPerImageShape] = useState();
@@ -291,8 +297,19 @@ const SpatialViewer = (props) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data, omeZarrSampleIds, perImageShape, gridShape, gridLayout]);
 
+  // An obj2s experiment's samples are its sample cell sets (its spatial files are
+  // linked to them). Joined so the URL fetch below only re-runs when they change.
+  const sampleCellSetIdsKey = useMemo(
+    () => (cellSetHierarchy.find(({ key }) => key === 'sample')?.children ?? [])
+      .map(({ key }) => key).join(','),
+    [cellSetHierarchy],
+  );
+
   // ── URL fetching ──────────────────────────────────────────────────────────
   useEffect(() => {
+    // imageless obj2s samples come from the cell sets, wait for them
+    if (isObj2s && isImageless && !sampleCellSetIdsKey) return;
+
     (async () => {
       try {
         const [imageResult, segResult, moleculesResult] = await Promise.allSettled([
@@ -300,51 +317,53 @@ const SpatialViewer = (props) => {
           // ome_zarr_zip request entirely (it would 404)
           isImageless
             ? Promise.resolve([])
-            : Promise.all(
-              sampleIdsForFileUrls.map((sampleId) => getSampleFileUrls(experimentId, sampleId, 'ome_zarr_zip')),
-            ).then((r) => r.flat()),
-          Promise.all(
-            sampleIdsForFileUrls.map((sampleId) => getSampleFileUrls(experimentId, sampleId, 'segmentations_ome_zarr_zip')),
-          ).then((r) => r.flat()),
+            : getSpatialFileUrls(experimentId, sampleIdsForFileUrls, 'ome_zarr_zip', isObj2s),
+          getSpatialFileUrls(experimentId, sampleIdsForFileUrls, 'segmentations_ome_zarr_zip', isObj2s),
           // molecules_by_gene is optional (only built when transcripts.parquet was
           // uploaded). Per-sample: an empty result for a sample => no overlay there.
-          Promise.all(
-            sampleIdsForFileUrls.map((sampleId) => getSampleFileUrls(experimentId, sampleId, 'molecules_by_gene')
-              .then((r) => r, () => [])),
-          ).then((r) => r.map((sampleUrls) => sampleUrls?.[0]?.url ?? null)),
+          getSpatialFileUrls(experimentId, sampleIdsForFileUrls, 'molecules_by_gene', isObj2s, { optional: true }),
         ]);
 
+        const segmentations = segResult.status === 'fulfilled' ? segResult.value : [];
+
+        let sampleIds;
         if (isImageless) {
           // No tissue image for this tech (e.g. Xenium); the layout is driven by
-          // the micron coordinates, so we only need the sample ids here.
-          setOmeZarrSampleIds(sampleIdsForFileUrls);
+          // the micron coordinates, so we only need the sample ids here. An obj2s
+          // experiment's samples are its sample cell sets (with or without
+          // segmentations: centroids-only objects fall back to centroid circles).
+          sampleIds = isObj2s
+            ? sampleCellSetIdsKey.split(',')
+            : sampleIdsForFileUrls;
+          setOmeZarrSampleIds(sampleIds);
         } else if (imageResult.status === 'fulfilled') {
-          const signedUrls = imageResult.value.map(({ url }) => url);
-          setOmeZarrUrls(signedUrls);
-          setOmeZarrSampleIds(
-            isObj2s ? imageResult.value.map(({ fileId }) => fileId) : sampleIdsForFileUrls,
-          );
+          sampleIds = imageResult.value.map(({ sampleId }) => sampleId);
+          setOmeZarrUrls(imageResult.value.map(({ url }) => url));
+          setOmeZarrSampleIds(sampleIds);
         } else {
           console.error('[SpatialViewer] Image URL fetch failed:', imageResult.reason);
+          return;
         }
 
-        if (segResult.status === 'fulfilled' && segResult.value.length) {
-          setSegmentationsOmeZarrUrls(segResult.value.map(({ url }) => url));
+        // segmentations and molecules are laid out in the same order as the images
+        const segmentationUrls = alignFileUrls(segmentations, sampleIds);
+        if (segmentationUrls.length && segmentationUrls.every(Boolean)) {
+          setSegmentationsOmeZarrUrls(segmentationUrls);
         } else {
           setSegmentationsUnavailable(true);
-          console.info('[SpatialViewer] segmentations_ome_zarr_zip unavailable — diamond fallback active.');
+          console.info('[SpatialViewer] segmentations_ome_zarr_zip unavailable — centroid fallback active.');
         }
 
         // Per-sample molecule artifact URLs (null where the sample has no artifact).
         // Absent for every sample => the Molecules layer is simply unavailable.
         if (moleculesResult.status === 'fulfilled') {
-          setMoleculesUrls(moleculesResult.value);
+          setMoleculesUrls(alignFileUrls(moleculesResult.value, sampleIds));
         }
       } catch (e) {
         console.error('[SpatialViewer] URL fetch error:', e);
       }
     })();
-  }, [sampleIdsForFileUrls, experimentId, isObj2s, isImageless]);
+  }, [sampleIdsForFileUrls, experimentId, isObj2s, isImageless, sampleCellSetIdsKey]);
 
   // Zarr roots are keyed only by URL, so regrouping (which changes the grid
   // layout but not the underlying per-sample data) doesn't re-open the stores —
@@ -370,7 +389,7 @@ const SpatialViewer = (props) => {
   // onto a micron-sized canvas (gem2s sizes it to the polygon coordinate
   // extent), so for imageless techs (e.g. Xenium) the bitmask shares the same
   // micron frame as the centroids — load and render it just like Visium HD
-  // rather than falling back to approximate diamonds.
+  // rather than falling back to approximate centroid circles.
   useEffect(() => {
     if (!segmentationRoots.length) return;
     // Fill empty grid cells with 0 (background) so the label bitmask treats
@@ -539,18 +558,23 @@ const SpatialViewer = (props) => {
     [cellColors, offsetData, hiddenCellIds, cellsInAnyCluster],
   );
 
-  // ── Diamond fallback ──────────────────────────────────────────────────────
+  // ── Centroid fallback ─────────────────────────────────────────────────────
+  // circles at the cell centroids when there are no segmentations, sized from
+  // the cell spacing so neighbouring circles don't overlap
+  const centroidRadius = useMemo(
+    () => (segmentationsUnavailable && offsetData
+      ? getCentroidRadius(offsetData, CENTROID_RADIUS)
+      : CENTROID_RADIUS),
+    [segmentationsUnavailable, offsetData],
+  );
+
   const polygonShapeData = useMemo(() => {
     if (!segmentationsUnavailable || !offsetData) return null;
     const shapes = [];
     offsetData.forEach(([x, y], key) => {
       if (hiddenCellIds.has(key)) return;
       if (!cellsInAnyCluster.has(key)) return;
-      const r = DIAMOND_RADIUS;
-      shapes.push({
-        polygon: new Float32Array([x, y + r, x + r, y, x, y - r, x - r, y, x, y + r]),
-        cellId: key.toString(),
-      });
+      shapes.push({ position: [x, y], cellId: key.toString() });
     });
     return shapes.length > 0 ? shapes : null;
   }, [offsetData, hiddenCellIds, cellsInAnyCluster, segmentationsUnavailable]);
@@ -669,7 +693,7 @@ const SpatialViewer = (props) => {
       return;
     }
 
-    // Fallback: diamond polygon layer
+    // Fallback: centroid circles layer
     const layerId = info.layer?.id;
     if (layerId === 'segmentations-polygon' && info.object) {
       hoveredByPointerRef.current = info.object.cellId;
@@ -915,9 +939,9 @@ const SpatialViewer = (props) => {
   const cellAndSelectionLayers = useMemo(() => {
     const result = [];
 
-    // Diamond fallback — only when no bitmask OME-Zarr is available
+    // Centroid fallback — only when no bitmask OME-Zarr is available
     if (polygonShapeData) {
-      result.push(new PolygonLayer({
+      result.push(new ScatterplotLayer({
         id: 'segmentations-polygon',
         data: polygonShapeData,
         visible: cellLayerVisible,
@@ -928,13 +952,13 @@ const SpatialViewer = (props) => {
         filled: true,
         stroked: false,
         opacity: 0.8,
-        _normalize: false,
-        positionFormat: 'XY',
-        getPolygon: (d) => d.polygon,
+        // radius in coordinate units, so circles scale with zoom like the tissue
+        radiusUnits: 'common',
+        getPosition: (d) => d.position,
+        getRadius: centroidRadius,
         getFillColor: (d) => polygonColorMap?.get(d.cellId) ?? DEFAULT_COLOR,
         updateTriggers: {
           getFillColor: [polygonColorMap],
-          getPolygon: [polygonShapeData],
         },
       }));
     }
@@ -964,7 +988,7 @@ const SpatialViewer = (props) => {
 
     return result;
   }, [
-    segmentationsLoader, polygonShapeData, polygonColorMap,
+    segmentationsLoader, polygonShapeData, polygonColorMap, centroidRadius,
     cellLayerVisible, activeTool, cellsQuadTree, handleEdit,
   ]);
 

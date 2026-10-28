@@ -6,4 +6,5 @@ export default {
   ERROR_OBJ2S_CLUSTERS: '\u26A0\uFE0F We couldn\'t detect clusters in the metadata from the uploaded object. Please check requirements and re-upload after fixing.',
   ERROR_OBJ2S_REDUCTION: '\u26A0\uFE0F We couldn\'t get the PCA and UMAP or TSNE dimensionality reduction from the uploaded object. Please check requirements and re-upload after fixing.',
   ERROR_OBJ2S_LOGCOUNTS: '\u26A0\uFE0F We couldn\'t get the logcounts from the uploaded object. Please check requirements and re-upload after fixing.',
+  ERROR_OBJ2S_IMAGES: '\u26A0\uFE0F We couldn\'t get the spatial images from the uploaded object. Images must be Visium (VisiumV1 or VisiumV2), Visium HD or Xenium (FOV), from a single technology. Please check requirements and re-upload after fixing.',
 };

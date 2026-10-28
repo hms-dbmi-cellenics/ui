@@ -19,7 +19,7 @@ import { getCellSets } from 'redux/selectors';
 import _ from 'lodash';
 import PlotStyling from 'components/plots/styling/PlotStyling';
 import MultiTileContainer from 'components/MultiTileContainer';
-import { getEmbeddingInitialConfig, isEmbeddingPlotType, getTotalCellCount } from 'utils/plotConfig/getEmbeddingInitialConfig';
+import { getEmbeddingInitialConfig, isEmbeddingPlotType, isMarkerCustomized } from 'utils/plotConfig/getEmbeddingInitialConfig';
 
 const PLOT = 'Plot';
 const CONTROLS = 'Controls';
@@ -109,36 +109,37 @@ const PlotContainer = (props) => {
     );
   }, [config, cellSets, plotType]);
 
-  // Auto-apply large-dataset defaults for embedding plots when config first loads with cellSets
+  // Cell-count-aware marker for embedding plots, or null if not applicable
+  const cellCountConfig = useMemo(() => {
+    if (!isEmbeddingPlotType(plotType)
+      || !cellSets?.properties || !cellSets?.hierarchy) return null;
+
+    const embeddingConfig = getEmbeddingInitialConfig(plotType, cellSets);
+    return embeddingConfig.defaultValues?.cellCountDefaults ? embeddingConfig : null;
+  }, [plotType, cellSets]);
+
+  // True while an embedding plot is still showing its standard marker but should get
+  // the cell-count defaults. Used to hold a loader so the plot never flashes the
+  // standard point size/outline then re-adjusts.
+  const cellCountMarkerPending = !!(config && cellCountConfig
+    && !config.defaultValues?.cellCountDefaults
+    && !config.defaultValues?.largeDatasetDefaults
+    && !isMarkerCustomized(config.marker, plotType));
+
+  // Auto-apply cell-count marker defaults for embedding plots once, when config first
+  // loads, unless the marker has already been customized
   useEffect(() => {
-    if (!isEmbeddingPlotType(plotType) || !config
-      || !cellSets?.properties || !cellSets?.hierarchy) return;
-    if (config.defaultValues?.largeDatasetDefaults) return; // Already applied
+    if (!cellCountMarkerPending) return;
 
-    const cellCount = cellSets.hierarchy?.find((node) => node.key === 'sample')
-      ?.children?.reduce((sum, child) => {
-        const cellIds = cellSets.properties[child.key]?.cellIds;
-        return sum + (cellIds?.size || 0);
-      }, 0);
-
-    if (cellCount > 100000) {
-      const largeDatasetConfig = getEmbeddingInitialConfig(plotType, cellSets);
-      if (largeDatasetConfig && largeDatasetConfig !== initialPlotConfigStates[plotType]) {
-        dispatch(updatePlotConfig(plotUuid, largeDatasetConfig));
-        debounceSave();
-      }
-    }
-  }, [config, cellSets, plotType, plotUuid, experimentId]);
-
-  // True while a large-dataset embedding plot is still showing its standard marker —
-  // i.e. the large-dataset defaults haven't been applied yet. Used to hold a loader
-  // so the plot never flashes the standard point size/outline then re-adjusts.
-  const largeDatasetPending = useMemo(() => {
-    if (!isEmbeddingPlotType(plotType) || !config
-      || !cellSets?.properties || !cellSets?.hierarchy) return false;
-    if (config.defaultValues?.largeDatasetDefaults) return false; // already applied
-    return getTotalCellCount(cellSets) > 100000;
-  }, [plotType, config, cellSets]);
+    dispatch(updatePlotConfig(plotUuid, {
+      marker: {
+        outline: cellCountConfig.marker.outline,
+        size: cellCountConfig.marker.size,
+      },
+      defaultValues: cellCountConfig.defaultValues,
+    }));
+    debounceSave();
+  }, [cellCountMarkerPending, cellCountConfig, plotUuid]);
 
   const onClickReset = () => {
     // For embedding plots with large datasets, use optimized defaults
@@ -215,8 +216,8 @@ const PlotContainer = (props) => {
   const TILE_MAP = {
     [PLOT]: {
       toolbarControls: renderPlotToolbarControls(),
-      // hold a loader until large-dataset marker defaults are applied (no flash)
-      component: () => (largeDatasetPending
+      // hold a loader until cell-count marker defaults are applied (no flash)
+      component: () => (cellCountMarkerPending
         ? <center><Skeleton.Image active style={{ width: 400, height: 400 }} /></center>
         : children),
       style: {

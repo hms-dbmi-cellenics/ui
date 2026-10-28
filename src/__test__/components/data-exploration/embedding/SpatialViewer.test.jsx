@@ -93,10 +93,17 @@ const initialState = {
         color: '#ff0000',
         cellIds: new Set([1, 2]),
       },
+      sample: {
+        name: 'Samples',
+      },
       [sample1FileId]: {
+        name: 'Sample 1',
+        parentNodeKey: 'sample',
         cellIds: new Set([0, 1]),
       },
       [sample2FileId]: {
+        name: 'Sample 2',
+        parentNodeKey: 'sample',
         cellIds: new Set([2, 3]),
       },
     },
@@ -104,6 +111,11 @@ const initialState = {
       {
         key: 'louvain',
         children: [{ key: 'cluster1' }, { key: 'cluster2' }],
+      },
+      {
+        // the obj2s experiment's samples, which its spatial files are linked to
+        key: 'sample',
+        children: [{ key: sample1FileId }, { key: sample2FileId }],
       },
     ],
     hidden: new Set(),
@@ -197,8 +209,12 @@ describe('SpatialViewer — imageless technology (e.g. Xenium)', () => {
       ...initialState.cellSets,
       properties: {
         ...initialState.cellSets.properties,
-        [xeniumSampleId]: { cellIds: new Set([0, 1, 2, 3]) },
+        [xeniumSampleId]: { name: 'Xenium', parentNodeKey: 'sample', cellIds: new Set([0, 1, 2, 3]) },
       },
+      hierarchy: [
+        initialState.cellSets.hierarchy[0],
+        { key: 'sample', children: [{ key: xeniumSampleId }] },
+      ],
     },
     experimentSettings: {
       info: { sampleIds: [xeniumSampleId] },
@@ -257,8 +273,12 @@ describe('SpatialViewer — molecule (transcript) overlay', () => {
       ...initialState.cellSets,
       properties: {
         ...initialState.cellSets.properties,
-        [xeniumSampleId]: { cellIds: new Set([0, 1, 2, 3]) },
+        [xeniumSampleId]: { name: 'Xenium', parentNodeKey: 'sample', cellIds: new Set([0, 1, 2, 3]) },
       },
+      hierarchy: [
+        initialState.cellSets.hierarchy[0],
+        { key: 'sample', children: [{ key: xeniumSampleId }] },
+      ],
     },
     experimentSettings: {
       info: { sampleIds: [xeniumSampleId] },
@@ -338,5 +358,109 @@ describe('SpatialViewer — molecule (transcript) overlay', () => {
       .filter((url) => url.includes('molecules.bygene.zip'));
     expect(moleculeStoreUrls).toHaveLength(1);
     expect(loadMoleculeMeta).toHaveBeenCalled();
+  });
+});
+
+describe('SpatialViewer obj2s file pairing', () => {
+  beforeAll(async () => {
+    await preloadAll();
+  });
+
+  afterEach(() => {
+    component.unmount();
+  });
+
+  const mountWithFiles = async (filesByType, state = initialState) => {
+    jest.clearAllMocks();
+    getSampleFileUrls.mockImplementation((_e, _s, fileType) => (
+      filesByType[fileType]
+        ? Promise.resolve(filesByType[fileType])
+        : Promise.reject(new Error('not found'))
+    ));
+    ZipFileStore.fromUrl.mockImplementation((url) => ({ url, get: jest.fn() }));
+
+    store = mockStore(state);
+    await act(() => {
+      component = mount(
+        <Provider store={store}>
+          <SpatialViewer experimentId={experimentId} width={width} height={height} />
+        </Provider>,
+      );
+    });
+  };
+
+  const storeUrls = (pattern) => ZipFileStore.fromUrl.mock.calls
+    .map(([url]) => url)
+    .filter((url) => url.includes(pattern));
+
+  it('lays out segmentations in the order of their linked images', async () => {
+    await mountWithFiles({
+      ome_zarr_zip: [
+        { url: 'image1', fileId: sample1FileId, obj2sSampleId: sample1FileId },
+        { url: 'image2', fileId: sample2FileId, obj2sSampleId: sample2FileId },
+      ],
+      // listed in the other order than the images
+      segmentations_ome_zarr_zip: [
+        { url: 'segmentations2', fileId: 'seg-file-2', obj2sSampleId: sample2FileId },
+        { url: 'segmentations1', fileId: 'seg-file-1', obj2sSampleId: sample1FileId },
+      ],
+    });
+
+    expect(storeUrls('image')).toEqual(['image1', 'image2']);
+    expect(storeUrls('segmentations')).toEqual(['segmentations1', 'segmentations2']);
+  });
+
+  it('lays out imageless (Xenium) obj2s samples from their sample cell sets', async () => {
+    const xeniumState = {
+      ...initialState,
+      samples: {
+        [obj2sSampleId]: {
+          type: 'seurat_spatial_object', options: { spatialTechnology: 'xenium' },
+        },
+      },
+    };
+
+    await mountWithFiles({
+      segmentations_ome_zarr_zip: [
+        { url: 'segmentations1', fileId: 'seg-file-1', obj2sSampleId: sample1FileId },
+        { url: 'segmentations2', fileId: 'seg-file-2', obj2sSampleId: sample2FileId },
+      ],
+      molecules_by_gene: [
+        { url: 'molecules.bygene.zip-2', fileId: 'mol-file-2', obj2sSampleId: sample2FileId },
+      ],
+    }, xeniumState);
+
+    // no tissue image for Xenium
+    const requestedFileTypes = getSampleFileUrls.mock.calls.map(([, , fileType]) => fileType);
+    expect(requestedFileTypes).not.toContain('ome_zarr_zip');
+
+    expect(storeUrls('segmentations')).toEqual(['segmentations1', 'segmentations2']);
+  });
+
+  it('shows centroids for imageless (Xenium) obj2s samples without segmentations', async () => {
+    const info = jest.spyOn(console, 'info').mockImplementation(() => {});
+    const xeniumState = {
+      ...initialState,
+      samples: {
+        [obj2sSampleId]: {
+          type: 'seurat_spatial_object', options: { spatialTechnology: 'xenium' },
+        },
+      },
+    };
+
+    // centroids-only object: no segmentation files, only molecules
+    await mountWithFiles({
+      molecules_by_gene: [
+        { url: 'molecules.bygene.zip-2', fileId: 'mol-file-2', obj2sSampleId: sample2FileId },
+      ],
+    }, xeniumState);
+
+    expect(storeUrls('segmentations')).toEqual([]);
+    expect(info).toHaveBeenCalledWith(expect.stringContaining('centroid fallback active'));
+
+    // samples are still laid out: the molecules are paired with their sample
+    expect(storeUrls('molecules')).toEqual(['molecules.bygene.zip-2']);
+
+    info.mockRestore();
   });
 });

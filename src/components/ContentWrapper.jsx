@@ -69,7 +69,6 @@ const ContentWrapper = (props) => {
   const user = useSelector((state) => state.user.current);
 
   const samples = useSelector((state) => state.samples);
-  const selectedTechnology = (samples[experimentData?.sampleIds?.[0]]?.type || false);
 
   useEffect(() => {
     // selectedExperimentID holds the value in redux of the selected experiment
@@ -89,6 +88,10 @@ const ContentWrapper = (props) => {
 
   const currentExperimentId = currentExperimentIdRef.current;
   const experiment = useSelector((state) => state?.experiments[currentExperimentId]);
+  // in data management there is no experiment in the route, so experimentData is
+  // empty: fall back to the selected experiment's samples
+  const firstSampleId = experimentData?.sampleIds?.[0] ?? experiment?.sampleIds?.[0];
+  const selectedTechnology = (samples[firstSampleId]?.type || false);
   const experimentName = experimentData?.experimentName || experiment?.name;
 
   const {

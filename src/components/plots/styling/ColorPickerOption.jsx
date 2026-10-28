@@ -5,7 +5,7 @@ import ColorPicker from '../../ColorPicker';
 
 const ColorPickerOption = (props) => {
   // See the z index here:
-  // https://github.com/ant-design/ant-design/blob/master/components/style/themes/default.less#L332
+  // https://github.com/ant-design/ant-design/blob/4.x-stable/components/style/themes/default.less
   // This ensures that the color selector is on top of any dropdown it may be embedded into.
   const COLOR_PICKER_Z_INDEX = 1050;
 
