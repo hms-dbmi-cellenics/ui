@@ -425,15 +425,26 @@ jobs:
 
       - name: Push production/develop template to releases repo for deployment
         if: (matrix.environment == 'production' && github.event_name == 'release' && github.event.action == 'released') || (matrix.environment == 'develop' && github.event_name == 'push')
-        uses: dmnemec/copy_file_to_another_repo_action@v1.0.4
         env:
           API_TOKEN_GITHUB: ${{ secrets.API_TOKEN_GITHUB }}
-        with:
-          source_file: ${{ steps.fill-metadata.outputs.deployment-name }}.yaml
-          destination_repo: ${{ github.repository_owner }}/releases
-          destination_folder: ${{ steps.fill-metadata.outputs.kubernetes-env }}
-          user_email: ci@biomage.net
-          user_name: Biomage CI/CD
+          SOURCE_FILE: ${{ steps.fill-metadata.outputs.deployment-name }}.yaml
+          DESTINATION_FOLDER: ${{ steps.fill-metadata.outputs.kubernetes-env }}
+        run: |-
+          git clone --single-branch --branch master \
+            "https://x-access-token:${API_TOKEN_GITHUB}@github.com/${GITHUB_REPOSITORY_OWNER}/releases.git" releases-repo
+          mkdir -p "releases-repo/$DESTINATION_FOLDER"
+          cp "$SOURCE_FILE" "releases-repo/$DESTINATION_FOLDER/"
+          cd releases-repo
+          git add .
+          if git diff --cached --quiet; then exit 0; fi
+          git -c user.email=ci@biomage.net -c user.name='Biomage CI/CD' \
+            commit --message "Update from https://github.com/${GITHUB_REPOSITORY}/commit/${GITHUB_SHA}"
+          # other repos push here too: retry on top of theirs
+          for attempt in 1 2 3; do
+            git push origin master && exit 0
+            git pull --rebase origin master
+          done
+          exit 1
 
       - name: Change name of deployment file for staging deployment
         if: (github.event_name == 'pull_request_target' || github.event_name == 'push') && matrix.environment == 'staging'
@@ -444,15 +455,26 @@ jobs:
           mv $DEPLOYMENT_NAME.yaml $REF_ID.yaml
       - name: Push staging deployment template to releases
         if: (github.event_name == 'pull_request_target' || github.event_name == 'push') && matrix.environment == 'staging'
-        uses: dmnemec/copy_file_to_another_repo_action@v1.0.4
         env:
           API_TOKEN_GITHUB: ${{ secrets.API_TOKEN_GITHUB }}
-        with:
-          source_file: ${{ needs.build-docker.outputs.ref-id }}.yaml
-          destination_repo: ${{ github.repository_owner }}/releases
-          destination_folder: staging-candidates/${{ steps.fill-metadata.outputs.deployment-name }}
-          user_email: ci@biomage.net
-          user_name: 'Biomage CI/CD'
+          SOURCE_FILE: ${{ needs.build-docker.outputs.ref-id }}.yaml
+          DESTINATION_FOLDER: staging-candidates/${{ steps.fill-metadata.outputs.deployment-name }}
+        run: |-
+          git clone --single-branch --branch master \
+            "https://x-access-token:${API_TOKEN_GITHUB}@github.com/${GITHUB_REPOSITORY_OWNER}/releases.git" releases-repo
+          mkdir -p "releases-repo/$DESTINATION_FOLDER"
+          cp "$SOURCE_FILE" "releases-repo/$DESTINATION_FOLDER/"
+          cd releases-repo
+          git add .
+          if git diff --cached --quiet; then exit 0; fi
+          git -c user.email=ci@biomage.net -c user.name='Biomage CI/CD' \
+            commit --message "Update from https://github.com/${GITHUB_REPOSITORY}/commit/${GITHUB_SHA}"
+          # other repos push here too: retry on top of theirs
+          for attempt in 1 2 3; do
+            git push origin master && exit 0
+            git pull --rebase origin master
+          done
+          exit 1
 
   ready-to-merge:
     name: Ready for merging
